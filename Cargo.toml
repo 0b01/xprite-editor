@@ -1,0 +1,7 @@
+[package]
+name = "wasm_snake"
+version = "0.1.0"
+authors = ["tensor-programming <abeltensor@tensor-programming.com>"]
+
+[dependencies]
+stdweb = "0.4.7"
