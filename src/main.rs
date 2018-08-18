@@ -1,16 +1,19 @@
 #[macro_use]
 extern crate stdweb;
 
-mod canvas;
 mod direction;
-mod snake;
+mod xprite;
 
-use canvas::Canvas;
-use direction::Direction;
-use snake::Snake;
+use xprite::Xprite;
 
 use stdweb::traits::*;
-use stdweb::web::{event::KeyDownEvent, IEventTarget};
+use stdweb::web::IEventTarget;
+use stdweb::web::event::{
+    KeyDownEvent,
+    MouseDownEvent,
+    MouseMoveEvent,
+    MouseUpEvent
+};
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -18,36 +21,36 @@ use std::rc::Rc;
 fn main() {
     stdweb::initialize();
 
-    let canvas = Canvas::new("#canvas", 20, 20);
-    let snake = Rc::new(RefCell::new(Snake::new(20, 20)));
+    let xprite = Rc::new(RefCell::new(Xprite::new("#canvas", 128, 128)));
 
-    snake.borrow().draw(&canvas);
+    xprite.borrow().draw();
 
-    stdweb::web::document().add_event_listener({
-        let snake = snake.clone();
-        move |event: KeyDownEvent| {
-            match event.key().as_ref() {
-                "ArrowLeft" => snake.borrow_mut().change_direction(Direction::Left),
-                "ArrowRight" => snake.borrow_mut().change_direction(Direction::Right),
-                "ArrowDown" => snake.borrow_mut().change_direction(Direction::Down),
-                "ArrowUp" => snake.borrow_mut().change_direction(Direction::Up),
-                _ => {}
-            };
-        }
+    let doc = stdweb::web::document();
+
+    // doc.add_event_listener({
+    //     move |event: KeyDownEvent| {
+    //         match event.key() {
+    //             key => console!(log, key)
+    //         };
+    //     }
+    // });
+
+    let xprite_clone = xprite.clone();
+    doc.add_event_listener(move |event: MouseUpEvent| {
+        xprite_clone.borrow_mut().mouse_up(event.client_x(), event.client_y());
     });
 
-    fn game_loop(snake: Rc<RefCell<Snake>>, canvas: Rc<Canvas>, time: u32) {
-        stdweb::web::set_timeout(
-            move || {
-                game_loop(snake.clone(), canvas.clone(), time);
-                snake.borrow_mut().update();
-                snake.borrow().draw(&canvas);
-            },
-            time,
-        );
-    }
+    let xprite_clone = xprite.clone();
+    doc.add_event_listener(move |event: MouseMoveEvent| {
+        xprite_clone.borrow_mut().mouse_move(event.client_x(), event.client_y());
+    });
 
-    game_loop(snake, Rc::new(canvas), 100);
 
+    let xprite_clone = xprite.clone();
+    doc.add_event_listener(move |event: MouseDownEvent| {
+        xprite_clone.borrow_mut().mouse_down(event.client_x(), event.client_y());
+    });
+
+    xprite.borrow().draw();
     stdweb::event_loop();
 }

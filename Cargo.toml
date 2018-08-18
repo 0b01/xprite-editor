@@ -1,5 +1,5 @@
 [package]
-name = "wasm_snake"
+name = "xprite"
 version = "0.1.0"
 authors = ["tensor-programming <abeltensor@tensor-programming.com>"]
 
