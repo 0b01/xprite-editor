@@ -9,9 +9,53 @@ use self::canvas::Canvas;
 use self::color::Color;
 use self::block::Block;
 
-pub struct Xprite {
+struct History {
     history: Vec<HashSet<Block>>,
     redos: Vec<HashSet<Block>>,
+}
+
+impl History {
+    pub fn new() -> Self {
+        let history = vec![HashSet::new()];
+        let redos = vec![];
+        History {
+            history,
+            redos,
+        }
+    }
+
+    pub fn duplicate(&mut self) {
+        let latest = self.current_block().clone();
+        self.history.push(latest);
+    }
+
+    fn current_block_mut(&mut self) -> &mut HashSet<Block> {
+        self.history.last_mut().unwrap()
+    }
+
+    fn current_block(&self) -> &HashSet<Block> {
+        self.history.last().unwrap()
+    }
+
+    pub fn clear_redo(&mut self) {
+        self.redos = Vec::new();
+    }
+
+    pub fn undo(&mut self) {
+        if let Some(last) = self.history.pop() {
+            self.redos.push(last);
+        }
+    }
+
+    pub fn redo(&mut self) {
+        if let Some(last) = self.redos.pop() {
+            self.history.push(last);
+        }
+    }
+}
+
+pub struct Xprite {
+    history: History,
     canvas: Canvas,
     selected_color: Color,
     is_mouse_down: Option<MouseButton>,
@@ -20,16 +64,13 @@ pub struct Xprite {
 
 impl Xprite {
     pub fn new(name: &str, art_w: u32, art_h: u32) -> Xprite {
-        let history = vec![HashSet::new()];
-        let redos = vec![];
         let canvas = Canvas::new(name, art_w, art_h);
-
         let selected_color = Color {r: 0, g: 0, b: 0, a: 255};
         let is_mouse_down = None;
         let cursor = None;
+        let history = History::new();
         Xprite {
             history,
-            redos,
             canvas,
             selected_color,
             is_mouse_down,
@@ -54,8 +95,7 @@ impl Xprite {
     pub fn mouse_down(&mut self, x: i32, y: i32, button: MouseButton) {
         self.is_mouse_down = Some(button);
 
-        self.push_history();
-        self.clear_redo();
+        self.on_new_stroke_start();
 
         let block = self.canvas.to_block(x, y, self.color());
         if let Some(block) = block {
@@ -64,43 +104,27 @@ impl Xprite {
         self.draw();
     }
 
-    fn push_history(&mut self) {
-        let latest = self.current_block().clone();
-        self.history.push(latest);
-    }
-
-    fn clear_redo(&mut self) {
-        self.redos = Vec::new();
+    fn on_new_stroke_start(&mut self) {
+        self.history.duplicate();
+        self.history.clear_redo();
     }
 
     pub fn undo(&mut self) {
-        if let Some(last) = self.history.pop() {
-            self.redos.push(last);
-        }
+        self.history.undo();
         self.draw();
     }
 
     pub fn redo(&mut self) {
-        if let Some(last) = self.redos.pop() {
-            self.history.push(last);
-        }
+        self.history.redo();
         self.draw();
     }
 
     pub fn add_pixel(&mut self, block: Block) {
-        self.current_block_mut().insert(block);
-    }
-
-    fn current_block_mut(&mut self) -> &mut HashSet<Block> {
-        self.history.last_mut().unwrap()
-    }
-
-    fn current_block(&self) -> &HashSet<Block> {
-        self.history.last().unwrap()
+        self.blocks_mut().insert(block);
     }
 
     pub fn remove_pixel(&mut self, block: &Block) {
-        self.current_block_mut().remove(block);
+        self.blocks_mut().remove(block);
     }
 
     pub fn mouse_move(&mut self, x: i32, y: i32) {
@@ -139,9 +163,17 @@ impl Xprite {
         self.is_mouse_down = None;
     }
 
+    pub fn blocks_mut(&mut self) -> &mut HashSet<Block> {
+        self.history.current_block_mut()
+    }
+
+    pub fn blocks(&self) -> &HashSet<Block> {
+        self.history.current_block()
+    }
+
     pub fn draw(&self) {
         self.canvas.clear_all();
-        for &Block{x, y, color} in self.current_block().iter() {
+        for &Block{x, y, color} in self.blocks().iter() {
             self.canvas.draw(x, y, &color.to_string());
         }
         self.draw_cursor();
