@@ -114,13 +114,6 @@ impl Canvas {
 
         if self.view.y1 >= self.art_h { self.view.y1 = self.art_h; }
         else { self.view.y1 += d; }
-
-        console!(log,
-            self.view.x0,
-            self.view.y0,
-            self.view.x1,
-            self.view.y1
-        );
     }
 
 

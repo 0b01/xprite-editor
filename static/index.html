@@ -26,7 +26,11 @@
     <input type='text' id="color-picker" />
     <div>
         pencil <br />
-        <input type="checkbox" id="simplify"/>
+        <input type="checkbox" id="simplify" checked="checked"/>
+        <select id='brush-shape'>
+            <option value="pixel">.</option>
+            <option value="cross">+</option>
+        </select>
     </div>
 
 
@@ -43,13 +47,15 @@
         });
 
         $("#simplify").click( function(){
-            if( $(this).is(':checked') ) {
-                xprite.set_option_for_tool("pencil", "simplify", "true");
-            } else {
-                xprite.set_option_for_tool("pencil", "simplify", "false");
-            }
-         });
+            let val = "false";
+            if( $(this).is(':checked') ) { val = "true"; }
+            xprite.set_option_for_tool("pencil", "simplify", val);
+        });
 
+        $("#brush-shape").change(function () {
+            let str = $("#brush-shape option:selected").val();
+            xprite.set_option_for_tool("pencil", "brush", str);
+        });
     </script>
 
 </body>

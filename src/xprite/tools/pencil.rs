@@ -98,16 +98,13 @@ impl Tool for Pencil {
         self.draw(xpr);
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, x: i32, y: i32) {
-        console!(log, "up", x, y);
-
+    fn mouse_up(&mut self, xpr: &mut Xprite, _x: i32, _y: i32) {
         if self.is_mouse_down.is_none() {return; }
         let button = self.is_mouse_down.clone().unwrap();
         if button == MouseButton::Right { return; }
 
         if self.simplify {
             if let Some(simplified) = self.current_stroke.reumann_witkam(self.tolerence) {
-                console!(log, &simplified);
                 xpr.history.undo();
                 xpr.history.on_new_stroke_start();
                 self.draw_stroke(xpr, &simplified);
@@ -142,6 +139,13 @@ impl Tool for Pencil {
                     self.tolerence = val;
                 } else {
                     console!(error, "cannot parse val:", value);
+                }
+            }
+            "brush" => {
+                match value {
+                    "cross" => self.brush = Brush::cross(),
+                    "pixel" => self.brush = Brush::pixel(),
+                    _ => console!(error, "malformed value: ", value),
                 }
             }
             _ => (),

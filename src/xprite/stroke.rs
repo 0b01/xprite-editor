@@ -30,6 +30,11 @@ impl Stroke {
         let mut second = 1;
         let mut third = 2;
 
+        // first point
+        ret.push(self.pos[first].0, self.pos[first].1);
+        // last point
+        ret.push(self.pos[self.pos.len()-1].0, self.pos[self.pos.len()-1].1);
+
         for _ in 0..(self.pos.len()-2) {
             let dist = point_line_distance(
                 self.pos[third].0 as f32,

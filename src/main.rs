@@ -35,7 +35,7 @@ fn main() {
     doc.add_event_listener({
         move |event: KeyDownEvent| {
             match event.key().as_ref() {
-                "+" => xprite_clone.borrow_mut().zoom_in(),
+                "=" => xprite_clone.borrow_mut().zoom_in(),
                 "-" => xprite_clone.borrow_mut().zoom_out(),
                 "z" => if event.ctrl_key() { xprite_clone.borrow_mut().undo() },
                 "Z" => if event.ctrl_key() { xprite_clone.borrow_mut().redo() },
