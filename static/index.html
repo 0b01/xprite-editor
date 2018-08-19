@@ -11,13 +11,36 @@
             outline: black 3px solid;
         }
     </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script src='http://bgrins.github.io/spectrum/spectrum.js'></script>
+    <link rel='stylesheet' href='http://bgrins.github.io/spectrum/spectrum.css' />
+
 </head>
 
 <body oncontextmenu="return false;">
     <canvas id="canvas" width="600" height="600" style="cursor: none;">
-
     </canvas>
+
+    <input type='text' id="custom" />
+
+
     <script src="xprite.js"></script>
+    <script>
+        $("#custom").spectrum({
+            color: "#f00",
+            flat: true,
+            showInput: true,
+            move: function(color) {
+                let rgb = color.toRgb();
+                xprite.set_color(rgb.r, rgb.g, rgb.b);
+            }
+        });
+    </script>
+
+</body>
+
     <script>
         function ska(x0, x1 ,y0, y1) {
             for (i = x0; i < x1; i++) {
@@ -30,8 +53,5 @@
             xprite.draw();
         }
     </script>
-
-</body>
-
 
 </html>

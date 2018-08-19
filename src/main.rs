@@ -79,6 +79,8 @@ fn main() {
     let fn_get_height = move || {xpr.borrow().get_height()};
     let xpr = xprite.clone();
     let fn_get_width = move || {xpr.borrow().get_width()};
+    let xpr = xprite.clone();
+    let fn_set_color = move |r:u8, g:u8, b:u8| {xpr.borrow_mut().set_color(r,g,b)};
 
 
     js! {
@@ -87,8 +89,8 @@ fn main() {
         window.xprite.draw_pixel = @{fn_draw_pixel};
         window.xprite.get_height = @{fn_get_height};
         window.xprite.get_width = @{fn_get_width};
+        window.xprite.set_color = @{fn_set_color};
     };
-
 
     stdweb::event_loop();
 

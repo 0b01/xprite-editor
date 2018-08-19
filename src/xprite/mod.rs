@@ -124,16 +124,16 @@ impl Xprite {
     pub fn mouse_up(&mut self, x: i32, y: i32) {
         console!(log, "up", x, y);
 
+        if self.is_mouse_down.is_none() {return; }
         let button = self.is_mouse_down.clone().unwrap();
-        if button == MouseButton::Right {
-            return;
+        if button == MouseButton::Right { return; }
+
+        if let Some(simplified) = self.current_stroke.reumann_witkam(2.0) {
+            console!(log, &simplified);
+            self.history.undo();
+            self.history.on_new_stroke_start();
+            self.draw_stroke(&simplified);
         }
-
-        let simplified = self.current_stroke.reumann_witkam(2.0);
-        console!(log, &simplified);
-
-        self.history.undo();
-        self.draw_stroke(&simplified);
 
         self.current_stroke.clear();
         self.is_mouse_down = None;
@@ -213,5 +213,9 @@ impl Xprite {
 
     pub fn color(&self) -> Color {
         self.selected_color
+    }
+
+    pub fn set_color(&mut self, r:u8, g:u8, b:u8) {
+        self.selected_color = Color::new(r, g, b);
     }
 }

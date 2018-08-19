@@ -1,4 +1,4 @@
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 pub struct Stroke {
     pub pos: Vec<(u32, u32)>,
 }
@@ -20,7 +20,11 @@ impl Stroke {
         self.pos.clear()
     }
 
-    pub fn reumann_witkam(&self, tol: f32) -> Stroke {
+    pub fn reumann_witkam(&self, tol: f32) -> Option<Stroke> {
+        if self.pos.len() < 10 {
+            return None;
+        }
+
         let mut ret = Stroke::new();
         let mut first = 0;
         let mut second = 1;
@@ -45,7 +49,7 @@ impl Stroke {
                 third = third+1;
             }
         }
-        ret
+        Some(ret)
     }
 }
 
