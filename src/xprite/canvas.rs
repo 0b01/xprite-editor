@@ -83,13 +83,6 @@ impl Canvas {
         self.view.y0 += d;
         self.view.x1 -= d;
         self.view.y1 -= d;
-
-        console!(log,
-            self.view.x0,
-            self.view.y0,
-            self.view.x1,
-            self.view.y1
-        );
     }
 
     pub fn zoom_in_at(&mut self, d: u32, x: u32, y: u32) {
@@ -107,13 +100,6 @@ impl Canvas {
         self.view.y0 += h0 as u32;
         self.view.x1 -= w1 as u32;
         self.view.y1 -= h1 as u32;
-
-        console!(log,
-            self.view.x0,
-            self.view.y0,
-            self.view.x1,
-            self.view.y1
-        );
     }
 
     pub fn zoom_out(&mut self, d: u32) {

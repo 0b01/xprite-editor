@@ -6,15 +6,13 @@ mod color;
 mod canvas;
 mod stroke;
 mod tools;
+mod toolbox;
 
-use std::rc::Rc;
-use std::cell::RefCell;
 use std::collections::HashSet;
 use stdweb::web::event::MouseButton;
 
-use self::tools::Tool;
-use self::tools::pencil::Pencil;
 
+use self::toolbox::Toolbox;
 use self::block::Block;
 use self::history::History;
 use self::canvas::Canvas;
@@ -29,7 +27,7 @@ pub struct Xprite {
     history: History,
     canvas: Canvas,
     selected_color: Color,
-    tool: Rc<RefCell<Tool>>,
+    toolbox: Toolbox,
     art_h: u32,
     art_w: u32,
     cursor_pos: Option<Block>,
@@ -41,7 +39,7 @@ impl Xprite {
         let selected_color = Color {r: 0, g: 0, b: 0, a: 255};
         let history = History::new();
         let cursor_pos = None;
-        let tool = Rc::new(RefCell::new(Pencil::new()));
+        let toolbox = Toolbox::new();
 
         Xprite {
             history,
@@ -50,22 +48,22 @@ impl Xprite {
             cursor_pos,
             art_h,
             art_w,
-            tool,
+            toolbox,
         }
     }
 
     pub fn mouse_move(&mut self, x: i32, y: i32) {
-        let tool = self.tool.clone();
+        let tool = self.toolbox.tool();
         tool.borrow_mut().mouse_move(self, x, y);
     }
 
     pub fn mouse_up(&mut self, x: i32, y: i32) {
-        let tool = self.tool.clone();
+        let tool = self.toolbox.tool();
         tool.borrow_mut().mouse_up(self, x, y);
     }
 
     pub fn mouse_down(&mut self, x: i32, y: i32, button: MouseButton) {
-        let tool = self.tool.clone();
+        let tool = self.toolbox.tool();
         tool.borrow_mut().mouse_down(self, x, y, button);
     }
 
@@ -135,7 +133,8 @@ impl Xprite {
     }
 
     pub fn draw(&self) {
-        self.tool.borrow().draw(self);
+        let tool = self.toolbox.tool();
+        tool.borrow().draw(self);
     }
 
     pub fn color(&self) -> Color {
