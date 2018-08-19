@@ -1,5 +1,7 @@
 #[macro_use]
 extern crate stdweb;
+#[macro_use]
+extern crate serde_derive;
 
 
 mod xprite;
@@ -36,7 +38,7 @@ fn main() {
                 "z" => if event.ctrl_key() { xprite_clone.borrow_mut().undo() },
                 "Z" => if event.ctrl_key() { xprite_clone.borrow_mut().redo() },
                 "y" => if event.ctrl_key() { xprite_clone.borrow_mut().redo() },
-                key => console!(log, key)
+                _ => (),
             };
         }
     });
@@ -69,15 +71,22 @@ fn main() {
 
     xprite.borrow().draw();
 
-    let xprclone = xprite.clone();
-    let fn_draw = move || {xprclone.borrow().draw()};
-    let xprclone = xprite.clone();
-    let fn_draw_pixel = move |x:u32, y:u32| {xprclone.borrow_mut().draw_pixel(x, y)};
+    let xpr = xprite.clone();
+    let fn_draw = move || {xpr.borrow().draw()};
+    let xpr = xprite.clone();
+    let fn_draw_pixel = move |x:u32, y:u32| {xpr.borrow_mut().draw_pixel(x, y)};
+    let xpr = xprite.clone();
+    let fn_get_height = move || {xpr.borrow().get_height()};
+    let xpr = xprite.clone();
+    let fn_get_width = move || {xpr.borrow().get_width()};
+
 
     js! {
         window.xprite = {};
         window.xprite.draw = @{fn_draw};
         window.xprite.draw_pixel = @{fn_draw_pixel};
+        window.xprite.get_height = @{fn_get_height};
+        window.xprite.get_width = @{fn_get_width};
     };
 
 

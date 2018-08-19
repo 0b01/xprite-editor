@@ -5,3 +5,5 @@ authors = ["tensor-programming <abeltensor@tensor-programming.com>"]
 
 [dependencies]
 stdweb = "0.4.7"
+serde = "1.0.71"
+serde_derive = "1.0.71"

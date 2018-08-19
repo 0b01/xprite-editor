@@ -4,6 +4,7 @@ mod brush;
 mod history;
 mod color;
 mod canvas;
+mod stroke;
 
 use std::collections::HashSet;
 use stdweb::web::event::MouseButton;
@@ -13,6 +14,7 @@ use self::history::History;
 use self::canvas::Canvas;
 use self::color::Color;
 use self::brush::Brush;
+use self::stroke::Stroke;
 
 pub type Blocks = HashSet<Block>;
 pub type BlockOffset = Blocks;
@@ -22,9 +24,12 @@ pub struct Xprite {
     canvas: Canvas,
     selected_color: Color,
     is_mouse_down: Option<MouseButton>,
+    current_stroke: Stroke,
     cursor: Option<Blocks>,
     cursor_pos: Option<Block>,
     brush: Brush,
+    art_h: u32,
+    art_w: u32,
 }
 
 impl Xprite {
@@ -36,6 +41,7 @@ impl Xprite {
         let cursor_pos = None;
         let history = History::new();
         let brush = Brush::pixel();
+        let current_stroke = Stroke::new();
 
         Xprite {
             history,
@@ -44,8 +50,19 @@ impl Xprite {
             is_mouse_down,
             cursor,
             cursor_pos,
+            current_stroke,
             brush,
+            art_h,
+            art_w,
         }
+    }
+
+    pub fn get_height(&self) -> u32 {
+        self.art_h
+    }
+
+    pub fn get_width(&self) -> u32 {
+        self.art_w
     }
 
     pub fn zoom_in(&mut self) {
@@ -62,14 +79,72 @@ impl Xprite {
         self.draw();
     }
 
+    pub fn mouse_move(&mut self, x: i32, y: i32) {
+        let blocks = self.canvas.to_blocks(x, y, &self.brush, self.color());
+        self.cursor = blocks.clone();
+        let x_y = self.canvas.get_cursor(x, y);
+        self.cursor_pos = Some(Block::from_tuple(x_y, self.color()));
+
+
+        self.draw();
+
+        // if mouse is done
+        if self.is_mouse_down.is_none() { return; }
+        if blocks.is_none() { return; }
+
+        self.current_stroke.push(x_y.0, x_y.1);
+
+        let button = self.is_mouse_down.clone().unwrap();
+        if button == MouseButton::Left {
+            self.add_pixels(&blocks.unwrap());
+        } else if button == MouseButton::Right {
+            self.remove_pixels(&blocks.unwrap());
+        }
+        self.draw();
+    }
+
+
     pub fn mouse_down(&mut self, x: i32, y: i32, button: MouseButton) {
         self.is_mouse_down = Some(button);
         self.history.on_new_stroke_start();
+        let (stroke_pos_x, stroke_pos_y) = self.canvas.get_cursor(x, y);
+        self.current_stroke.push(stroke_pos_x, stroke_pos_y);
+
         let blocks = self.canvas.to_blocks(x, y, &self.brush, self.color());
         if let Some(blocks) = blocks {
-            self.add_pixels(&blocks);
+            if button == MouseButton::Left {
+                self.add_pixels(&blocks);
+            } else {
+                self.remove_pixels(&blocks);
+            }
         }
         self.draw();
+    }
+
+    pub fn mouse_up(&mut self, x: i32, y: i32) {
+        console!(log, "up", x, y);
+
+        let button = self.is_mouse_down.clone().unwrap();
+        if button == MouseButton::Right {
+            return;
+        }
+
+        let simplified = self.current_stroke.reumann_witkam(2.0);
+        console!(log, &simplified);
+
+        self.history.undo();
+        self.draw_stroke(&simplified);
+
+        self.current_stroke.clear();
+        self.is_mouse_down = None;
+
+        self.draw();
+    }
+
+    pub fn draw_stroke(&mut self, stroke: &Stroke) {
+        for &(ref x, ref y) in stroke.pos.iter() {
+            self.draw_pixel(*x, *y);
+        }
     }
 
     pub fn undo(&mut self) {
@@ -105,29 +180,6 @@ impl Xprite {
 
     pub fn remove_pixel(&mut self, block: &Block) {
         self.blocks_mut().remove(block);
-    }
-
-    pub fn mouse_move(&mut self, x: i32, y: i32) {
-        let blocks = self.canvas.to_blocks(x, y, &self.brush, self.color());
-        self.cursor = blocks.clone();
-        self.cursor_pos = Some(Block::from_tuple(self.canvas.get_cursor(x, y), self.color()));
-        self.draw();
-
-        if self.is_mouse_down.is_none() { return; }
-        if blocks.is_none() { return; }
-
-        let button = self.is_mouse_down.clone().unwrap();
-        if button == MouseButton::Left {
-            self.add_pixels(&blocks.unwrap());
-        } else if button == MouseButton::Right {
-            self.remove_pixels(&blocks.unwrap());
-        }
-        self.draw();
-    }
-
-    pub fn mouse_up(&mut self, x: i32, y: i32) {
-        console!(log, "up", x, y);
-        self.is_mouse_down = None;
     }
 
     pub fn blocks_mut(&mut self) -> &mut Blocks {
