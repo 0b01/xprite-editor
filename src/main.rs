@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate stdweb;
 
-mod direction;
 mod xprite;
 
 use xprite::Xprite;
