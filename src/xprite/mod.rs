@@ -5,9 +5,15 @@ mod history;
 mod color;
 mod canvas;
 mod stroke;
+mod tools;
 
+use std::rc::Rc;
+use std::cell::RefCell;
 use std::collections::HashSet;
 use stdweb::web::event::MouseButton;
+
+use self::tools::Tool;
+use self::tools::pencil::Pencil;
 
 use self::block::Block;
 use self::history::History;
@@ -23,38 +29,44 @@ pub struct Xprite {
     history: History,
     canvas: Canvas,
     selected_color: Color,
-    is_mouse_down: Option<MouseButton>,
-    current_stroke: Stroke,
-    cursor: Option<Blocks>,
-    cursor_pos: Option<Block>,
-    brush: Brush,
+    tool: Rc<RefCell<Tool>>,
     art_h: u32,
     art_w: u32,
+    cursor_pos: Option<Block>,
 }
 
 impl Xprite {
     pub fn new(name: &str, art_w: u32, art_h: u32) -> Xprite {
         let canvas = Canvas::new(name, art_w, art_h);
         let selected_color = Color {r: 0, g: 0, b: 0, a: 255};
-        let is_mouse_down = None;
-        let cursor = None;
-        let cursor_pos = None;
         let history = History::new();
-        let brush = Brush::pixel();
-        let current_stroke = Stroke::new();
+        let cursor_pos = None;
+        let tool = Rc::new(RefCell::new(Pencil::new()));
 
         Xprite {
             history,
             canvas,
             selected_color,
-            is_mouse_down,
-            cursor,
             cursor_pos,
-            current_stroke,
-            brush,
             art_h,
             art_w,
+            tool,
         }
+    }
+
+    pub fn mouse_move(&mut self, x: i32, y: i32) {
+        let tool = self.tool.clone();
+        tool.borrow_mut().mouse_move(self, x, y);
+    }
+
+    pub fn mouse_up(&mut self, x: i32, y: i32) {
+        let tool = self.tool.clone();
+        tool.borrow_mut().mouse_up(self, x, y);
+    }
+
+    pub fn mouse_down(&mut self, x: i32, y: i32, button: MouseButton) {
+        let tool = self.tool.clone();
+        tool.borrow_mut().mouse_down(self, x, y, button);
     }
 
     pub fn get_height(&self) -> u32 {
@@ -77,74 +89,6 @@ impl Xprite {
     pub fn zoom_out(&mut self) {
         self.canvas.zoom_out(5);
         self.draw();
-    }
-
-    pub fn mouse_move(&mut self, x: i32, y: i32) {
-        let blocks = self.canvas.to_blocks(x, y, &self.brush, self.color());
-        self.cursor = blocks.clone();
-        let x_y = self.canvas.get_cursor(x, y);
-        self.cursor_pos = Some(Block::from_tuple(x_y, self.color()));
-
-
-        self.draw();
-
-        // if mouse is done
-        if self.is_mouse_down.is_none() { return; }
-        if blocks.is_none() { return; }
-
-        self.current_stroke.push(x_y.0, x_y.1);
-
-        let button = self.is_mouse_down.clone().unwrap();
-        if button == MouseButton::Left {
-            self.add_pixels(&blocks.unwrap());
-        } else if button == MouseButton::Right {
-            self.remove_pixels(&blocks.unwrap());
-        }
-        self.draw();
-    }
-
-
-    pub fn mouse_down(&mut self, x: i32, y: i32, button: MouseButton) {
-        self.is_mouse_down = Some(button);
-        self.history.on_new_stroke_start();
-        let (stroke_pos_x, stroke_pos_y) = self.canvas.get_cursor(x, y);
-        self.current_stroke.push(stroke_pos_x, stroke_pos_y);
-
-        let blocks = self.canvas.to_blocks(x, y, &self.brush, self.color());
-        if let Some(blocks) = blocks {
-            if button == MouseButton::Left {
-                self.add_pixels(&blocks);
-            } else {
-                self.remove_pixels(&blocks);
-            }
-        }
-        self.draw();
-    }
-
-    pub fn mouse_up(&mut self, x: i32, y: i32) {
-        console!(log, "up", x, y);
-
-        if self.is_mouse_down.is_none() {return; }
-        let button = self.is_mouse_down.clone().unwrap();
-        if button == MouseButton::Right { return; }
-
-        if let Some(simplified) = self.current_stroke.reumann_witkam(2.0) {
-            console!(log, &simplified);
-            self.history.undo();
-            self.history.on_new_stroke_start();
-            self.draw_stroke(&simplified);
-        }
-
-        self.current_stroke.clear();
-        self.is_mouse_down = None;
-
-        self.draw();
-    }
-
-    pub fn draw_stroke(&mut self, stroke: &Stroke) {
-        for &(ref x, ref y) in stroke.pos.iter() {
-            self.draw_pixel(*x, *y);
-        }
     }
 
     pub fn undo(&mut self) {
@@ -191,24 +135,7 @@ impl Xprite {
     }
 
     pub fn draw(&self) {
-        self.canvas.clear_all();
-        for &Block{x, y, color} in self.blocks().iter() {
-            self.canvas.draw(x, y, &color.to_string());
-        }
-        self.draw_cursor();
-    }
-
-    fn draw_cursor(&self) {
-        if self.cursor.is_none() { return; }
-
-        let cursor = self.cursor.clone().unwrap();
-        for &pos in cursor.iter() {
-            self.canvas.draw(
-                pos.x,
-                pos.y,
-                &Color::red().to_string()
-            );
-        }
+        self.tool.borrow().draw(self);
     }
 
     pub fn color(&self) -> Color {
