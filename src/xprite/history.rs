@@ -1,6 +1,7 @@
 use xprite::Blocks;
 use std::collections::HashSet;
 
+#[derive(Debug)]
 pub struct History {
     stack: Vec<Blocks>,
     redos: Vec<Blocks>,

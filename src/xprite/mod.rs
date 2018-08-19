@@ -94,6 +94,11 @@ impl Xprite {
         }
     }
 
+    pub fn draw_pixel(&mut self, x: u32, y:u32) {
+        let color = self.color();
+        self.blocks_mut().insert(Block {x, y, color});
+    }
+
     pub fn add_pixel(&mut self, block: Block) {
         self.blocks_mut().insert(block);
     }

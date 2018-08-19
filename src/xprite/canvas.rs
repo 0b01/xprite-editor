@@ -13,6 +13,7 @@ pub struct View {
     pub y1: u32,
 }
 
+#[derive(Debug)]
 pub struct Canvas {
     pub canvas: CanvasElement,
     pub ctx: CanvasRenderingContext2d,
@@ -74,6 +75,10 @@ impl Canvas {
     }
 
     pub fn zoom_in(&mut self, d: u32) {
+        if self.view.x1 - self.view.x0 < 2*d
+         ||self.view.y1 - self.view.y0 < 2*d {
+             return;
+         }
         self.view.x0 += d;
         self.view.y0 += d;
         self.view.x1 -= d;
@@ -88,6 +93,11 @@ impl Canvas {
     }
 
     pub fn zoom_in_at(&mut self, d: u32, x: u32, y: u32) {
+        if self.view.x1 - self.view.x0 < 2*d
+         ||self.view.y1 - self.view.y0 < 2*d {
+             return;
+        }
+
         let w0 = ((x-self.view.x0) as f32 / (self.view.x1 - self.view.x0) as f32) * d as f32;
         let w1 = d as f32 - w0;
         let h0 = ((y-self.view.y0) as f32 / (self.view.y1 - self.view.y0) as f32) * d as f32;

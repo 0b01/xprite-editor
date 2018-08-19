@@ -14,11 +14,24 @@
 </head>
 
 <body oncontextmenu="return false;">
-    <canvas id="canvas" width="1200" height="1200" style="cursor: none;">
+    <canvas id="canvas" width="600" height="600" style="cursor: none;">
 
     </canvas>
     <script src="xprite.js"></script>
+    <script>
+        function ska(x0, x1 ,y0, y1) {
+            for (i = x0; i < x1; i++) {
+                if (i % 2) {j = y0;}
+                else {j = y0 + 1;}
+                for (; j < y1; j += 2) {
+                    xprite.draw_pixel(i, j);
+                }
+            }
+            xprite.draw();
+        }
+    </script>
 
 </body>
+
 
 </html>

@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate stdweb;
 
+
 mod xprite;
 
 use xprite::Xprite;
@@ -67,6 +68,18 @@ fn main() {
     });
 
     xprite.borrow().draw();
+
+    let xprclone = xprite.clone();
+    let fn_draw = move || {xprclone.borrow().draw()};
+    let xprclone = xprite.clone();
+    let fn_draw_pixel = move |x:u32, y:u32| {xprclone.borrow_mut().draw_pixel(x, y)};
+
+    js! {
+        window.xprite = {};
+        window.xprite.draw = @{fn_draw};
+        window.xprite.draw_pixel = @{fn_draw_pixel};
+    };
+
 
     stdweb::event_loop();
 
