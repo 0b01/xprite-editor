@@ -23,12 +23,16 @@
     <canvas id="canvas" width="600" height="600" style="cursor: none;">
     </canvas>
 
-    <input type='text' id="custom" />
+    <input type='text' id="color-picker" />
+    <div>
+        pencil <br />
+        <input type="checkbox" id="simplify"/>
+    </div>
 
 
     <script src="xprite.js"></script>
     <script>
-        $("#custom").spectrum({
+        $("#color-picker").spectrum({
             color: "#f00",
             flat: true,
             showInput: true,
@@ -37,10 +41,18 @@
                 xprite.set_color(rgb.r, rgb.g, rgb.b);
             }
         });
+
+        $("#simplify").click( function(){
+            if( $(this).is(':checked') ) {
+                xprite.set_option_for_tool("pencil", "simplify", "true");
+            } else {
+                xprite.set_option_for_tool("pencil", "simplify", "false");
+            }
+         });
+
     </script>
 
 </body>
-
     <script>
         function ska(x0, x1 ,y0, y1) {
             for (i = x0; i < x1; i++) {
@@ -53,5 +65,4 @@
             xprite.draw();
         }
     </script>
-
 </html>

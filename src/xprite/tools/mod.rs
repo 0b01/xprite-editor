@@ -9,4 +9,5 @@ pub trait Tool {
     fn mouse_up(&mut self, &mut Xprite, x: i32, y: i32);
     fn mouse_down(&mut self, &mut Xprite, x: i32, y: i32, button: MouseButton);
     fn draw(&self, &Xprite);
+    fn set(&mut self, option: &str, value: &str);
 }

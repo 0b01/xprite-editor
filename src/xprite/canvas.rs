@@ -1,4 +1,4 @@
-use xprite::{Blocks, Block, Color, Brush};
+use xprite::{Pixels, Block, Color, Brush};
 
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
@@ -166,7 +166,7 @@ impl Canvas {
         (x, y)
     }
 
-    pub fn to_blocks(&self, cli_x: i32, cli_y: i32, brush: &Brush, color: Color) -> Option<Blocks> {
+    pub fn to_blocks(&self, cli_x: i32, cli_y: i32, brush: &Brush, color: Color) -> Option<Pixels> {
         let (x, y) = self.get_cursor(cli_x, cli_y);
 
         let (brush_w, brush_h) = brush.size;

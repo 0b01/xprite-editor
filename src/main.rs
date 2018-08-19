@@ -1,3 +1,5 @@
+#![recursion_limit="128"]
+
 #[macro_use]
 extern crate stdweb;
 #[macro_use]
@@ -71,6 +73,13 @@ fn main() {
 
     xprite.borrow().draw();
 
+    init_js_bindings(&xprite);
+
+    stdweb::event_loop();
+
+}
+
+fn init_js_bindings(xprite: &Rc<RefCell<Xprite>>) {
     let xpr = xprite.clone();
     let fn_draw = move || {xpr.borrow().draw()};
     let xpr = xprite.clone();
@@ -81,7 +90,14 @@ fn main() {
     let fn_get_width = move || {xpr.borrow().get_width()};
     let xpr = xprite.clone();
     let fn_set_color = move |r:u8, g:u8, b:u8| {xpr.borrow_mut().set_color(r,g,b)};
-
+    let xpr = xprite.clone();
+    let fn_set_option = move |opt:String, val:String| {xpr.borrow_mut().set_option(&opt, &val)};
+    let xpr = xprite.clone();
+    let fn_set_option_for_tool = move |name: String, opt:String, val:String|
+        {xpr.borrow_mut().set_option_for_tool(&name, &opt, &val)};
+    let xpr = xprite.clone();
+    let fn_change_tool = move |name: String|
+        {xpr.borrow_mut().change_tool(&name)};
 
     js! {
         window.xprite = {};
@@ -90,8 +106,8 @@ fn main() {
         window.xprite.get_height = @{fn_get_height};
         window.xprite.get_width = @{fn_get_width};
         window.xprite.set_color = @{fn_set_color};
+        window.xprite.set_option = @{fn_set_option};
+        window.xprite.set_option_for_tool = @{fn_set_option_for_tool};
+        window.xprite.change_tool = @{fn_change_tool};
     };
-
-    stdweb::event_loop();
-
 }

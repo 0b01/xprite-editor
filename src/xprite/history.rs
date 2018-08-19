@@ -1,10 +1,10 @@
-use xprite::Blocks;
+use xprite::Pixels;
 use std::collections::HashSet;
 
 #[derive(Debug)]
 pub struct History {
-    stack: Vec<Blocks>,
-    redos: Vec<Blocks>,
+    stack: Vec<Pixels>,
+    redos: Vec<Pixels>,
 }
 
 impl History {
@@ -27,11 +27,11 @@ impl History {
         self.stack.push(latest);
     }
 
-    pub fn current_block_mut(&mut self) -> &mut Blocks {
+    pub fn current_block_mut(&mut self) -> &mut Pixels {
         self.stack.last_mut().unwrap()
     }
 
-    pub fn current_block(&self) -> &Blocks {
+    pub fn current_block(&self) -> &Pixels {
         self.stack.last().unwrap()
     }
 

@@ -20,8 +20,8 @@ use self::color::Color;
 use self::brush::Brush;
 use self::stroke::Stroke;
 
-pub type Blocks = HashSet<Block>;
-pub type BlockOffset = Blocks;
+pub type Pixels = HashSet<Block>;
+pub type PixelOffsets = Pixels;
 
 pub struct Xprite {
     history: History,
@@ -99,13 +99,13 @@ impl Xprite {
         self.draw();
     }
 
-    pub fn add_pixels(&mut self, blocks: &Blocks) {
+    pub fn add_pixels(&mut self, blocks: &Pixels) {
         for &pixel in blocks.iter() {
             self.add_pixel(pixel);
         }
     }
 
-    pub fn remove_pixels(&mut self, blocks: &Blocks) {
+    pub fn remove_pixels(&mut self, blocks: &Pixels) {
         for &pixel in blocks.iter() {
             self.remove_pixel(&pixel);
         }
@@ -124,12 +124,29 @@ impl Xprite {
         self.blocks_mut().remove(block);
     }
 
-    pub fn blocks_mut(&mut self) -> &mut Blocks {
+    pub fn blocks_mut(&mut self) -> &mut Pixels {
         self.history.current_block_mut()
     }
 
-    pub fn blocks(&self) -> &Blocks {
+    pub fn blocks(&self) -> &Pixels {
         self.history.current_block()
+    }
+
+    pub fn set_option(&self, opt: &str, val: &str) {
+        let tool = self.toolbox.tool();
+        tool.borrow_mut().set(opt, val);
+    }
+
+    pub fn set_option_for_tool(&self, name: &str, opt: &str, val: &str) {
+        if let Some(tool) = self.toolbox.get(name) {
+            tool.borrow_mut().set(opt, val);
+        } else {
+            console!(error, "toolbox does not have ", name);
+        }
+    }
+
+    pub fn change_tool(&mut self, name: &str) {
+        self.toolbox.change_to(name);
     }
 
     pub fn draw(&self) {

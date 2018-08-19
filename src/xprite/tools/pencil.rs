@@ -1,14 +1,55 @@
 use xprite::tools::Tool;
 
 use stdweb::web::event::MouseButton;
-use xprite::{Xprite, Stroke, Block, Blocks, Brush, Color};
+use xprite::{Xprite, Stroke, Block, Pixels, Brush, Color};
 
 pub struct Pencil {
     is_mouse_down: Option<MouseButton>,
     current_stroke: Stroke,
-    cursor: Option<Blocks>,
+    cursor: Option<Pixels>,
     cursor_pos: Option<Block>,
     brush: Brush,
+    tolerence: f32,
+    simplify: bool,
+}
+impl Pencil {
+    pub fn new() -> Self {
+        let is_mouse_down = None;
+        let cursor = None;
+        let cursor_pos = None;
+        let brush = Brush::pixel();
+        let current_stroke = Stroke::new();
+
+        Self {
+            is_mouse_down,
+            current_stroke,
+            cursor,
+            cursor_pos,
+            brush,
+            simplify: true,
+            tolerence: 2.0,
+        }
+    }
+
+    pub fn draw_stroke(&mut self, xpr: &mut Xprite, stroke: &Stroke) {
+        for &(ref x, ref y) in stroke.pos.iter() {
+            xpr.draw_pixel(*x, *y);
+        }
+    }
+
+    fn draw_cursor(&self, xpr: &Xprite) {
+        if self.cursor.is_none() { return; }
+
+        let cursor = self.cursor.clone().unwrap();
+        for &pos in cursor.iter() {
+            xpr.canvas.draw(
+                pos.x,
+                pos.y,
+                &Color::red().to_string()
+            );
+        }
+    }
+
 }
 
 impl Tool for Pencil {
@@ -64,11 +105,13 @@ impl Tool for Pencil {
         let button = self.is_mouse_down.clone().unwrap();
         if button == MouseButton::Right { return; }
 
-        if let Some(simplified) = self.current_stroke.reumann_witkam(2.0) {
-            console!(log, &simplified);
-            xpr.history.undo();
-            xpr.history.on_new_stroke_start();
-            self.draw_stroke(xpr, &simplified);
+        if self.simplify {
+            if let Some(simplified) = self.current_stroke.reumann_witkam(self.tolerence) {
+                console!(log, &simplified);
+                xpr.history.undo();
+                xpr.history.on_new_stroke_start();
+                self.draw_stroke(xpr, &simplified);
+            }
         }
 
         self.current_stroke.clear();
@@ -84,42 +127,24 @@ impl Tool for Pencil {
         }
         self.draw_cursor(xpr);
     }
-}
 
-impl Pencil {
-    pub fn new() -> Self {
-        let is_mouse_down = None;
-        let cursor = None;
-        let cursor_pos = None;
-        let brush = Brush::pixel();
-        let current_stroke = Stroke::new();
-
-        Self {
-            is_mouse_down,
-            current_stroke,
-            cursor,
-            cursor_pos,
-            brush,
+    fn set(&mut self, option: &str, value: &str) {
+        match option {
+            "simplify" => {
+                match value {
+                    "true" => self.simplify = true,
+                    "false" => self.simplify = false,
+                    _ => console!(error, "malformed value: ", value),
+                }
+            }
+            "tolerence" => {
+                if let Ok(val) = value.parse() {
+                    self.tolerence = val;
+                } else {
+                    console!(error, "cannot parse val:", value);
+                }
+            }
+            _ => (),
         }
     }
-
-    pub fn draw_stroke(&mut self, xpr: &mut Xprite, stroke: &Stroke) {
-        for &(ref x, ref y) in stroke.pos.iter() {
-            xpr.draw_pixel(*x, *y);
-        }
-    }
-
-    fn draw_cursor(&self, xpr: &Xprite) {
-        if self.cursor.is_none() { return; }
-
-        let cursor = self.cursor.clone().unwrap();
-        for &pos in cursor.iter() {
-            xpr.canvas.draw(
-                pos.x,
-                pos.y,
-                &Color::red().to_string()
-            );
-        }
-    }
-
 }

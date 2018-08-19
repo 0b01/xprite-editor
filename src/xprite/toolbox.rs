@@ -28,6 +28,14 @@ impl Toolbox {
         self.selected.clone()
     }
 
+    pub fn get(&self, name: &str) -> Option<Rc<RefCell<Tool>>> {
+        if let Some(tool) = self.tools.get(name) {
+            Some(tool.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn change_to(&mut self, name: &str) {
         if let Some(tool) = self.tools.get(name) {
             self.selected = tool.clone();

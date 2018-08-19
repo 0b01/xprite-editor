@@ -1,10 +1,10 @@
 use xprite::Block;
 use xprite::Color;
-use xprite::BlockOffset;
+use xprite::PixelOffsets;
 use std::collections::HashSet;
 
 pub struct Brush {
-    pub shape: BlockOffset,
+    pub shape: PixelOffsets,
     pub size: (u32, u32),
 }
 
