@@ -1,7 +1,6 @@
-use xprite::Block;
+use xprite::{Pixel, Pixels};
 use xprite::Color;
 use xprite::PixelOffsets;
-use std::collections::HashSet;
 
 pub struct Brush {
     pub shape: PixelOffsets,
@@ -10,25 +9,25 @@ pub struct Brush {
 
 impl Brush {
     pub fn pixel() -> Self {
-        let mut hs = HashSet::new();
-        hs.insert(blocks!(0, 0));
+        let mut pxs = Pixels::new();
+        pxs.insert(pixel!(0, 0));
 
         Self {
-            shape: hs,
+            shape: pxs,
             size: (1, 1),
         }
     }
 
     pub fn cross() -> Self {
-        let mut hs = HashSet::new();
-        hs.insert(blocks!(0, 1));
-        hs.insert(blocks!(1, 0));
-        hs.insert(blocks!(1, 1));
-        hs.insert(blocks!(1, 2));
-        hs.insert(blocks!(2, 1));
+        let mut pxs = Pixels::new();
+        pxs.insert(pixel!(0, 1));
+        pxs.insert(pixel!(1, 0));
+        pxs.insert(pixel!(1, 1));
+        pxs.insert(pixel!(1, 2));
+        pxs.insert(pixel!(2, 1));
 
         Self {
-            shape: hs,
+            shape: pxs,
             size: (3, 3),
         }
     }

@@ -1,3 +1,5 @@
+use xprite::Pixels;
+
 #[derive(Serialize, Clone)]
 pub struct Stroke {
     pub pos: Vec<(u32, u32)>,
@@ -37,12 +39,9 @@ impl Stroke {
 
         for _ in 0..(self.pos.len()-2) {
             let dist = point_line_distance(
-                self.pos[third].0 as f32,
-                self.pos[third].1 as f32,
-                self.pos[first].0 as f32,
-                self.pos[first].1 as f32,
-                self.pos[second].0 as f32,
-                self.pos[second].1 as f32
+                self.pos[third],
+                self.pos[first],
+                self.pos[second]
             );
 
             if dist <= tol {
@@ -56,9 +55,25 @@ impl Stroke {
         }
         Some(ret)
     }
+
+    pub fn rasterize(&self) -> Pixels {
+        // ... todo
+        Pixels::new()
+    }
 }
 
-fn point_line_distance(x0: f32, y0: f32, x1: f32, y1: f32, x2: f32, y2: f32) -> f32 {
+fn point_line_distance(
+    (x0, y0): (u32, u32),
+    (x1, y1): (u32, u32),
+    (x2, y2): (u32, u32)
+) -> f32 {
+    let x0 = x0 as f32;
+    let x1 = x1 as f32;
+    let x2 = x2 as f32;
+    let y0 = y0 as f32;
+    let y1 = y1 as f32;
+    let y2 = y2 as f32;
+
     ((x2-x1)*(y1-y0)-(x1-x0)*(y2-y1)).abs()
     /
     ((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)).sqrt()

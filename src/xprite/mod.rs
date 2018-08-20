@@ -1,5 +1,5 @@
 #[macro_use]
-mod block;
+mod pixel;
 mod brush;
 mod history;
 mod color;
@@ -9,18 +9,35 @@ mod tools;
 mod toolbox;
 
 use std::collections::HashSet;
+use std::collections::hash_set::Iter;
 use stdweb::web::event::MouseButton;
 
 
 use self::toolbox::Toolbox;
-use self::block::Block;
+use self::pixel::Pixel;
 use self::history::History;
 use self::canvas::Canvas;
 use self::color::Color;
 use self::brush::Brush;
 use self::stroke::Stroke;
 
-pub type Pixels = HashSet<Block>;
+#[derive(Clone, Debug)]
+pub struct Pixels(HashSet<Pixel>);
+impl Pixels {
+    pub fn new() -> Self {
+        Pixels(HashSet::new())
+    }
+    pub fn remove(&mut self, px: &Pixel) {
+        self.0.remove(px);
+    }
+    pub fn insert(&mut self, px: Pixel) {
+        self.0.insert(px);
+    }
+    pub fn iter(&self) -> Iter<Pixel> {
+        self.0.iter()
+    }
+}
+
 pub type PixelOffsets = Pixels;
 
 pub struct Xprite {
@@ -30,7 +47,7 @@ pub struct Xprite {
     toolbox: Toolbox,
     art_h: u32,
     art_w: u32,
-    cursor_pos: Option<Block>,
+    cursor_pos: Option<Pixel>,
 }
 
 impl Xprite {
@@ -99,37 +116,37 @@ impl Xprite {
         self.draw();
     }
 
-    pub fn add_pixels(&mut self, blocks: &Pixels) {
-        for &pixel in blocks.iter() {
+    pub fn add_pixels(&mut self, pixels: &Pixels) {
+        for &pixel in pixels.iter() {
             self.add_pixel(pixel);
         }
     }
 
-    pub fn remove_pixels(&mut self, blocks: &Pixels) {
-        for &pixel in blocks.iter() {
+    pub fn remove_pixels(&mut self, pixels: &Pixels) {
+        for &pixel in pixels.iter() {
             self.remove_pixel(&pixel);
         }
     }
 
     pub fn draw_pixel(&mut self, x: u32, y:u32) {
         let color = self.color();
-        self.blocks_mut().insert(Block {x, y, color});
+        self.pixels_mut().insert(Pixel {x, y, color});
     }
 
-    pub fn add_pixel(&mut self, block: Block) {
-        self.blocks_mut().insert(block);
+    pub fn add_pixel(&mut self, pixel: Pixel) {
+        self.pixels_mut().insert(pixel);
     }
 
-    pub fn remove_pixel(&mut self, block: &Block) {
-        self.blocks_mut().remove(block);
+    pub fn remove_pixel(&mut self, pixel: &Pixel) {
+        self.pixels_mut().remove(pixel);
     }
 
-    pub fn blocks_mut(&mut self) -> &mut Pixels {
-        self.history.current_block_mut()
+    pub fn pixels_mut(&mut self) -> &mut Pixels {
+        self.history.current_pixels_mut()
     }
 
-    pub fn blocks(&self) -> &Pixels {
-        self.history.current_block()
+    pub fn pixels(&self) -> &Pixels {
+        self.history.current_pixels()
     }
 
     pub fn set_option(&self, opt: &str, val: &str) {

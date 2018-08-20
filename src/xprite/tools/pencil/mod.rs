@@ -1,13 +1,13 @@
 use xprite::tools::Tool;
 
 use stdweb::web::event::MouseButton;
-use xprite::{Xprite, Stroke, Block, Pixels, Brush, Color};
+use xprite::{Xprite, Stroke, Pixel, Pixels, Brush, Color};
 
 pub struct Pencil {
     is_mouse_down: Option<MouseButton>,
     current_stroke: Stroke,
     cursor: Option<Pixels>,
-    cursor_pos: Option<Block>,
+    cursor_pos: Option<Pixel>,
     brush: Brush,
     tolerence: f32,
     simplify: bool,
@@ -32,8 +32,8 @@ impl Pencil {
     }
 
     pub fn draw_stroke(&mut self, xpr: &mut Xprite, stroke: &Stroke) {
-        for &(ref x, ref y) in stroke.pos.iter() {
-            xpr.draw_pixel(*x, *y);
+        for &Pixel{x, y, ..} in stroke.rasterize().iter() {
+            xpr.draw_pixel(x, y);
         }
     }
 
@@ -59,13 +59,13 @@ impl Tool for Pencil {
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, x: i32, y: i32) {
-        let blocks = xpr.canvas.to_blocks(x, y, &self.brush, xpr.color());
-        self.cursor = blocks.clone();
+        let pixels = xpr.canvas.to_pixels(x, y, &self.brush, xpr.color());
+        self.cursor = pixels.clone();
         let x_y = xpr.canvas.get_cursor(x, y);
-        self.cursor_pos = Some(Block::from_tuple(x_y, xpr.color()));
+        self.cursor_pos = Some(Pixel::from_tuple(x_y, xpr.color()));
 
         // if mouse is done
-        if self.is_mouse_down.is_none() || blocks.is_none() {
+        if self.is_mouse_down.is_none() || pixels.is_none() {
             self.draw(xpr);
             return;
         }
@@ -74,9 +74,9 @@ impl Tool for Pencil {
 
         let button = self.is_mouse_down.clone().unwrap();
         if button == MouseButton::Left {
-            xpr.add_pixels(&blocks.unwrap());
+            xpr.add_pixels(&pixels.unwrap());
         } else if button == MouseButton::Right {
-            xpr.remove_pixels(&blocks.unwrap());
+            xpr.remove_pixels(&pixels.unwrap());
         }
         self.draw(xpr);
     }
@@ -87,12 +87,12 @@ impl Tool for Pencil {
         let (stroke_pos_x, stroke_pos_y) = xpr.canvas.get_cursor(x, y);
         self.current_stroke.push(stroke_pos_x, stroke_pos_y);
 
-        let blocks = xpr.canvas.to_blocks(x, y, &self.brush, xpr.color());
-        if let Some(blocks) = blocks {
+        let pixels = xpr.canvas.to_pixels(x, y, &self.brush, xpr.color());
+        if let Some(pixels) = pixels {
             if button == MouseButton::Left {
-                xpr.add_pixels(&blocks);
+                xpr.add_pixels(&pixels);
             } else {
-                xpr.remove_pixels(&blocks);
+                xpr.remove_pixels(&pixels);
             }
         }
         self.draw(xpr);
@@ -119,7 +119,7 @@ impl Tool for Pencil {
 
     fn draw(&self, xpr: &Xprite) {
         xpr.canvas.clear_all();
-        for &Block{x, y, color} in xpr.blocks().iter() {
+        for &Pixel{x, y, color} in xpr.pixels().iter() {
             xpr.canvas.draw(x, y, &color.to_string());
         }
         self.draw_cursor(xpr);

@@ -7,3 +7,4 @@ authors = ["tensor-programming <abeltensor@tensor-programming.com>"]
 stdweb = "0.4.7"
 serde = "1.0.71"
 serde_derive = "1.0.71"
+lyon_geom = "0.12.1"

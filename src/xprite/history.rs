@@ -1,5 +1,4 @@
 use xprite::Pixels;
-use std::collections::HashSet;
 
 #[derive(Debug)]
 pub struct History {
@@ -9,7 +8,7 @@ pub struct History {
 
 impl History {
     pub fn new() -> Self {
-        let stack = vec![HashSet::new()];
+        let stack = vec![Pixels::new()];
         let redos = vec![];
         History {
             stack,
@@ -23,15 +22,15 @@ impl History {
     }
 
     pub fn duplicate(&mut self) {
-        let latest = self.current_block().clone();
+        let latest = self.current_pixels().clone();
         self.stack.push(latest);
     }
 
-    pub fn current_block_mut(&mut self) -> &mut Pixels {
+    pub fn current_pixels_mut(&mut self) -> &mut Pixels {
         self.stack.last_mut().unwrap()
     }
 
-    pub fn current_block(&self) -> &Pixels {
+    pub fn current_pixels(&self) -> &Pixels {
         self.stack.last().unwrap()
     }
 

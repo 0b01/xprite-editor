@@ -1,4 +1,4 @@
-use xprite::{Pixels, Block, Color, Brush};
+use xprite::{Pixels, Pixel, Color, Brush};
 
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
@@ -159,7 +159,7 @@ impl Canvas {
         (x, y)
     }
 
-    pub fn to_blocks(&self, cli_x: i32, cli_y: i32, brush: &Brush, color: Color) -> Option<Pixels> {
+    pub fn to_pixels(&self, cli_x: i32, cli_y: i32, brush: &Brush, color: Color) -> Option<Pixels> {
         let (x, y) = self.get_cursor(cli_x, cli_y);
 
         let (brush_w, brush_h) = brush.size;
@@ -168,9 +168,9 @@ impl Canvas {
             None
         } else {
             let ret = brush.shape.iter().map(
-                |Block {x:dx, y:dy,..}| Block {x: x+dx, y: y+dy, color}
+                |Pixel {x:dx, y:dy,..}| Pixel {x: x+dx, y: y+dy, color}
             ).collect();
-            Some(ret)
+            Some(Pixels(ret))
         }
     }
 }
