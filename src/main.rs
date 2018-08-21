@@ -4,6 +4,7 @@
 extern crate stdweb;
 #[macro_use]
 extern crate serde_derive;
+extern crate lyon_geom;
 
 
 mod xprite;
@@ -83,7 +84,7 @@ fn init_js_bindings(xprite: &Rc<RefCell<Xprite>>) {
     let xpr = xprite.clone();
     let fn_draw = move || {xpr.borrow().draw()};
     let xpr = xprite.clone();
-    let fn_draw_pixel = move |x:u32, y:u32| {xpr.borrow_mut().draw_pixel(x, y)};
+    let fn_draw_pixel = move |x:u32, y:u32| {xpr.borrow_mut().draw_pixel(x, y, None)};
     let xpr = xprite.clone();
     let fn_get_height = move || {xpr.borrow().get_height()};
     let xpr = xprite.clone();

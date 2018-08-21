@@ -5,6 +5,8 @@ use stdweb::unstable::TryInto;
 use stdweb::web::html_element::CanvasElement;
 use stdweb::web::{document, CanvasRenderingContext2d};
 
+use lyon_geom::euclid::Point2D;
+
 #[derive(Debug)]
 pub struct View {
     pub x0: u32,
@@ -85,7 +87,9 @@ impl Canvas {
         self.view.y1 -= d;
     }
 
-    pub fn zoom_in_at(&mut self, d: u32, x: u32, y: u32) {
+    pub fn zoom_in_at(&mut self, d: u32, point: Point2D<u32>) {
+        let x = point.x;
+        let y = point.y;
         if self.view.x1 - self.view.x0 < 2*d
          ||self.view.y1 - self.view.y0 < 2*d {
              return;
@@ -168,7 +172,10 @@ impl Canvas {
             None
         } else {
             let ret = brush.shape.iter().map(
-                |Pixel {x:dx, y:dy,..}| Pixel {x: x+dx, y: y+dy, color}
+                |Pixel {point,..}| Pixel {
+                    point: Point2D::new(point.x+x, point.y+y),
+                    color: Some(color),
+                }
             ).collect();
             Some(Pixels(ret))
         }

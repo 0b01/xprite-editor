@@ -1,11 +1,14 @@
 use xprite::tools::Tool;
 
 use stdweb::web::event::MouseButton;
-use xprite::{Xprite, Stroke, Pixel, Pixels, Brush, Color};
+use xprite::{Xprite, Polyline, Pixel, Pixels, Brush, Color};
+
+use lyon_geom::cubic_bezier::CubicBezierSegment;
+use lyon_geom::euclid::Point2D;
 
 pub struct Pencil {
     is_mouse_down: Option<MouseButton>,
-    current_stroke: Stroke,
+    current_polyline: Polyline,
     cursor: Option<Pixels>,
     cursor_pos: Option<Pixel>,
     brush: Brush,
@@ -18,11 +21,11 @@ impl Pencil {
         let cursor = None;
         let cursor_pos = None;
         let brush = Brush::pixel();
-        let current_stroke = Stroke::new();
+        let current_polyline = Polyline::new();
 
         Self {
             is_mouse_down,
-            current_stroke,
+            current_polyline,
             cursor,
             cursor_pos,
             brush,
@@ -31,10 +34,27 @@ impl Pencil {
         }
     }
 
-    pub fn draw_stroke(&mut self, xpr: &mut Xprite, stroke: &Stroke) {
-        for &Pixel{x, y, ..} in stroke.rasterize().iter() {
-            xpr.draw_pixel(x, y);
+    pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline) {
+
+        let path = polyline.interp();
+        for &Pixel{point, ..} in path.rasterize(xpr).iter() {
+            xpr.draw_pixel(point.x, point.y, Some(Color::new(200, 200, 200)));
         }
+
+        for &p in polyline.pos.iter() {
+            let (x,y) = xpr.canvas.get_cursor(p.x as i32, p.y as i32);
+            console!(log, x, y);
+            xpr.draw_pixel(x, y, Some(Color::red()));
+        }
+
+        for seg in &path.segments {
+            let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
+            for point in vec![ctrl1, ctrl2] {
+                let (x, y) = xpr.canvas.get_cursor(point.x as i32, point.y as i32);
+                xpr.draw_pixel(x, y, Some(Color::blue()));
+            }
+        }
+
     }
 
     fn draw_cursor(&self, xpr: &Xprite) {
@@ -43,8 +63,8 @@ impl Pencil {
         let cursor = self.cursor.clone().unwrap();
         for &pos in cursor.iter() {
             xpr.canvas.draw(
-                pos.x,
-                pos.y,
+                pos.point.x,
+                pos.point.y,
                 &Color::red().to_string()
             );
         }
@@ -62,7 +82,7 @@ impl Tool for Pencil {
         let pixels = xpr.canvas.to_pixels(x, y, &self.brush, xpr.color());
         self.cursor = pixels.clone();
         let x_y = xpr.canvas.get_cursor(x, y);
-        self.cursor_pos = Some(Pixel::from_tuple(x_y, xpr.color()));
+        self.cursor_pos = Some(Pixel::from_tuple(x_y, Some(xpr.color())));
 
         // if mouse is done
         if self.is_mouse_down.is_none() || pixels.is_none() {
@@ -70,7 +90,7 @@ impl Tool for Pencil {
             return;
         }
 
-        self.current_stroke.push(x_y.0, x_y.1);
+        self.current_polyline.push(x as f32, y as f32);
 
         let button = self.is_mouse_down.clone().unwrap();
         if button == MouseButton::Left {
@@ -83,9 +103,9 @@ impl Tool for Pencil {
 
     fn mouse_down(&mut self, xpr: &mut Xprite, x: i32, y: i32, button: MouseButton) {
         self.is_mouse_down = Some(button);
-        xpr.history.on_new_stroke_start();
-        let (stroke_pos_x, stroke_pos_y) = xpr.canvas.get_cursor(x, y);
-        self.current_stroke.push(stroke_pos_x, stroke_pos_y);
+        xpr.history.on_new_polyline_start();
+
+        self.current_polyline.push(x as f32, y as f32);
 
         let pixels = xpr.canvas.to_pixels(x, y, &self.brush, xpr.color());
         if let Some(pixels) = pixels {
@@ -104,14 +124,14 @@ impl Tool for Pencil {
         if button == MouseButton::Right { return; }
 
         if self.simplify {
-            if let Some(simplified) = self.current_stroke.reumann_witkam(self.tolerence) {
+            if let Some(simplified) = self.current_polyline.reumann_witkam(self.tolerence) {
                 xpr.history.undo();
-                xpr.history.on_new_stroke_start();
-                self.draw_stroke(xpr, &simplified);
+                xpr.history.on_new_polyline_start();
+                self.draw_polyline(xpr, &simplified);
             }
         }
 
-        self.current_stroke.clear();
+        self.current_polyline.clear();
         self.is_mouse_down = None;
 
         self.draw(xpr);
@@ -119,8 +139,8 @@ impl Tool for Pencil {
 
     fn draw(&self, xpr: &Xprite) {
         xpr.canvas.clear_all();
-        for &Pixel{x, y, color} in xpr.pixels().iter() {
-            xpr.canvas.draw(x, y, &color.to_string());
+        for &Pixel{point, color} in xpr.pixels().iter() {
+            xpr.canvas.draw(point.x, point.y, &color.unwrap_or(xpr.color()).to_string());
         }
         self.draw_cursor(xpr);
     }

@@ -1,18 +1,18 @@
 use xprite::Color;
 use std::hash::{Hash, Hasher};
+use lyon_geom::euclid::Point2D;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Pixel {
-    pub x: u32,
-    pub y: u32,
-    pub color: Color,
+    pub point: Point2D<u32>,
+    pub color: Option<Color>,
 }
 
 impl Pixel {
-    pub fn from_tuple((x,y): (u32, u32), color: Color) -> Self {
+    pub fn from_tuple((x,y): (u32, u32), color: Option<Color>) -> Self {
+        let point = Point2D::new(x, y);
         Pixel {
-            x,
-            y,
+            point,
             color
         }
     }
@@ -20,17 +20,15 @@ impl Pixel {
 
 impl Hash for Pixel {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.x.hash(state);
-        self.y.hash(state);
+        self.point.hash(state);
     }
 }
 
 macro_rules! pixel {
     ($i:expr, $j: expr) => {
         Pixel {
-            x: $i,
-            y: $j,
-            color: Color::red(),
+            point: Point2D::new($i, $j),
+            color: Some(Color::red()),
         }
     };
 }

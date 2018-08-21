@@ -36,4 +36,13 @@ impl Color {
             a: 255,
         }
     }
+
+    pub fn blue() -> Color {
+        Color {
+            r: 0,
+            g: 0,
+            b: 255,
+            a: 255,
+        }
+    }
 }

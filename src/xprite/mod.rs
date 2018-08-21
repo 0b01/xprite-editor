@@ -1,25 +1,23 @@
 #[macro_use]
-mod pixel;
-mod brush;
-mod history;
-mod color;
-mod canvas;
-mod stroke;
+mod common;
 mod tools;
+mod history;
+mod canvas;
 mod toolbox;
 
 use std::collections::HashSet;
 use std::collections::hash_set::Iter;
 use stdweb::web::event::MouseButton;
-
+use lyon_geom::euclid::Point2D;
 
 use self::toolbox::Toolbox;
-use self::pixel::Pixel;
+use self::common::pixel::Pixel;
 use self::history::History;
 use self::canvas::Canvas;
-use self::color::Color;
-use self::brush::Brush;
-use self::stroke::Stroke;
+use self::common::path::Path;
+use self::common::color::Color;
+use self::common::brush::Brush;
+use self::common::polyline::Polyline;
 
 #[derive(Clone, Debug)]
 pub struct Pixels(HashSet<Pixel>);
@@ -70,6 +68,9 @@ impl Xprite {
     }
 
     pub fn mouse_move(&mut self, x: i32, y: i32) {
+        let x_y = self.canvas.get_cursor(x, y);
+        self.cursor_pos = Some(Pixel::from_tuple(x_y, Some(self.color())));
+
         let tool = self.toolbox.tool();
         tool.borrow_mut().mouse_move(self, x, y);
     }
@@ -94,7 +95,7 @@ impl Xprite {
 
     pub fn zoom_in(&mut self) {
         if let Some(cursor_pos) = self.cursor_pos {
-            self.canvas.zoom_in_at(5, cursor_pos.x, cursor_pos.y)
+            self.canvas.zoom_in_at(5, cursor_pos.point)
         } else {
             self.canvas.zoom_in(5);
         }
@@ -128,9 +129,10 @@ impl Xprite {
         }
     }
 
-    pub fn draw_pixel(&mut self, x: u32, y:u32) {
-        let color = self.color();
-        self.pixels_mut().insert(Pixel {x, y, color});
+    pub fn draw_pixel(&mut self, x: u32, y:u32, color: Option<Color>) {
+        let point = Point2D::new(x, y);
+        let color = if color.is_none() { Some(self.color()) } else { color };
+        self.pixels_mut().insert(Pixel {point, color});
     }
 
     pub fn add_pixel(&mut self, pixel: Pixel) {
