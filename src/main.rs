@@ -1,7 +1,7 @@
 #![recursion_limit="128"]
 
-#[macro_use]
-extern crate itertools;
+// #[macro_use]
+// extern crate itertools;
 #[macro_use]
 extern crate stdweb;
 extern crate lyon_geom;
@@ -38,6 +38,7 @@ fn main() {
             match event.key().as_ref() {
                 "=" => xprite_clone.borrow_mut().zoom_in(),
                 "-" => xprite_clone.borrow_mut().zoom_out(),
+                "p" => xprite_clone.borrow().print_cursor_location(),
                 "z" => if event.ctrl_key() { xprite_clone.borrow_mut().undo() },
                 "Z" => if event.ctrl_key() { xprite_clone.borrow_mut().redo() },
                 "y" => if event.ctrl_key() { xprite_clone.borrow_mut().redo() },

@@ -1,5 +1,5 @@
 use std::cmp::{min, max};
-use xprite::{Xprite, Polyline, Pixels, Pixel, Color};
+use xprite::{Xprite, Polyline, Pixels, Pixel};
 use lyon_geom::cubic_bezier::CubicBezierSegment;
 use lyon_geom::euclid::{Point2D, Size2D};
 
@@ -106,6 +106,7 @@ impl Path {
         tangents
     }
 
+    #[allow(unused)]
     // found on pomax's website (catmull-rom)
     pub fn cubic(polyline: &Polyline) -> Self {
         let mut segments = Vec::new();
@@ -183,6 +184,7 @@ impl Path {
         }
 
         for c in 0..path.len() {
+            console!(log, path[c].point.x, path[c].point.y);
             let c = if c > 0 && c+1 < path.len()
                 && (path[c-1].point.x == path[c].point.x || path[c-1].point.y == path[c].point.y)
                 && (path[c+1].point.x == path[c].point.x || path[c+1].point.y == path[c].point.y)

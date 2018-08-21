@@ -3,9 +3,6 @@ use xprite::tools::Tool;
 use stdweb::web::event::MouseButton;
 use xprite::{Xprite, Polyline, Pixel, Pixels, Brush, Color};
 
-use lyon_geom::cubic_bezier::CubicBezierSegment;
-use lyon_geom::euclid::Point2D;
-
 pub struct Pencil {
     is_mouse_down: Option<MouseButton>,
     current_polyline: Polyline,
