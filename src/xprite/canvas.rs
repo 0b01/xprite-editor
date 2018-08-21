@@ -1,11 +1,9 @@
-use xprite::{Pixels, Pixel, Color, Brush};
+use xprite::{Pixels, Pixel, Color, Brush, Point2D};
 
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
 use stdweb::web::html_element::CanvasElement;
 use stdweb::web::{document, CanvasRenderingContext2d};
-
-use lyon_geom::euclid::Point2D;
 
 #[derive(Debug)]
 pub struct View {
@@ -122,8 +120,8 @@ impl Canvas {
 
 
     pub fn draw(&self, x: u32, y: u32, color: &str) {
-        assert!(x < self.art_w);
-        assert!(y < self.art_h);
+        if x >= self.art_w { return; }
+        if y >= self.art_h { return; }
 
         if !self.is_in_view(x, y) { return; }
 

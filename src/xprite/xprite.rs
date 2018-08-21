@@ -1,6 +1,5 @@
-use xprite::{History, Canvas, Color, Toolbox, Pixel, Pixels};
+use xprite::{History, Canvas, Color, Toolbox, Pixel, Pixels, MouseButton};
 
-use stdweb::web::event::MouseButton;
 use lyon_geom::euclid::Point2D;
 
 pub struct Xprite {
@@ -116,14 +115,14 @@ impl Xprite {
         self.history.current_pixels()
     }
 
-    pub fn set_option(&self, opt: &str, val: &str) {
+    pub fn set_option(&mut self, opt: &str, val: &str) {
         let tool = self.toolbox.tool();
-        tool.borrow_mut().set(opt, val);
+        tool.borrow_mut().set(self, opt, val);
     }
 
-    pub fn set_option_for_tool(&self, name: &str, opt: &str, val: &str) {
+    pub fn set_option_for_tool(&mut self, name: &str, opt: &str, val: &str) {
         if let Some(tool) = self.toolbox.get(name) {
-            tool.borrow_mut().set(opt, val);
+            tool.borrow_mut().set(self, opt, val);
         } else {
             console!(error, "toolbox does not have ", name);
         }

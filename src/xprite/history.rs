@@ -16,7 +16,7 @@ impl History {
         }
     }
 
-    pub fn on_new_polyline_start(&mut self) {
+    pub fn new_history_frame(&mut self) {
         self.duplicate();
         self.clear_redo();
     }

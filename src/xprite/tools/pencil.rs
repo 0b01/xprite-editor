@@ -102,7 +102,7 @@ impl Tool for Pencil {
 
     fn mouse_down(&mut self, xpr: &mut Xprite, x: i32, y: i32, button: MouseButton) {
         self.is_mouse_down = Some(button);
-        xpr.history.on_new_polyline_start();
+        xpr.history.new_history_frame();
 
         self.current_polyline.push(x as f32, y as f32);
 
@@ -125,7 +125,7 @@ impl Tool for Pencil {
         if self.simplify {
             if let Some(simplified) = self.current_polyline.reumann_witkam(self.tolerence) {
                 xpr.history.undo();
-                xpr.history.on_new_polyline_start();
+                xpr.history.new_history_frame();
                 self.draw_polyline(xpr, &simplified);
             }
         }
@@ -144,14 +144,14 @@ impl Tool for Pencil {
         self.draw_cursor(xpr);
     }
 
-    fn set(&mut self, option: &str, value: &str) {
+    fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) {
         match option {
             "simplify" => {
                 match value {
                     "true" => self.simplify = true,
                     "false" => self.simplify = false,
                     _ => console!(error, "malformed value: ", value),
-                }
+                };
             }
             "tolerence" => {
                 if let Ok(val) = value.parse() {

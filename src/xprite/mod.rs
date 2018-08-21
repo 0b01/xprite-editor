@@ -20,3 +20,6 @@ pub use self::common::polyline::Polyline;
 
 
 pub type PixelOffsets = Pixels;
+
+use stdweb::web::event::MouseButton;
+use lyon_geom::euclid::Point2D;

@@ -15,6 +15,7 @@ use stdweb::traits::*;
 use stdweb::web::IEventTarget;
 use stdweb::web::event::{
     KeyDownEvent,
+    KeyUpEvent,
     MouseDownEvent,
     MouseMoveEvent,
     MouseUpEvent
@@ -32,16 +33,29 @@ fn main() {
 
     let doc = stdweb::web::document();
 
-    let xprite_clone = xprite.clone();
+    let xpr = xprite.clone();
     doc.add_event_listener({
         move |event: KeyDownEvent| {
             match event.key().as_ref() {
-                "=" => xprite_clone.borrow_mut().zoom_in(),
-                "-" => xprite_clone.borrow_mut().zoom_out(),
-                "p" => xprite_clone.borrow().print_cursor_location(),
-                "z" => if event.ctrl_key() { xprite_clone.borrow_mut().undo() },
-                "Z" => if event.ctrl_key() { xprite_clone.borrow_mut().redo() },
-                "y" => if event.ctrl_key() { xprite_clone.borrow_mut().redo() },
+                "=" => xpr.borrow_mut().zoom_in(),
+                "-" => xpr.borrow_mut().zoom_out(),
+                "p" => xpr.borrow().print_cursor_location(),
+                "z" => if event.ctrl_key() { xpr.borrow_mut().undo() },
+                "Z" => if event.ctrl_key() { xpr.borrow_mut().redo() },
+                "y" => if event.ctrl_key() { xpr.borrow_mut().redo() },
+                "Control" => xpr.borrow_mut().set_option("ctrl", "true"),
+                "Shift" => xpr.borrow_mut().set_option("shift", "true"),
+                _ => (),
+            };
+        }
+    });
+
+    let xpr = xprite.clone();
+    doc.add_event_listener({
+        move |event: KeyUpEvent| {
+            match event.key().as_ref() {
+                "Control" => xpr.borrow_mut().set_option("ctrl", "false"),
+                "Shift" => xpr.borrow_mut().set_option("shift", "false"),
                 _ => (),
             };
         }

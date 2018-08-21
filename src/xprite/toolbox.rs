@@ -2,8 +2,11 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-use xprite::tools::Tool;
-use xprite::tools::pencil::Pencil;
+use xprite::tools::{
+    Tool,
+    pencil::Pencil,
+    line::Line,
+};
 
 pub struct Toolbox {
     /// tool singletons
@@ -14,9 +17,14 @@ pub struct Toolbox {
 impl Toolbox {
     pub fn new() -> Self {
         let mut tools: HashMap<&'static str, Rc<RefCell<Tool>>> = HashMap::new();
+
         let pencil = Rc::new(RefCell::new(Pencil::new()));
         tools.insert("pencil", pencil.clone());
-        let selected = pencil;
+
+        let line = Rc::new(RefCell::new(Line::new()));
+        tools.insert("line", line.clone());
+
+        let selected = line;
 
         Toolbox {
             tools,
