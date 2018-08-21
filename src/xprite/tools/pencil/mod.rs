@@ -41,19 +41,21 @@ impl Pencil {
             xpr.draw_pixel(point.x, point.y, Some(Color::new(200, 200, 200)));
         }
 
+        // plot simplified points
         for &p in polyline.pos.iter() {
-            let (x,y) = xpr.canvas.get_cursor(p.x as i32, p.y as i32);
-            console!(log, x, y);
-            xpr.draw_pixel(x, y, Some(Color::red()));
+            let (x,y) = xpr.canvas.client_to_grid(p.x as i32, p.y as i32);
+            // console!(log, x, y);
+            xpr.draw_pixel(x, y, Some(Color::blue()));
         }
 
-        for seg in &path.segments {
-            let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
-            for point in vec![ctrl1, ctrl2] {
-                let (x, y) = xpr.canvas.get_cursor(point.x as i32, point.y as i32);
-                xpr.draw_pixel(x, y, Some(Color::blue()));
-            }
-        }
+        // // plot control points
+        // for seg in &path.segments {
+        //     let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
+        //     for point in vec![ctrl1, ctrl2] {
+        //         let (x, y) = xpr.canvas.client_to_grid(point.x as i32, point.y as i32);
+        //         xpr.draw_pixel(x, y, Some(Color::red()));
+        //     }
+        // }
 
     }
 
@@ -81,7 +83,7 @@ impl Tool for Pencil {
     fn mouse_move(&mut self, xpr: &mut Xprite, x: i32, y: i32) {
         let pixels = xpr.canvas.to_pixels(x, y, &self.brush, xpr.color());
         self.cursor = pixels.clone();
-        let x_y = xpr.canvas.get_cursor(x, y);
+        let x_y = xpr.canvas.client_to_grid(x, y);
         self.cursor_pos = Some(Pixel::from_tuple(x_y, Some(xpr.color())));
 
         // if mouse is done

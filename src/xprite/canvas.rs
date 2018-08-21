@@ -153,7 +153,7 @@ impl Canvas {
         );
     }
 
-    pub fn get_cursor(&self, cli_x: i32, cli_y: i32) -> (u32, u32) {
+    pub fn client_to_grid(&self, cli_x: i32, cli_y: i32) -> (u32, u32) {
         let scaled_w = self.canvas_w / (self.view.x1 - self.view.x0);
         let scaled_h = self.canvas_h / (self.view.y1 - self.view.y0);
 
@@ -164,7 +164,7 @@ impl Canvas {
     }
 
     pub fn to_pixels(&self, cli_x: i32, cli_y: i32, brush: &Brush, color: Color) -> Option<Pixels> {
-        let (x, y) = self.get_cursor(cli_x, cli_y);
+        let (x, y) = self.client_to_grid(cli_x, cli_y);
 
         let (brush_w, brush_h) = brush.size;
 

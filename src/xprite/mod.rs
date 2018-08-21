@@ -5,13 +5,12 @@ mod history;
 mod canvas;
 mod toolbox;
 
-use std::collections::HashSet;
-use std::collections::hash_set::Iter;
 use stdweb::web::event::MouseButton;
 use lyon_geom::euclid::Point2D;
 
 use self::toolbox::Toolbox;
 use self::common::pixel::Pixel;
+use self::common::pixels::Pixels;
 use self::history::History;
 use self::canvas::Canvas;
 use self::common::path::Path;
@@ -19,22 +18,6 @@ use self::common::color::Color;
 use self::common::brush::Brush;
 use self::common::polyline::Polyline;
 
-#[derive(Clone, Debug)]
-pub struct Pixels(HashSet<Pixel>);
-impl Pixels {
-    pub fn new() -> Self {
-        Pixels(HashSet::new())
-    }
-    pub fn remove(&mut self, px: &Pixel) {
-        self.0.remove(px);
-    }
-    pub fn insert(&mut self, px: Pixel) {
-        self.0.insert(px);
-    }
-    pub fn iter(&self) -> Iter<Pixel> {
-        self.0.iter()
-    }
-}
 
 pub type PixelOffsets = Pixels;
 
@@ -68,7 +51,7 @@ impl Xprite {
     }
 
     pub fn mouse_move(&mut self, x: i32, y: i32) {
-        let x_y = self.canvas.get_cursor(x, y);
+        let x_y = self.canvas.client_to_grid(x, y);
         self.cursor_pos = Some(Pixel::from_tuple(x_y, Some(self.color())));
 
         let tool = self.toolbox.tool();

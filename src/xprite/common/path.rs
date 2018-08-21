@@ -156,21 +156,46 @@ impl Path {
     pub fn rasterize(&self, xpr: &Xprite) -> Pixels {
         let mut ret = Pixels::new();
         for seg in &self.segments {
-            let mut t: f32 = 0.0;
-            for _ in 0..=1000 {
-                let point = seg.sample(t);
-                let color = None;
-                let (x, y) = xpr.canvas.get_cursor(point.x as i32, point.y as i32);
-                ret.insert(Pixel {
-                    point: Point2D::new(x, y),
-                    color
-                });
-                t += 0.001;
+            let pixs = Path::convert_path_to_pixel(xpr, seg);
+            ret.extend(&pixs);
+        }
+        ret
+    }
+
+    fn convert_path_to_pixel(xpr: &Xprite, seg: &CubicBezierSegment<f32>) -> Pixels {
+        let mut path = Vec::new();
+        let mut pixs = Pixels::new();
+        let mut points = Pixels::new();
+
+        for i in 0..100 {
+            let t = i as f32 / 100.;
+            let point = seg.sample(t);
+            let (x, y) = xpr.canvas.client_to_grid(point.x as i32, point.y as i32);
+            let pixel = Pixel {
+                point: Point2D::new(x, y),
+                color: None
+            };
+
+            if !pixs.contains(&pixel) {
+                pixs.insert(pixel);
+                path.push(pixel);
             }
         }
 
-        ret
+        for c in 0..path.len() {
+            let c = if c > 0 && c+1 < path.len()
+                && (path[c-1].point.x == path[c].point.x || path[c-1].point.y == path[c].point.y)
+                && (path[c+1].point.x == path[c].point.x || path[c+1].point.y == path[c].point.y)
+                && path[c-1].point.x != path[c+1].point.x
+                && path[c-1].point.y != path[c+1].point.y {
+                c + 1
+            } else  { c };
+            points.insert(path[c].clone());
+        }
+
+        points
     }
+
 }
 
 #[cfg(test)]
@@ -211,5 +236,4 @@ mod test {
         )
 
     }
-
 }

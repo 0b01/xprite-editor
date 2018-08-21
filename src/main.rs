@@ -1,9 +1,9 @@
 #![recursion_limit="128"]
 
 #[macro_use]
-extern crate stdweb;
+extern crate itertools;
 #[macro_use]
-extern crate serde_derive;
+extern crate stdweb;
 extern crate lyon_geom;
 
 

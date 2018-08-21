@@ -27,7 +27,7 @@ impl Hash for Pixel {
 macro_rules! pixel {
     ($i:expr, $j: expr) => {
         Pixel {
-            point: Point2D::new($i, $j),
+            point: Point2D::new($i as u32, $j as u32),
             color: Some(Color::red()),
         }
     };
