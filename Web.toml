@@ -1,0 +1,4 @@
+default-target = "wasm32-unknown-unknown"
+[cargo-web]
+minimum-version = "0.6.0"
+

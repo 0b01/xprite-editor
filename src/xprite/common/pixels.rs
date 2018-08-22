@@ -1,4 +1,4 @@
-use xprite::Pixel;
+use xprite::{Pixel, Color};
 
 use std::collections::HashSet;
 use std::collections::hash_set::Iter;
@@ -23,5 +23,12 @@ impl Pixels {
     }
     pub fn iter(&self) -> Iter<Pixel> {
         self.0.iter()
+    }
+
+    pub fn set_color(&mut self, color: &Color) {
+        self.0 = self.0
+            .iter()
+            .map(|Pixel {point,..}| { Pixel{ point: *point, color: Some(*color) } })
+            .collect::<HashSet<_>>();
     }
 }

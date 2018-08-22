@@ -32,6 +32,7 @@ impl Xprite {
     }
 
     pub fn mouse_move(&mut self, x: i32, y: i32) {
+        if out_of_bounds(x, y) {return;}
         let x_y = self.canvas.client_to_grid(x, y);
         self.cursor_pos = Some(Pixel::from_tuple(x_y, Some(self.color())));
 
@@ -40,14 +41,17 @@ impl Xprite {
     }
 
     pub fn mouse_up(&mut self, x: i32, y: i32) {
+        if out_of_bounds(x, y) {return;}
         let tool = self.toolbox.tool();
         tool.borrow_mut().mouse_up(self, x, y);
     }
 
     pub fn mouse_down(&mut self, x: i32, y: i32, button: MouseButton) {
+        if out_of_bounds(x, y) {return;}
         let tool = self.toolbox.tool();
         tool.borrow_mut().mouse_down(self, x, y, button);
     }
+
 
     pub fn get_height(&self) -> u32 {
         self.art_h
@@ -151,4 +155,11 @@ impl Xprite {
         console!(log, "cursor:", pos.point.x, pos.point.y);
 
     }
+}
+
+fn out_of_bounds(x: i32, y: i32) -> bool {
+    if x < 0 || y < 0 {
+        return true;
+    }
+    return false;
 }

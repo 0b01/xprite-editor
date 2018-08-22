@@ -40,6 +40,8 @@ fn main() {
                 "=" => xpr.borrow_mut().zoom_in(),
                 "-" => xpr.borrow_mut().zoom_out(),
                 "p" => xpr.borrow().print_cursor_location(),
+                "l" => xpr.borrow_mut().change_tool("line"),
+                "f" => xpr.borrow_mut().change_tool("pencil"),
                 "z" => if event.ctrl_key() { xpr.borrow_mut().undo() },
                 "Z" => if event.ctrl_key() { xpr.borrow_mut().redo() },
                 "y" => if event.ctrl_key() { xpr.borrow_mut().redo() },
@@ -97,23 +99,32 @@ fn main() {
 
 fn init_js_bindings(xprite: &Rc<RefCell<Xprite>>) {
     let xpr = xprite.clone();
-    let fn_draw = move || {xpr.borrow().draw()};
+    let fn_draw = move ||
+        {xpr.borrow().draw()};
     let xpr = xprite.clone();
-    let fn_draw_pixel = move |x:u32, y:u32| {xpr.borrow_mut().draw_pixel(x, y, None)};
+    let fn_draw_pixel = move |x:u32, y:u32|
+        {xpr.borrow_mut().draw_pixel(x, y, None)};
     let xpr = xprite.clone();
-    let fn_get_height = move || {xpr.borrow().get_height()};
+    let fn_get_height = move ||
+        {xpr.borrow().get_height()};
     let xpr = xprite.clone();
-    let fn_get_width = move || {xpr.borrow().get_width()};
+    let fn_get_width = move ||
+        {xpr.borrow().get_width()};
     let xpr = xprite.clone();
-    let fn_set_color = move |r:u8, g:u8, b:u8| {xpr.borrow_mut().set_color(r,g,b)};
+    let fn_set_color = move |r:u8, g:u8, b:u8|
+        {xpr.borrow_mut().set_color(r,g,b)};
     let xpr = xprite.clone();
-    let fn_set_option = move |opt:String, val:String| {xpr.borrow_mut().set_option(&opt, &val)};
+    let fn_set_option = move |opt:String, val:String|
+        {xpr.borrow_mut().set_option(&opt, &val)};
     let xpr = xprite.clone();
     let fn_set_option_for_tool = move |name: String, opt:String, val:String|
         {xpr.borrow_mut().set_option_for_tool(&name, &opt, &val)};
     let xpr = xprite.clone();
     let fn_change_tool = move |name: String|
         {xpr.borrow_mut().change_tool(&name)};
+    let xpr = xprite.clone();
+    let fn_new_history_frame = move ||
+        {xpr.borrow_mut().history.new_history_frame();};
 
     js! {
         window.xprite = {};
@@ -125,5 +136,6 @@ fn init_js_bindings(xprite: &Rc<RefCell<Xprite>>) {
         window.xprite.set_option = @{fn_set_option};
         window.xprite.set_option_for_tool = @{fn_set_option_for_tool};
         window.xprite.change_tool = @{fn_change_tool};
+        window.xprite.new_history_frame = @{fn_new_history_frame}
     };
 }

@@ -112,6 +112,7 @@ fn bresenham(start: &Pixel, stop: &Pixel) -> Pixels {
     let mut y0 = start.point.y as i32;
     let x1 = stop.point.x as i32;
     let y1 = stop.point.y as i32;
+
     let dx = (x1-x0).abs();
     let sx = if x0<x1 {1} else {-1};
     let dy = -(y1-y0).abs();
@@ -170,8 +171,9 @@ impl Line {
 
 
     fn finalize_line(&mut self, xpr: &mut Xprite) {
-        if let Some(pixs) = self.get_line() {
+        if let Some(ref mut pixs) = self.get_line() {
             xpr.history.new_history_frame();
+            pixs.set_color(&xpr.color());
             xpr.add_pixels(&pixs);
         }
     }

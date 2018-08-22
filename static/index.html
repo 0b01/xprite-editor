@@ -24,7 +24,15 @@
     </canvas>
 
     <input type='text' id="color-picker" />
-    <div>
+
+    <div style="border: 1px solid black">
+        <select id='tools'>
+            <option value="line">line</option>
+            <option value="pencil">pencil</option>
+        </select>
+    </div>
+
+    <div style="border: 1px solid black">
         pencil <br />
         <input type="checkbox" id="simplify" checked="checked"/>
         <select id='brush-shape'>
@@ -53,6 +61,11 @@
             xprite.set_option_for_tool("pencil", "simplify", val);
         });
 
+        $("#tools").change(function () {
+            let str = $("#tools option:selected").val();
+            xprite.change_tool(str);
+        });
+
         $("#brush-shape").change(function () {
             let str = $("#brush-shape option:selected").val();
             xprite.set_option_for_tool("pencil", "brush", str);
@@ -66,7 +79,8 @@
 
 </body>
     <script>
-        function ska(x0, x1 ,y0, y1) {
+        function checkers(x0, x1 ,y0, y1) {
+            xprite.new_history_frame();
             for (i = x0; i < x1; i++) {
                 if (i % 2) {j = y0;}
                 else {j = y0 + 1;}
