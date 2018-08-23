@@ -3,6 +3,7 @@ use stdweb::web::event::MouseButton;
 
 pub mod pencil;
 pub mod line;
+pub mod paint_bucket;
 
 pub trait Tool {
     fn get_name(&self) -> &'static str;

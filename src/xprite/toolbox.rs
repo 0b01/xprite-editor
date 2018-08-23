@@ -6,6 +6,7 @@ use xprite::tools::{
     Tool,
     pencil::Pencil,
     line::Line,
+    paint_bucket::PaintBucket,
 };
 
 pub struct Toolbox {
@@ -23,6 +24,9 @@ impl Toolbox {
 
         let line = Rc::new(RefCell::new(Line::new()));
         tools.insert("line", line.clone());
+
+        let paint_bucket = Rc::new(RefCell::new(PaintBucket::new()));
+        tools.insert("paint_bucket", paint_bucket.clone());
 
         let selected = line;
 
