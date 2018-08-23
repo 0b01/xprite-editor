@@ -1,8 +1,24 @@
-use xprite::{History, Canvas, Color, Toolbox, Pixel, Pixels, MouseButton};
+use xprite::{History, Canvas, Color, Toolbox, Pixel, Pixels, MouseButton, Point2D};
 
-use lyon_geom::euclid::Point2D;
+pub enum Event {
+    MouseMove {
+        x: i32,
+        y: i32,
+    },
+    MouseDown {
+        x: i32,
+        y: i32,
+        button: MouseButton,
+    },
+    MouseUp {
+        x: i32,
+        y: i32,
+    },
+}
+
 
 pub struct Xprite {
+    pub event_queue: Vec<Event>,
     pub history: History,
     pub canvas: Canvas,
     pub selected_color: Color,
@@ -14,6 +30,7 @@ pub struct Xprite {
 
 impl Xprite {
     pub fn new(name: &str, art_w: u32, art_h: u32) -> Xprite {
+        let event_queue = Vec::new();
         let canvas = Canvas::new(name, art_w, art_h);
         let selected_color = Color {r: 0, g: 0, b: 0, a: 255};
         let history = History::new();
@@ -21,6 +38,7 @@ impl Xprite {
         let toolbox = Toolbox::new();
 
         Xprite {
+            event_queue,
             history,
             canvas,
             selected_color,
@@ -31,25 +49,32 @@ impl Xprite {
         }
     }
 
-    pub fn mouse_move(&mut self, x: i32, y: i32) {
-        if out_of_bounds(x, y) {return;}
-        let x_y = self.canvas.client_to_grid(x, y);
-        self.cursor_pos = Some(Pixel::from_tuple(x_y, Some(self.color())));
+    pub fn mouse_move(&mut self, evt: &Event) {
+        if let &Event::MouseMove{x, y} = evt {
+            if out_of_bounds(x, y) {return;}
+            let point = self.canvas.client_to_grid(x, y);
+            let color = Some(self.color());
+            self.cursor_pos = Some(Pixel{point, color});
 
-        let tool = self.toolbox.tool();
-        tool.borrow_mut().mouse_move(self, x, y);
+            let tool = self.toolbox.tool();
+            tool.borrow_mut().mouse_move(self, x, y);
+        }
     }
 
-    pub fn mouse_up(&mut self, x: i32, y: i32) {
-        if out_of_bounds(x, y) {return;}
-        let tool = self.toolbox.tool();
-        tool.borrow_mut().mouse_up(self, x, y);
+    pub fn mouse_up(&mut self, evt: &Event) {
+        if let &Event::MouseUp{x, y} = evt {
+            if out_of_bounds(x, y) { return; }
+            let tool = self.toolbox.tool();
+            tool.borrow_mut().mouse_up(self, x, y);
+        }
     }
 
-    pub fn mouse_down(&mut self, x: i32, y: i32, button: MouseButton) {
-        if out_of_bounds(x, y) {return;}
-        let tool = self.toolbox.tool();
-        tool.borrow_mut().mouse_down(self, x, y, button);
+    pub fn mouse_down(&mut self, evt: &Event) {
+        if let &Event::MouseDown{x, y, button} = evt {
+            if out_of_bounds(x, y) {return;}
+            let tool = self.toolbox.tool();
+            tool.borrow_mut().mouse_down(self, x, y, button);
+        }
     }
 
 

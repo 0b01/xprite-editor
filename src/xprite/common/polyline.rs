@@ -1,5 +1,5 @@
-use xprite::Path;
-use lyon_geom::euclid::Point2D;
+use xprite::{Xprite, Path, Point2D, Pixels};
+use xprite::tools::line::bresenham;
 
 #[derive(Clone)]
 pub struct Polyline {
@@ -63,11 +63,24 @@ impl Polyline {
         Path::from_polyline(self)
     }
 
+    pub fn connect_with_line(&self, xpr: &Xprite) -> Pixels {
+        let mut ret = Pixels::new();
+        for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
+            let p0 = xpr.canvas.client_to_grid(p0.x as i32, p0.y as i32);
+            let p1 = xpr.canvas.client_to_grid(p1.x as i32, p1.y as i32);
+            let seg = bresenham(&p0, &p1);
+            ret.extend(&seg);
+        }
+
+        console!(log, ret.0.len() as i32);
+        ret
+    }
+
 }
 
 /// distance from p0 to p1--p2
-fn point_line_distance( p0: Point2D<f32>, p1: Point2D<f32>, p2: Point2D<f32>) -> f32 {
+pub fn point_line_distance( p0: Point2D<f32>, p1: Point2D<f32>, p2: Point2D<f32>) -> f32 {
     ((p2.x-p1.x)*(p1.y-p0.y)-(p1.x-p0.x)*(p2.y-p1.y)).abs()
     /
-    ((p2.x-p1.x)*(p2.x-p1.x)+(p2.y-p1.y)*(p2.y-p1.y)).sqrt()
+    ((p2.x-p1.x)*(p2.x-p1.x)+(p2.y-p1.y)*(p2.y as f32-p1.y as f32)).sqrt()
 }

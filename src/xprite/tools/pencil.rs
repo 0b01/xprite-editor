@@ -1,7 +1,7 @@
 use xprite::tools::Tool;
 
 use stdweb::web::event::MouseButton;
-use xprite::{Xprite, Polyline, Pixel, Pixels, Brush, Color};
+use xprite::{Xprite, Polyline, Pixel, Pixels, Brush, Color, Point2D};
 
 pub struct Pencil {
     is_mouse_down: Option<MouseButton>,
@@ -40,8 +40,7 @@ impl Pencil {
 
         // plot simplified points
         for &p in polyline.pos.iter() {
-            let (x,y) = xpr.canvas.client_to_grid(p.x as i32, p.y as i32);
-            // console!(log, x, y);
+            let Point2D{x, y} = xpr.canvas.client_to_grid(p.x as i32, p.y as i32);
             xpr.draw_pixel(x, y, Some(Color::blue()));
         }
 
@@ -80,8 +79,9 @@ impl Tool for Pencil {
     fn mouse_move(&mut self, xpr: &mut Xprite, x: i32, y: i32) {
         let pixels = xpr.canvas.to_pixels(x, y, &self.brush, xpr.color());
         self.cursor = pixels.clone();
-        let x_y = xpr.canvas.client_to_grid(x, y);
-        self.cursor_pos = Some(Pixel::from_tuple(x_y, Some(xpr.color())));
+        let point = xpr.canvas.client_to_grid(x, y);
+        let color = Some(xpr.color());
+        self.cursor_pos = Some(Pixel{point, color});
 
         // if mouse is done
         if self.is_mouse_down.is_none() || pixels.is_none() {
@@ -93,7 +93,8 @@ impl Tool for Pencil {
 
         let button = self.is_mouse_down.clone().unwrap();
         if button == MouseButton::Left {
-            xpr.add_pixels(&pixels.unwrap());
+            let line_pixs = self.current_polyline.connect_with_line(&xpr);
+            xpr.add_pixels(&line_pixs);
         } else if button == MouseButton::Right {
             xpr.remove_pixels(&pixels.unwrap());
         }

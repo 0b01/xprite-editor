@@ -1,7 +1,7 @@
+use std::f32;
 use std::cmp::{min, max};
-use xprite::{Xprite, Polyline, Pixels, Pixel};
-use lyon_geom::cubic_bezier::CubicBezierSegment;
-use lyon_geom::euclid::{Point2D, Size2D};
+use xprite::{Xprite, Polyline, Pixels, Pixel, CubicBezierSegment, Point2D, Size2D};
+use xprite::common::polyline::point_line_distance;
 
 fn convert(p1: Point2D<f32>, p2: Point2D<f32>, p3: Point2D<f32>, p4: Point2D<f32>) -> CubicBezierSegment<f32> {
     let t = 0.5;
@@ -156,6 +156,7 @@ impl Path {
 
     pub fn rasterize(&self, xpr: &Xprite) -> Pixels {
         let mut ret = Pixels::new();
+        // convert each segment
         for seg in &self.segments {
             let pixs = Path::convert_path_to_pixel(xpr, seg);
             ret.extend(&pixs);
@@ -163,15 +164,41 @@ impl Path {
         ret
     }
 
+    fn is_extra_pixel(points: &[Pixel], i: usize) -> bool {
+          if i<=0 || i>=points.len()-1 { false }
+          else {
+              let q1 = points[i-1];
+              let q2 = points[i];
+              let q3 = points[i+1];
+              (q2.point.x-q1.point.x==0 && q3.point.y-q2.point.y==0)
+              || (q2.point.y-q1.point.y==0 && q3.point.x-q2.point.x==0)
+          }
+    }
+
+    fn get_min_dist(p: &Pixel, samples: &[Point2D<f32>]) -> f32 {
+        let mut min_dist = f32::MAX;
+        for i in 0..(samples.len()-1) {
+            let dist = point_line_distance(p.point.into(), samples[i], samples[i+1]);
+            if dist < min_dist { min_dist = dist; }
+        }
+        min_dist
+    }
+
+    /// rasterize a single bezier curve by sampling
     fn convert_path_to_pixel(xpr: &Xprite, seg: &CubicBezierSegment<f32>) -> Pixels {
         let mut path = Vec::new();
+        let mut samples = Vec::new();
+
         let mut pixs = Pixels::new();
         let mut points = Pixels::new();
 
         for i in 0..100 {
             let t = i as f32 / 100.;
             let point = seg.sample(t);
-            let (x, y) = xpr.canvas.client_to_grid(point.x as i32, point.y as i32);
+            let sample = xpr.canvas.shrink_size(point.x, point.y);
+            samples.push(sample);
+
+            let Point2D {x, y} = xpr.canvas.client_to_grid(point.x as i32, point.y as i32);
             let pixel = Pixel {
                 point: Point2D::new(x, y),
                 color: None
@@ -183,16 +210,24 @@ impl Path {
             }
         }
 
-        for c in 0..path.len() {
-            console!(log, path[c].point.x, path[c].point.y);
-            let c = if c > 0 && c+1 < path.len()
-                && (path[c-1].point.x == path[c].point.x || path[c-1].point.y == path[c].point.y)
-                && (path[c+1].point.x == path[c].point.x || path[c+1].point.y == path[c].point.y)
-                && path[c-1].point.x != path[c+1].point.x
-                && path[c-1].point.y != path[c+1].point.y {
-                c + 1
-            } else  { c };
-            points.insert(path[c].clone());
+        for i in 0..path.len() {
+            if Path::is_extra_pixel(&path, i) {
+                let q1 = path[i-1];
+                let q2 = path[i];
+                let q3 = path[i+1];
+                let mut remove = true;
+                let d1 = Path::get_min_dist(&q1, &samples);
+                let d2 = Path::get_min_dist(&q2, &samples);
+                let d3 = Path::get_min_dist(&q3, &samples);
+
+                if (Path::is_extra_pixel(&path, i-1) && d1 < d2)
+                || (Path::is_extra_pixel(&path, i+1) && d3 < d2) { remove = false; }
+
+                if remove {
+                    continue;
+                }
+            }
+            points.insert(path[i]);
         }
 
         points

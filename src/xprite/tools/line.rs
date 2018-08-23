@@ -106,12 +106,12 @@ fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
 
 
 
-fn bresenham(start: &Pixel, stop: &Pixel) -> Pixels {
+pub fn bresenham(start: &Point2D<u32>, stop: &Point2D<u32>) -> Pixels {
     let mut ret = Pixels::new();
-    let mut x0 = start.point.x as i32;
-    let mut y0 = start.point.y as i32;
-    let x1 = stop.point.x as i32;
-    let y1 = stop.point.y as i32;
+    let mut x0 = start.x as i32;
+    let mut y0 = start.y as i32;
+    let x1 = stop.x as i32;
+    let y1 = stop.y as i32;
 
     let dx = (x1-x0).abs();
     let sx = if x0<x1 {1} else {-1};
@@ -164,7 +164,7 @@ impl Line {
             if self.snap {
                 Some(snapped_line(self.is_snap_45, &start, &stop))
             } else {
-                Some(bresenham(&start, &stop))
+                Some(bresenham(&start.point.into(), &stop.point.into()))
             }
         } else {None}} else { None }
     }
@@ -196,14 +196,16 @@ impl Tool for Line {
 
     fn mouse_move(&mut self, xpr: &mut Xprite, x: i32, y: i32) {
         // set current cursor_pos
-        let x_y = xpr.canvas.client_to_grid(x, y);
-        self.cursor_pos = Some(Pixel::from_tuple(x_y, Some(xpr.color())));
+        let point = xpr.canvas.client_to_grid(x, y);
+        let color = Some(xpr.color());
+        self.cursor_pos = Some(Pixel {point, color});
         self.draw(xpr);
     }
 
     fn mouse_up(&mut self, xpr: &mut Xprite, x: i32, y: i32) {
-        let x_y = xpr.canvas.client_to_grid(x, y);
-        self.cursor_pos = Some(Pixel::from_tuple(x_y, Some(xpr.color())));
+        let point = xpr.canvas.client_to_grid(x, y);
+        let color = Some(xpr.color());
+        self.cursor_pos = Some(Pixel {point, color});
         self.finalize_line(xpr);
         self.is_mouse_down = None;
         self.start_pos = None;
@@ -213,8 +215,9 @@ impl Tool for Line {
 
     fn mouse_down(&mut self, xpr: &mut Xprite, x: i32, y: i32, button: MouseButton) {
         self.is_mouse_down = Some(button);
-        let x_y = xpr.canvas.client_to_grid(x, y);
-        self.start_pos = Some(Pixel::from_tuple(x_y, Some(xpr.color())));
+        let point = xpr.canvas.client_to_grid(x, y);
+        let color = Some(xpr.color());
+        self.start_pos = Some(Pixel{point, color});
     }
 
     fn draw(&self, xpr: &Xprite) {

@@ -1,11 +1,10 @@
 [package]
 name = "xprite"
 version = "0.1.0"
-authors = ["tensor-programming <abeltensor@tensor-programming.com>"]
+authors = ["ricky <ricky@rickyhan.com>"]
 
 [dependencies]
 stdweb = "0.4.7"
 serde = "1.0.71"
 serde_derive = "1.0.71"
-lyon_geom = "0.12.1"
 itertools = "0.7"

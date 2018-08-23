@@ -1,7 +1,5 @@
-use xprite::{Pixel, Pixels};
-use xprite::Color;
+use xprite::{Pixel, Pixels, Point2D};
 use xprite::PixelOffsets;
-use lyon_geom::euclid::Point2D;
 
 pub struct Brush {
     pub shape: PixelOffsets,

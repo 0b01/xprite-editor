@@ -4,12 +4,11 @@
 // extern crate itertools;
 #[macro_use]
 extern crate stdweb;
-extern crate lyon_geom;
 
 
 mod xprite;
 
-use xprite::Xprite;
+use xprite::{Xprite, Event};
 
 use stdweb::traits::*;
 use stdweb::web::IEventTarget;
@@ -66,16 +65,20 @@ fn main() {
     let xprite_clone = xprite.clone();
     doc.add_event_listener(move |event: MouseUpEvent| {
         xprite_clone.borrow_mut().mouse_up(
-            event.client_x(),
-            event.client_y(),
+            &Event::MouseUp{
+                x: event.client_x(),
+                y: event.client_y(),
+            }
         );
     });
 
     let xprite_clone = xprite.clone();
     doc.add_event_listener(move |event: MouseMoveEvent| {
         xprite_clone.borrow_mut().mouse_move(
-            event.client_x(),
-            event.client_y(),
+            &Event::MouseMove{
+                x: event.client_x(),
+                y: event.client_y(),
+            }
         );
     });
 
@@ -83,9 +86,11 @@ fn main() {
     let xprite_clone = xprite.clone();
     doc.add_event_listener(move |event: MouseDownEvent| {
         xprite_clone.borrow_mut().mouse_down(
-            event.client_x(),
-            event.client_y(),
-            event.button(),
+            &Event::MouseDown{
+                x: event.client_x(),
+                y: event.client_y(),
+                button: event.button(),
+            }
         );
     });
 
