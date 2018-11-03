@@ -14,7 +14,7 @@ pub use self::xprite::{Xprite, Event};
 pub use self::common::pixel::Pixel;
 pub use self::common::pixels::Pixels;
 pub use self::common::path::Path;
-pub use self::common::color::Color;
+pub use self::common::color::{Color, ColorOption};
 pub use self::common::brush::Brush;
 pub use self::common::polyline::Polyline;
 

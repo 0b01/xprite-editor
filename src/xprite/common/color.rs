@@ -1,3 +1,9 @@
+#[derive(Debug, Clone, Eq, Copy, PartialEq)]
+pub enum ColorOption {
+    Unset,
+    Set(Color),
+}
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Color {
     pub r: u8,

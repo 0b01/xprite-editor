@@ -1,4 +1,4 @@
-use xprite::{Pixel, Pixels, Point2D};
+use xprite::*;
 use xprite::PixelOffsets;
 
 pub struct Brush {

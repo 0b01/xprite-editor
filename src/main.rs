@@ -8,7 +8,7 @@ extern crate stdweb;
 
 mod xprite;
 
-use xprite::{Xprite, Event};
+use xprite::*;
 
 use stdweb::traits::*;
 use stdweb::web::IEventTarget;
@@ -108,7 +108,7 @@ fn init_js_bindings(xprite: &Rc<RefCell<Xprite>>) {
         {xpr.borrow().draw()};
     let xpr = xprite.clone();
     let fn_draw_pixel = move |x:u32, y:u32|
-        {xpr.borrow_mut().draw_pixel(x, y, None)};
+        {xpr.borrow_mut().draw_pixel(x, y, ColorOption::Unset)};
     let xpr = xprite.clone();
     let fn_get_height = move ||
         {xpr.borrow().get_height()};

@@ -1,7 +1,7 @@
+use xprite::*;
 use xprite::tools::Tool;
 
 use stdweb::web::event::MouseButton;
-use xprite::{Xprite, Polyline, Pixel, Pixels, Brush, Color, Point2D};
 
 pub struct Pencil {
     is_mouse_down: Option<MouseButton>,
@@ -35,13 +35,15 @@ impl Pencil {
 
         let path = polyline.interp();
         for &Pixel{point, ..} in path.rasterize(xpr).iter() {
-            xpr.draw_pixel(point.x, point.y, Some(Color::new(200, 200, 200)));
+            let color = ColorOption::Set(Color::new(200, 200, 200));
+            xpr.draw_pixel(point.x, point.y, color);
         }
 
         // plot simplified points
         for &p in polyline.pos.iter() {
             let Point2D{x, y} = xpr.canvas.client_to_grid(p.x as i32, p.y as i32);
-            xpr.draw_pixel(x, y, Some(Color::blue()));
+            let color = ColorOption::Set(Color::blue());
+            xpr.draw_pixel(x, y, color);
         }
 
         // // plot control points
@@ -80,7 +82,7 @@ impl Tool for Pencil {
         let pixels = xpr.canvas.to_pixels(x, y, &self.brush, xpr.color());
         self.cursor = pixels.clone();
         let point = xpr.canvas.client_to_grid(x, y);
-        let color = Some(xpr.color());
+        let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel{point, color});
 
         // if mouse is done
@@ -140,7 +142,11 @@ impl Tool for Pencil {
     fn draw(&self, xpr: &Xprite) {
         xpr.canvas.clear_all();
         for &Pixel{point, color} in xpr.pixels().iter() {
-            xpr.canvas.draw(point.x, point.y, &color.unwrap_or(xpr.color()).to_string());
+            let color = match color {
+                ColorOption::Set(c) => c,
+                ColorOption::Unset => xpr.color(),
+            }.to_string();
+            xpr.canvas.draw(point.x, point.y, &color);
         }
         self.draw_cursor(xpr);
     }

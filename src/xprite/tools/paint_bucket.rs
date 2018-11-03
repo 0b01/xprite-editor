@@ -1,5 +1,5 @@
 use xprite::tools::Tool;
-use xprite::{Xprite, MouseButton, Pixel, Color};
+use xprite::*;
 
 #[derive(Clone)]
 pub struct PaintBucket {
@@ -43,14 +43,14 @@ impl Tool for PaintBucket {
 
     fn mouse_move(&mut self, xpr: &mut Xprite, x: i32, y: i32) {
         let point = xpr.canvas.client_to_grid(x, y);
-        let color = Some(xpr.color());
+        let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel {point, color});
         self.draw(xpr);
     }
 
     fn mouse_up(&mut self, xpr: &mut Xprite, x: i32, y: i32) {
         let point = xpr.canvas.client_to_grid(x, y);
-        let color = Some(xpr.color());
+        let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel {point, color});
         self.floodfill(xpr);
         self.draw(xpr);
@@ -65,7 +65,13 @@ impl Tool for PaintBucket {
     fn draw(&self, xpr: &Xprite) {
         xpr.canvas.clear_all();
         for &Pixel{point, color} in xpr.pixels().iter() {
-            xpr.canvas.draw(point.x, point.y, &color.unwrap_or(xpr.color()).to_string());
+            let color = match color {
+                ColorOption::Unset =>
+                    xpr.color(),
+                ColorOption::Set(c) =>
+                    c
+            }.to_string();
+            xpr.canvas.draw(point.x, point.y, &color);
         }
         self.draw_cursor(xpr);
     }

@@ -1,6 +1,6 @@
 use std::f32;
 use std::cmp::{min, max};
-use xprite::{Xprite, Polyline, Pixels, Pixel, CubicBezierSegment, Point2D, Size2D};
+use xprite::*;
 use xprite::common::polyline::point_line_distance;
 
 fn convert(p1: Point2D<f32>, p2: Point2D<f32>, p3: Point2D<f32>, p4: Point2D<f32>) -> CubicBezierSegment<f32> {
@@ -201,7 +201,7 @@ impl Path {
             let Point2D {x, y} = xpr.canvas.client_to_grid(point.x as i32, point.y as i32);
             let pixel = Pixel {
                 point: Point2D::new(x, y),
-                color: None
+                color: ColorOption::Unset,
             };
 
             if !pixs.contains(&pixel) {

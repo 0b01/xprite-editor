@@ -1,4 +1,4 @@
-use xprite::{History, Canvas, Color, Toolbox, Pixel, Pixels, MouseButton, Point2D};
+use xprite::*;
 
 pub enum Event {
     MouseMove {
@@ -53,7 +53,7 @@ impl Xprite {
         if let &Event::MouseMove{x, y} = evt {
             if out_of_bounds(x, y) {return;}
             let point = self.canvas.client_to_grid(x, y);
-            let color = Some(self.color());
+            let color = ColorOption::Set(self.color());
             self.cursor_pos = Some(Pixel{point, color});
 
             let tool = self.toolbox.tool();
@@ -122,9 +122,13 @@ impl Xprite {
         }
     }
 
-    pub fn draw_pixel(&mut self, x: u32, y:u32, color: Option<Color>) {
+    pub fn draw_pixel(&mut self, x: u32, y:u32, color: ColorOption) {
         let point = Point2D::new(x, y);
-        let color = if color.is_none() { Some(self.color()) } else { color };
+        let color = match color {
+            ColorOption::Unset => self.color(),
+            ColorOption::Set(c) => c
+        };
+        let color = ColorOption::Set(color);
         self.pixels_mut().insert(Pixel {point, color});
     }
 

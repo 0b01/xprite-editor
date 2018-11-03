@@ -1,4 +1,4 @@
-use xprite::{Pixels, Pixel, Color, Brush, Point2D};
+use xprite::*;
 
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
@@ -183,7 +183,7 @@ impl Canvas {
             let ret = brush.shape.iter().map(
                 |Pixel {point,..}| Pixel {
                     point: Point2D::new(point.x+x, point.y+y),
-                    color: Some(color),
+                    color: ColorOption::Set(color),
                 }
             ).collect();
             Some(Pixels(ret))

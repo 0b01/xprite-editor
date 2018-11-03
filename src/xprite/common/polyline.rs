@@ -1,4 +1,4 @@
-use xprite::{Xprite, Path, Point2D, Pixels};
+use xprite::*;
 use xprite::tools::line::bresenham;
 
 #[derive(Clone)]
