@@ -9,6 +9,13 @@ impl Pixels {
     pub fn new() -> Self {
         Pixels(HashSet::new())
     }
+    pub fn from_slice(slice: &[Pixel]) -> Self {
+        let mut set = HashSet::new();
+        for i in slice.iter() {
+            set.insert(*i);
+        }
+        Pixels(set)
+    }
     pub fn extend(&mut self, other: &Pixels) {
         self.0.extend(&other.0)
     }

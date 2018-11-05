@@ -2,6 +2,7 @@ use std::f32;
 use std::cmp::{min, max};
 use xprite::*;
 use xprite::common::polyline::point_line_distance;
+use xprite::common::sorter;
 
 fn convert(p1: Point2D<f32>, p2: Point2D<f32>, p3: Point2D<f32>, p4: Point2D<f32>) -> CubicBezierSegment<f32> {
     let t = 0.5;
@@ -56,7 +57,7 @@ impl Path {
     pub fn from_polyline(polyline: &Polyline) -> Self {
         let points = &polyline.pos;
         let mut segments = Vec::new();
-        let tangents = Path::monotonic_cubic_tangents(&points);
+        let tangents = Path::_monotonic_cubic_tangents(&points);
 
         let mut i = 0;
         for _ in 0..(points.len()-1) {
@@ -75,7 +76,8 @@ impl Path {
 
     /// from d3:
     ///     https://github.com/d3/d3/blob/a40a611d6b9fc4ff3815ca830d86b6c00d130995/src/svg/line.js#L377
-    pub fn monotonic_cubic_tangents(points: &[Point2D<f32>]) -> Vec<Size2D<f32>> {
+    /// get tangent_lines
+    pub fn _monotonic_cubic_tangents(points: &[Point2D<f32>]) -> Vec<Size2D<f32>> {
         let mut tangents = Vec::new();
 
         let mut m = line_finite_diff(&points);
@@ -107,7 +109,7 @@ impl Path {
     }
 
     #[allow(unused)]
-    // found on pomax's website (catmull-rom)
+    /// found on pomax's website (catmull-rom)
     pub fn cubic(polyline: &Polyline) -> Self {
         let mut segments = Vec::new();
 
@@ -155,13 +157,19 @@ impl Path {
     }
 
     pub fn rasterize(&self, xpr: &Xprite) -> Pixels {
-        let mut ret = Pixels::new();
+        let mut ret = Vec::new();
         // convert each segment
         for seg in &self.segments {
             let pixs = Path::convert_path_to_pixel(xpr, seg);
             ret.extend(&pixs);
         }
-        ret
+
+        let ret = if true {
+            sorter::sort_path(&mut ret)
+        } else {
+            ret
+        };
+        Pixels::from_slice(&ret)
     }
 
     fn is_extra_pixel(points: &[Pixel], i: usize) -> bool {
@@ -185,17 +193,19 @@ impl Path {
     }
 
     /// rasterize a single bezier curve by sampling
-    fn convert_path_to_pixel(xpr: &Xprite, seg: &CubicBezierSegment<f32>) -> Pixels {
+    fn convert_path_to_pixel(xpr: &Xprite, seg: &CubicBezierSegment<f32>) -> Vec<Pixel> {
         let mut path = Vec::new();
         let mut samples = Vec::new();
 
-        let mut pixs = Pixels::new();
-        let mut points = Pixels::new();
+        let mut set = Pixels::new();
+        let mut points = Vec::new();
 
+        // sample n points
         for i in 0..100 {
             let t = i as f32 / 100.;
             let point = seg.sample(t);
             let sample = xpr.canvas.shrink_size(point.x, point.y);
+            // console!(log, "{}, {}", sample.x, sample.y);
             samples.push(sample);
 
             let Point2D {x, y} = xpr.canvas.client_to_grid(point.x as i32, point.y as i32);
@@ -204,12 +214,15 @@ impl Path {
                 color: ColorOption::Unset,
             };
 
-            if !pixs.contains(&pixel) {
-                pixs.insert(pixel);
+            // don't allow duplicate pixels
+            if !set.contains(&pixel) {
+                set.insert(pixel);
                 path.push(pixel);
             }
         }
 
+        // remove extra pixels from path
+        // Pixel perfect algo
         for i in 0..path.len() {
             if Path::is_extra_pixel(&path, i) {
                 let q1 = path[i-1];
@@ -219,18 +232,20 @@ impl Path {
                 let d1 = Path::get_min_dist(&q1, &samples);
                 let d2 = Path::get_min_dist(&q2, &samples);
                 let d3 = Path::get_min_dist(&q3, &samples);
-
                 if (Path::is_extra_pixel(&path, i-1) && d1 < d2)
                 || (Path::is_extra_pixel(&path, i+1) && d3 < d2) { remove = false; }
-
                 if remove {
                     continue;
                 }
             }
-            points.insert(path[i]);
+            points.push(path[i]);
         }
 
-        points
+        if false {
+            sorter::sort_path(&mut points)
+        } else {
+            points
+        }
     }
 
 }
@@ -269,7 +284,7 @@ mod test {
                 Size2D::new(6.666666666666667, 0.0),
                 Size2D::new(6.666666666666667, 0.0)
             ],
-            Path::monotonic_cubic_tangents(&points),
+            Path::_monotonic_cubic_tangents(&points),
         )
 
     }

@@ -72,7 +72,7 @@ impl Polyline {
             ret.extend(&seg);
         }
 
-        console!(log, ret.0.len() as i32);
+        // console!(log, ret.0.len() as i32);
         ret
     }
 

@@ -27,7 +27,7 @@ impl Pencil {
             cursor_pos,
             brush,
             simplify: true,
-            tolerence: 2.0,
+            tolerence: 10.,
         }
     }
 

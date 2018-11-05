@@ -6,3 +6,4 @@ pub mod polyline;
 pub mod color;
 pub mod path;
 pub mod geom;
+pub mod sorter;
