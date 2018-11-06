@@ -12,45 +12,45 @@ pub fn get_concavity(path: &[Pixel]) -> bool {
     let Point2D {x: x2, y: y2} = p2.point.as_i32();
     let Point2D {x: x3, y: y3} = p3.point.as_i32();
 
+    // console!(log, x1, x2, x3);
     // assert!(x1 < x2);
     // assert!(x2 < x3);
-
-    let m1 = (y2 - y1) / (x2 - x1);
-    let m2 = (y3 - y2) / (x3 - x2);
-
-    if m1 < m2 {
+    if (x2 == x1) || (x2 == x3) {
         false
     } else {
-        true
+        let m1 = (y2 - y1) / (x2 - x1);
+        let m2 = (y3 - y2) / (x3 - x2);
+
+        if m1 < m2 {
+            false
+        } else {
+            true
+        }
     }
 }
 
-pub fn sort_path(path: &mut [Pixel]) -> Vec<Pixel> {
+pub fn sort_path(path: &mut [Pixel]) -> Option<Vec<Pixel>> {
 
-    let going_up = path.iter().last().unwrap().point.y < path[0].point.y;
-    let mut dir = if going_up {
-        // console!(log, "going up");
-        -1
-    } else {
-        1
-    };
+    let up = path.iter().last()?.point.y < path[0].point.y;
+    let mut dir = if up { -1 } else { 1 };
+
     // if the path is drawn from right to left
-    let right_to_left = path.iter().last().unwrap().point.x < path[0].point.x;
+    let right_to_left = path.iter().last()?.point.x < path[0].point.x;
     if right_to_left {
-        // console!(log, "right to left");
         dir *= -1;
         path.reverse();
     };
 
     let is_concave_up = get_concavity(path);
-    // console!(log, format!("concavity: {}", is_concave_up));
+    console!(log, format!("concavity: {}\nup: {}", is_concave_up, up));
 
     let mut segs = Vec::new();
-    let Pixel { point: mut p0, .. } = path[0];
+    let Pixel { point: p0, .. } = path[0];
+    let mut p0 = p0;
     let mut d = (1,1);
 
     for Pixel {point: pi, ..} in path.iter() {
-        let p0_ = pi.as_i32();
+        let p0_ = p0.as_i32();
         let pi_ = pi.as_i32();
         // console!(log, format!("{:?}", pi));
         if pi.x == p0.x || pi.y == p0.y {
@@ -82,19 +82,32 @@ pub fn sort_path(path: &mut [Pixel]) -> Vec<Pixel> {
         else {Ordering::Greater}
     });
 
-    if (is_concave_up && !going_up)
-    || (!is_concave_up && going_up) {
+    if (is_concave_up && !up)
+    || (!is_concave_up && up) {
         segs.reverse();
     }
 
+    // rrf in dihedral group
     if right_to_left {
         segs.reverse();
     }
 
     let mut ret = Vec::new();
     let mut p0 = path[0];
-    p0.point.y -= 1;
-    p0.point.x -= 1;
+
+    // offset
+    if (right_to_left && up)
+    || (!right_to_left && !up){
+        p0.point.x -= 1;
+        p0.point.y -= 1;
+    } else if !right_to_left && up {
+        p0.point.x -= 1;
+        p0.point.y += 1;
+    } else if right_to_left && !up {
+        p0.point.x -= 1;
+        p0.point.y += 1;
+    }
+
     for &((dx, dy), _) in segs.iter() {
         if dx == 1 {
             p0.point.x += 1;
@@ -120,5 +133,5 @@ pub fn sort_path(path: &mut [Pixel]) -> Vec<Pixel> {
     }
 
     // console!(log, format!("{:#?}", segs));
-    ret
+    Some(ret)
 }

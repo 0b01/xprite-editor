@@ -17,7 +17,7 @@ impl History {
         }
     }
 
-    pub fn new_history_frame(&mut self) {
+    pub fn enter(&mut self) {
         self.duplicate();
         self.clear_redo();
     }

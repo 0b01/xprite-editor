@@ -1,5 +1,5 @@
 use xprite::prelude::*;
-use xprite::tools::Tool;
+use xprite::lib::algorithms::sorter;
 use stdweb::web::event::MouseButton;
 
 pub struct Pencil {
@@ -25,15 +25,22 @@ impl Pencil {
             cursor,
             cursor_pos,
             brush,
-            simplify: true,
             tolerence: 10.,
+            simplify: false,
+        }
+    }
+
+    pub fn draw_pixels(&mut self, xpr: &mut Xprite, pixs: &[Pixel]) {
+        for &Pixel{point, ..} in pixs.iter() {
+            let color = ColorOption::Set(Color::new(200, 200, 200));
+            xpr.draw_pixel(point.x, point.y, color);
         }
     }
 
     pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline) {
 
         let path = polyline.interp();
-        for &Pixel{point, ..} in path.rasterize(xpr).iter() {
+        for &Pixel{point, ..} in path.rasterize(xpr).unwrap().iter() {
             let color = ColorOption::Set(Color::new(200, 200, 200));
             xpr.draw_pixel(point.x, point.y, color);
         }
@@ -95,7 +102,7 @@ impl Tool for Pencil {
         let button = self.is_mouse_down.clone().unwrap();
         if button == MouseButton::Left {
             let line_pixs = self.current_polyline.connect_with_line(&xpr);
-            xpr.add_pixels(&line_pixs);
+            xpr.add_pixels(&Pixels::from_slice(&line_pixs));
         } else if button == MouseButton::Right {
             xpr.remove_pixels(&pixels.unwrap());
         }
@@ -104,7 +111,7 @@ impl Tool for Pencil {
 
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<i32>, button: MouseButton) {
         self.is_mouse_down = Some(button);
-        xpr.history.new_history_frame();
+        xpr.history.enter();
 
         self.current_polyline.push(p.as_f32());
 
@@ -127,9 +134,15 @@ impl Tool for Pencil {
         if self.simplify {
             if let Some(simplified) = self.current_polyline.reumann_witkam(self.tolerence) {
                 xpr.history.undo();
-                xpr.history.new_history_frame();
+                xpr.history.enter();
                 self.draw_polyline(xpr, &simplified);
             }
+        } else {
+            xpr.history.undo();
+            xpr.history.enter();
+            let mut points = self.current_polyline.connect_with_line(xpr);
+            let sorted = sorter::sort_path(&mut points).unwrap();
+            self.draw_pixels(xpr, &sorted);
         }
 
         self.current_polyline.clear();

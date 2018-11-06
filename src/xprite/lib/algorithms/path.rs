@@ -156,22 +156,22 @@ impl Path {
         }
     }
 
-    pub fn rasterize(&self, xpr: &Xprite) -> Pixels {
-        let sort_segments = true;
+    pub fn rasterize(&self, xpr: &Xprite) -> Option<Pixels> {
+        let sort_segments = false;
 
         let mut ret = Vec::new();
         // convert each segment
         for seg in &self.segments {
-            let pixs = Path::convert_path_to_pixel(xpr, seg, sort_segments);
+            let pixs = Path::convert_path_to_pixel(xpr, seg, sort_segments)?;
             ret.extend(&pixs);
         }
 
-        let ret = if !sort_segments {
-            sorter::sort_path(&mut ret)
+        if !sort_segments {
+            let sorted = sorter::sort_path(ret.as_mut_slice())?;
+            Some(Pixels::from_slice(&sorted))
         } else {
-            ret
-        };
-        Pixels::from_slice(&ret)
+            Some(Pixels::from_slice(&ret))
+        }
     }
 
     fn is_extra_pixel(points: &[Pixel], i: usize) -> bool {
@@ -195,7 +195,7 @@ impl Path {
     }
 
     /// rasterize a single bezier curve by sampling
-    fn convert_path_to_pixel(xpr: &Xprite, seg: &CubicBezierSegment<f32>, sorted: bool) -> Vec<Pixel> {
+    fn convert_path_to_pixel(xpr: &Xprite, seg: &CubicBezierSegment<f32>, sorted: bool) -> Option<Vec<Pixel>> {
         let mut path = Vec::new();
         let mut samples = Vec::new();
 
@@ -246,7 +246,7 @@ impl Path {
         if sorted {
             sorter::sort_path(&mut points)
         } else {
-            points
+            Some(points)
         }
     }
 

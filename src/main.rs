@@ -128,8 +128,8 @@ fn init_js_bindings(xprite: &Rc<RefCell<Xprite>>) {
     let fn_change_tool = move |name: String|
         {xpr.borrow_mut().change_tool(&name)};
     let xpr = xprite.clone();
-    let fn_new_history_frame = move ||
-        {xpr.borrow_mut().history.new_history_frame();};
+    let fn_enter = move ||
+        {xpr.borrow_mut().history.enter();};
 
     js! {
         window.xprite = {};
@@ -141,6 +141,6 @@ fn init_js_bindings(xprite: &Rc<RefCell<Xprite>>) {
         window.xprite.set_option = @{fn_set_option};
         window.xprite.set_option_for_tool = @{fn_set_option_for_tool};
         window.xprite.change_tool = @{fn_change_tool};
-        window.xprite.new_history_frame = @{fn_new_history_frame}
+        window.xprite.enter = @{fn_enter}
     };
 }

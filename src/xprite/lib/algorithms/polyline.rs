@@ -1,5 +1,5 @@
 use xprite::prelude::*;
-use xprite::tools::line::bresenham;
+use xprite::lib::algorithms::line::bresenham;
 
 #[derive(Clone)]
 pub struct Polyline {
@@ -63,8 +63,8 @@ impl Polyline {
         Path::from_polyline(self)
     }
 
-    pub fn connect_with_line(&self, xpr: &Xprite) -> Pixels {
-        let mut ret = Pixels::new();
+    pub fn connect_with_line(&self, xpr: &Xprite) -> Vec<Pixel> {
+        let mut ret = Vec::new();
         for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
             let p0 = xpr.canvas.client_to_grid(p0.as_i32());
             let p1 = xpr.canvas.client_to_grid(p1.as_i32());
