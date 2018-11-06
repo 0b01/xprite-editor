@@ -15,6 +15,39 @@ impl<S: Copy + Add<Output=S>> Point2D<S> {
     }
 }
 
+impl Point2D<u32>  {
+    pub fn as_f32(&self) -> Point2D<f32> {
+        let x = self.x as f32;
+        let y = self.y as f32;
+        Point2D {x, y}
+    }
+}
+
+impl Point2D<i32>  {
+    pub fn as_f32(&self) -> Point2D<f32> {
+        let x = self.x as f32;
+        let y = self.y as f32;
+        Point2D {x, y}
+    }
+}
+
+
+impl Point2D<u32>  {
+    pub fn as_i32(&self) -> Point2D<i32> {
+        let x = self.x as i32;
+        let y = self.y as i32;
+        Point2D {x, y}
+    }
+}
+
+impl Point2D<f32>  {
+    pub fn as_i32(&self) -> Point2D<i32> {
+        let x = self.x as i32;
+        let y = self.y as i32;
+        Point2D {x, y}
+    }
+}
+
 impl<T: Copy + Add<Output=T>> Add for Point2D<T> {
     type Output = Point2D<T>;
     /// add a vector

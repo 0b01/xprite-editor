@@ -73,16 +73,16 @@ impl Tool for Line {
         "line"
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, x: i32, y: i32) {
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<i32>) {
         // set current cursor_pos
-        let point = xpr.canvas.client_to_grid(x, y);
+        let point = xpr.canvas.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel {point, color});
         self.draw(xpr);
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, x: i32, y: i32) {
-        let point = xpr.canvas.client_to_grid(x, y);
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D<i32>) {
+        let point = xpr.canvas.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel {point, color});
         self.finalize_line(xpr);
@@ -92,9 +92,9 @@ impl Tool for Line {
     }
 
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, x: i32, y: i32, button: MouseButton) {
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<i32>, button: MouseButton) {
         self.is_mouse_down = Some(button);
-        let point = xpr.canvas.client_to_grid(x, y);
+        let point = xpr.canvas.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.start_pos = Some(Pixel{point, color});
     }

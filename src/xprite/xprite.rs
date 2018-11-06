@@ -53,12 +53,13 @@ impl Xprite {
     pub fn mouse_move(&mut self, evt: &Event) {
         if let &Event::MouseMove{x, y} = evt {
             if out_of_bounds(x, y) {return;}
-            let point = self.canvas.client_to_grid(x, y);
+            let p = Point2D::new(x, y);
+            let point = self.canvas.client_to_grid(p);
             let color = ColorOption::Set(self.color());
             self.cursor_pos = Some(Pixel{point, color});
 
             let tool = self.toolbox.tool();
-            tool.borrow_mut().mouse_move(self, x, y);
+            tool.borrow_mut().mouse_move(self, p);
         }
     }
 
@@ -66,7 +67,8 @@ impl Xprite {
         if let &Event::MouseUp{x, y} = evt {
             if out_of_bounds(x, y) { return; }
             let tool = self.toolbox.tool();
-            tool.borrow_mut().mouse_up(self, x, y);
+            let p = Point2D::new(x, y);
+            tool.borrow_mut().mouse_up(self, p);
         }
     }
 
@@ -74,7 +76,8 @@ impl Xprite {
         if let &Event::MouseDown{x, y, button} = evt {
             if out_of_bounds(x, y) {return;}
             let tool = self.toolbox.tool();
-            tool.borrow_mut().mouse_down(self, x, y, button);
+            let p = Point2D::new(x, y);
+            tool.borrow_mut().mouse_down(self, p, button);
         }
     }
 

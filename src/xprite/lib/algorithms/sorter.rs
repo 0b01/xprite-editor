@@ -1,23 +1,22 @@
+//! Smoothing curves by sorting monotonic subcurve line segments by slope.
+
 use xprite::prelude::*;
 use std::cmp::Ordering;
 
 pub fn get_concavity(path: &[Pixel]) -> bool {
     let p1 = path[0];
     let p2 = path[path.len() / 2];
-    let p3 = path[path.len()-1];
+    let p3 = path[path.len() - 1];
 
-    let x1 = p1.point.x;
-    let x2 = p2.point.x;
-    let x3 = p3.point.x;
-    let y1 = p1.point.y;
-    let y2 = p2.point.y;
-    let y3 = p3.point.y;
+    let Point2D {x: x1, y: y1} = p1.point.as_i32();
+    let Point2D {x: x2, y: y2} = p2.point.as_i32();
+    let Point2D {x: x3, y: y3} = p3.point.as_i32();
 
     // assert!(x1 < x2);
     // assert!(x2 < x3);
 
-    let m1 = (y2 as i32 - y1 as i32) / (x2 as i32 - x1 as i32);
-    let m2 = (y3 as i32 - y2 as i32) / (x3 as i32 - x2 as i32);
+    let m1 = (y2 - y1) / (x2 - x1);
+    let m2 = (y3 - y2) / (x3 - x2);
 
     if m1 < m2 {
         false
@@ -47,15 +46,17 @@ pub fn sort_path(path: &mut [Pixel]) -> Vec<Pixel> {
     // console!(log, format!("concavity: {}", is_concave_up));
 
     let mut segs = Vec::new();
-    let mut p0 = path[0];
+    let Pixel { point: mut p0, .. } = path[0];
     let mut d = (1,1);
 
-    for pi in path.iter() {
+    for Pixel {point: pi, ..} in path.iter() {
+        let p0_ = pi.as_i32();
+        let pi_ = pi.as_i32();
         // console!(log, format!("{:?}", pi));
-        if pi.point.x == p0.point.x || pi.point.y == p0.point.y {
+        if pi.x == p0.x || pi.y == p0.y {
             d = (
-                d.0 + pi.point.x as i32 - p0.point.x as i32,
-                d.1 + dir * (pi.point.y as i32 - p0.point.y as i32),
+                d.0 +        pi_.x - p0_.x,
+                d.1 + dir * (pi_.y - p0_.y),
             );
         } else {
             // console!(log, format!("{:?}", d));

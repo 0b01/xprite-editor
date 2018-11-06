@@ -6,4 +6,3 @@ mod canvas;
 mod toolbox;
 mod xprite;
 pub mod prelude;
-

@@ -162,7 +162,8 @@ impl Canvas {
         Point2D::new(x, y)
     }
 
-    pub fn client_to_grid(&self, cli_x: i32, cli_y: i32) -> Point2D<u32> {
+    pub fn client_to_grid(&self, p: Point2D<i32>) -> Point2D<u32> {
+        let Point2D {x: cli_x, y: cli_y} = p;
         let scaled_w = self.canvas_w / (self.view.x1 - self.view.x0);
         let scaled_h = self.canvas_h / (self.view.y1 - self.view.y0);
 
@@ -172,8 +173,8 @@ impl Canvas {
         Point2D::new(x, y)
     }
 
-    pub fn to_pixels(&self, cli_x: i32, cli_y: i32, brush: &Brush, color: Color) -> Option<Pixels> {
-        let Point2D {x, y} = self.client_to_grid(cli_x, cli_y);
+    pub fn to_pixels(&self, p: Point2D<i32>, brush: &Brush, color: Color) -> Option<Pixels> {
+        let Point2D {x, y} = self.client_to_grid(p);
 
         let (brush_w, brush_h) = brush.size;
 

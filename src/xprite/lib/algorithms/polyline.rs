@@ -14,8 +14,8 @@ impl Polyline {
         }
     }
 
-    pub fn push(&mut self, x: f32, y: f32) {
-        self.pos.push(Point2D::new(x, y))
+    pub fn push(&mut self, p: Point2D<f32>) {
+        self.pos.push(p)
     }
 
     pub fn clear(&mut self) {
@@ -34,7 +34,7 @@ impl Polyline {
         let mut third = 2;
 
         // first point
-        ret.push(self.pos[first].x, self.pos[first].y);
+        ret.push(Point2D::new(self.pos[first].x, self.pos[first].y));
 
         for _ in 0..(self.pos.len()-2) {
             let dist = point_line_distance(
@@ -46,7 +46,7 @@ impl Polyline {
             if dist <= tol {
                 third = third+1;
             } else {
-                ret.push(self.pos[third].x, self.pos[third].y);
+                ret.push(Point2D::new(self.pos[third].x, self.pos[third].y));
                 first = second;
                 second = third;
                 third = third+1;
@@ -54,7 +54,7 @@ impl Polyline {
         }
 
         // last point
-        ret.push(self.pos[self.pos.len()-1].x, self.pos[self.pos.len()-1].y);
+        ret.push(Point2D::new(self.pos[self.pos.len()-1].x, self.pos[self.pos.len()-1].y));
 
         Some(ret)
     }
@@ -66,8 +66,8 @@ impl Polyline {
     pub fn connect_with_line(&self, xpr: &Xprite) -> Pixels {
         let mut ret = Pixels::new();
         for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
-            let p0 = xpr.canvas.client_to_grid(p0.x as i32, p0.y as i32);
-            let p1 = xpr.canvas.client_to_grid(p1.x as i32, p1.y as i32);
+            let p0 = xpr.canvas.client_to_grid(p0.as_i32());
+            let p1 = xpr.canvas.client_to_grid(p1.as_i32());
             let seg = bresenham(&p0, &p1);
             ret.extend(&seg);
         }

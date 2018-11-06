@@ -40,19 +40,19 @@ impl Pencil {
 
         // plot simplified points
         for &p in polyline.pos.iter() {
-            let Point2D{x, y} = xpr.canvas.client_to_grid(p.x as i32, p.y as i32);
+            let Point2D{x, y} = xpr.canvas.client_to_grid(p.as_i32());
             let color = ColorOption::Set(Color::blue());
             xpr.draw_pixel(x, y, color);
         }
 
-        // // plot control points
-        // for seg in &path.segments {
-        //     let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
-        //     for point in vec![ctrl1, ctrl2] {
-        //         let (x, y) = xpr.canvas.client_to_grid(point.x as i32, point.y as i32);
-        //         xpr.draw_pixel(x, y, Some(Color::red()));
-        //     }
-        // }
+        // plot control points
+        for seg in &path.segments {
+            let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
+            for point in vec![ctrl1, ctrl2] {
+                let Point2D{x, y} = xpr.canvas.client_to_grid(point.as_i32());
+                xpr.draw_pixel(x, y, ColorOption::Set(Color::red()));
+            }
+        }
 
     }
 
@@ -77,10 +77,10 @@ impl Tool for Pencil {
         "pencil"
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, x: i32, y: i32) {
-        let pixels = xpr.canvas.to_pixels(x, y, &self.brush, xpr.color());
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<i32>) {
+        let pixels = xpr.canvas.to_pixels(p, &self.brush, xpr.color());
         self.cursor = pixels.clone();
-        let point = xpr.canvas.client_to_grid(x, y);
+        let point = xpr.canvas.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel{point, color});
 
@@ -90,7 +90,7 @@ impl Tool for Pencil {
             return;
         }
 
-        self.current_polyline.push(x as f32, y as f32);
+        self.current_polyline.push(p.as_f32());
 
         let button = self.is_mouse_down.clone().unwrap();
         if button == MouseButton::Left {
@@ -102,13 +102,13 @@ impl Tool for Pencil {
         self.draw(xpr);
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, x: i32, y: i32, button: MouseButton) {
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<i32>, button: MouseButton) {
         self.is_mouse_down = Some(button);
         xpr.history.new_history_frame();
 
-        self.current_polyline.push(x as f32, y as f32);
+        self.current_polyline.push(p.as_f32());
 
-        let pixels = xpr.canvas.to_pixels(x, y, &self.brush, xpr.color());
+        let pixels = xpr.canvas.to_pixels(p, &self.brush, xpr.color());
         if let Some(pixels) = pixels {
             if button == MouseButton::Left {
                 xpr.add_pixels(&pixels);
@@ -119,7 +119,7 @@ impl Tool for Pencil {
         self.draw(xpr);
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, _x: i32, _y: i32) {
+    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Point2D<i32>) {
         if self.is_mouse_down.is_none() {return; }
         let button = self.is_mouse_down.clone().unwrap();
         if button == MouseButton::Right { return; }
