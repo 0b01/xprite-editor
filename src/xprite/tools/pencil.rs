@@ -141,8 +141,11 @@ impl Tool for Pencil {
             xpr.history.undo();
             xpr.history.enter();
             let mut points = self.current_polyline.connect_with_line(xpr);
-            let sorted = sorter::sort_path(&mut points).unwrap();
-            self.draw_pixels(xpr, &sorted);
+            let sorted = sorter::sort_path(&mut points);
+            match sorted {
+                Some(curve) => self.draw_pixels(xpr, &curve),
+                None => (),
+            }
         }
 
         self.current_polyline.clear();

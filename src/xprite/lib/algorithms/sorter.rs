@@ -42,7 +42,7 @@ pub fn sort_path(path: &mut [Pixel]) -> Option<Vec<Pixel>> {
     };
 
     let is_concave_up = get_concavity(path);
-    console!(log, format!("concavity: {}\nup: {}", is_concave_up, up));
+    // console!(log, format!("concavity: {}\nup: {}", is_concave_up, up));
 
     let mut segs = Vec::new();
     let Pixel { point: p0, .. } = path[0];

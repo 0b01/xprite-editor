@@ -64,20 +64,24 @@ fn main() {
 
     let xprite_clone = xprite.clone();
     doc.add_event_listener(move |event: MouseUpEvent| {
+        let scroll_x = stdweb::web::window().page_x_offset();
+        let scroll_y = stdweb::web::window().page_y_offset();
         xprite_clone.borrow_mut().mouse_up(
             &Event::MouseUp{
-                x: event.client_x(),
-                y: event.client_y(),
+                x: event.client_x() + scroll_x as i32,
+                y: event.client_y() + scroll_y as i32,
             }
         );
     });
 
     let xprite_clone = xprite.clone();
     doc.add_event_listener(move |event: MouseMoveEvent| {
+        let scroll_x = stdweb::web::window().page_x_offset();
+        let scroll_y = stdweb::web::window().page_y_offset();
         xprite_clone.borrow_mut().mouse_move(
             &Event::MouseMove{
-                x: event.client_x(),
-                y: event.client_y(),
+                x: event.client_x() + scroll_x as i32,
+                y: event.client_y() + scroll_y as i32,
             }
         );
     });
@@ -85,10 +89,12 @@ fn main() {
 
     let xprite_clone = xprite.clone();
     doc.add_event_listener(move |event: MouseDownEvent| {
+        let scroll_x = stdweb::web::window().page_x_offset();
+        let scroll_y = stdweb::web::window().page_y_offset();
         xprite_clone.borrow_mut().mouse_down(
             &Event::MouseDown{
-                x: event.client_x(),
-                y: event.client_y(),
+                x: event.client_x() + scroll_x as i32,
+                y: event.client_y() + scroll_y as i32,
                 button: event.button(),
             }
         );
