@@ -63,8 +63,8 @@ impl Path {
         for _ in 0..(points.len()-1) {
             let line = CubicBezierSegment {
                 from: points[i],
-                ctrl1: points[i].add_size(&tangents[i]),
-                ctrl2: points[i+1].add_size(&tangents[i+1]),
+                ctrl1: points[i] + tangents[i],
+                ctrl2: points[i+1] + tangents[i+1],
                 to: points[i+1]
             };
             segments.push(line);
@@ -77,7 +77,7 @@ impl Path {
     /// from d3:
     ///     https://github.com/d3/d3/blob/a40a611d6b9fc4ff3815ca830d86b6c00d130995/src/svg/line.js#L377
     /// get tangent_lines
-    pub fn _monotonic_cubic_tangents(points: &[Point2D<f32>]) -> Vec<Size2D<f32>> {
+    pub fn _monotonic_cubic_tangents(points: &[Point2D<f32>]) -> Vec<Point2D<f32>> {
         let mut tangents = Vec::new();
 
         let mut m = line_finite_diff(&points);
@@ -103,7 +103,7 @@ impl Path {
             let p0 = points[min(points.len()-1, i + 1)];
             let p1 = points[max(0, i as isize - 1) as usize];
             let s = (p0.x - p1.x) / (6. * (1. + m[i] * m[i]));
-            tangents.push(Size2D::new(s, m[i] * s));
+            tangents.push(Point2D::new(s, m[i] * s));
         }
         tangents
     }
@@ -281,8 +281,8 @@ mod test {
         ];
         assert_eq!(
             vec![
-                Size2D::new(6.666666666666667, 0.0),
-                Size2D::new(6.666666666666667, 0.0)
+                Point2D::new(6.666666666666667, 0.0),
+                Point2D::new(6.666666666666667, 0.0)
             ],
             Path::_monotonic_cubic_tangents(&points),
         )
