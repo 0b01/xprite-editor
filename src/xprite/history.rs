@@ -1,4 +1,5 @@
-use xprite::Pixels;
+use xprite::prelude::*;
+
 
 #[derive(Debug)]
 pub struct History {

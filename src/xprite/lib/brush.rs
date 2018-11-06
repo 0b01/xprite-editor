@@ -1,5 +1,4 @@
-use xprite::*;
-use xprite::PixelOffsets;
+use xprite::prelude::*;
 
 pub struct Brush {
     pub shape: PixelOffsets,

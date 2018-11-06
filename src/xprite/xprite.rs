@@ -1,4 +1,5 @@
-use xprite::*;
+use xprite::prelude::*;
+use stdweb::web::event::MouseButton;
 
 pub enum Event {
     MouseMove {

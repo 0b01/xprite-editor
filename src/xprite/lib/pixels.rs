@@ -1,4 +1,4 @@
-use xprite::*;
+use xprite::prelude::*;
 
 use std::collections::HashSet;
 use std::collections::hash_set::Iter;

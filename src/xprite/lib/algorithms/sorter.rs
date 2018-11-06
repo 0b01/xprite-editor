@@ -1,4 +1,4 @@
-use xprite::*;
+use xprite::prelude::*;
 use std::cmp::Ordering;
 
 pub fn get_concavity(path: &[Pixel]) -> bool {

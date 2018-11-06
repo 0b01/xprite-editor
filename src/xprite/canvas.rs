@@ -1,4 +1,4 @@
-use xprite::*;
+use xprite::prelude::*;
 
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;

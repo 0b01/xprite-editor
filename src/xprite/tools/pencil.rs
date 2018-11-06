@@ -1,6 +1,5 @@
-use xprite::*;
+use xprite::prelude::*;
 use xprite::tools::Tool;
-
 use stdweb::web::event::MouseButton;
 
 pub struct Pencil {

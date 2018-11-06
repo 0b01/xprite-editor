@@ -1,4 +1,4 @@
-use xprite::*;
+use xprite::prelude::*;
 use xprite::tools::line::bresenham;
 
 #[derive(Clone)]

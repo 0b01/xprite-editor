@@ -1,8 +1,8 @@
 use std::f32;
 use std::cmp::{min, max};
-use xprite::*;
-use xprite::common::polyline::point_line_distance;
-use xprite::common::sorter;
+use xprite::prelude::*;
+use super::polyline::point_line_distance;
+use super::sorter;
 
 fn convert(p1: Point2D<f32>, p2: Point2D<f32>, p3: Point2D<f32>, p4: Point2D<f32>) -> CubicBezierSegment<f32> {
     let t = 0.5;

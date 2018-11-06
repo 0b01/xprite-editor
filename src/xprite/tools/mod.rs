@@ -1,4 +1,4 @@
-use xprite::Xprite;
+use xprite::prelude::*;
 use stdweb::web::event::MouseButton;
 
 pub mod pencil;

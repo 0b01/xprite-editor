@@ -1,4 +1,3 @@
-use xprite::*;
 use xprite::tools::*;
 
 use std::f32::consts::PI;
@@ -264,11 +263,9 @@ pub fn bresenham(start: &Point2D<u32>, stop: &Point2D<u32>) -> Pixels {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use xprite::Point2D;
     #[test]
     fn test_adjust() {
         let adjusted_end = snapped_line(true, &pixel!(0, 0), &pixel!(10, 9));
         println!("{:?}", adjusted_end);
-
     }
 }

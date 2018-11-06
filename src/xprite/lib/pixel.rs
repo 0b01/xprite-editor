@@ -1,4 +1,4 @@
-use xprite::*;
+use xprite::prelude::*;
 use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]

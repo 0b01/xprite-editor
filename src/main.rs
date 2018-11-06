@@ -8,7 +8,7 @@ extern crate stdweb;
 
 mod xprite;
 
-use xprite::*;
+use xprite::prelude::*;
 
 use stdweb::traits::*;
 use stdweb::web::IEventTarget;
