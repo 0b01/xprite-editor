@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>xprite pixel art editor</title>
+    <style>
+        #canvas {
+            outline: black 3px solid;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script src='http://bgrins.github.io/spectrum/spectrum.js'></script>
+    <link rel='stylesheet' href='http://bgrins.github.io/spectrum/spectrum.css' />
+
+</head>
+
+<body oncontextmenu="return false;">
+    <canvas id="canvas" width="600" height="600" style="cursor: none;">
+    </canvas>
+
+    <script>
+        setTimeout( function() {
+            xprite.change_tool("pencil");
+            xprite.set_option_for_tool("pencil", "simplify", "true");
+        }, 100);
+    </script>
+    <script src="xprite.js"></script>
+
+</body>
+
+</html>

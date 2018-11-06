@@ -25,7 +25,8 @@ fn is_extra_pixel(points: &[Pixel], i: usize) -> bool {
 
 /// remove extra pixels from path
 /// Pixel perfect algo
-pub fn pixel_perfect(path: &[Pixel], samples: &[Point2D<f32>]) -> Vec<Pixel> {
+/// samples are optional
+pub fn pixel_perfect(path: &[Pixel], samples: Option<&[Point2D<f32>]>) -> Vec<Pixel> {
     let mut points = Vec::new();
     for i in 0..path.len() {
         if is_extra_pixel(&path, i) {
@@ -33,14 +34,30 @@ pub fn pixel_perfect(path: &[Pixel], samples: &[Point2D<f32>]) -> Vec<Pixel> {
             let q2 = path[i];
             let q3 = path[i+1];
             let mut remove = true;
-            let d1 = get_min_dist(&q1, &samples);
-            let d2 = get_min_dist(&q2, &samples);
-            let d3 = get_min_dist(&q3, &samples);
-            if (is_extra_pixel(&path, i-1) && d1 < d2)
-            || (is_extra_pixel(&path, i+1) && d3 < d2) { remove = false; }
-            if remove {
-                continue;
-            }
+
+            match samples {
+                Some(s) => {
+                    let d1 = get_min_dist(&q1, &s);
+                    let d2 = get_min_dist(&q2, &s);
+                    let d3 = get_min_dist(&q3, &s);
+                    if (is_extra_pixel(&path, i-1) && d1 < d2)
+                    || (is_extra_pixel(&path, i+1) && d3 < d2) {
+                        remove = false;
+                    }
+                },
+                None => {
+                    let s = path.iter().map(|x| x.point.as_f32()).collect::<Vec<_>>();
+                    let d1 = get_min_dist(&q1, &s);
+                    let d2 = get_min_dist(&q2, &s);
+                    let d3 = get_min_dist(&q3, &s);
+                    if (is_extra_pixel(&path, i-1) && d1 < d2)
+                    || (is_extra_pixel(&path, i+1) && d3 < d2) {
+                        remove = false;
+                    }
+                },
+            };
+
+            if remove { continue; }
         }
         points.push(path[i]);
     }

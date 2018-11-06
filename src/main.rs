@@ -1,4 +1,5 @@
 #![recursion_limit="128"]
+#![feature(try_from)]
 
 // #[macro_use]
 // extern crate itertools;
@@ -11,7 +12,9 @@ mod xprite;
 use xprite::prelude::*;
 
 use stdweb::traits::*;
-use stdweb::web::IEventTarget;
+use stdweb::unstable::TryInto;
+use stdweb::web::{IEventTarget, IHtmlElement};
+use stdweb::web::html_element::CanvasElement;
 use stdweb::web::event::{
     KeyDownEvent,
     KeyUpEvent,
@@ -64,24 +67,24 @@ fn main() {
 
     let xprite_clone = xprite.clone();
     doc.add_event_listener(move |event: MouseUpEvent| {
-        let scroll_x = stdweb::web::window().page_x_offset();
-        let scroll_y = stdweb::web::window().page_y_offset();
+        let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
+        let rect = canvas.get_bounding_client_rect();
         xprite_clone.borrow_mut().mouse_up(
             &Event::MouseUp{
-                x: event.client_x() + scroll_x as i32,
-                y: event.client_y() + scroll_y as i32,
+                x: event.client_x() - rect.get_x() as i32,
+                y: event.client_y() - rect.get_y() as i32,
             }
         );
     });
 
     let xprite_clone = xprite.clone();
     doc.add_event_listener(move |event: MouseMoveEvent| {
-        let scroll_x = stdweb::web::window().page_x_offset();
-        let scroll_y = stdweb::web::window().page_y_offset();
+        let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
+        let rect = canvas.get_bounding_client_rect();
         xprite_clone.borrow_mut().mouse_move(
             &Event::MouseMove{
-                x: event.client_x() + scroll_x as i32,
-                y: event.client_y() + scroll_y as i32,
+                x: event.client_x() - rect.get_x() as i32,
+                y: event.client_y() - rect.get_y() as i32,
             }
         );
     });
@@ -89,12 +92,12 @@ fn main() {
 
     let xprite_clone = xprite.clone();
     doc.add_event_listener(move |event: MouseDownEvent| {
-        let scroll_x = stdweb::web::window().page_x_offset();
-        let scroll_y = stdweb::web::window().page_y_offset();
+        let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
+        let rect = canvas.get_bounding_client_rect();
         xprite_clone.borrow_mut().mouse_down(
             &Event::MouseDown{
-                x: event.client_x() + scroll_x as i32,
-                y: event.client_y() + scroll_y as i32,
+                x: event.client_x() - rect.get_x() as i32,
+                y: event.client_y() - rect.get_y() as i32,
                 button: event.button(),
             }
         );

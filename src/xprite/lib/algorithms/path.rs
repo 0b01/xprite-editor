@@ -156,19 +156,18 @@ impl Path {
         }
     }
 
-    pub fn rasterize(&self, xpr: &Xprite) -> Option<Pixels> {
-        let sort_segments = false;
-
+    pub fn rasterize(&self, xpr: &Xprite, sort_each: bool, sort_whole: bool) -> Option<Pixels> {
         let mut ret = Vec::new();
         // convert each segment
         for seg in &self.segments {
-            let pixs = Path::convert_path_to_pixel(xpr, seg, sort_segments)?;
+            let pixs = Path::convert_path_to_pixel(xpr, seg, sort_each)?;
             ret.extend(&pixs);
         }
 
-        if !sort_segments {
+        if sort_whole {
             let sorted = sorter::sort_path(ret.as_mut_slice())?;
-            Some(Pixels::from_slice(&sorted))
+            let points = pixel_perfect(&sorted, None);
+            Some(Pixels::from_slice(&points))
         } else {
             Some(Pixels::from_slice(&ret))
         }
@@ -202,7 +201,7 @@ impl Path {
             }
         }
 
-        let mut points = pixel_perfect(&path, &samples);
+        let mut points = pixel_perfect(&path, Some(&samples));
 
         if sorted {
             sorter::sort_path(&mut points)
