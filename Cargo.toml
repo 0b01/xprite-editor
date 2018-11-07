@@ -1,3 +1,7 @@
 [workspace]
-members = [ "xprite", "xprite-web" ]
+members = [
+    "xprite",
+    "xprite-web",
+    "xprite-native",
+]
 

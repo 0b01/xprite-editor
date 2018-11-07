@@ -1,0 +1,11 @@
+[package]
+name = "xprite-native"
+version = "0.1.0"
+authors = ["Ricky Han <rickylqhan@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+imgui = "0.0.21"
+glium = { version = "0.22", default-features = true }
+imgui-glium-renderer = "0.0.21"
+xprite = { path = "../xprite" }
