@@ -1,5 +1,5 @@
 use std::f32;
-use xprite::prelude::*;
+use crate::prelude::*;
 use super::polyline::point_line_distance;
 
 fn get_min_dist(p: &Pixel, samples: &[Point2D<f32>]) -> f32 {

@@ -5,12 +5,11 @@
 // extern crate itertools;
 #[macro_use]
 extern crate stdweb;
+extern crate xprite;
+mod stdweb_renderer;
 
-
-mod xprite;
-
+use self::stdweb_renderer::StdwebRenderer;
 use xprite::prelude::*;
-
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
 use stdweb::web::{IEventTarget, IHtmlElement};
@@ -20,16 +19,16 @@ use stdweb::web::event::{
     KeyUpEvent,
     MouseDownEvent,
     MouseMoveEvent,
-    MouseUpEvent
+    MouseUpEvent,
 };
-
 use std::cell::RefCell;
 use std::rc::Rc;
 
 fn main() {
     stdweb::initialize();
 
-    let xprite = Rc::new(RefCell::new(Xprite::new("#canvas", 200, 200)));
+    let renderer = Box::new(StdwebRenderer::new("#canvas"));
+    let xprite = Rc::new(RefCell::new(Xprite::new(renderer, 200, 200)));
 
     xprite.borrow().draw();
 
@@ -70,7 +69,7 @@ fn main() {
         let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
         let rect = canvas.get_bounding_client_rect();
         xprite_clone.borrow_mut().mouse_up(
-            &Event::MouseUp{
+            &MouseEvent::MouseUp{
                 x: event.client_x() - rect.get_x() as i32,
                 y: event.client_y() - rect.get_y() as i32,
             }
@@ -82,7 +81,7 @@ fn main() {
         let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
         let rect = canvas.get_bounding_client_rect();
         xprite_clone.borrow_mut().mouse_move(
-            &Event::MouseMove{
+            &MouseEvent::MouseMove{
                 x: event.client_x() - rect.get_x() as i32,
                 y: event.client_y() - rect.get_y() as i32,
             }
@@ -94,11 +93,16 @@ fn main() {
     doc.add_event_listener(move |event: MouseDownEvent| {
         let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
         let rect = canvas.get_bounding_client_rect();
+        let button = match event.button() {
+            stdweb::web::event::MouseButton::Left => MouseButton::Left,
+            stdweb::web::event::MouseButton::Right => MouseButton::Right,
+            _ => unimplemented!(),
+        };
         xprite_clone.borrow_mut().mouse_down(
-            &Event::MouseDown{
+            &MouseEvent::MouseDown {
                 x: event.client_x() - rect.get_x() as i32,
                 y: event.client_y() - rect.get_y() as i32,
-                button: event.button(),
+                button,
             }
         );
     });

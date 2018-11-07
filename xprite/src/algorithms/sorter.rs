@@ -1,6 +1,6 @@
 //! Smoothing curves by sorting monotonic subcurve line segments by slope.
 
-use xprite::prelude::*;
+use crate::prelude::*;
 use std::cmp::Ordering;
 
 pub fn get_concavity(path: &[Pixel]) -> bool {

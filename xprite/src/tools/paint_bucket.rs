@@ -1,5 +1,4 @@
-use xprite::prelude::*;
-use stdweb::web::event::MouseButton;
+use crate::prelude::*;
 
 #[derive(Clone)]
 pub struct PaintBucket {
@@ -80,7 +79,7 @@ impl Tool for PaintBucket {
 
     fn set(&mut self, xpr: &mut Xprite, option: &str, value: &str) {
         match option {
-            _ => console!(error, "unimpl: ", option)
+            _ => panic!("unimpl: {}", option)
         }
     }
 }

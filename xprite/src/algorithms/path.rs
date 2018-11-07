@@ -1,6 +1,6 @@
 use std::f32;
 use std::cmp::{min, max};
-use xprite::prelude::*;
+use crate::prelude::*;
 use super::sorter;
 use super::pixel_perfect::pixel_perfect;
 

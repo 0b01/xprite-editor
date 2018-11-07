@@ -1,9 +1,5 @@
-use xprite::prelude::*;
-
-use stdweb::traits::*;
-use stdweb::unstable::TryInto;
-use stdweb::web::html_element::CanvasElement;
-use stdweb::web::{document, CanvasRenderingContext2d};
+use crate::prelude::*;
+use crate::rendering::Renderer;
 
 #[derive(Debug)]
 pub struct View {
@@ -15,8 +11,7 @@ pub struct View {
 
 #[derive(Debug)]
 pub struct Canvas {
-    pub canvas: CanvasElement,
-    pub ctx: CanvasRenderingContext2d,
+    pub renderer: Box<Renderer>,
 
     scaled_w: u32,
     scaled_h: u32,
@@ -31,18 +26,9 @@ pub struct Canvas {
 }
 
 impl Canvas {
-    pub fn new(attr_id: &str, art_w: u32, art_h: u32) -> Canvas {
-        let canvas: CanvasElement = document()
-            .query_selector(attr_id)
-            .unwrap()
-            .unwrap()
-            .try_into()
-            .unwrap();
-
-        let ctx: CanvasRenderingContext2d = canvas.get_context().unwrap();
-
-        let canvas_w = canvas.width();
-        let canvas_h = canvas.height();
+    pub fn new(renderer: Box<Renderer>, art_w: u32, art_h: u32) -> Canvas {
+        let canvas_w = renderer.width();
+        let canvas_h = renderer.height();
 
         let scaled_w =  canvas_w / art_w;
         let scaled_h = canvas_h / art_h;
@@ -55,8 +41,7 @@ impl Canvas {
         };
 
         Canvas {
-            canvas,
-            ctx,
+            renderer,
             scaled_w,
             scaled_h,
             canvas_w,
@@ -125,7 +110,7 @@ impl Canvas {
 
         if !self.is_in_view(x, y) { return; }
 
-        self.ctx.set_fill_style_color(color);
+        self.renderer.set_fill_style_color(color);
 
         let scaled_w = self.canvas_w / (self.view.x1 - self.view.x0);
         let scaled_h = self.canvas_h / (self.view.y1 - self.view.y0);
@@ -133,7 +118,7 @@ impl Canvas {
         let x = (x-self.view.x0) * scaled_w;
         let y = (y-self.view.y0) * scaled_h;
 
-        self.ctx.fill_rect(
+        self.renderer.fill_rect(
             f64::from(x),
             f64::from(y),
             f64::from(scaled_w),
@@ -142,8 +127,8 @@ impl Canvas {
     }
 
     pub fn clear_all(&self) {
-        self.ctx.set_fill_style_color("white");
-        self.ctx.fill_rect(
+        self.renderer.set_fill_style_color("white");
+        self.renderer.fill_rect(
             0.0,
             0.0,
             f64::from(self.art_w * self.scaled_w),

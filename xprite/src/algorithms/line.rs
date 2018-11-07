@@ -1,4 +1,4 @@
-use xprite::prelude::*;
+use crate::prelude::*;
 use std::f32::consts::PI;
 use std::f32;
 
@@ -97,7 +97,7 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Vec<Pixel> {
             5 => { for i in 0..dx { ret.push(pixel!(x0-i as f32, y0 - i as f32))} }
             6 => { for i in 0..dy { ret.push(pixel!(x0, y0 - i as f32))} }
             7 => { for i in 0..dx { ret.push(pixel!(x0+i as f32, y0 - i as f32))} }
-            _ => console!(error, "impossible")
+            _ => panic!("impossible"),
         }
     }
 

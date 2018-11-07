@@ -1,7 +1,6 @@
-use xprite::prelude::*;
-use xprite::lib::algorithms::sorter::sort_path;
-use xprite::lib::algorithms::pixel_perfect::pixel_perfect;
-use stdweb::web::event::MouseButton;
+use crate::prelude::*;
+use crate::algorithms::sorter::sort_path;
+use crate::algorithms::pixel_perfect::pixel_perfect;
 
 #[derive(Eq, PartialEq, Clone, Copy)]
 pub enum PencilMode {
@@ -162,12 +161,12 @@ impl Tool for Pencil {
                 self.draw_polyline(xpr, &simple, false, true);
             }
             PixelPerfect => {
-                let mut points = self.current_polyline.connect_with_line(xpr);
+                let points = self.current_polyline.connect_with_line(xpr);
                 let perfect = &pixel_perfect(&points);
                 self.draw_pixels(xpr, &perfect);
             }
             SortedMonotonic => {
-                let mut points = self.current_polyline.connect_with_line(xpr);
+                let points = self.current_polyline.connect_with_line(xpr);
                 let mut perfect = pixel_perfect(&points);
                 let sorted = sort_path(&mut perfect)?;
                 self.draw_pixels(xpr, &sorted);
@@ -202,21 +201,21 @@ impl Tool for Pencil {
                     "pp"        => self.mode = PixelPerfect,
                     "whole"     => self.mode = SimplifyAndSortWhole,
                     "parts"     => self.mode = SimplifyAndSortByParts,
-                    _ => console!(error, "malformed value: ", value),
+                    _ => panic!("malformed value: {}", value),
                 };
             }
             "tolerence" => {
                 if let Ok(val) = value.parse() {
                     self.tolerence = val;
                 } else {
-                    console!(error, "cannot parse val:", value);
+                    panic!("cannot parse val: {}", value);
                 }
             }
             "brush" => {
                 match value {
                     "cross" => self.brush = Brush::cross(),
                     "pixel" => self.brush = Brush::pixel(),
-                    _ => console!(error, "malformed value: ", value),
+                    _ => panic!("malformed value: {}", value),
                 }
             }
             _ => (),

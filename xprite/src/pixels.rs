@@ -1,4 +1,4 @@
-use xprite::prelude::*;
+use crate::prelude::*;
 use std::slice::Iter;
 use std::hash::{Hash, Hasher};
 

@@ -1,10 +1,6 @@
-[package]
-name = "xprite"
-version = "0.1.0"
-authors = ["ricky <ricky@rickyhan.com>"]
+[workspace]
 
-[dependencies]
-stdweb = "0.4.10"
-serde = "1.0.71"
-serde_derive = "1.0.71"
-itertools = "0.7"
+members = [
+    "xprite",
+    "xprite-wasm"
+]

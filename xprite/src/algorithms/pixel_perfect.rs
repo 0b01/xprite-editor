@@ -1,4 +1,4 @@
-use xprite::prelude::*;
+use crate::prelude::*;
 
 pub fn pixel_perfect(path: &[Pixel]) -> Vec<Pixel> {
     let mut ret = Vec::new();

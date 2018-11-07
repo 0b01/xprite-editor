@@ -1,5 +1,5 @@
-use xprite::prelude::*;
-use xprite::lib::algorithms::line::bresenham;
+use crate::prelude::*;
+use crate::algorithms::line::bresenham;
 
 #[derive(Clone)]
 pub struct Polyline {

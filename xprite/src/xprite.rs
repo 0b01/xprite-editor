@@ -1,25 +1,8 @@
-use xprite::prelude::*;
-use stdweb::web::event::MouseButton;
-
-pub enum Event {
-    MouseMove {
-        x: i32,
-        y: i32,
-    },
-    MouseDown {
-        x: i32,
-        y: i32,
-        button: MouseButton,
-    },
-    MouseUp {
-        x: i32,
-        y: i32,
-    },
-}
-
+use crate::prelude::*;
+use crate::rendering::Renderer;
 
 pub struct Xprite {
-    pub event_queue: Vec<Event>,
+    pub event_queue: Vec<MouseEvent>,
     pub history: History,
     pub canvas: Canvas,
     pub selected_color: Color,
@@ -30,9 +13,9 @@ pub struct Xprite {
 }
 
 impl Xprite {
-    pub fn new(name: &str, art_w: u32, art_h: u32) -> Xprite {
+    pub fn new(renderer: Box<Renderer>, art_w: u32, art_h: u32) -> Xprite {
         let event_queue = Vec::new();
-        let canvas = Canvas::new(name, art_w, art_h);
+        let canvas = Canvas::new(renderer, art_w, art_h);
         let selected_color = Color {r: 0, g: 0, b: 0, a: 255};
         let history = History::new();
         let cursor_pos = None;
@@ -50,8 +33,8 @@ impl Xprite {
         }
     }
 
-    pub fn mouse_move(&mut self, evt: &Event) {
-        if let &Event::MouseMove{x, y} = evt {
+    pub fn mouse_move(&mut self, evt: &MouseEvent) {
+        if let &MouseEvent::MouseMove{x, y} = evt {
             if out_of_bounds(x, y) {return;}
             let p = Point2D::new(x, y);
             let point = self.canvas.client_to_grid(p);
@@ -63,8 +46,8 @@ impl Xprite {
         }
     }
 
-    pub fn mouse_up(&mut self, evt: &Event) {
-        if let &Event::MouseUp{x, y} = evt {
+    pub fn mouse_up(&mut self, evt: &MouseEvent) {
+        if let &MouseEvent::MouseUp{x, y} = evt {
             if out_of_bounds(x, y) { return; }
             let tool = self.toolbox.tool();
             let p = Point2D::new(x, y);
@@ -72,8 +55,8 @@ impl Xprite {
         }
     }
 
-    pub fn mouse_down(&mut self, evt: &Event) {
-        if let &Event::MouseDown{x, y, button} = evt {
+    pub fn mouse_down(&mut self, evt: &MouseEvent) {
+        if let &MouseEvent::MouseDown{x, y, button} = evt {
             if out_of_bounds(x, y) {return;}
             let tool = self.toolbox.tool();
             let p = Point2D::new(x, y);
@@ -151,7 +134,7 @@ impl Xprite {
         if let Some(tool) = self.toolbox.get(name) {
             tool.borrow_mut().set(self, opt, val);
         } else {
-            console!(error, "toolbox does not have ", name);
+            panic!("toolbox does not contain {}", name);
         }
     }
 
@@ -175,8 +158,7 @@ impl Xprite {
     pub fn print_cursor_location(&self) {
         if self.cursor_pos.is_none() { return; }
         let pos = self.cursor_pos.unwrap();;
-        console!(log, "cursor:", pos.point.x, pos.point.y);
-
+        panic!("cursor: ({}, {})", pos.point.x, pos.point.y);
     }
 }
 

@@ -1,4 +1,4 @@
-use xprite::prelude::*;
+use crate::prelude::*;
 
 
 #[derive(Debug)]

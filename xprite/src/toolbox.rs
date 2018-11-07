@@ -2,7 +2,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-use xprite::tools::{
+use crate::tools::{
     Tool,
     pencil::Pencil,
     line::Line,

@@ -1,5 +1,5 @@
-use xprite::tools::*;
-use xprite::lib::algorithms::line::*;
+use crate::tools::*;
+use crate::algorithms::line::*;
 
 #[derive(Clone)]
 pub struct Line {
@@ -119,7 +119,7 @@ impl Tool for Line {
                 match value {
                     "true" => { self.snap = true; self.is_snap_45 = true }
                     "false" => { self.snap = false }
-                    _ => console!(error, "unimpl for ctrl: ", value)
+                    _ => panic!("unimpl for ctrl: {}", value)
                 }
                 self.draw(xpr);
             }
@@ -127,11 +127,11 @@ impl Tool for Line {
                 match value {
                     "true" => { self.snap = true; self.is_snap_45 = false }
                     "false" => { self.snap = false }
-                    _ => console!(error, "unimpl for ctrl: ", value)
+                    _ => panic!("unimpl for ctrl: {}", value)
                 }
                 self.draw(xpr);
             }
-            _ => console!(error, "unimpl: ", option)
+            _ => panic!("unimpl: {}", option)
         }
     }
 }
