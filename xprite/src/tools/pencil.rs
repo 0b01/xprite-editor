@@ -79,7 +79,7 @@ impl Pencil {
         if self.cursor.is_none() { return None; }
         let cursor = self.cursor.clone().unwrap();
         for &pos in cursor.iter() {
-            xpr.canvas()?.draw(
+            xpr.canvas.draw(
                 pos.point.x,
                 pos.point.y,
                 &Color::red().to_string()
@@ -97,9 +97,9 @@ impl Tool for Pencil {
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<i32>) -> Option<()> {
-        let pixels = xpr.canvas()?.to_pixels(p, &self.brush, xpr.color());
+        let pixels = xpr.canvas.to_pixels(p, &self.brush, xpr.color());
         self.cursor = pixels.clone();
-        let point = xpr.canvas()?.client_to_grid(p);
+        let point = xpr.canvas.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel{point, color});
 
@@ -129,7 +129,7 @@ impl Tool for Pencil {
 
         self.current_polyline.push(p.as_f32());
 
-        let pixels = xpr.canvas()?.to_pixels(p, &self.brush, xpr.color());
+        let pixels = xpr.canvas.to_pixels(p, &self.brush, xpr.color());
         if let Some(pixels) = pixels {
             if button == MouseButton::Left {
                 xpr.add_pixels(&pixels);
@@ -180,13 +180,13 @@ impl Tool for Pencil {
     }
 
     fn draw(&self, xpr: &Xprite) -> Option<()> {
-        xpr.canvas()?.clear_all();
+        xpr.canvas.clear_all();
         for &Pixel{point, color} in xpr.pixels().iter() {
             let color = match color {
                 ColorOption::Set(c) => c,
                 ColorOption::Unset => xpr.color(),
             }.to_string();
-            xpr.canvas()?.draw(point.x, point.y, &color);
+            xpr.canvas.draw(point.x, point.y, &color);
         }
         self.draw_cursor(xpr)
     }

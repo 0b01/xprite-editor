@@ -6,6 +6,10 @@ const WHITE: [f32;4] = [256.,256.,256.,256.];
 const RED: [f32;4] = [256.,0.,0.,256.];
 const BLACK: [f32;4] = [0.,0.,0.,0.];
 
+/// steps:
+/// 1. get dimensions
+/// 2. handle mouse and keyboard input, change state
+/// 3. update by calling draw method which takes in a renderer
 pub fn draw(state: &mut State, ui: &Ui) -> bool {
     main_menu_bar(state, ui);
     draw_canvas(state, ui);

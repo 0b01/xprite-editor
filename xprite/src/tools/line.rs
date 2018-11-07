@@ -23,7 +23,7 @@ impl Line {
 
     fn draw_cursor(&self, xpr: &Xprite) -> Option<()> {
         if let Some(pix) = self.cursor_pos {
-            xpr.canvas()?.draw(
+            xpr.canvas.draw(
                 pix.point.x,
                 pix.point.y,
                 &Color::red().to_string()
@@ -60,7 +60,7 @@ impl Line {
                     ColorOption::Set(c) => c,
                     ColorOption::Unset => xpr.color(),
                 }.to_string();
-                xpr.canvas()?.draw(point.x, point.y, &color);
+                xpr.canvas.draw(point.x, point.y, &color);
             }
         }
         Some(())
@@ -76,7 +76,7 @@ impl Tool for Line {
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<i32>) -> Option<()> {
         // set current cursor_pos
-        let point = xpr.canvas()?.client_to_grid(p);
+        let point = xpr.canvas.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel {point, color});
         self.draw(xpr);
@@ -84,7 +84,7 @@ impl Tool for Line {
     }
 
     fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D<i32>) -> Option<()> {
-        let point = xpr.canvas()?.client_to_grid(p);
+        let point = xpr.canvas.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel {point, color});
         self.finalize_line(xpr);
@@ -98,21 +98,21 @@ impl Tool for Line {
 
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<i32>, button: MouseButton) -> Option<()> {
         self.is_mouse_down = Some(button);
-        let point = xpr.canvas()?.client_to_grid(p);
+        let point = xpr.canvas.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.start_pos = Some(Pixel{point, color});
         Some(())
     }
 
     fn draw(&self, xpr: &Xprite) -> Option<()> {
-        xpr.canvas()?.clear_all();
+        xpr.canvas.clear_all();
         self.draw_line(xpr);
         for &Pixel{point, color} in xpr.pixels().iter() {
             let color = match color {
                 ColorOption::Set(c) => c,
                 ColorOption::Unset => xpr.color(),
             }.to_string();
-            xpr.canvas()?.draw(point.x, point.y, &color);
+            xpr.canvas.draw(point.x, point.y, &color);
         }
         self.draw_cursor(xpr);
 

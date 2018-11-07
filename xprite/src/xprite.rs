@@ -1,10 +1,10 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
 
-pub struct Xprite<'a> {
+pub struct Xprite {
     pub event_queue: Vec<MouseEvent>,
     pub history: History,
-    pub canvas: Option<Canvas<'a>>,
+    pub canvas: Canvas,
     pub selected_color: Color,
     pub toolbox: Toolbox,
     pub art_h: u32,
@@ -12,18 +12,19 @@ pub struct Xprite<'a> {
     pub cursor_pos: Option<Pixel>,
 }
 
-impl<'a> Xprite<'a> {
-    pub fn new(art_w: u32, art_h: u32) -> Xprite<'a> {
+impl Xprite {
+    pub fn new(art_w: u32, art_h: u32) -> Xprite {
         let event_queue = Vec::new();
         let selected_color = Color {r: 0, g: 0, b: 0, a: 255};
         let history = History::new();
         let cursor_pos = None;
         let toolbox = Toolbox::new();
+        let canvas = Canvas::new(art_w, art_h);
 
         Xprite {
             event_queue,
             history,
-            canvas: None,
+            canvas,
             selected_color,
             cursor_pos,
             art_h,
@@ -32,24 +33,15 @@ impl<'a> Xprite<'a> {
         }
     }
 
-    pub fn init(&mut self, renderer: Box<Renderer + 'a>) {
-        let canvas = Canvas::new(renderer, self.art_w, self.art_h);
-        self.canvas = Some(canvas);
-    }
-
-    pub fn canvas(&self) -> Option<&Canvas> {
-        self.canvas.as_ref()
-    }
-
-    pub fn canvas_mut(&mut self) -> Option<&mut Canvas<'a>> {
-        self.canvas.as_mut()
+    pub fn update_canvas_dims(&mut self, canvas_w: u32, canvas_h: u32) {
+        self.canvas.update(canvas_w, canvas_h)
     }
 
     pub fn mouse_move(&mut self, evt: &MouseEvent) -> Option<()> {
         if let &MouseEvent::MouseMove{x, y} = evt {
             if out_of_bounds(x, y) {return Some(());}
             let p = Point2D::new(x, y);
-            let point = self.canvas()?.client_to_grid(p);
+            let point = self.canvas.client_to_grid(p);
             let color = ColorOption::Set(self.color());
             self.cursor_pos = Some(Pixel{point, color});
 
@@ -90,15 +82,15 @@ impl<'a> Xprite<'a> {
 
     pub fn zoom_in(&mut self) -> Option<()> {
         if let Some(cursor_pos) = self.cursor_pos {
-            self.canvas_mut()?.zoom_in_at(5, cursor_pos.point)
+            self.canvas.zoom_in_at(5, cursor_pos.point)
         } else {
-            self.canvas_mut()?.zoom_in(5);
+            self.canvas.zoom_in(5);
         }
         self.draw()
     }
 
     pub fn zoom_out(&mut self) -> Option<()> {
-        self.canvas_mut()?.zoom_out(5);
+        self.canvas.zoom_out(5);
         self.draw()
     }
 
