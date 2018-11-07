@@ -8,8 +8,8 @@ pub struct View {
     pub y1: u32,
 }
 
-pub struct Canvas {
-    pub renderer: Box<Renderer>,
+pub struct Canvas<'a> {
+    pub renderer: Box<Renderer + 'a>,
 
     scaled_w: u32,
     scaled_h: u32,
@@ -23,8 +23,8 @@ pub struct Canvas {
     view: View,
 }
 
-impl Canvas {
-    pub fn new(renderer: Box<Renderer>, art_w: u32, art_h: u32) -> Canvas {
+impl<'a> Canvas<'a> {
+    pub fn new(renderer: Box<Renderer + 'a>, art_w: u32, art_h: u32) -> Canvas<'a> {
         let canvas_w = renderer.width();
         let canvas_h = renderer.height();
 

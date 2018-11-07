@@ -1,10 +1,10 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
 
-pub struct Xprite {
+pub struct Xprite<'a> {
     pub event_queue: Vec<MouseEvent>,
     pub history: History,
-    pub canvas: Option<Canvas>,
+    pub canvas: Option<Canvas<'a>>,
     pub selected_color: Color,
     pub toolbox: Toolbox,
     pub art_h: u32,
@@ -12,8 +12,8 @@ pub struct Xprite {
     pub cursor_pos: Option<Pixel>,
 }
 
-impl Xprite {
-    pub fn new(art_w: u32, art_h: u32) -> Xprite {
+impl<'a> Xprite<'a> {
+    pub fn new(art_w: u32, art_h: u32) -> Xprite<'a> {
         let event_queue = Vec::new();
         let selected_color = Color {r: 0, g: 0, b: 0, a: 255};
         let history = History::new();
@@ -32,7 +32,7 @@ impl Xprite {
         }
     }
 
-    pub fn init(&mut self, renderer: Box<Renderer>) {
+    pub fn init(&mut self, renderer: Box<Renderer + 'a>) {
         let canvas = Canvas::new(renderer, self.art_w, self.art_h);
         self.canvas = Some(canvas);
     }
@@ -41,7 +41,7 @@ impl Xprite {
         self.canvas.as_ref()
     }
 
-    pub fn canvas_mut(&mut self) -> Option<&mut Canvas> {
+    pub fn canvas_mut(&mut self) -> Option<&mut Canvas<'a>> {
         self.canvas.as_mut()
     }
 
