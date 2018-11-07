@@ -63,18 +63,18 @@ impl Polyline {
         Path::from_polyline(self)
     }
 
-    pub fn connect_with_line(&self, xpr: &Xprite) -> Vec<Pixel> {
+    pub fn connect_with_line(&self, xpr: &Xprite) -> Option<Vec<Pixel>> {
         let mut ret = Vec::new();
         for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
-            let p0 = xpr.canvas.client_to_grid(p0.as_i32());
-            let p1 = xpr.canvas.client_to_grid(p1.as_i32());
+            let p0 = xpr.canvas()?.client_to_grid(p0.as_i32());
+            let p1 = xpr.canvas()?.client_to_grid(p1.as_i32());
             let seg = bresenham(&p0, &p1);
             ret.extend(&seg);
         }
 
         // console!(log, ret.0.len() as i32);
         ret.dedup();
-        ret
+        Some(ret)
     }
 
 }

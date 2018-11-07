@@ -4,7 +4,7 @@ use crate::rendering::Renderer;
 pub struct Xprite {
     pub event_queue: Vec<MouseEvent>,
     pub history: History,
-    pub canvas: Canvas,
+    pub canvas: Option<Canvas>,
     pub selected_color: Color,
     pub toolbox: Toolbox,
     pub art_h: u32,
@@ -13,9 +13,8 @@ pub struct Xprite {
 }
 
 impl Xprite {
-    pub fn new(renderer: Box<Renderer>, art_w: u32, art_h: u32) -> Xprite {
+    pub fn new(art_w: u32, art_h: u32) -> Xprite {
         let event_queue = Vec::new();
-        let canvas = Canvas::new(renderer, art_w, art_h);
         let selected_color = Color {r: 0, g: 0, b: 0, a: 255};
         let history = History::new();
         let cursor_pos = None;
@@ -24,7 +23,7 @@ impl Xprite {
         Xprite {
             event_queue,
             history,
-            canvas,
+            canvas: None,
             selected_color,
             cursor_pos,
             art_h,
@@ -33,35 +32,51 @@ impl Xprite {
         }
     }
 
-    pub fn mouse_move(&mut self, evt: &MouseEvent) {
+    pub fn init(&mut self, renderer: Box<Renderer>) {
+        let canvas = Canvas::new(renderer, self.art_w, self.art_h);
+        self.canvas = Some(canvas);
+    }
+
+    pub fn canvas(&self) -> Option<&Canvas> {
+        self.canvas.as_ref()
+    }
+
+    pub fn canvas_mut(&mut self) -> Option<&mut Canvas> {
+        self.canvas.as_mut()
+    }
+
+    pub fn mouse_move(&mut self, evt: &MouseEvent) -> Option<()> {
         if let &MouseEvent::MouseMove{x, y} = evt {
-            if out_of_bounds(x, y) {return;}
+            if out_of_bounds(x, y) {return Some(());}
             let p = Point2D::new(x, y);
-            let point = self.canvas.client_to_grid(p);
+            let point = self.canvas()?.client_to_grid(p);
             let color = ColorOption::Set(self.color());
             self.cursor_pos = Some(Pixel{point, color});
 
             let tool = self.toolbox.tool();
             tool.borrow_mut().mouse_move(self, p);
         }
+        Some(())
     }
 
-    pub fn mouse_up(&mut self, evt: &MouseEvent) {
+    pub fn mouse_up(&mut self, evt: &MouseEvent) -> Option<()> {
         if let &MouseEvent::MouseUp{x, y} = evt {
-            if out_of_bounds(x, y) { return; }
+            if out_of_bounds(x, y) { return Some(()); }
             let tool = self.toolbox.tool();
             let p = Point2D::new(x, y);
             tool.borrow_mut().mouse_up(self, p);
         }
+        Some(())
     }
 
-    pub fn mouse_down(&mut self, evt: &MouseEvent) {
+    pub fn mouse_down(&mut self, evt: &MouseEvent) -> Option<()> {
         if let &MouseEvent::MouseDown{x, y, button} = evt {
-            if out_of_bounds(x, y) {return;}
+            if out_of_bounds(x, y) {return Some(());}
             let tool = self.toolbox.tool();
             let p = Point2D::new(x, y);
             tool.borrow_mut().mouse_down(self, p, button);
         }
+        Some(())
     }
 
 
@@ -73,18 +88,18 @@ impl Xprite {
         self.art_w
     }
 
-    pub fn zoom_in(&mut self) {
+    pub fn zoom_in(&mut self) -> Option<()> {
         if let Some(cursor_pos) = self.cursor_pos {
-            self.canvas.zoom_in_at(5, cursor_pos.point)
+            self.canvas_mut()?.zoom_in_at(5, cursor_pos.point)
         } else {
-            self.canvas.zoom_in(5);
+            self.canvas_mut()?.zoom_in(5);
         }
-        self.draw();
+        self.draw()
     }
 
-    pub fn zoom_out(&mut self) {
-        self.canvas.zoom_out(5);
-        self.draw();
+    pub fn zoom_out(&mut self) -> Option<()> {
+        self.canvas_mut()?.zoom_out(5);
+        self.draw()
     }
 
     pub fn undo(&mut self) {
@@ -142,9 +157,10 @@ impl Xprite {
         self.toolbox.change_to(name);
     }
 
-    pub fn draw(&self) {
+    pub fn draw(&self) -> Option<()> {
         let tool = self.toolbox.tool();
         tool.borrow().draw(self);
+        Some(())
     }
 
     pub fn color(&self) -> Color {

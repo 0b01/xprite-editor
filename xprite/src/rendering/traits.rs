@@ -1,6 +1,4 @@
-use std::fmt::Debug;
-
-pub trait Renderer: Debug {
+pub trait Renderer {
     fn width(&self) -> u32;
     fn height(&self) -> u32;
     fn set_fill_style_color(&self, color: &str);

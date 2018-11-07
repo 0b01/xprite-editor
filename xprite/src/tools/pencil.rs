@@ -75,17 +75,17 @@ impl Pencil {
 
     }
 
-    fn draw_cursor(&self, xpr: &Xprite) {
-        if self.cursor.is_none() { return; }
-
+    fn draw_cursor(&self, xpr: &Xprite) -> Option<()> {
+        if self.cursor.is_none() { return None; }
         let cursor = self.cursor.clone().unwrap();
         for &pos in cursor.iter() {
-            xpr.canvas.draw(
+            xpr.canvas()?.draw(
                 pos.point.x,
                 pos.point.y,
                 &Color::red().to_string()
             );
         }
+        Some(())
     }
 
 }
@@ -96,17 +96,16 @@ impl Tool for Pencil {
         "pencil"
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<i32>) {
-        let pixels = xpr.canvas.to_pixels(p, &self.brush, xpr.color());
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<i32>) -> Option<()> {
+        let pixels = xpr.canvas()?.to_pixels(p, &self.brush, xpr.color());
         self.cursor = pixels.clone();
-        let point = xpr.canvas.client_to_grid(p);
+        let point = xpr.canvas()?.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel{point, color});
 
         // if mouse is done
         if self.is_mouse_down.is_none() || pixels.is_none() {
-            self.draw(xpr);
-            return;
+            return self.draw(xpr);
         }
 
         self.current_polyline.push(p.as_f32());
@@ -115,22 +114,22 @@ impl Tool for Pencil {
         if button == MouseButton::Left {
             xpr.history.undo();
             xpr.history.enter();
-            let line_pixs = self.current_polyline.connect_with_line(&xpr);
+            let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
             let perfect = pixel_perfect(&line_pixs);
             xpr.add_pixels(&Pixels::from_slice(&perfect));
         } else if button == MouseButton::Right {
             // xpr.remove_pixels(&pixels.unwrap());
         }
-        self.draw(xpr);
+        self.draw(xpr)
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<i32>, button: MouseButton) {
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<i32>, button: MouseButton) -> Option<()>{
         self.is_mouse_down = Some(button);
         xpr.history.enter();
 
         self.current_polyline.push(p.as_f32());
 
-        let pixels = xpr.canvas.to_pixels(p, &self.brush, xpr.color());
+        let pixels = xpr.canvas()?.to_pixels(p, &self.brush, xpr.color());
         if let Some(pixels) = pixels {
             if button == MouseButton::Left {
                 xpr.add_pixels(&pixels);
@@ -138,7 +137,7 @@ impl Tool for Pencil {
                 // xpr.remove_pixels(&pixels);
             }
         }
-        self.draw(xpr);
+        self.draw(xpr)
     }
 
     fn mouse_up(&mut self, xpr: &mut Xprite, _p: Point2D<i32>) -> Option<()> {
@@ -161,12 +160,12 @@ impl Tool for Pencil {
                 self.draw_polyline(xpr, &simple, false, true);
             }
             PixelPerfect => {
-                let points = self.current_polyline.connect_with_line(xpr);
+                let points = self.current_polyline.connect_with_line(xpr)?;
                 let perfect = &pixel_perfect(&points);
                 self.draw_pixels(xpr, &perfect);
             }
             SortedMonotonic => {
-                let points = self.current_polyline.connect_with_line(xpr);
+                let points = self.current_polyline.connect_with_line(xpr)?;
                 let mut perfect = pixel_perfect(&points);
                 let sorted = sort_path(&mut perfect)?;
                 self.draw_pixels(xpr, &sorted);
@@ -180,19 +179,19 @@ impl Tool for Pencil {
         Some(())
     }
 
-    fn draw(&self, xpr: &Xprite) {
-        xpr.canvas.clear_all();
+    fn draw(&self, xpr: &Xprite) -> Option<()> {
+        xpr.canvas()?.clear_all();
         for &Pixel{point, color} in xpr.pixels().iter() {
             let color = match color {
                 ColorOption::Set(c) => c,
                 ColorOption::Unset => xpr.color(),
             }.to_string();
-            xpr.canvas.draw(point.x, point.y, &color);
+            xpr.canvas()?.draw(point.x, point.y, &color);
         }
-        self.draw_cursor(xpr);
+        self.draw_cursor(xpr)
     }
 
-    fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) {
+    fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) -> Option<()> {
         match option {
             "mode" => {
                 use self::PencilMode::*;
@@ -220,5 +219,6 @@ impl Tool for Pencil {
             }
             _ => (),
         }
+        Some(())
     }
 }

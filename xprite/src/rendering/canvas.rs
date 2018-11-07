@@ -1,7 +1,6 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
 
-#[derive(Debug)]
 pub struct View {
     pub x0: u32,
     pub y0: u32,
@@ -9,7 +8,6 @@ pub struct View {
     pub y1: u32,
 }
 
-#[derive(Debug)]
 pub struct Canvas {
     pub renderer: Box<Renderer>,
 

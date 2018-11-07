@@ -5,6 +5,11 @@ use stdweb::unstable::TryInto;
 use stdweb::web::html_element::CanvasElement;
 use stdweb::web::{document, CanvasRenderingContext2d};
 
+pub struct StdwebRenderer {
+    pub canvas: CanvasElement,
+    pub ctx: CanvasRenderingContext2d,
+}
+
 impl Renderer for StdwebRenderer {
     fn width(&self) -> u32 {
         self.canvas.width()
@@ -35,10 +40,4 @@ impl StdwebRenderer {
             ctx
         }
     }
-}
-
-#[derive(Debug)]
-pub struct StdwebRenderer {
-    pub canvas: CanvasElement,
-    pub ctx: CanvasRenderingContext2d,
 }

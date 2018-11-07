@@ -27,8 +27,9 @@ use std::rc::Rc;
 fn main() {
     stdweb::initialize();
 
+    let xprite = Rc::new(RefCell::new(Xprite::new(200, 200)));
     let renderer = Box::new(StdwebRenderer::new("#canvas"));
-    let xprite = Rc::new(RefCell::new(Xprite::new(renderer, 200, 200)));
+    xprite.borrow_mut().init(renderer);
 
     xprite.borrow().draw();
 
@@ -38,8 +39,8 @@ fn main() {
     doc.add_event_listener({
         move |event: KeyDownEvent| {
             match event.key().as_ref() {
-                "=" => xpr.borrow_mut().zoom_in(),
-                "-" => xpr.borrow_mut().zoom_out(),
+                "=" => xpr.borrow_mut().zoom_in().unwrap(),
+                "-" => xpr.borrow_mut().zoom_out().unwrap(),
                 "p" => xpr.borrow().print_cursor_location(),
                 "l" => xpr.borrow_mut().change_tool("line"),
                 "f" => xpr.borrow_mut().change_tool("pencil"),

@@ -21,14 +21,15 @@ impl Line {
         }
     }
 
-    fn draw_cursor(&self, xpr: &Xprite) {
+    fn draw_cursor(&self, xpr: &Xprite) -> Option<()> {
         if let Some(pix) = self.cursor_pos {
-            xpr.canvas.draw(
+            xpr.canvas()?.draw(
                 pix.point.x,
                 pix.point.y,
                 &Color::red().to_string()
             );
         }
+        Some(())
     }
 
     fn get_line(&self) -> Option<Vec<Pixel>> {
@@ -52,16 +53,17 @@ impl Line {
         }
     }
 
-    fn draw_line(&self, xpr: &Xprite) {
+    fn draw_line(&self, xpr: &Xprite) -> Option<()> {
         if let Some(pixs) = self.get_line() {
             for &Pixel{point, color} in pixs.iter() {
                 let color = match color {
                     ColorOption::Set(c) => c,
                     ColorOption::Unset => xpr.color(),
                 }.to_string();
-                xpr.canvas.draw(point.x, point.y, &color);
+                xpr.canvas()?.draw(point.x, point.y, &color);
             }
         }
+        Some(())
     }
 
 }
@@ -72,16 +74,17 @@ impl Tool for Line {
         "line"
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<i32>) {
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<i32>) -> Option<()> {
         // set current cursor_pos
-        let point = xpr.canvas.client_to_grid(p);
+        let point = xpr.canvas()?.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel {point, color});
         self.draw(xpr);
+        Some(())
     }
 
     fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D<i32>) -> Option<()> {
-        let point = xpr.canvas.client_to_grid(p);
+        let point = xpr.canvas()?.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel {point, color});
         self.finalize_line(xpr);
@@ -93,27 +96,30 @@ impl Tool for Line {
     }
 
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<i32>, button: MouseButton) {
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<i32>, button: MouseButton) -> Option<()> {
         self.is_mouse_down = Some(button);
-        let point = xpr.canvas.client_to_grid(p);
+        let point = xpr.canvas()?.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.start_pos = Some(Pixel{point, color});
+        Some(())
     }
 
-    fn draw(&self, xpr: &Xprite) {
-        xpr.canvas.clear_all();
+    fn draw(&self, xpr: &Xprite) -> Option<()> {
+        xpr.canvas()?.clear_all();
         self.draw_line(xpr);
         for &Pixel{point, color} in xpr.pixels().iter() {
             let color = match color {
                 ColorOption::Set(c) => c,
                 ColorOption::Unset => xpr.color(),
             }.to_string();
-            xpr.canvas.draw(point.x, point.y, &color);
+            xpr.canvas()?.draw(point.x, point.y, &color);
         }
         self.draw_cursor(xpr);
+
+        Some(())
     }
 
-    fn set(&mut self, xpr: &mut Xprite, option: &str, value: &str) {
+    fn set(&mut self, xpr: &mut Xprite, option: &str, value: &str) -> Option<()> {
         match option {
             "ctrl" => {
                 match value {
@@ -133,5 +139,6 @@ impl Tool for Line {
             }
             _ => panic!("unimpl: {}", option)
         }
+        Some(())
     }
 }
