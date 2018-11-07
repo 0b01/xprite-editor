@@ -73,6 +73,7 @@ impl Polyline {
         }
 
         // console!(log, ret.0.len() as i32);
+        ret.dedup();
         ret
     }
 

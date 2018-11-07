@@ -1,6 +1,15 @@
 use xprite::prelude::*;
-use xprite::lib::algorithms::{sorter, pixel_perfect};
+use xprite::lib::algorithms::sorter::sort_path;
+use xprite::lib::algorithms::pixel_perfect::pixel_perfect;
 use stdweb::web::event::MouseButton;
+
+#[derive(Eq, PartialEq)]
+pub enum PencilMode {
+    Monotonic,
+    PixelPerfect,
+    SimplifyAndSortWhole,
+    SimplifyAndSortByParts,
+}
 
 pub struct Pencil {
     is_mouse_down: Option<MouseButton>,
@@ -9,7 +18,7 @@ pub struct Pencil {
     cursor_pos: Option<Pixel>,
     brush: Brush,
     tolerence: f32,
-    simplify: bool,
+    mode: PencilMode,
 }
 impl Pencil {
     pub fn new() -> Self {
@@ -26,7 +35,7 @@ impl Pencil {
             cursor_pos,
             brush,
             tolerence: 2.,
-            simplify: true,
+            mode: PencilMode::PixelPerfect,
         }
     }
 
@@ -101,8 +110,10 @@ impl Tool for Pencil {
 
         let button = self.is_mouse_down.clone().unwrap();
         if button == MouseButton::Left {
+            xpr.history.undo();
+            xpr.history.enter();
             let line_pixs = self.current_polyline.connect_with_line(&xpr);
-            let perfect = pixel_perfect::pixel_perfect(&line_pixs, None);
+            let perfect = pixel_perfect(&line_pixs);
             xpr.add_pixels(&Pixels::from_slice(&perfect));
         } else if button == MouseButton::Right {
             xpr.remove_pixels(&pixels.unwrap());
@@ -134,18 +145,28 @@ impl Tool for Pencil {
 
         xpr.history.undo();
         xpr.history.enter();
-        if self.simplify {
-            // simply curve then rasterize
-            if let Some(simplified) = self.current_polyline.reumann_witkam(self.tolerence) {
-                self.draw_polyline(xpr, &simplified);
+        use self::PencilMode::*;
+        match self.mode {
+            SimplifyAndSortByParts => {
+                // simply curve then rasterize
+                let simplified = self.current_polyline.reumann_witkam(self.tolerence);
+                match simplified  {
+                    Some(simple) => {
+                        self.draw_polyline(xpr, &simple);
+                    }
+                    None => (),
+                }
             }
-        } else {
-            // connect polyline with line and sort segments
-            let mut points = self.current_polyline.connect_with_line(xpr);
-            let sorted = sorter::sort_path(&mut points);
-            match sorted {
-                Some(curve) => self.draw_pixels(xpr, &curve),
-                None => (),
+            PixelPerfect => {
+                let mut points = self.current_polyline.connect_with_line(xpr);
+                let perfect = &pixel_perfect(&points);
+                self.draw_pixels(xpr, &perfect);
+            }
+            SortedMonotonic => {
+                let mut points = self.current_polyline.connect_with_line(xpr);
+                let perfect = &pixel_perfect(&points);
+                let sorted = sort_path(&perfect);
+                self.draw_pixels(xpr, &sorted);
             }
         }
 

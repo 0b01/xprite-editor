@@ -166,17 +166,17 @@ impl Path {
 
         if sort_whole {
             let sorted = sorter::sort_path(ret.as_mut_slice())?;
-            let points = pixel_perfect(&sorted, None);
+            let points = pixel_perfect(&sorted);
             Some(Pixels::from_slice(&points))
         } else {
-            Some(Pixels::from_slice(&ret))
+            let points = pixel_perfect(&ret);
+            Some(Pixels::from_slice(&points))
         }
     }
 
     /// rasterize a single bezier curve by sampling
     fn convert_path_to_pixel(xpr: &Xprite, seg: &CubicBezierSegment<f32>, sorted: bool) -> Option<Vec<Pixel>> {
         let mut path = Vec::new();
-        let mut samples = Vec::new();
 
         let mut set = Pixels::new();
 
@@ -186,7 +186,6 @@ impl Path {
             let point = seg.sample(t);
             let sample = xpr.canvas.shrink_size(point.x, point.y);
             // console!(log, "{}, {}", sample.x, sample.y);
-            samples.push(sample);
 
             let Point2D {x, y} = xpr.canvas.client_to_grid(point.as_i32());
             let pixel = Pixel {
@@ -201,7 +200,7 @@ impl Path {
             }
         }
 
-        let mut points = pixel_perfect(&path, Some(&samples));
+        let mut points = pixel_perfect(&path);
 
         if sorted {
             sorter::sort_path(&mut points)
