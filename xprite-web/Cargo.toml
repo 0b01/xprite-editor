@@ -1,5 +1,5 @@
 [package]
-name = "xprite-wasm"
+name = "xprite-web"
 version = "0.1.0"
 authors = ["Ricky Han <rickylqhan@gmail.com>"]
 edition = "2018"
