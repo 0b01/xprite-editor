@@ -48,12 +48,14 @@ impl Tool for PaintBucket {
         self.draw(xpr);
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D<i32>) {
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D<i32>) -> Option<()> {
         let point = xpr.canvas.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel {point, color});
         self.floodfill(xpr);
         self.draw(xpr);
+
+        Some(())
     }
 
 

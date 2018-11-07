@@ -156,11 +156,11 @@ impl Path {
         }
     }
 
-    pub fn rasterize(&self, xpr: &Xprite, sort_each: bool, sort_whole: bool) -> Option<Pixels> {
+    pub fn rasterize(&self, xpr: &Xprite, sort_parts: bool, sort_whole: bool) -> Option<Pixels> {
         let mut ret = Vec::new();
         // convert each segment
         for seg in &self.segments {
-            let pixs = Path::convert_path_to_pixel(xpr, seg, sort_each)?;
+            let pixs = Path::convert_path_to_pixel(xpr, seg, sort_parts)?;
             ret.extend(&pixs);
         }
 
@@ -184,8 +184,6 @@ impl Path {
         for i in 0..100 {
             let t = i as f32 / 100.;
             let point = seg.sample(t);
-            let sample = xpr.canvas.shrink_size(point.x, point.y);
-            // console!(log, "{}, {}", sample.x, sample.y);
 
             let Point2D {x, y} = xpr.canvas.client_to_grid(point.as_i32());
             let pixel = Pixel {
@@ -195,7 +193,7 @@ impl Path {
 
             // don't allow duplicate pixels
             if !set.contains(&pixel) {
-                set.insert(pixel);
+                set.push(pixel);
                 path.push(pixel);
             }
         }

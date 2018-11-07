@@ -1,8 +1,5 @@
 use xprite::prelude::*;
-
-use std::collections::HashSet;
-use std::collections::hash_set::Iter;
-
+use std::slice::Iter;
 use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -28,26 +25,23 @@ macro_rules! pixel {
 
 
 #[derive(Clone, Debug)]
-pub struct Pixels(pub HashSet<Pixel>);
+pub struct Pixels(pub Vec<Pixel>);
 impl Pixels {
     pub fn new() -> Self {
-        Pixels(HashSet::new())
+        Pixels(Vec::new())
     }
     pub fn from_slice(slice: &[Pixel]) -> Self {
-        let mut set = HashSet::new();
+        let mut vec = Vec::new();
         for i in slice.iter() {
-            set.insert(*i);
+            vec.push(*i);
         }
-        Pixels(set)
+        Pixels(vec)
     }
     pub fn extend(&mut self, other: &Pixels) {
         self.0.extend(&other.0)
     }
-    pub fn remove(&mut self, px: &Pixel) {
-        self.0.remove(px);
-    }
-    pub fn insert(&mut self, px: Pixel) {
-        self.0.insert(px);
+    pub fn push(&mut self, px: Pixel) {
+        self.0.push(px);
     }
     pub fn contains(&mut self, px: &Pixel) -> bool {
         self.0.contains(px)
@@ -55,12 +49,11 @@ impl Pixels {
     pub fn iter(&self) -> Iter<Pixel> {
         self.0.iter()
     }
-
     pub fn set_color(&mut self, color: &Color) {
         let color = ColorOption::Set(*color);
         self.0 = self.0
             .iter()
             .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
-            .collect::<HashSet<_>>();
+            .collect::<Vec<_>>();
     }
 }

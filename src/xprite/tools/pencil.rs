@@ -3,12 +3,16 @@ use xprite::lib::algorithms::sorter::sort_path;
 use xprite::lib::algorithms::pixel_perfect::pixel_perfect;
 use stdweb::web::event::MouseButton;
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Clone, Copy)]
 pub enum PencilMode {
-    Monotonic,
+    /// just run pixel perfect - nothing else
     PixelPerfect,
+    /// convert to vector and sort everything by slope
     SimplifyAndSortWhole,
+    /// convert to vector and sort each segment
     SimplifyAndSortByParts,
+    /// sort each monotonic segment
+    SortedMonotonic,
 }
 
 pub struct Pencil {
@@ -46,15 +50,15 @@ impl Pencil {
         }
     }
 
-    pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline) {
+    pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline, sort_parts: bool, sort_whole: bool) {
 
         let path = polyline.interp();
-        for &Pixel{point, ..} in path.rasterize(xpr, false, false).unwrap().iter() {
+        for &Pixel{point, ..} in path.rasterize(xpr, sort_parts, sort_whole).unwrap().iter() {
             let color = ColorOption::Set(Color::new(200, 200, 200));
             xpr.draw_pixel(point.x, point.y, color);
         }
 
-        // // plot simplified points
+        // // plot anchors
         // for &p in polyline.pos.iter() {
         //     let Point2D{x, y} = xpr.canvas.client_to_grid(p.as_i32());
         //     let color = ColorOption::Set(Color::blue());
@@ -116,7 +120,7 @@ impl Tool for Pencil {
             let perfect = pixel_perfect(&line_pixs);
             xpr.add_pixels(&Pixels::from_slice(&perfect));
         } else if button == MouseButton::Right {
-            xpr.remove_pixels(&pixels.unwrap());
+            // xpr.remove_pixels(&pixels.unwrap());
         }
         self.draw(xpr);
     }
@@ -132,16 +136,16 @@ impl Tool for Pencil {
             if button == MouseButton::Left {
                 xpr.add_pixels(&pixels);
             } else {
-                xpr.remove_pixels(&pixels);
+                // xpr.remove_pixels(&pixels);
             }
         }
         self.draw(xpr);
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Point2D<i32>) {
-        if self.is_mouse_down.is_none() {return; }
+    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Point2D<i32>) -> Option<()> {
+        if self.is_mouse_down.is_none() {return Some(()); }
         let button = self.is_mouse_down.clone().unwrap();
-        if button == MouseButton::Right { return; }
+        if button == MouseButton::Right { return Some(()); }
 
         xpr.history.undo();
         xpr.history.enter();
@@ -149,13 +153,13 @@ impl Tool for Pencil {
         match self.mode {
             SimplifyAndSortByParts => {
                 // simply curve then rasterize
-                let simplified = self.current_polyline.reumann_witkam(self.tolerence);
-                match simplified  {
-                    Some(simple) => {
-                        self.draw_polyline(xpr, &simple);
-                    }
-                    None => (),
-                }
+                let simple = self.current_polyline.reumann_witkam(self.tolerence)?;
+                self.draw_polyline(xpr, &simple, true, false);
+            }
+            SimplifyAndSortWhole => {
+                // simply curve then rasterize
+                let simple = self.current_polyline.reumann_witkam(self.tolerence)?;
+                self.draw_polyline(xpr, &simple, false, true);
             }
             PixelPerfect => {
                 let mut points = self.current_polyline.connect_with_line(xpr);
@@ -164,8 +168,8 @@ impl Tool for Pencil {
             }
             SortedMonotonic => {
                 let mut points = self.current_polyline.connect_with_line(xpr);
-                let perfect = &pixel_perfect(&points);
-                let sorted = sort_path(&perfect);
+                let mut perfect = pixel_perfect(&points);
+                let sorted = sort_path(&mut perfect)?;
                 self.draw_pixels(xpr, &sorted);
             }
         }
@@ -174,6 +178,7 @@ impl Tool for Pencil {
         self.is_mouse_down = None;
 
         self.draw(xpr);
+        Some(())
     }
 
     fn draw(&self, xpr: &Xprite) {
@@ -190,10 +195,13 @@ impl Tool for Pencil {
 
     fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) {
         match option {
-            "simplify" => {
+            "mode" => {
+                use self::PencilMode::*;
                 match value {
-                    "true" => self.simplify = true,
-                    "false" => self.simplify = false,
+                    "monotonic" => self.mode = SortedMonotonic,
+                    "pp"        => self.mode = PixelPerfect,
+                    "whole"     => self.mode = SimplifyAndSortWhole,
+                    "parts"     => self.mode = SimplifyAndSortByParts,
                     _ => console!(error, "malformed value: ", value),
                 };
             }

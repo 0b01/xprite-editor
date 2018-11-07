@@ -120,12 +120,6 @@ impl Xprite {
         }
     }
 
-    pub fn remove_pixels(&mut self, pixels: &Pixels) {
-        for &pixel in pixels.iter() {
-            self.remove_pixel(&pixel);
-        }
-    }
-
     pub fn draw_pixel(&mut self, x: u32, y:u32, color: ColorOption) {
         let point = Point2D::new(x, y);
         let color = match color {
@@ -133,15 +127,11 @@ impl Xprite {
             ColorOption::Set(c) => c
         };
         let color = ColorOption::Set(color);
-        self.pixels_mut().insert(Pixel {point, color});
+        self.pixels_mut().push(Pixel {point, color});
     }
 
     pub fn add_pixel(&mut self, pixel: Pixel) {
-        self.pixels_mut().insert(pixel);
-    }
-
-    pub fn remove_pixel(&mut self, pixel: &Pixel) {
-        self.pixels_mut().remove(pixel);
+        self.pixels_mut().push(pixel);
     }
 
     pub fn pixels_mut(&mut self) -> &mut Pixels {

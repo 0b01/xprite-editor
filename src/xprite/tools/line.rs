@@ -80,7 +80,7 @@ impl Tool for Line {
         self.draw(xpr);
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D<i32>) {
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D<i32>) -> Option<()> {
         let point = xpr.canvas.client_to_grid(p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel {point, color});
@@ -88,6 +88,8 @@ impl Tool for Line {
         self.is_mouse_down = None;
         self.start_pos = None;
         self.draw(xpr);
+
+        Some(())
     }
 
 
