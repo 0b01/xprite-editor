@@ -9,7 +9,7 @@ pub struct State {
 impl State {
     pub fn new(xpr: Xprite) -> State {
         State {
-            show_grid: true,
+            show_grid: false,
             scrolling: imgui::ImVec2::new(0.,0.),
             xpr
         }

@@ -60,6 +60,9 @@ impl Canvas {
     }
 
     pub fn update(&mut self, canvas_w: u32, canvas_h: u32) {
+        if self.canvas_w == canvas_w && self.canvas_h == canvas_h { return; }
+        println!("Updating canvas size");
+
         let scale_w =  canvas_w / self.art_w;
         let scale_h = canvas_h / self.art_h;
 

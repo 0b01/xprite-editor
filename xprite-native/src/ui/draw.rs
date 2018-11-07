@@ -41,22 +41,28 @@ fn draw_canvas(state: &mut State, ui: &Ui) {
 
             ui.with_style_and_color_vars(&styles, &colors, || {
                 ui.child_frame(im_str!("scrolling_region"), (0., 0.,))
-                  .show_scrollbar(false)
-                  .movable(false)
-                  .build(|| {
-                    if state.show_grid {
-                        draw_grid(state, ui);
-                    }
+                    .show_scrollbar(false)
+                    .movable(false)
+                    .build(|| {
+                        update_dims(state, ui);
+                        if state.show_grid {
+                            draw_grid(state, ui);
+                        }
 
-                    if ui.is_window_hovered() && !ui.is_item_active() && ui.imgui().is_mouse_dragging(ImMouseButton::Middle) {
-                        let d = ui.imgui().mouse_delta();
-                        state.scrolling.x += d.0;
-                        state.scrolling.y += d.1;
-                    }
-                  });
+                        if ui.is_window_hovered() && !ui.is_item_active() && ui.imgui().is_mouse_dragging(ImMouseButton::Middle) {
+                            let d = ui.imgui().mouse_delta();
+                            state.scrolling.x += d.0;
+                            state.scrolling.y += d.1;
+                      }
+                    });
             });
 
         });
+}
+
+fn update_dims(state: &mut State, ui: &Ui) {
+    let canvas_sz = ui.get_window_size();
+    state.xpr.canvas.update(canvas_sz.0 as u32, canvas_sz.1 as u32);
 }
 
 fn draw_grid(state: &mut State, ui: &Ui) {

@@ -33,10 +33,6 @@ impl Xprite {
         }
     }
 
-    pub fn update_canvas_dims(&mut self, canvas_w: u32, canvas_h: u32) {
-        self.canvas.update(canvas_w, canvas_h)
-    }
-
     pub fn mouse_move(&mut self, evt: &MouseEvent) -> Option<()> {
         if let &MouseEvent::MouseMove{x, y} = evt {
             if out_of_bounds(x, y) {return Some(());}
