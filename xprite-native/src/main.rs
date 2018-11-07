@@ -23,7 +23,7 @@ fn main() {
     let mut state = state::State::new(xpr);
     render::run("Xprite", BGCOLOR, |ui| {
         let mut renderer = ImguiRenderer::new();
-        renderer.init(ui);
+        renderer.init(ui.clone());
         xpr.init(Box::new(renderer));
 
         ui::draw(&mut state, ui)
