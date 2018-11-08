@@ -128,10 +128,11 @@ impl Xprite {
     }
 
     pub fn render(&self, rdr: &Renderer) {
-        self.canvas.clear_all(rdr);
+        self.canvas.draw_canvas(rdr);
+        self.canvas.draw_grid(rdr);
         // for &Pixel{point, color: _ } in self.pixels().iter() {
         //     let Point2D {x, y} = point;
-        //     self.canvas.draw(rdr, x, y, "black");
+        self.canvas.draw_pixel(rdr, 0., 0., BLACK);
         // }
     }
 }

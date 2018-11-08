@@ -1,42 +1,36 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
 
-pub struct View {
-    pub x0: f32,
-    pub y0: f32,
-    pub x1: f32,
-    pub y1: f32,
+pub struct Scroll {
+    pub x: f32,
+    pub y: f32,
 }
 
-impl Default for View {
+impl Default for Scroll {
     fn default() -> Self {
         Self {
-            x0: 0.,
-            y0: 0.,
-            x1: 0.,
-            y1: 0.,
+            x: 0.,
+            y: 0.,
         }
     }
 }
 
 pub struct Canvas {
-    pub scale_w: f32,
-    pub scale_h: f32,
+    pub scale: f32,
     pub win_x: f32,
     pub win_y: f32,
     pub canvas_w: f32,
     pub canvas_h: f32,
     pub art_w: f32,
     pub art_h: f32,
-    pub view: View,
+    pub scroll: Scroll,
     pub show_grid: bool,
 }
 
 impl Default for Canvas {
     fn default() -> Self {
         Self {
-            scale_w: 0.,
-            scale_h: 0.,
+            scale: 10.,
 
             win_x: 0.,
             win_y: 0.,
@@ -47,7 +41,7 @@ impl Default for Canvas {
             art_w: 0.,
             art_h: 0.,
 
-            view: View::default(),
+            scroll: Scroll::default(),
             show_grid: false,
         }
     }
@@ -58,8 +52,6 @@ impl Canvas {
         let mut ret = Self::default();
         ret.art_w = art_w;
         ret.art_h = art_h;
-        ret.view.x1 = art_w;
-        ret.view.y1 = art_h;
         ret
     }
 
@@ -69,114 +61,83 @@ impl Canvas {
     }
 
     pub fn update_sz(&mut self, canvas_w: f32, canvas_h: f32) {
-        if self.canvas_w == canvas_w && self.canvas_h == canvas_h { return; }
-        println!("Updating canvas size");
-
-        let scale_w =  canvas_w / self.art_w;
-        let scale_h = canvas_h / self.art_h;
-
-        self.scale_w = scale_w;
-        self.scale_h = scale_h;
         self.canvas_w = canvas_w;
         self.canvas_h = canvas_h;
-        self.art_w = self.art_w;
-        self.art_h = self.art_h;
     }
 
-    fn is_in_view(&self, x: f32, y: f32) -> bool {
-        x >= self.view.x0 &&
-        x <= self.view.x1 &&
-        y >= self.view.y0 &&
-        y <= self.view.y1
-    }
-
-    pub fn zoom_in(&mut self, d: f32) {
-        if self.view.x1 - self.view.x0 < 2.*d
-         ||self.view.y1 - self.view.y0 < 2.*d {
-             return;
-         }
-        self.view.x0 += d;
-        self.view.y0 += d;
-        self.view.x1 -= d;
-        self.view.y1 -= d;
-    }
-
-    pub fn zoom_in_at(&mut self, d: f32, point: Point2D<f32>) {
-        let x = point.x;
-        let y = point.y;
-        if self.view.x1 - self.view.x0 < 2.*d
-         ||self.view.y1 - self.view.y0 < 2.*d {
-             return;
-        }
-
-        let w0 = ((x-self.view.x0) / (self.view.x1 - self.view.x0)) * d;
-        let w1 = d - w0;
-        let h0 = ((y-self.view.y0) / (self.view.y1 - self.view.y0)) * d;
-        let h1 = d - h0;
-
-        self.view.x0 += w0;
-        self.view.y0 += h0;
-        self.view.x1 -= w1;
-        self.view.y1 -= h1;
-    }
-
-    pub fn zoom_out(&mut self, d: f32) {
-        if self.view.x0 <= d { self.view.x0 = 0.; }
-        else { self.view.x0 -= d; }
-
-        if self.view.y0 <= d { self.view.y0 = 0.; }
-        else { self.view.y0 -= d; }
-
-        if self.view.x1 >= self.art_w { self.view.x1 = self.art_w; }
-        else { self.view.x1 += d; }
-
-        if self.view.y1 >= self.art_h { self.view.y1 = self.art_h; }
-        else { self.view.y1 += d; }
-    }
-
-
-    pub fn draw(&self, rdr: &Renderer, x: f32, y: f32, color: &str) {
+    pub fn draw_pixel(&self, rdr: &Renderer, x: f32, y: f32, color: [f32;4]) {
+        let o = self.origin();
         if x >= self.art_w { return; }
         if y >= self.art_h { return; }
+        let screen_p0 = [
+            o.0 + self.scale * x,
+            o.1 + self.scale * y,
+        ];
+        let screen_p1 = [
+            o.0 + self.scale * (x+1.),
+            o.1 + self.scale * (y+1.),
+        ];
 
-        if !self.is_in_view(x, y) { return; }
+        rdr.rect( screen_p0, screen_p1, color);
+    }
 
-        rdr.set_fill_style_color(color);
+    pub fn origin(&self) -> (f32, f32) {
+        (
+            self.win_x + self.scroll.x,
+            self.win_y + self.scroll.y
+        )
+    }
 
-        let scale_w = self.canvas_w / (self.view.x1 - self.view.x0);
-        let scale_h = self.canvas_h / (self.view.y1 - self.view.y0);
-
-        let x = (x-self.view.x0) * scale_w;
-        let y = (y-self.view.y0) * scale_h;
-
-        rdr.fill_rect(
-            x,
-            y,
-            scale_w,
-            scale_h,
+    pub fn draw_canvas(&self, rdr: &Renderer) {
+        let o = self.origin();
+        rdr.rect(
+            [o.0, o.1],
+            [
+                o.0 + self.art_w * self.scale,
+                o.1 + self.art_h * self.scale,
+            ],
+            GREY,
         );
     }
 
-    pub fn clear_all(&self, rdr: &Renderer) {
-        rdr.set_fill_style_color("white");
-        rdr.fill_rect(
-            self.win_x + 0.0 - 10.,
-            self.win_y + 0.0 - 10.,
-            self.win_x + self.art_w * self.scale_w - 10.,
-            self.win_y + self.art_h * self.scale_h - 10.,
-        );
+    pub fn draw_grid(&self, rdr: &Renderer) {
+        if !self.show_grid { return }
+        let o = self.origin();
+
+        let color = BLACK;
+        let mut x = 0.;
+        while x < self.scale * self.art_w {
+            rdr.line(
+                [o.0 + x, o.1],
+                [o.0 + x, o.1 + self.scale * self.art_h],
+                color
+            );
+            x += self.scale;
+        }
+
+        let mut y = 0.;
+        while y < self.scale * self.art_h {
+            rdr.line(
+                [o.0, o.1 + y],
+                [o.0 + self.scale * self.art_w, o.1 + y],
+                color
+            );
+            y += self.scale;
+        }
     }
+
 
     /// same as client_to_grid but for f32
     pub fn shrink_size(&self, p: &Point2D<f32>) -> Point2D<f32> {
-        let Point2D {x: cli_x , y: cli_y} = p;
-        let scale_w = self.canvas_w / (self.view.x1 - self.view.x0);
-        let scale_h = self.canvas_h / (self.view.y1 - self.view.y0);
+        // let Point2D {x: cli_x , y: cli_y} = p;
+        // let scale_w = self.canvas_w / (self.scroll.x1 - self.scroll.x0);
+        // let scale_h = self.canvas_h / (self.scroll.y1 - self.scroll.y0);
 
-        let x = cli_x / scale_w as f32 + self.view.x0 as f32;
-        let y = cli_y / scale_h as f32 + self.view.y0 as f32;
+        // let x = cli_x / scale_w as f32 + self.scroll.x0 as f32;
+        // let y = cli_y / scale_h as f32 + self.scroll.y0 as f32;
 
-        Point2D::new(x, y)
+        // Point2D::new(x, y)
+        unimplemented!()
     }
 
     pub fn to_pixels(&self, p: Point2D<f32>, brush: &Brush, color: Color) -> Option<Pixels> {

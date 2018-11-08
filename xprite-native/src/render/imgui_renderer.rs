@@ -13,19 +13,18 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
     fn height(&self) -> u32 {
         self.ui.get_window_size().1 as u32
     }
-    fn set_fill_style_color(&self, _color: &str) {
-        ()
-    }
-    fn fill_rect(&self, a: f32, b: f32, c: f32, d: f32) {
+    fn rect(&self, p0:[f32;2], p1:[f32;2], color:[f32;4]) {
         let draw_list = self.ui.get_window_draw_list();
         draw_list
-            .add_rect(
-                (a, b),
-                (c, d),
-                [0.,0.,200.,255.])
+            .add_rect(p0, p1, color)
             .filled(true)
             .build();
-        println!("just drew rect {} {} {} {}", a, b, c, d);
+    }
+    fn line(&self, p0:[f32;2], p1:[f32;2], color:[f32;4]) {
+        let draw_list = self.ui.get_window_draw_list();
+        draw_list
+            .add_line(p0, p1, color)
+            .build();
     }
 }
 
