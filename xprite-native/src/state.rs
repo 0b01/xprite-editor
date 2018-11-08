@@ -4,6 +4,7 @@ pub struct State {
     pub xpr: Xprite,
     pub last_mouse_pos: (f32, f32),
     pub is_left_mouse_down: bool,
+    pub is_right_mouse_down: bool,
 }
 
 impl State {
@@ -12,6 +13,7 @@ impl State {
             xpr,
             last_mouse_pos: (0., 0.),
             is_left_mouse_down: false,
+            is_right_mouse_down: false,
         }
     }
 

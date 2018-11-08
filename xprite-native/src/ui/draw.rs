@@ -10,8 +10,31 @@ use xprite::rendering::Renderer;
 /// 3. update by calling draw method which takes in a renderer
 pub fn draw(rdr: &Renderer, state: &mut State, ui: &Ui) -> bool {
     main_menu_bar(rdr, state, ui);
+    toolbar(state, ui);
     draw_canvas(rdr, state, ui);
     true
+}
+
+fn toolbar(state: &mut State, ui: &Ui) {
+    ui.window(im_str!("toolbox")).build(|| {
+        let tools = [
+            "pencil",
+            "line",
+            "3",
+            "4",
+        ];
+        for (_index, name) in tools.iter().enumerate() {
+            let is_sel = &state.xpr.toolbox.tool().borrow().get_name() == name;
+            if ui.selectable(
+                im_str!("{}", name),
+                is_sel,
+                ImGuiSelectableFlags::empty(),
+                (0.,0.)
+            ) {
+                state.xpr.change_tool(name);
+            }
+        }
+    })
 }
 
 fn main_menu_bar(_rdr: &Renderer, _state: &mut State, ui: &Ui) {
@@ -19,7 +42,11 @@ fn main_menu_bar(_rdr: &Renderer, _state: &mut State, ui: &Ui) {
         ui.menu(im_str!("File")).build(|| {
             ui.menu_item(im_str!("Load")).shortcut(im_str!("Ctrl+O")).build();
             ui.menu_item(im_str!("Save")).shortcut(im_str!("Ctrl+S")).build();
-        })
+        });
+        ui.menu(im_str!("Edit")).build(|| {
+            ui.menu_item(im_str!("Undo")).shortcut(im_str!("Ctrl+Z")).build();
+            ui.menu_item(im_str!("Redo")).shortcut(im_str!("Ctrl+R")).build();
+        });
     })
 }
 
@@ -82,6 +109,7 @@ fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     let left_mouse_down = ui.imgui().is_mouse_down(ImMouseButton::Left);
+    let right_mouse_down = ui.imgui().is_mouse_down(ImMouseButton::Right);
 
     // middle key for scrolling
     if ui.is_window_hovered() && !ui.is_item_active() &&
@@ -95,6 +123,12 @@ fn bind_input(state: &mut State, ui: &Ui) {
     if ui.is_window_hovered() && !ui.is_item_active()
     {
         state.xpr.canvas.scale += wheel_delta;
+    }
+
+    // right up
+    if state.is_right_mouse_down && !right_mouse_down {
+        // state.xpr.mouse_up(&MouseUp{ x, y });
+        state.is_right_mouse_down = false;
     }
 
     // left up

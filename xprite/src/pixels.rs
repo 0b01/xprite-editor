@@ -46,6 +46,9 @@ impl Pixels {
     pub fn extend(&mut self, other: &Pixels) {
         self.0.extend(&other.0)
     }
+    pub fn extend_vec(&mut self, pxs: &[Pixel]) {
+        self.0.extend(pxs)
+    }
     pub fn push(&mut self, px: Pixel) {
         self.0.push(px);
     }

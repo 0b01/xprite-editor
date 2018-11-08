@@ -40,11 +40,10 @@ impl Line {
         } else {None}} else { None }
     }
 
-
     fn finalize_line(&mut self, xpr: &mut Xprite) {
         if let Some(pixs) = self.get_line() {
             xpr.history.enter();
-            xpr.add_stroke(&pixs);
+            xpr.history.current_pixels_mut().extend_vec(&pixs);
         }
     }
 
@@ -80,12 +79,11 @@ impl Tool for Line {
         self.is_mouse_down = None;
         self.start_pos = None;
         self.draw(xpr);
-
         Some(())
     }
 
-
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: MouseButton) -> Option<()> {
+        if MouseButton::Left != button { return Some(()); }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(&p);
         let color = ColorOption::Set(xpr.color());

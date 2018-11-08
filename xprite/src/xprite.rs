@@ -4,6 +4,7 @@ use crate::rendering::Renderer;
 pub struct Xprite {
     pub event_queue: Vec<MouseEvent>,
     pub history: History,
+    pub buffer: Pixels,
     pub canvas: Canvas,
     pub selected_color: Color,
     pub toolbox: Toolbox,
@@ -20,10 +21,12 @@ impl Xprite {
         let cursor_pos = None;
         let toolbox = Toolbox::new();
         let canvas = Canvas::new(art_w, art_h);
+        let buffer = Pixels::new();
 
         Xprite {
             event_queue,
             history,
+            buffer,
             canvas,
             selected_color,
             cursor_pos,
@@ -72,28 +75,31 @@ impl Xprite {
         self.history.redo();
     }
 
+    /// add stroke to temp buffer
     pub fn add_stroke(&mut self, pixels: &[Pixel]) {
         for &pixel in pixels.iter() {
             self.add_pixel(pixel);
         }
     }
 
+    /// add pixels to temp buffer
     pub fn add_pixels(&mut self, pixels: &Pixels) {
         for &pixel in pixels.iter() {
             self.add_pixel(pixel);
         }
     }
 
+    /// add pixel to temp buffer
     pub fn add_pixel(&mut self, pixel: Pixel) {
         self.pixels_mut().push(pixel);
     }
 
     pub fn pixels_mut(&mut self) -> &mut Pixels {
-        self.history.current_pixels_mut()
+        &mut self.buffer
     }
 
     pub fn pixels(&self) -> &Pixels {
-        self.history.current_pixels()
+        &self.buffer
     }
 
     pub fn set_option(&mut self, opt: &str, val: &str) {
@@ -134,6 +140,10 @@ impl Xprite {
     pub fn render(&self, rdr: &Renderer) {
         self.canvas.draw_canvas(rdr);
         self.canvas.draw_grid(rdr);
+        for &Pixel{point, color: _ } in self.history.current_pixels().iter() {
+            let Point2D {x, y} = point;
+            self.canvas.draw_pixel(rdr, x, y, BLACK);
+        }
         for &Pixel{point, color: _ } in self.pixels().iter() {
             let Point2D {x, y} = point;
             self.canvas.draw_pixel(rdr, x, y, BLACK);
