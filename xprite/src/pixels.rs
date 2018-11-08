@@ -52,6 +52,9 @@ impl Pixels {
     pub fn contains(&mut self, px: &Pixel) -> bool {
         self.0.contains(px)
     }
+    pub fn clear(&mut self) {
+        self.0.clear();
+    }
     pub fn iter(&self) -> Iter<Pixel> {
         self.0.iter()
     }

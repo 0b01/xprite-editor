@@ -121,6 +121,10 @@ impl Xprite {
         self.selected_color = Color::new(r, g, b);
     }
 
+    pub fn new_frame(&mut self) {
+        self.pixels_mut().clear();
+    }
+
     pub fn print_cursor_location(&self) {
         if self.cursor_pos.is_none() { return; }
         let pos = self.cursor_pos.unwrap();;
@@ -130,10 +134,10 @@ impl Xprite {
     pub fn render(&self, rdr: &Renderer) {
         self.canvas.draw_canvas(rdr);
         self.canvas.draw_grid(rdr);
-        // for &Pixel{point, color: _ } in self.pixels().iter() {
-        //     let Point2D {x, y} = point;
-        self.canvas.draw_pixel(rdr, 0., 0., BLACK);
-        // }
+        for &Pixel{point, color: _ } in self.pixels().iter() {
+            let Point2D {x, y} = point;
+            self.canvas.draw_pixel(rdr, x, y, BLACK);
+        }
     }
 }
 

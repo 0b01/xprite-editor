@@ -81,6 +81,7 @@ fn bind_input(state: &mut State, ui: &Ui) {
         state.xpr.mouse_move(&MouseMove{ x, y });
     }
 
+    let left_mouse_down = ui.imgui().is_mouse_down(ImMouseButton::Left);
 
     // middle key for scrolling
     if ui.is_window_hovered() && !ui.is_item_active() &&
@@ -96,12 +97,19 @@ fn bind_input(state: &mut State, ui: &Ui) {
         state.xpr.canvas.scale += wheel_delta;
     }
 
+    // left up
+    if state.is_left_mouse_down && !left_mouse_down {
+        state.xpr.mouse_up(&MouseUp{ x, y });
+        state.is_left_mouse_down = false;
+    }
+
     // left down
     if ui.is_window_hovered() && !ui.is_item_active() &&
-        ui.imgui().is_mouse_down(ImMouseButton::Left)
+        left_mouse_down && !state.is_left_mouse_down
     {
         println!("mouse left down");
         state.xpr.mouse_down(&MouseDown{ x, y, button: Left });
+        state.is_left_mouse_down = true;
     }
 
     //right down
