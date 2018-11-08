@@ -126,5 +126,13 @@ impl Xprite {
         let pos = self.cursor_pos.unwrap();;
         panic!("cursor: ({}, {})", pos.point.x, pos.point.y);
     }
+
+    pub fn render(&self, rdr: &Renderer) {
+        self.canvas.clear_all(rdr);
+        // for &Pixel{point, color: _ } in self.pixels().iter() {
+        //     let Point2D {x, y} = point;
+        //     self.canvas.draw(rdr, x, y, "black");
+        // }
+    }
 }
 

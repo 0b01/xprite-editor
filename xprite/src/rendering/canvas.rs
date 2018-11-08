@@ -22,11 +22,14 @@ impl Default for View {
 pub struct Canvas {
     pub scale_w: f32,
     pub scale_h: f32,
+    pub win_x: f32,
+    pub win_y: f32,
     pub canvas_w: f32,
     pub canvas_h: f32,
     pub art_w: f32,
     pub art_h: f32,
     pub view: View,
+    pub show_grid: bool,
 }
 
 impl Default for Canvas {
@@ -35,6 +38,9 @@ impl Default for Canvas {
             scale_w: 0.,
             scale_h: 0.,
 
+            win_x: 0.,
+            win_y: 0.,
+
             canvas_w: 0.,
             canvas_h: 0.,
 
@@ -42,6 +48,7 @@ impl Default for Canvas {
             art_h: 0.,
 
             view: View::default(),
+            show_grid: false,
         }
     }
 }
@@ -56,7 +63,12 @@ impl Canvas {
         ret
     }
 
-    pub fn update(&mut self, canvas_w: f32, canvas_h: f32) {
+    pub fn update_pos(&mut self, win_x: f32, win_y: f32) {
+        self.win_x = win_x;
+        self.win_y = win_y;
+    }
+
+    pub fn update_sz(&mut self, canvas_w: f32, canvas_h: f32) {
         if self.canvas_w == canvas_w && self.canvas_h == canvas_h { return; }
         println!("Updating canvas size");
 
@@ -123,38 +135,36 @@ impl Canvas {
     }
 
 
-    fn draw(&self, x: f32, y: u32, color: &str) {
-        unimplemented!()
-        // if x >= self.art_w { return; }
-        // if y >= self.art_h { return; }
+    pub fn draw(&self, rdr: &Renderer, x: f32, y: f32, color: &str) {
+        if x >= self.art_w { return; }
+        if y >= self.art_h { return; }
 
-        // if !self.is_in_view(x, y) { return; }
+        if !self.is_in_view(x, y) { return; }
 
-        // self.renderer.set_fill_style_color(color);
+        rdr.set_fill_style_color(color);
 
-        // let scale_w = self.canvas_w / (self.view.x1 - self.view.x0);
-        // let scale_h = self.canvas_h / (self.view.y1 - self.view.y0);
+        let scale_w = self.canvas_w / (self.view.x1 - self.view.x0);
+        let scale_h = self.canvas_h / (self.view.y1 - self.view.y0);
 
-        // let x = (x-self.view.x0) * scale_w;
-        // let y = (y-self.view.y0) * scale_h;
+        let x = (x-self.view.x0) * scale_w;
+        let y = (y-self.view.y0) * scale_h;
 
-        // self.renderer.fill_rect(
-        //     f64::from(x),
-        //     f64::from(y),
-        //     f64::from(scale_w),
-        //     f64::from(scale_h),
-        // );
+        rdr.fill_rect(
+            x,
+            y,
+            scale_w,
+            scale_h,
+        );
     }
 
-    fn clear_all(&self) {
-        unimplemented!()
-        // self.renderer.set_fill_style_color("white");
-        // self.renderer.fill_rect(
-        //     0.0,
-        //     0.0,
-        //     f64::from(self.art_w * self.scale_w),
-        //     f64::from(self.art_h * self.scale_h),
-        // );
+    pub fn clear_all(&self, rdr: &Renderer) {
+        rdr.set_fill_style_color("white");
+        rdr.fill_rect(
+            self.win_x + 0.0 - 10.,
+            self.win_y + 0.0 - 10.,
+            self.win_x + self.art_w * self.scale_w - 10.,
+            self.win_y + self.art_h * self.scale_h - 10.,
+        );
     }
 
     /// same as client_to_grid but for f32
