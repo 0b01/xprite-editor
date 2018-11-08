@@ -69,16 +69,16 @@ impl Canvas {
         let o = self.origin();
         if x >= self.art_w { return; }
         if y >= self.art_h { return; }
-        let screen_p0 = [
+        let p0 = [
             o.0 + self.scale * x,
             o.1 + self.scale * y,
         ];
-        let screen_p1 = [
+        let p1 = [
             o.0 + self.scale * (x+1.),
             o.1 + self.scale * (y+1.),
         ];
 
-        rdr.rect( screen_p0, screen_p1, color);
+        rdr.rect( p0, p1, color);
     }
 
     pub fn origin(&self) -> (f32, f32) {
@@ -126,18 +126,14 @@ impl Canvas {
         }
     }
 
-
-    /// same as client_to_grid but for f32
+    /// convert screen pos to pixel location
     pub fn shrink_size(&self, p: &Point2D<f32>) -> Point2D<f32> {
-        // let Point2D {x: cli_x , y: cli_y} = p;
-        // let scale_w = self.canvas_w / (self.scroll.x1 - self.scroll.x0);
-        // let scale_h = self.canvas_h / (self.scroll.y1 - self.scroll.y0);
-
-        // let x = cli_x / scale_w as f32 + self.scroll.x0 as f32;
-        // let y = cli_y / scale_h as f32 + self.scroll.y0 as f32;
-
-        // Point2D::new(x, y)
-        unimplemented!()
+        let Point2D {x: cli_x , y: cli_y} = p;
+        let o = self.origin();
+        Point2D {
+            x: ((cli_x - o.0) / self.scale).floor(),
+            y: ((cli_y - o.1) / self.scale).floor(),
+        }
     }
 
     pub fn to_pixels(&self, p: Point2D<f32>, brush: &Brush, color: Color) -> Option<Pixels> {

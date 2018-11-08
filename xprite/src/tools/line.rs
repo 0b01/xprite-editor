@@ -88,6 +88,7 @@ impl Tool for Line {
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: MouseButton) -> Option<()> {
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(&p);
+        println!("{:#?}", point);
         let color = ColorOption::Set(xpr.color());
         self.start_pos = Some(Pixel{point, color});
         Some(())
