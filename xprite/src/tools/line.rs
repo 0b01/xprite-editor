@@ -3,7 +3,7 @@ use crate::algorithms::line::*;
 
 #[derive(Clone)]
 pub struct Line {
-    is_mouse_down: Option<MouseButton>,
+    is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,
     start_pos: Option<Pixel>,
     snap: bool,
@@ -82,8 +82,8 @@ impl Tool for Line {
         Some(())
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: MouseButton) -> Option<()> {
-        if MouseButton::Left != button { return Some(()); }
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: InputItem) -> Option<()> {
+        if InputItem::Left != button { return Some(()); }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(&p);
         let color = ColorOption::Set(xpr.color());

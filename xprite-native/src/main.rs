@@ -19,7 +19,7 @@ const BGCOLOR: [f32; 4] = [0.,0.,0.,0.];
 fn main() {
     init_logger();
     info!("Starting Xprite");
-    let xpr = Xprite::new(36., 36.);
+    let xpr = Xprite::new(100., 100.);
     let mut state = state::State::new(xpr);
     render::run("Xprite", BGCOLOR, |ui| {
         let rdr = ImguiRenderer::new(&ui);
@@ -32,7 +32,8 @@ fn init_logger() {
         // Perform allocation-free log formatting
         .format(|out, message, record| {
             out.finish(format_args!(
-                "[{}][{}] {}",
+                "{}[{}][{}] {}",
+                chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
                 record.target(),
                 record.level(),
                 message

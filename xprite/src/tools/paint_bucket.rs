@@ -56,7 +56,7 @@ impl Tool for PaintBucket {
     }
 
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: MouseButton) -> Option<()> {
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: InputItem) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
         let color = Some(xpr.color());
         Some(())

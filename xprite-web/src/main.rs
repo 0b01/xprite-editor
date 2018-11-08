@@ -70,7 +70,7 @@ fn main() {
         let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
         let rect = canvas.get_bounding_client_rect();
         xprite_clone.borrow_mut().mouse_up(
-            &MouseEvent::MouseUp{
+            &InputEvent::MouseUp{
                 x: event.client_x() - rect.get_x() as i32,
                 y: event.client_y() - rect.get_y() as i32,
             }
@@ -82,7 +82,7 @@ fn main() {
         let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
         let rect = canvas.get_bounding_client_rect();
         xprite_clone.borrow_mut().mouse_move(
-            &MouseEvent::MouseMove{
+            &InputEvent::MouseMove{
                 x: event.client_x() - rect.get_x() as i32,
                 y: event.client_y() - rect.get_y() as i32,
             }
@@ -95,12 +95,12 @@ fn main() {
         let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
         let rect = canvas.get_bounding_client_rect();
         let button = match event.button() {
-            stdweb::web::event::MouseButton::Left => MouseButton::Left,
-            stdweb::web::event::MouseButton::Right => MouseButton::Right,
+            stdweb::web::event::InputItem::Left => InputItem::Left,
+            stdweb::web::event::InputItem::Right => InputItem::Right,
             _ => unimplemented!(),
         };
         xprite_clone.borrow_mut().mouse_down(
-            &MouseEvent::MouseDown {
+            &InputEvent::MouseDown {
                 x: event.client_x() - rect.get_x() as i32,
                 y: event.client_y() - rect.get_y() as i32,
                 button,

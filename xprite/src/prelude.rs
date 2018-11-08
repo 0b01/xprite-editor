@@ -8,7 +8,7 @@ pub use crate::algorithms::path::Path;
 pub use crate::color::{Color, ColorOption};
 pub use crate::brush::Brush;
 pub use crate::geom::{Point2D, CubicBezierSegment};
-pub use crate::input::{MouseButton, MouseEvent};
+pub use crate::input::{InputEvent, InputItem};
 pub use crate::rendering::canvas::Canvas;
 
 pub type PixelOffsets = Pixels;

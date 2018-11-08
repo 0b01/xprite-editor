@@ -15,7 +15,7 @@ pub enum PencilMode {
 }
 
 pub struct Pencil {
-    is_mouse_down: Option<MouseButton>,
+    is_mouse_down: Option<InputItem>,
     current_polyline: Polyline,
     cursor: Option<Pixels>,
     cursor_pos: Option<Pixel>,
@@ -97,19 +97,19 @@ impl Tool for Pencil {
         self.current_polyline.push(p);
 
         let button = self.is_mouse_down.clone().unwrap();
-        if button == MouseButton::Left {
+        if button == InputItem::Left {
             xpr.history.undo();
             xpr.history.enter();
             let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
             let perfect = pixel_perfect(&line_pixs);
             xpr.add_pixels(&Pixels::from_slice(&perfect));
-        } else if button == MouseButton::Right {
+        } else if button == InputItem::Right {
             // xpr.remove_pixels(&pixels.unwrap());
         }
         self.draw(xpr)
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: MouseButton) -> Option<()>{
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: InputItem) -> Option<()>{
         self.is_mouse_down = Some(button);
         xpr.history.enter();
 
@@ -117,7 +117,7 @@ impl Tool for Pencil {
 
         let pixels = xpr.canvas.to_pixels(p, &self.brush, xpr.color());
         if let Some(pixels) = pixels {
-            if button == MouseButton::Left {
+            if button == InputItem::Left {
                 xpr.add_pixels(&pixels);
             } else {
                 // xpr.remove_pixels(&pixels);
@@ -129,7 +129,7 @@ impl Tool for Pencil {
     fn mouse_up(&mut self, xpr: &mut Xprite, _p: Point2D<f32>) -> Option<()> {
         if self.is_mouse_down.is_none() {return Some(()); }
         let button = self.is_mouse_down.clone().unwrap();
-        if button == MouseButton::Right { return Some(()); }
+        if button == InputItem::Right { return Some(()); }
 
         xpr.history.undo();
         xpr.history.enter();

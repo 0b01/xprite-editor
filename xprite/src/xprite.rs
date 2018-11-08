@@ -2,7 +2,7 @@ use crate::prelude::*;
 use crate::rendering::Renderer;
 
 pub struct Xprite {
-    pub event_queue: Vec<MouseEvent>,
+    pub event_queue: Vec<InputEvent>,
     pub history: History,
     pub buffer: Pixels,
     pub canvas: Canvas,
@@ -36,8 +36,8 @@ impl Xprite {
         }
     }
 
-    pub fn mouse_move(&mut self, evt: &MouseEvent) -> Option<()> {
-        if let &MouseEvent::MouseMove{x, y} = evt {
+    pub fn mouse_move(&mut self, evt: &InputEvent) -> Option<()> {
+        if let &InputEvent::MouseMove{x, y} = evt {
             let p = Point2D::new(x, y);
             let point = self.canvas.shrink_size(&p);
             let color = ColorOption::Set(self.color());
@@ -49,8 +49,8 @@ impl Xprite {
         Some(())
     }
 
-    pub fn mouse_up(&mut self, evt: &MouseEvent) -> Option<()> {
-        if let &MouseEvent::MouseUp{x, y} = evt {
+    pub fn mouse_up(&mut self, evt: &InputEvent) -> Option<()> {
+        if let &InputEvent::MouseUp{x, y} = evt {
             let tool = self.toolbox.tool();
             let p = Point2D::new(x, y);
             tool.borrow_mut().mouse_up(self, p);
@@ -58,8 +58,8 @@ impl Xprite {
         Some(())
     }
 
-    pub fn mouse_down(&mut self, evt: &MouseEvent) -> Option<()> {
-        if let &MouseEvent::MouseDown{x, y, button} = evt {
+    pub fn mouse_down(&mut self, evt: &InputEvent) -> Option<()> {
+        if let &InputEvent::MouseDown{x, y, button} = evt {
             let tool = self.toolbox.tool();
             let p = Point2D::new(x, y);
             tool.borrow_mut().mouse_down(self, p, button);

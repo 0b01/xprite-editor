@@ -37,15 +37,19 @@ fn toolbar(state: &mut State, ui: &Ui) {
     })
 }
 
-fn main_menu_bar(_rdr: &Renderer, _state: &mut State, ui: &Ui) {
+fn main_menu_bar(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     ui.main_menu_bar(|| {
         ui.menu(im_str!("File")).build(|| {
             ui.menu_item(im_str!("Load")).shortcut(im_str!("Ctrl+O")).build();
             ui.menu_item(im_str!("Save")).shortcut(im_str!("Ctrl+S")).build();
         });
         ui.menu(im_str!("Edit")).build(|| {
-            ui.menu_item(im_str!("Undo")).shortcut(im_str!("Ctrl+Z")).build();
-            ui.menu_item(im_str!("Redo")).shortcut(im_str!("Ctrl+R")).build();
+            if ui.menu_item(im_str!("Undo")).shortcut(im_str!("Ctrl+Z")).build() {
+                state.xpr.undo();
+            }
+            if ui.menu_item(im_str!("Redo")).shortcut(im_str!("Ctrl+y")).build() {
+                state.xpr.redo();
+            }
         });
     })
 }
@@ -97,8 +101,8 @@ fn update_viewport(state: &mut State, ui: &Ui) {
 }
 
 fn bind_input(state: &mut State, ui: &Ui) {
-    use self::MouseButton::*;
-    use self::MouseEvent::*;
+    use self::InputItem::*;
+    use self::InputEvent::*;
 
     let wheel_delta = ui.imgui().mouse_wheel();
     let (x, y) = ui.imgui().mouse_pos();
@@ -126,32 +130,54 @@ fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     // right up
-    if state.is_right_mouse_down && !right_mouse_down {
+    if state.inputs.right && !right_mouse_down {
         // state.xpr.mouse_up(&MouseUp{ x, y });
-        state.is_right_mouse_down = false;
+        state.inputs.right = false;
     }
 
     // left up
-    if state.is_left_mouse_down && !left_mouse_down {
+    if state.inputs.left && !left_mouse_down {
         state.xpr.mouse_up(&MouseUp{ x, y });
-        state.is_left_mouse_down = false;
+        state.inputs.left = false;
     }
 
     // left down
     if ui.is_window_hovered() && !ui.is_item_active() &&
-        left_mouse_down && !state.is_left_mouse_down
+        left_mouse_down && !state.inputs.left
     {
         println!("mouse left down");
         state.xpr.mouse_down(&MouseDown{ x, y, button: Left });
-        state.is_left_mouse_down = true;
+        state.inputs.left = true;
     }
 
-    //right down
+    // right down
     if ui.is_window_hovered() && !ui.is_item_active() &&
         ui.imgui().is_mouse_down(ImMouseButton::Right)
     {
         let (x, y) = ui.imgui().mouse_pos();
         state.xpr.mouse_down(&MouseDown{ x, y, button: Right });
+    }
+
+    let ctrl_down = ui.imgui().key_ctrl();
+
+    // ctrl down
+    if state.inputs.debounce(InputItem::Ctrl, ctrl_down) {
+        if ctrl_down {
+            println!("ctrl down");
+        } else {
+            println!("ctrl up");
+        }
+    }
+
+    // z
+    let key = ui.imgui().get_key_index(ImGuiKey::Z);
+    if !state.inputs.z && ui.imgui().is_key_down(key) {
+        state.inputs.z = true;
+        println!("Z is being held!");
+    }
+    if state.inputs.z && !ui.imgui().is_key_down(key) {
+        state.inputs.z = false;
+        println!("Z is released!");
     }
 
     state.update_mouse_pos(x, y);
