@@ -66,8 +66,8 @@ impl Polyline {
     pub fn connect_with_line(&self, xpr: &Xprite) -> Option<Vec<Pixel>> {
         let mut ret = Vec::new();
         for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
-            let p0 = xpr.canvas.client_to_grid(p0.as_i32());
-            let p1 = xpr.canvas.client_to_grid(p1.as_i32());
+            let p0 = xpr.canvas.shrink_size(p0);
+            let p1 = xpr.canvas.shrink_size(p1);
             let seg = bresenham(&p0, &p1);
             ret.extend(&seg);
         }

@@ -185,7 +185,7 @@ impl Path {
             let t = i as f32 / 100.;
             let point = seg.sample(t);
 
-            let Point2D {x, y} = xpr.canvas.client_to_grid(point.as_i32());
+            let Point2D {x, y} = xpr.canvas.shrink_size(&point);
             let pixel = Pixel {
                 point: Point2D::new(x, y),
                 color: ColorOption::Unset,

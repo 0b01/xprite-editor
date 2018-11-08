@@ -98,35 +98,35 @@ pub fn sort_path(path: &mut [Pixel]) -> Option<Vec<Pixel>> {
     // offset
     if (right_to_left && up)
     || (!right_to_left && !up){
-        p0.point.x -= 1;
-        p0.point.y -= 1;
+        p0.point.x -= 1.;
+        p0.point.y -= 1.;
     } else if !right_to_left && up {
-        p0.point.x -= 1;
-        p0.point.y += 1;
+        p0.point.x -= 1.;
+        p0.point.y += 1.;
     } else if right_to_left && !up {
-        p0.point.x -= 1;
-        p0.point.y += 1;
+        p0.point.x -= 1.;
+        p0.point.y += 1.;
     }
 
     for &((dx, dy), _) in segs.iter() {
         if dx == 1 {
-            p0.point.x += 1;
+            p0.point.x += 1.;
             for _ in 0..dy {
                 if dir == 1 {
-                    p0.point.y += 1;
+                    p0.point.y += 1.;
                 } else {
-                    p0.point.y -= 1;
+                    p0.point.y -= 1.;
                 }
                 ret.push(p0);
             }
         } else if dy == 1 {
             if dir == 1 {
-                p0.point.y += 1;
+                p0.point.y += 1.;
             } else {
-                p0.point.y -= 1;
+                p0.point.y -= 1.;
             }
             for _ in 0..dx {
-                p0.point.x += 1;
+                p0.point.x += 1.;
                 ret.push(p0);
             }
         }

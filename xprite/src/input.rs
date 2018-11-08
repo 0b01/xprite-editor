@@ -6,16 +6,16 @@ pub enum MouseButton {
 
 pub enum MouseEvent {
     MouseMove {
-        x: i32,
-        y: i32,
+        x: f32,
+        y: f32,
     },
     MouseDown {
-        x: i32,
-        y: i32,
+        x: f32,
+        y: f32,
         button: MouseButton,
     },
     MouseUp {
-        x: i32,
-        y: i32,
+        x: f32,
+        y: f32,
     },
 }

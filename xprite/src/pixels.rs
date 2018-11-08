@@ -2,9 +2,9 @@ use crate::prelude::*;
 use std::slice::Iter;
 use std::hash::{Hash, Hasher};
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Pixel {
-    pub point: Point2D<u32>,
+    pub point: Point2D<f32>,
     pub color: ColorOption,
 }
 
@@ -17,8 +17,14 @@ impl Hash for Pixel {
 macro_rules! pixel {
     ($i:expr, $j: expr) => {
         Pixel {
-            point: Point2D::new($i as u32, $j as u32),
+            point: Point2D::new($i, $j),
             color: ColorOption::Unset,
+        }
+    };
+    ($i:expr, $j: expr, $k: expr) => {
+        Pixel {
+            point: Point2D::new($i, $j),
+            color: ColorOption::Set($k),
         }
     };
 }
@@ -55,5 +61,13 @@ impl Pixels {
             .iter()
             .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
             .collect::<Vec<_>>();
+    }
+    pub fn with_color(&mut self, color: &Color) -> &Self {
+        let color = ColorOption::Set(*color);
+        self.0 = self.0
+            .iter()
+            .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
+            .collect::<Vec<_>>();
+        self
     }
 }

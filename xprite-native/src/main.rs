@@ -19,7 +19,7 @@ const BGCOLOR: [f32; 4] = [0.,0.,0.,0.];
 fn main() {
     init_logger();
     info!("Starting Xprite");
-    let xpr = Xprite::new(600, 600);
+    let xpr = Xprite::new(600., 600.);
     let mut state = state::State::new(xpr);
     render::run("Xprite", BGCOLOR, |ui| {
         // let mut renderer = ImguiRenderer::new();

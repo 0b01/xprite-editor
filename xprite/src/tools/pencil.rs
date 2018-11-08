@@ -42,24 +42,16 @@ impl Pencil {
         }
     }
 
-    pub fn draw_pixels(&mut self, xpr: &mut Xprite, pixs: &[Pixel]) {
-        for &Pixel{point, ..} in pixs.iter() {
-            let color = ColorOption::Set(Color::new(200, 200, 200));
-            xpr.draw_pixel(point.x, point.y, color);
-        }
-    }
-
     pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline, sort_parts: bool, sort_whole: bool) {
 
         let path = polyline.interp();
-        for &Pixel{point, ..} in path.rasterize(xpr, sort_parts, sort_whole).unwrap().iter() {
-            let color = ColorOption::Set(Color::new(200, 200, 200));
-            xpr.draw_pixel(point.x, point.y, color);
-        }
+        let mut rasterized = path.rasterize(xpr, sort_parts, sort_whole).unwrap();
+        let pixels = rasterized.with_color(&Color::grey());
+        xpr.add_pixels(&pixels);
 
         // // plot anchors
         // for &p in polyline.pos.iter() {
-        //     let Point2D{x, y} = xpr.canvas.client_to_grid(p.as_i32());
+        //     let Point2D{x, y} = xpr.canvas.shrink_size(p.as_i32());
         //     let color = ColorOption::Set(Color::blue());
         //     xpr.draw_pixel(x, y, color);
         // }
@@ -68,23 +60,17 @@ impl Pencil {
         // for seg in &path.segments {
         //     let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
         //     for point in vec![ctrl1, ctrl2] {
-        //         let Point2D{x, y} = xpr.canvas.client_to_grid(point.as_i32());
+        //         let Point2D{x, y} = xpr.canvas.shrink_size(point.as_i32());
         //         xpr.draw_pixel(x, y, ColorOption::Set(Color::red()));
         //     }
         // }
 
     }
 
-    fn draw_cursor(&self, xpr: &Xprite) -> Option<()> {
+    fn draw_cursor(&self, xpr: &mut Xprite) -> Option<()> {
         if self.cursor.is_none() { return None; }
         let cursor = self.cursor.clone().unwrap();
-        for &pos in cursor.iter() {
-            xpr.canvas.draw(
-                pos.point.x,
-                pos.point.y,
-                &Color::red().to_string()
-            );
-        }
+        xpr.add_pixels(&cursor);
         Some(())
     }
 
@@ -96,10 +82,10 @@ impl Tool for Pencil {
         "pencil"
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<i32>) -> Option<()> {
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
         let pixels = xpr.canvas.to_pixels(p, &self.brush, xpr.color());
         self.cursor = pixels.clone();
-        let point = xpr.canvas.client_to_grid(p);
+        let point = xpr.canvas.shrink_size(&p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel{point, color});
 
@@ -108,7 +94,7 @@ impl Tool for Pencil {
             return self.draw(xpr);
         }
 
-        self.current_polyline.push(p.as_f32());
+        self.current_polyline.push(p);
 
         let button = self.is_mouse_down.clone().unwrap();
         if button == MouseButton::Left {
@@ -123,11 +109,11 @@ impl Tool for Pencil {
         self.draw(xpr)
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<i32>, button: MouseButton) -> Option<()>{
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: MouseButton) -> Option<()>{
         self.is_mouse_down = Some(button);
         xpr.history.enter();
 
-        self.current_polyline.push(p.as_f32());
+        self.current_polyline.push(p);
 
         let pixels = xpr.canvas.to_pixels(p, &self.brush, xpr.color());
         if let Some(pixels) = pixels {
@@ -140,7 +126,7 @@ impl Tool for Pencil {
         self.draw(xpr)
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Point2D<i32>) -> Option<()> {
+    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Point2D<f32>) -> Option<()> {
         if self.is_mouse_down.is_none() {return Some(()); }
         let button = self.is_mouse_down.clone().unwrap();
         if button == MouseButton::Right { return Some(()); }
@@ -162,13 +148,13 @@ impl Tool for Pencil {
             PixelPerfect => {
                 let points = self.current_polyline.connect_with_line(xpr)?;
                 let perfect = &pixel_perfect(&points);
-                self.draw_pixels(xpr, &perfect);
+                xpr.add_pixels(&Pixels::from_slice(&perfect).with_color(&Color::grey()));
             }
             SortedMonotonic => {
                 let points = self.current_polyline.connect_with_line(xpr)?;
                 let mut perfect = pixel_perfect(&points);
                 let sorted = sort_path(&mut perfect)?;
-                self.draw_pixels(xpr, &sorted);
+                xpr.add_pixels(&Pixels::from_slice(&sorted).with_color(&Color::grey()));
             }
         }
 
@@ -179,15 +165,8 @@ impl Tool for Pencil {
         Some(())
     }
 
-    fn draw(&self, xpr: &Xprite) -> Option<()> {
-        xpr.canvas.clear_all();
-        for &Pixel{point, color} in xpr.pixels().iter() {
-            let color = match color {
-                ColorOption::Set(c) => c,
-                ColorOption::Unset => xpr.color(),
-            }.to_string();
-            xpr.canvas.draw(point.x, point.y, &color);
-        }
+    fn draw(&self, xpr: &mut Xprite) -> Option<()> {
+        // xpr.canvas.clear_all();
         self.draw_cursor(xpr)
     }
 

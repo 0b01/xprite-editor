@@ -51,8 +51,8 @@ fn draw_canvas(state: &mut State, ui: &Ui) {
 
                         if ui.is_window_hovered() && !ui.is_item_active() && ui.imgui().is_mouse_dragging(ImMouseButton::Middle) {
                             let d = ui.imgui().mouse_delta();
-                            state.scrolling.x += d.0;
-                            state.scrolling.y += d.1;
+                            state.xpr.canvas.view.x0 += d.0;
+                            state.xpr.canvas.view.y0 += d.1;
                       }
                     });
             });
@@ -62,16 +62,18 @@ fn draw_canvas(state: &mut State, ui: &Ui) {
 
 fn update_dims(state: &mut State, ui: &Ui) {
     let canvas_sz = ui.get_window_size();
-    state.xpr.canvas.update(canvas_sz.0 as u32, canvas_sz.1 as u32);
+    state.xpr.canvas.update(canvas_sz.0, canvas_sz.1);
 }
 
 fn draw_grid(state: &mut State, ui: &Ui) {
+    let cvs = &mut state.xpr.canvas;
+
     let draw_list = ui.get_window_draw_list();
     let color = WHITE;
     let sz = 64.;
     let win_pos = ui.get_cursor_screen_pos();
     let canvas_sz = ui.get_window_size();
-    let mut x = state.scrolling.x % sz;
+    let mut x = cvs.view.x0 % sz;
     while x < canvas_sz.0 {
         draw_list.add_line(
             (x + win_pos.0, 0. + win_pos.1),
@@ -80,7 +82,7 @@ fn draw_grid(state: &mut State, ui: &Ui) {
         ).build();
         x += sz;
     }
-    let mut y = state.scrolling.y % sz;
+    let mut y = cvs.view.y0 % sz;
     while y < canvas_sz.1 {
         draw_list.add_line(
             (0. + win_pos.0, y + win_pos.1),

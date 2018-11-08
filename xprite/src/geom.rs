@@ -8,6 +8,13 @@ pub struct Point2D<S: Copy> {
     pub y: S,
 }
 
+impl Hash for Point2D<f32> {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        (self.x as i32).hash(state);
+        (self.y as i32).hash(state);
+    }
+}
+
 impl<S: Copy + Add<Output=S>> Point2D<S> {
     /// create a new point
     pub fn new(x: S, y: S) -> Self {
@@ -56,14 +63,6 @@ impl<T: Copy + Add<Output=T>> Add for Point2D<T> {
             x: self.x + size.x,
             y: self.y + size.y,
         }
-    }
-}
-
-impl<S: Copy + Hash> Hash for Point2D<S> {
-    /// two points are equal if their coordinates are equal
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.x.hash(state);
-        self.y.hash(state);
     }
 }
 

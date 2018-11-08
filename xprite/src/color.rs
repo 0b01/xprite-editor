@@ -27,28 +27,25 @@ impl ToString for Color {
 impl Color {
     pub fn new(r:u8, g:u8, b:u8) -> Color {
         Color {
-            r,
-            g,
-            b,
-            a:255,
+            r, g, b, a:255,
         }
     }
 
     pub fn red() -> Color {
         Color {
-            r: 255,
-            g: 0,
-            b: 0,
-            a: 255,
+            r: 255, g: 0, b: 0, a: 255,
         }
     }
 
     pub fn blue() -> Color {
         Color {
-            r: 0,
-            g: 0,
-            b: 255,
-            a: 255,
+            r: 0, g: 0, b: 255, a: 255,
+        }
+    }
+
+    pub fn grey() -> Color {
+        Color {
+            r: 200, g: 200, b: 200, a: 255,
         }
     }
 }
