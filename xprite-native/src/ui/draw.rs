@@ -128,10 +128,10 @@ fn bind_input(state: &mut State, ui: &Ui) {
     if state.inputs.debounce(InputItem::Left, left) {
         if left {
             trace!("mouse left down");
-            state.xpr.mouse_down(&MouseDown{ x, y, button: Left });
+            state.xpr.event(&MouseDown{ x, y, button: Left });
         } else {
             trace!("mouse left up");
-            state.xpr.mouse_up(&MouseUp{ x, y });
+            state.xpr.event(&MouseUp{ x, y });
         }
     }
 
@@ -139,7 +139,7 @@ fn bind_input(state: &mut State, ui: &Ui) {
     if state.inputs.debounce(InputItem::Right, right) {
         if right {
             let (x, y) = ui.imgui().mouse_pos();
-            state.xpr.mouse_down(&MouseDown{ x, y, button: Right });
+            state.xpr.event(&MouseDown{ x, y, button: Right });
         }
     }
 
@@ -148,11 +148,24 @@ fn bind_input(state: &mut State, ui: &Ui) {
     if state.inputs.debounce(InputItem::Ctrl, ctrl) {
         if ctrl {
             trace!("ctrl down");
+            state.xpr.event(&KeyDown{ key: Ctrl });
         } else {
             trace!("ctrl up");
+            state.xpr.event(&KeyUp{ key: Ctrl });
         }
     }
 
+    // shift
+    let shift = ui.imgui().key_shift();
+    if state.inputs.debounce(InputItem::Shift, shift) {
+        if shift {
+            trace!("shift down");
+            state.xpr.event(&KeyDown{ key: Shift });
+        } else {
+            trace!("shift up");
+            state.xpr.event(&KeyUp{ key: Shift });
+        }
+    }
 
     // z
     let key_z = ui.imgui().get_key_index(ImGuiKey::Z);
@@ -189,7 +202,6 @@ fn bind_input(state: &mut State, ui: &Ui) {
     //         println!("{}", i);
     //     }
     // }
-
 
     state.update_mouse_pos(x, y);
 }

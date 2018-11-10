@@ -1,4 +1,4 @@
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum InputItem {
     Ctrl,
     Shift,
@@ -8,6 +8,20 @@ pub enum InputItem {
     Right,
 }
 
+impl InputItem {
+    pub fn as_str(&self) -> &str {
+        match &self {
+            InputItem::Ctrl => "ctrl",
+            InputItem::Shift => "shift",
+            InputItem::Z => "z",
+            InputItem::Y => "y",
+            _ => unimplemented!(),
+        }
+    }
+}
+
+
+#[derive(Debug)]
 pub enum InputEvent {
     MouseMove {
         x: f32,

@@ -1,4 +1,7 @@
 #[macro_use]
+extern crate log;
+
+#[macro_use]
 pub mod pixels;
 pub mod brush;
 pub mod color;

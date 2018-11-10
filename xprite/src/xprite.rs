@@ -36,36 +36,6 @@ impl Xprite {
         }
     }
 
-    pub fn mouse_move(&mut self, evt: &InputEvent) -> Option<()> {
-        if let &InputEvent::MouseMove{x, y} = evt {
-            let p = Point2D::new(x, y);
-            let point = self.canvas.shrink_size(&p);
-            let color = ColorOption::Set(self.color());
-            self.cursor_pos = Some(Pixel{point, color});
-
-            let tool = self.toolbox.tool();
-            tool.borrow_mut().mouse_move(self, p);
-        }
-        Some(())
-    }
-
-    pub fn mouse_up(&mut self, evt: &InputEvent) -> Option<()> {
-        if let &InputEvent::MouseUp{x, y} = evt {
-            let tool = self.toolbox.tool();
-            let p = Point2D::new(x, y);
-            tool.borrow_mut().mouse_up(self, p);
-        }
-        Some(())
-    }
-
-    pub fn mouse_down(&mut self, evt: &InputEvent) -> Option<()> {
-        if let &InputEvent::MouseDown{x, y, button} = evt {
-            let tool = self.toolbox.tool();
-            let p = Point2D::new(x, y);
-            tool.borrow_mut().mouse_down(self, p, button);
-        }
-        Some(())
-    }
 
     pub fn undo(&mut self) {
         self.history.undo();
@@ -102,9 +72,11 @@ impl Xprite {
         &self.buffer
     }
 
-    pub fn set_option(&mut self, opt: &str, val: &str) {
+    pub fn set_option(&mut self, opt: &str, val: &str) -> Option<()> {
         let tool = self.toolbox.tool();
-        tool.borrow_mut().set(self, opt, val);
+        let mut current_tool = tool.borrow_mut();
+        trace!("setting option {}={}", opt, val);
+        current_tool.set(self, opt, val)
     }
 
     pub fn set_option_for_tool(&mut self, name: &str, opt: &str, val: &str) {
@@ -151,3 +123,59 @@ impl Xprite {
     }
 }
 
+
+/// handle events
+impl Xprite {
+
+    pub fn event(&mut self, evt: &InputEvent) -> Option<()> {
+        use self::InputEvent::*;
+        trace!("{:#?}", evt);
+        match evt {
+            MouseMove { .. } => self.mouse_move(evt),
+            MouseDown { .. } => self.mouse_down(evt),
+            MouseUp { .. } => self.mouse_up(evt),
+            KeyUp { key } => self.key_up(key),
+            KeyDown { key } => self.key_down(key),
+        }
+    }
+
+    pub fn key_up(&mut self, key: &InputItem) -> Option<()> {
+        self.set_option(key.as_str(), "false")
+    }
+
+    pub fn key_down(&mut self, key: &InputItem) -> Option<()> {
+        self.set_option(key.as_str(), "true")
+    }
+
+    pub fn mouse_move(&mut self, evt: &InputEvent) -> Option<()> {
+        if let &InputEvent::MouseMove{x, y} = evt {
+            let p = Point2D::new(x, y);
+            let point = self.canvas.shrink_size(&p);
+            let color = ColorOption::Set(self.color());
+            self.cursor_pos = Some(Pixel{point, color});
+
+            let tool = self.toolbox.tool();
+            tool.borrow_mut().mouse_move(self, p);
+        }
+        Some(())
+    }
+
+    pub fn mouse_up(&mut self, evt: &InputEvent) -> Option<()> {
+        if let &InputEvent::MouseUp{x, y} = evt {
+            let tool = self.toolbox.tool();
+            let p = Point2D::new(x, y);
+            tool.borrow_mut().mouse_up(self, p);
+        }
+        Some(())
+    }
+
+    pub fn mouse_down(&mut self, evt: &InputEvent) -> Option<()> {
+        if let &InputEvent::MouseDown{x, y, button} = evt {
+            let tool = self.toolbox.tool();
+            let p = Point2D::new(x, y);
+            tool.borrow_mut().mouse_down(self, p, button);
+        }
+        Some(())
+    }
+
+}
