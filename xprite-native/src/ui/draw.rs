@@ -1,4 +1,5 @@
 use crate::state::State;
+use crate::ui::tools;
 use imgui::*;
 use xprite::prelude::*;
 use xprite::rendering::Renderer;
@@ -12,16 +13,40 @@ pub fn draw(rdr: &Renderer, state: &mut State, ui: &Ui) -> bool {
     main_menu_bar(rdr, state, ui);
     toolbar(state, ui);
     draw_canvas(rdr, state, ui);
+    draw_settings(rdr, state, ui);
+    tool_panel(rdr, state, ui);
     true
 }
 
+fn tool_panel(_rdr: &Renderer, state: &mut State, ui: &Ui) {
+    let sz = ui.frame_size().logical_size;
+    let selected = &state.xpr.toolbox.tool().borrow().tool_type();
+    ui
+    .window(im_str!("Tool Options: {}", selected.as_str()))
+    .position((sz.0 as f32 - 300., 20.), ImGuiCond::Appearing)
+    .size((300., sz.1 as f32 - 20.), ImGuiCond::Appearing)
+    .movable(false)
+    .collapsible(false)
+    .resizable(false)
+    .build(|| {
+        tools::draw(&selected, state, ui);
+    })
+}
+
 fn toolbar(state: &mut State, ui: &Ui) {
-    ui.window(im_str!("toolbox")).build(|| {
-        let tools: Vec<&str> = state.xpr.toolbox.tools.keys().cloned().collect();
+    ui
+    .window(im_str!("toolbox"))
+    .position((0.,20.), ImGuiCond::Appearing)
+    .size((100., 100.), ImGuiCond::Appearing)
+    .movable(false)
+    .collapsible(false)
+    .resizable(false)
+    .build(|| {
+        let tools: Vec<ToolType> = state.xpr.toolbox.tools.keys().cloned().collect();
         for (_index, name) in tools.iter().enumerate() {
-            let is_sel = &state.xpr.toolbox.tool().borrow().get_name() == name;
+            let is_sel = &state.xpr.toolbox.tool().borrow().tool_type() == name;
             if ui.selectable(
-                im_str!("{}", name),
+                im_str!("{}", name.as_str()),
                 is_sel,
                 ImGuiSelectableFlags::empty(),
                 (0.,0.)
@@ -32,11 +57,21 @@ fn toolbar(state: &mut State, ui: &Ui) {
     })
 }
 
+fn draw_settings(_rdr: &Renderer, state: &mut State, ui: &Ui) {
+    if !state.show_settings { return; }
+    ui.window(im_str!("Settings")).build(|| {
+
+    })
+}
+
 fn main_menu_bar(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     ui.main_menu_bar(|| {
         ui.menu(im_str!("File")).build(|| {
             ui.menu_item(im_str!("Load")).shortcut(im_str!("Ctrl+O")).build();
             ui.menu_item(im_str!("Save")).shortcut(im_str!("Ctrl+S")).build();
+            if ui.menu_item(im_str!("Settings")).build() {
+                state.show_settings = true;
+            }
         });
         ui.menu(im_str!("Edit")).build(|| {
             if ui.menu_item(im_str!("Undo")).shortcut(im_str!("Ctrl+Z")).build() {
@@ -52,10 +87,11 @@ fn main_menu_bar(_rdr: &Renderer, state: &mut State, ui: &Ui) {
 fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
     ui.window(im_str!("canvas"))
-        .position((20.0, 20.0), ImGuiCond::Appearing)
-        // .size((700.0, 300.0), ImGuiCond::Appearing)
-        .size((sz.0 as f32/2., sz.1 as f32/2.), ImGuiCond::Appearing)
-        .resizable(true)
+        .position((100.0, 20.0), ImGuiCond::Appearing)
+        .size((sz.0 as f32 - 400., sz.1 as f32 - 20.), ImGuiCond::Appearing)
+        .resizable(false)
+        .movable(false)
+        .collapsible(false)
         .build(|| {
             // checkbox for show grid
             ui.checkbox(im_str!("grid"), &mut state.xpr.canvas.show_grid);
@@ -110,8 +146,10 @@ fn bind_input(state: &mut State, ui: &Ui) {
     let left = ui.imgui().is_mouse_down(ImMouseButton::Left);
     let right = ui.imgui().is_mouse_down(ImMouseButton::Right);
 
+    let using_window = ui.is_window_hovered() && !ui.is_item_active();
+
     // middle key for scrolling
-    if ui.is_window_hovered() && !ui.is_item_active() &&
+    if using_window &&
         ui.imgui().is_mouse_dragging(ImMouseButton::Middle)
     {
         let d = ui.imgui().mouse_delta();
@@ -119,13 +157,14 @@ fn bind_input(state: &mut State, ui: &Ui) {
         state.xpr.canvas.scroll.y += d.1;
     }
 
-    if ui.is_window_hovered() && !ui.is_item_active()
+
+    if using_window
     {
         state.xpr.canvas.scale += wheel_delta
     }
 
     // left
-    if state.inputs.debounce(InputItem::Left, left) {
+    if state.inputs.debounce(InputItem::Left, left) && using_window {
         if left {
             trace!("mouse left down");
             state.xpr.event(&MouseDown{ x, y, button: Left });
@@ -136,7 +175,7 @@ fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     // right
-    if state.inputs.debounce(InputItem::Right, right) {
+    if state.inputs.debounce(InputItem::Right, right) && using_window {
         if right {
             let (x, y) = ui.imgui().mouse_pos();
             state.xpr.event(&MouseDown{ x, y, button: Right });
@@ -164,6 +203,18 @@ fn bind_input(state: &mut State, ui: &Ui) {
         } else {
             trace!("shift up");
             state.xpr.event(&KeyUp{ key: Shift });
+        }
+    }
+
+    // shift
+    let space = ui.imgui().is_key_down(19);
+    if state.inputs.debounce(InputItem::Space, space) {
+        if space {
+            trace!("space down");
+            state.xpr.event(&KeyDown{ key: Space });
+        } else {
+            trace!("space up");
+            state.xpr.event(&KeyUp{ key: Space });
         }
     }
 

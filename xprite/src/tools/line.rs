@@ -60,8 +60,8 @@ impl Line {
 
 impl Tool for Line {
 
-    fn get_name(&self) -> &'static str {
-        "line"
+    fn tool_type(&self) -> ToolType {
+        ToolType::Line
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
@@ -125,4 +125,6 @@ impl Tool for Line {
         }
         Some(())
     }
+
+
 }

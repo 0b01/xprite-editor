@@ -1,4 +1,4 @@
-use imgui::{FontGlyphRange, FrameSize, ImFontConfig, ImGui, ImGuiMouseCursor, Ui};
+use imgui::{ImGui, FontGlyphRange, FrameSize, ImFontConfig, ImGuiMouseCursor, Ui, ImGuiCol, ImVec4};
 use std::time::Instant;
 
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
@@ -6,6 +6,63 @@ struct MouseState {
     pos: (i32, i32),
     pressed: (bool, bool, bool),
     wheel: f32,
+}
+
+fn set_style(imgui: &mut ImGui) {
+    let mut style = imgui.style_mut();
+    style.window_rounding = 5.3;
+    style.frame_rounding = 2.3;
+    style.grab_rounding = 2.3;
+    style.scrollbar_rounding = 5.0;
+    style.frame_border_size = 1.0;
+    style.item_spacing.y = 6.5;
+
+    let vals = ImGuiCol::values();
+    macro_rules! find {
+        ($item: ident) => {
+            vals.iter().position(|&i|i==ImGuiCol::$item).unwrap()
+        };
+    }
+
+    style.colors[find!(Text)]                  = ImVec4::new(0.73333335, 0.73333335, 0.73333335, 1.00);
+    style.colors[find!(TextDisabled)]          = ImVec4::new(0.34509805, 0.34509805, 0.34509805, 1.00);
+    style.colors[find!(WindowBg)]              = ImVec4::new(0.23529413, 0.24705884, 0.25490198, 0.94);
+    style.colors[find!(ChildBg)]               = ImVec4::new(0.23529413, 0.24705884, 0.25490198, 0.00);
+    style.colors[find!(PopupBg)]               = ImVec4::new(0.23529413, 0.24705884, 0.25490198, 0.94);
+    style.colors[find!(Border)]                = ImVec4::new(0.33333334, 0.33333334, 0.33333334, 0.50);
+    style.colors[find!(BorderShadow)]          = ImVec4::new(0.15686275, 0.15686275, 0.15686275, 0.00);
+    style.colors[find!(FrameBg)]               = ImVec4::new(0.16862746, 0.16862746, 0.16862746, 0.54);
+    style.colors[find!(FrameBgHovered)]        = ImVec4::new(0.453125, 0.67578125, 0.99609375, 0.67);
+    style.colors[find!(FrameBgActive)]         = ImVec4::new(0.47058827, 0.47058827, 0.47058827, 0.67);
+    style.colors[find!(TitleBg)]               = ImVec4::new(0.2, 0.2, 0.2, 1.00);
+    style.colors[find!(TitleBgCollapsed)]      = ImVec4::new(0.16, 0.29, 0.48, 1.00);
+    style.colors[find!(TitleBgActive)]         = ImVec4::new(0.6, 0.6, 0.6, 0.51);
+    style.colors[find!(MenuBarBg)]             = ImVec4::new(0.27058825, 0.28627452, 0.2901961, 0.80);
+    style.colors[find!(ScrollbarBg)]           = ImVec4::new(0.27058825, 0.28627452, 0.2901961, 0.60);
+    style.colors[find!(ScrollbarGrab)]         = ImVec4::new(0.21960786, 0.30980393, 0.41960788, 0.51);
+    style.colors[find!(ScrollbarGrabHovered)]  = ImVec4::new(0.21960786, 0.30980393, 0.41960788, 1.00);
+    style.colors[find!(ScrollbarGrabActive)]   = ImVec4::new(0.13725491, 0.19215688, 0.2627451, 0.91);
+    style.colors[find!(CheckMark)]             = ImVec4::new(0.90, 0.90, 0.90, 0.83);
+    style.colors[find!(SliderGrab)]            = ImVec4::new(0.70, 0.70, 0.70, 0.62);
+    style.colors[find!(SliderGrabActive)]      = ImVec4::new(0.30, 0.30, 0.30, 0.84);
+    style.colors[find!(Button)]                = ImVec4::new(0.33333334, 0.3529412, 0.36078432, 0.49);
+    style.colors[find!(ButtonHovered)]         = ImVec4::new(0.21960786, 0.30980393, 0.41960788, 1.00);
+    style.colors[find!(ButtonActive)]          = ImVec4::new(0.13725491, 0.19215688, 0.2627451, 1.00);
+    style.colors[find!(Header)]                = ImVec4::new(0.33333334, 0.3529412, 0.36078432, 0.53);
+    style.colors[find!(HeaderHovered)]         = ImVec4::new(0.453125, 0.67578125, 0.99609375, 0.67);
+    style.colors[find!(HeaderActive)]          = ImVec4::new(0.47058827, 0.47058827, 0.47058827, 0.67);
+    style.colors[find!(Separator)]             = ImVec4::new(0.31640625, 0.31640625, 0.31640625, 1.00);
+    style.colors[find!(SeparatorHovered)]      = ImVec4::new(0.31640625, 0.31640625, 0.31640625, 1.00);
+    style.colors[find!(SeparatorActive)]       = ImVec4::new(0.31640625, 0.31640625, 0.31640625, 1.00);
+    style.colors[find!(ResizeGrip)]            = ImVec4::new(1.00, 1.00, 1.00, 0.85);
+    style.colors[find!(ResizeGripHovered)]     = ImVec4::new(1.00, 1.00, 1.00, 0.60);
+    style.colors[find!(ResizeGripActive)]      = ImVec4::new(1.00, 1.00, 1.00, 0.90);
+    style.colors[find!(PlotLines)]             = ImVec4::new(0.61, 0.61, 0.61, 1.00);
+    style.colors[find!(PlotLinesHovered)]      = ImVec4::new(1.00, 0.43, 0.35, 1.00);
+    style.colors[find!(PlotHistogram)]         = ImVec4::new(0.90, 0.70, 0.00, 1.00);
+    style.colors[find!(PlotHistogramHovered)]  = ImVec4::new(1.00, 0.60, 0.00, 1.00);
+    style.colors[find!(TextSelectedBg)]        = ImVec4::new(0.18431373, 0.39607847, 0.79215693, 0.90);
+
 }
 
 pub fn run<F: FnMut(&Ui) -> bool>(title: &str, clear_color: [f32; 4], mut run_ui: F) {
@@ -23,6 +80,7 @@ pub fn run<F: FnMut(&Ui) -> bool>(title: &str, clear_color: [f32; 4], mut run_ui
 
     let mut imgui = ImGui::init();
     imgui.set_ini_filename(None);
+    set_style(&mut imgui);
 
     // In the examples we only use integer DPI factors, because the UI can get very blurry
     // otherwise. This might or might not be what you want in a real application.
@@ -38,7 +96,7 @@ pub fn run<F: FnMut(&Ui) -> bool>(title: &str, clear_color: [f32; 4], mut run_ui
     );
 
     imgui.fonts().add_font_with_config(
-        include_bytes!("../mplus-1p-regular.ttf"),
+        include_bytes!("../Roboto-Regular.ttf"),
         ImFontConfig::new()
             .merge_mode(true)
             .oversample_h(1)
@@ -91,6 +149,7 @@ pub fn run<F: FnMut(&Ui) -> bool>(title: &str, clear_color: [f32; 4], mut run_ui
                             Some(Key::X) => imgui.set_key(16, pressed),
                             Some(Key::Y) => imgui.set_key(17, pressed),
                             Some(Key::Z) => imgui.set_key(18, pressed),
+                            Some(Key::Space) => imgui.set_key(19, pressed),
                             Some(Key::LControl) | Some(Key::RControl) => {
                                 imgui.set_key_ctrl(pressed)
                             }

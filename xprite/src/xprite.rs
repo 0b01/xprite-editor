@@ -79,15 +79,15 @@ impl Xprite {
         current_tool.set(self, opt, val)
     }
 
-    pub fn set_option_for_tool(&mut self, name: &str, opt: &str, val: &str) {
+    pub fn set_option_for_tool(&mut self, name: &ToolType, opt: &str, val: &str) {
         if let Some(tool) = self.toolbox.get(name) {
             tool.borrow_mut().set(self, opt, val);
         } else {
-            panic!("toolbox does not contain {}", name);
+            panic!("toolbox does not contain {}", name.as_str());
         }
     }
 
-    pub fn change_tool(&mut self, name: &str) {
+    pub fn change_tool(&mut self, name: &ToolType) {
         self.toolbox.change_to(name);
     }
 
@@ -115,6 +115,9 @@ impl Xprite {
 }
 
 impl Xprite {
+}
+
+impl Xprite {
     /// render to canvas
     pub fn render(&self, rdr: &Renderer) {
         self.canvas.draw_canvas(rdr);
@@ -127,13 +130,11 @@ impl Xprite {
             let Point2D {x, y} = point;
             self.canvas.draw_pixel(rdr, x, y, BLACK, true);
         }
-
         for p in self.cursor_pos.iter() {
             let Point2D {x, y} = p.point;
             self.canvas.draw_pixel(rdr, x, y, RED, false);
         }
     }
-
 }
 
 
@@ -153,11 +154,19 @@ impl Xprite {
     }
 
     pub fn key_up(&mut self, key: &InputItem) -> Option<()> {
-        self.set_option(key.as_str(), "false")
+        if key == &InputItem::Space {
+            self.space_up()
+        } else {
+            self.set_option(key.as_str(), "false")
+        }
     }
 
     pub fn key_down(&mut self, key: &InputItem) -> Option<()> {
-        self.set_option(key.as_str(), "true")
+        if key == &InputItem::Space {
+            self.space_down()
+        } else {
+            self.set_option(key.as_str(), "true")
+        }
     }
 
     pub fn mouse_move(&mut self, evt: &InputEvent) -> Option<()> {
@@ -190,4 +199,11 @@ impl Xprite {
         Some(())
     }
 
+    fn space_down(&mut self) -> Option<()> {
+        Some(())
+    }
+
+    fn space_up(&mut self) -> Option<()> {
+        Some(())
+    }
 }

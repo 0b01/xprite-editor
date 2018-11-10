@@ -1,6 +1,9 @@
 use crate::prelude::*;
 
 pub fn pixel_perfect(path: &[Pixel]) -> Vec<Pixel> {
+    if path.len() == 1 || path.len() == 0 {
+        return path.iter().cloned().collect();
+    }
     let mut ret = Vec::new();
     let mut c = 0;
 

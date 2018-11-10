@@ -1,4 +1,4 @@
-pub use crate::tools::Tool;
+pub use crate::tools::{Tool, ToolType};
 pub use crate::toolbox::Toolbox;
 pub use crate::history::History;
 pub use crate::pixels::{Pixel, Pixels};

@@ -5,6 +5,7 @@ pub struct State {
     pub xpr: Xprite,
     pub last_mouse_pos: (f32, f32),
     pub inputs: InputState,
+    pub show_settings: bool,
 }
 
 impl State {
@@ -13,6 +14,7 @@ impl State {
             xpr,
             last_mouse_pos: (0., 0.),
             inputs: InputState::default(),
+            show_settings: false,
         }
     }
 

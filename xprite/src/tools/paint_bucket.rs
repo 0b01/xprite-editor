@@ -33,8 +33,8 @@ impl PaintBucket {
 
 impl Tool for PaintBucket {
 
-    fn get_name(&self) -> &'static str {
-        "paint_bucket"
+    fn tool_type(&self) -> ToolType {
+        ToolType::PaintBucket
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {

@@ -11,6 +11,7 @@ use xprite::prelude::*;
 use crate::render::imgui_renderer::ImguiRenderer;
 
 mod render;
+mod prelude;
 mod ui;
 mod state;
 

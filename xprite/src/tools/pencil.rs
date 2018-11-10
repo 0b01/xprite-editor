@@ -101,8 +101,8 @@ impl Pencil {
 
 impl Tool for Pencil {
 
-    fn get_name(&self) -> &'static str {
-        "pencil"
+    fn tool_type(&self) -> ToolType {
+        ToolType::Pencil
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
@@ -171,12 +171,17 @@ impl Tool for Pencil {
                 self.draw_polyline(xpr, &simple, false, true);
             }
             PixelPerfect => {
-                self.buffer.clear();
-                let points = self.current_polyline.connect_with_line(xpr)?;
-                let perfect = &pixel_perfect(&points);
-                let mut pixs = Pixels::from_slice(&perfect);
-                pixs.set_color(&Color::grey());
-                self.buffer.extend(&pixs);
+                // if there is only one pixel in the buffer
+                if self.buffer.0.len() == 1 {
+                    // noop
+                } else {
+                    self.buffer.clear();
+                    let points = self.current_polyline.connect_with_line(xpr)?;
+                    let perfect = &pixel_perfect(&points);
+                    let mut pixs = Pixels::from_slice(&perfect);
+                    pixs.set_color(&Color::grey());
+                    self.buffer.extend(&pixs);
+                }
             }
             SortedMonotonic => {
                 let points = self.current_polyline.connect_with_line(xpr)?;

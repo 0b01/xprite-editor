@@ -2,6 +2,7 @@
 pub enum InputItem {
     Ctrl,
     Shift,
+    Space,
     Alt,
     Z,
     Y,
@@ -14,6 +15,7 @@ impl InputItem {
         match &self {
             InputItem::Ctrl => "ctrl",
             InputItem::Shift => "shift",
+            InputItem::Space => "space",
             InputItem::Alt => "alt",
             InputItem::Z => "z",
             InputItem::Y => "y",
@@ -52,6 +54,7 @@ pub struct InputState {
     pub right: bool,
     pub ctrl: bool,
     pub shift: bool,
+    pub space: bool,
     pub alt: bool,
     pub z: bool,
     pub y: bool,
@@ -64,6 +67,7 @@ impl Default for InputState {
             right: false,
             ctrl: false,
             shift: false,
+            space: false,
             alt: false,
             z: false,
             y: false,
@@ -87,6 +91,7 @@ impl InputState {
         match item {
             InputItem::Ctrl => debounce!(ctrl),
             InputItem::Shift => debounce!(shift),
+            InputItem::Space => debounce!(space),
             InputItem::Alt => debounce!(alt),
             InputItem::Z => debounce!(z),
             InputItem::Y => debounce!(y),
