@@ -2,11 +2,15 @@ use std::ops::Add;
 use std::hash::{Hash, Hasher};
 
 /// represents a point in a 2D cartesian plane
-#[derive(PartialEq, Debug, Copy, Clone, Eq)]
+#[derive(PartialEq, Debug, Copy, Clone)]
 pub struct Point2D<S: Copy> {
     pub x: S,
     pub y: S,
 }
+
+impl Eq for Point2D<f32> {
+}
+
 
 impl Hash for Point2D<f32> {
     fn hash<H: Hasher>(&self, state: &mut H) {

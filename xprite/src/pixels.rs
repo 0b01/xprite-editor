@@ -1,9 +1,10 @@
 use crate::prelude::*;
+use std::collections::HashSet;
 use std::slice::Iter;
 use std::hash::{Hash, Hasher};
 use std::fmt::{Debug, Formatter, Error};
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub struct Pixel {
     pub point: Point2D<f32>,
     pub color: ColorOption,
@@ -38,32 +39,47 @@ macro_rules! pixel {
 
 
 #[derive(Clone)]
-pub struct Pixels(pub Vec<Pixel>);
+/// dual repr
+pub struct Pixels(pub Vec<Pixel>, pub HashSet<Pixel>);
 impl Pixels {
     pub fn new() -> Self {
-        Pixels(Vec::new())
+        Pixels(Vec::new(), HashSet::new())
     }
     pub fn from_slice(slice: &[Pixel]) -> Self {
         let mut vec = Vec::new();
-        for i in slice.iter() {
-            vec.push(*i);
+        let mut set = HashSet::new();
+        for p in slice.iter() {
+            if set.contains(p) {
+                continue;
+            }
+            vec.push(*p);
+            set.insert(*p);
         }
-        Pixels(vec)
+        Pixels(vec, set)
     }
     pub fn extend(&mut self, other: &Pixels) {
-        self.0.extend(&other.0)
+        self.extend_vec(&other.0);
     }
     pub fn extend_vec(&mut self, pxs: &[Pixel]) {
-        self.0.extend(pxs)
+        for p in pxs.iter() {
+            if self.1.contains(&p) {
+                continue;
+            }
+            self.0.push(*p);
+            self.1.insert(*p);
+        }
     }
     pub fn push(&mut self, px: Pixel) {
-        self.0.push(px);
+        if !self.1.contains(&px) {
+            self.0.push(px);
+        }
     }
     pub fn contains(&mut self, px: &Pixel) -> bool {
-        self.0.contains(px)
+        self.1.contains(px)
     }
     pub fn clear(&mut self) {
         self.0.clear();
+        self.1.clear();
     }
     pub fn iter(&self) -> Iter<Pixel> {
         self.0.iter()
@@ -88,9 +104,10 @@ impl Pixels {
 impl Debug for Pixels {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         match self.0.len() {
-            0 => write!(f, "Pixels(empty)"),
-            1 => write!(f, "Pixels([{:?}])", self.0[0]),
-            _ => write!(f, "Pixels([{:?}..{:?}])", self.0[0], self.0.last().unwrap()),
+            0 => write!(f, "Pixels[0](empty)"),
+            1 => write!(f, "Pixels[1]([{:?}])", self.0[0]),
+            // _ => write!(f, "Pixels[{}]([{:?}..{:?}])", self.0.len(), self.0[0], self.0.last().unwrap()),
+            _ => write!(f, "Pixels[{}]([{:?}])", self.0.len(), self.0),
         }
     }
 }
