@@ -4,12 +4,13 @@ use crate::algorithms::pixel_perfect::pixel_perfect;
 
 #[derive(Eq, PartialEq, Clone, Copy)]
 pub enum PencilMode {
+    Raw,
     /// pixel perfect - nothing else
     PixelPerfect,
-    /// convert to vector and sort everything by slope
-    SimplifyAndSortWhole,
-    /// convert to vector and sort each segment
-    SimplifyAndSortByParts,
+    // /// convert to vector and sort everything by slope
+    // SimplifyAndSortWhole,
+    // /// convert to vector and sort each segment
+    // SimplifyAndSortByParts,
     /// sort each monotonic segment
     SortedMonotonic,
 }
@@ -17,27 +18,30 @@ pub enum PencilMode {
 impl PencilMode {
     pub fn as_str(&self) -> &str {
         match self {
+            PencilMode::Raw => "Raw",
             PencilMode::PixelPerfect => "Pixel Perfect",
-            PencilMode::SimplifyAndSortWhole => "Sorted",
-            PencilMode::SimplifyAndSortByParts => "Sorted By Parts",
-            PencilMode::SortedMonotonic => "Monotonic Sorting",
+            // PencilMode::SimplifyAndSortWhole => "Sorted",
+            // PencilMode::SimplifyAndSortByParts => "Sorted By Parts",
+            PencilMode::SortedMonotonic => "Sorted Monotonic",
         }
     }
     pub fn from_str(string: &str) -> Self {
         match string {
+            "Raw" => PencilMode::Raw,
             "Pixel Perfect" => PencilMode::PixelPerfect,
-            "Sorted" => PencilMode::SimplifyAndSortWhole,
-            "Sorted By Parts" => PencilMode::SimplifyAndSortByParts,
-            "Monotonic Sorting" => PencilMode::SortedMonotonic,
+            // "Sorted" => PencilMode::SimplifyAndSortWhole,
+            // "Sorted By Parts" => PencilMode::SimplifyAndSortByParts,
+            "Sorted Monotonic" => PencilMode::SortedMonotonic,
             _ => unimplemented!(),
         }
     }
 
 
-    pub const VARIANTS: [PencilMode; 4] = [
+    pub const VARIANTS: [PencilMode; 3] = [
+        PencilMode::Raw,
         PencilMode::PixelPerfect,
-        PencilMode::SimplifyAndSortWhole,
-        PencilMode::SimplifyAndSortByParts,
+        // PencilMode::SimplifyAndSortWhole,
+        // PencilMode::SimplifyAndSortByParts,
         PencilMode::SortedMonotonic,
     ];
 }
@@ -150,13 +154,15 @@ impl Tool for Pencil {
 
         let button = self.is_mouse_down.clone().unwrap();
         if button == InputItem::Left {
-            // xpr.history.undo();
-            self.buffer.clear();
-            let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
-            let perfect = pixel_perfect(&line_pixs);
-            let pixs = Pixels::from_slice(&perfect);
-            // debug!("-------------");
-            self.buffer.extend(&pixs);
+                self.buffer.clear();
+                let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
+                let pixs = if self.mode != PencilMode::Raw {
+                    let perfect = pixel_perfect(&line_pixs);
+                    Pixels::from_slice(&perfect)
+                } else {
+                    Pixels::from_slice(&line_pixs)
+                };
+                self.buffer.extend(&pixs);
         } else if button == InputItem::Right {
             // xpr.remove_pixels(&pixels.unwrap());
         }
@@ -165,7 +171,6 @@ impl Tool for Pencil {
 
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: InputItem) -> Option<()>{
         self.is_mouse_down = Some(button);
-        xpr.history.enter();
 
         self.current_polyline.push(p);
         self.buffer.clear();
@@ -185,22 +190,23 @@ impl Tool for Pencil {
         let button = self.is_mouse_down.clone().unwrap();
         if button == InputItem::Right { return Some(()); }
 
-        xpr.history.undo();
-        xpr.history.enter();
         use self::PencilMode::*;
         match self.mode {
-            SimplifyAndSortByParts => {
-                self.buffer.clear();
-                let simple = self.current_polyline.reumann_witkam(self.tolerence)?;
-                let pixs = self.draw_polyline(xpr, &simple, true, false);
-                self.buffer.extend(&pixs);
+            // SimplifyAndSortByParts => {
+            //     self.buffer.clear();
+            //     let simple = self.current_polyline.reumann_witkam(self.tolerence)?;
+            //     let pixs = self.draw_polyline(xpr, &simple, true, false);
+            //     self.buffer.extend(&pixs);
 
-            }
-            SimplifyAndSortWhole => {
-                self.buffer.clear();
-                let simple = self.current_polyline.reumann_witkam(self.tolerence)?;
-                let pixs = self.draw_polyline(xpr, &simple, false, true);
-                self.buffer.extend(&pixs);
+            // }
+            // SimplifyAndSortWhole => {
+            //     self.buffer.clear();
+            //     let simple = self.current_polyline.reumann_witkam(self.tolerence)?;
+            //     let pixs = self.draw_polyline(xpr, &simple, false, true);
+            //     self.buffer.extend(&pixs);
+            // }
+            Raw => {
+                // self.buffer.extend(&pixs);
             }
             PixelPerfect => {
                 // if there is only one pixel in the buffer
