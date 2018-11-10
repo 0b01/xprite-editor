@@ -18,7 +18,7 @@ const BGCOLOR: [f32; 4] = [0.,0.,0.,0.];
 
 fn main() {
     init_logger();
-    debug!("Starting Xprite");
+    trace!("Starting Xprite");
     let xpr = Xprite::new(100., 100.);
     let mut state = state::State::new(xpr);
     render::run("Xprite", BGCOLOR, |ui| {

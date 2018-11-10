@@ -1,11 +1,18 @@
 use crate::prelude::*;
 use std::slice::Iter;
 use std::hash::{Hash, Hasher};
+use std::fmt::{Debug, Formatter, Error};
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub struct Pixel {
     pub point: Point2D<f32>,
     pub color: ColorOption,
+}
+
+impl Debug for Pixel {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "({},{})", self.point.x, self.point.y)
+    }
 }
 
 impl Hash for Pixel {

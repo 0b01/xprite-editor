@@ -44,6 +44,7 @@ impl Line {
         if let Some(pixs) = self.get_line() {
             xpr.history.enter();
             xpr.history.current_pixels_mut().extend_vec(&pixs);
+            println!("{:#?}", xpr.history);
         }
     }
 

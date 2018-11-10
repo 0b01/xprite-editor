@@ -132,10 +132,10 @@ fn bind_input(state: &mut State, ui: &Ui) {
     // left
     if state.inputs.debounce(InputItem::Left, left) {
         if left {
-            debug!("mouse left down");
+            trace!("mouse left down");
             state.xpr.mouse_down(&MouseDown{ x, y, button: Left });
         } else {
-            debug!("mouse left up");
+            trace!("mouse left up");
             state.xpr.mouse_up(&MouseUp{ x, y });
         }
     }
@@ -152,9 +152,9 @@ fn bind_input(state: &mut State, ui: &Ui) {
     let ctrl = ui.imgui().key_ctrl();
     if state.inputs.debounce(InputItem::Ctrl, ctrl) {
         if ctrl {
-            debug!("ctrl down");
+            trace!("ctrl down");
         } else {
-            debug!("ctrl up");
+            trace!("ctrl up");
         }
     }
 
@@ -164,13 +164,13 @@ fn bind_input(state: &mut State, ui: &Ui) {
     let z = ui.imgui().is_key_down(key_z);
     if state.inputs.debounce(InputItem::Z, z) {
         if z {
-            debug!("z down");
+            trace!("z down");
             if state.inputs.ctrl {
                 state.xpr.undo();
-                debug!("ctrl+z");
+                trace!("ctrl+z");
             }
         } else {
-            debug!("z up");
+            trace!("z up");
         }
     }
 
@@ -179,13 +179,13 @@ fn bind_input(state: &mut State, ui: &Ui) {
     let is_y_down = ui.imgui().is_key_down(key_y);
     if state.inputs.debounce(InputItem::Y, is_y_down) {
         if is_y_down {
-            debug!("Y down");
+            trace!("Y down");
             if state.inputs.ctrl {
                 state.xpr.redo();
-                debug!("ctrl+y");
+                trace!("ctrl+y");
             }
         } else {
-            debug!("y up");
+            trace!("y up");
         }
     }
 
