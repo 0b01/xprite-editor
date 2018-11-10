@@ -93,13 +93,8 @@ fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
         .movable(false)
         .collapsible(false)
         .build(|| {
-            // checkbox for show grid
-            ui.checkbox(im_str!("grid"), &mut state.xpr.canvas.show_grid);
-            ui.drag_float(im_str!("scale"), &mut state.xpr.canvas.scale)
-              .min(1.)
-              .max(50.)
-              .speed(0.1)
-              .build();
+            // // checkbox for show grid
+            // ui.checkbox(im_str!("grid"), &mut state.xpr.canvas.show_grid);
 
             let styles = [
                 StyleVar::FramePadding(ImVec2::new(1., 1.)),
@@ -108,7 +103,9 @@ fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
             let colors = [ (ImGuiCol::ChildBg, GREY) ];
 
             ui.with_style_and_color_vars(&styles, &colors, || {
-                ui.child_frame(im_str!("scrolling_region"), (0., 0.,))
+                let win_sz = ui.get_window_size();
+                let child_frame_sz = (win_sz.0, win_sz.1 - 100.);
+                ui.child_frame(im_str!("scrolling_region"), child_frame_sz)
                     .show_scrollbar(false)
                     .movable(false)
                     .build(|| {
@@ -119,6 +116,12 @@ fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
 
                     });
             });
+
+            ui.drag_float(im_str!("scale"), &mut state.xpr.canvas.scale)
+              .min(1.)
+              .max(50.)
+              .speed(0.1)
+              .build();
 
         });
 }
@@ -138,8 +141,9 @@ fn bind_input(state: &mut State, ui: &Ui) {
     let wheel_delta = ui.imgui().mouse_wheel();
     let (x, y) = ui.imgui().mouse_pos();
 
-    if state.last_mouse_pos.0 != x
-    || state.last_mouse_pos.1 != y {
+    if (state.last_mouse_pos.0 != x || state.last_mouse_pos.1 != y)
+    && !state.inputs.space
+    {
         state.xpr.mouse_move(&MouseMove{ x, y });
     }
 
@@ -148,23 +152,38 @@ fn bind_input(state: &mut State, ui: &Ui) {
 
     let using_window = ui.is_window_hovered() && !ui.is_item_active();
 
+    if state.inputs.space {
+        ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Move);
+    }
+
     // middle key for scrolling
     if using_window &&
-        ui.imgui().is_mouse_dragging(ImMouseButton::Middle)
+        (
+            ui.imgui().is_mouse_dragging(ImMouseButton::Middle)
+        ||  (state.inputs.space && state.inputs.left)
+        )
     {
+        // set cursor
+        ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Move);
         let d = ui.imgui().mouse_delta();
         state.xpr.canvas.scroll.x += d.0;
         state.xpr.canvas.scroll.y += d.1;
     }
 
-
-    if using_window
-    {
+    if using_window {
         state.xpr.canvas.scale += wheel_delta
+    }
+    if state.xpr.canvas.scale > 100. {
+        state.xpr.canvas.scale = 100.;
+    }
+    if state.xpr.canvas.scale < 0. {
+        state.xpr.canvas.scale = 1.;
     }
 
     // left
-    if state.inputs.debounce(InputItem::Left, left) && using_window {
+    if state.inputs.debounce(InputItem::Left, left)
+    && using_window
+    && !state.inputs.space {
         if left {
             trace!("mouse left down");
             state.xpr.event(&MouseDown{ x, y, button: Left });

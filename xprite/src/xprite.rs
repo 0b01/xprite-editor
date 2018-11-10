@@ -154,19 +154,11 @@ impl Xprite {
     }
 
     pub fn key_up(&mut self, key: &InputItem) -> Option<()> {
-        if key == &InputItem::Space {
-            self.space_up()
-        } else {
-            self.set_option(key.as_str(), "false")
-        }
+        self.set_option(key.as_str(), "false")
     }
 
     pub fn key_down(&mut self, key: &InputItem) -> Option<()> {
-        if key == &InputItem::Space {
-            self.space_down()
-        } else {
-            self.set_option(key.as_str(), "true")
-        }
+        self.set_option(key.as_str(), "true")
     }
 
     pub fn mouse_move(&mut self, evt: &InputEvent) -> Option<()> {
@@ -196,14 +188,6 @@ impl Xprite {
             let p = Point2D::new(x, y);
             tool.borrow_mut().mouse_down(self, p, button);
         }
-        Some(())
-    }
-
-    fn space_down(&mut self) -> Option<()> {
-        Some(())
-    }
-
-    fn space_up(&mut self) -> Option<()> {
         Some(())
     }
 }
