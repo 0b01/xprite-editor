@@ -14,6 +14,34 @@ pub enum PencilMode {
     SortedMonotonic,
 }
 
+impl PencilMode {
+    pub fn as_str(&self) -> &str {
+        match self {
+            PencilMode::PixelPerfect => "Pixel Perfect",
+            PencilMode::SimplifyAndSortWhole => "Sorted",
+            PencilMode::SimplifyAndSortByParts => "Sorted By Parts",
+            PencilMode::SortedMonotonic => "Monotonic Sorting",
+        }
+    }
+    pub fn from_str(string: &str) -> Self {
+        match string {
+            "Pixel Perfect" => PencilMode::PixelPerfect,
+            "Sorted" => PencilMode::SimplifyAndSortWhole,
+            "Sorted By Parts" => PencilMode::SimplifyAndSortByParts,
+            "Monotonic Sorting" => PencilMode::SortedMonotonic,
+            _ => unimplemented!(),
+        }
+    }
+
+
+    pub const VARIANTS: [PencilMode; 4] = [
+        PencilMode::PixelPerfect,
+        PencilMode::SimplifyAndSortWhole,
+        PencilMode::SimplifyAndSortByParts,
+        PencilMode::SortedMonotonic,
+    ];
+}
+
 pub struct Pencil {
     is_mouse_down: Option<InputItem>,
     current_polyline: Polyline,
@@ -21,7 +49,7 @@ pub struct Pencil {
     cursor_pos: Option<Pixel>,
     brush: Brush,
     tolerence: f32,
-    mode: PencilMode,
+    pub mode: PencilMode,
     buffer: Pixels,
 }
 impl Pencil {
@@ -45,12 +73,13 @@ impl Pencil {
         }
     }
 
-    pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline, sort_parts: bool, sort_whole: bool) {
+    pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline, sort_parts: bool, sort_whole: bool) -> Pixels {
 
         let path = polyline.interp();
         let mut rasterized = path.rasterize(xpr, sort_parts, sort_whole).unwrap();
-        let pixels = rasterized.with_color(&Color::grey());
-        xpr.add_pixels(&pixels);
+        rasterized.set_color(&Color::grey());
+        // self.buffer.extend(&pixels);
+        rasterized
 
         // // plot anchors
         // for &p in polyline.pos.iter() {
@@ -161,14 +190,17 @@ impl Tool for Pencil {
         use self::PencilMode::*;
         match self.mode {
             SimplifyAndSortByParts => {
-                // simply curve then rasterize
+                self.buffer.clear();
                 let simple = self.current_polyline.reumann_witkam(self.tolerence)?;
-                self.draw_polyline(xpr, &simple, true, false);
+                let pixs = self.draw_polyline(xpr, &simple, true, false);
+                self.buffer.extend(&pixs);
+
             }
             SimplifyAndSortWhole => {
-                // simply curve then rasterize
+                self.buffer.clear();
                 let simple = self.current_polyline.reumann_witkam(self.tolerence)?;
-                self.draw_polyline(xpr, &simple, false, true);
+                let pixs = self.draw_polyline(xpr, &simple, false, true);
+                self.buffer.extend(&pixs);
             }
             PixelPerfect => {
                 // if there is only one pixel in the buffer
@@ -184,6 +216,7 @@ impl Tool for Pencil {
                 }
             }
             SortedMonotonic => {
+                self.buffer.clear();
                 let points = self.current_polyline.connect_with_line(xpr)?;
                 let mut perfect = pixel_perfect(&points);
                 let sorted = sort_path(&mut perfect)?;
@@ -217,11 +250,11 @@ impl Tool for Pencil {
         match option {
             "mode" => {
                 use self::PencilMode::*;
-                match value {
-                    "monotonic" => self.mode = SortedMonotonic,
-                    "pp"        => self.mode = PixelPerfect,
-                    "whole"     => self.mode = SimplifyAndSortWhole,
-                    "parts"     => self.mode = SimplifyAndSortByParts,
+                match PencilMode::from_str(value) {
+                    SortedMonotonic         => self.mode = SortedMonotonic,
+                    PixelPerfect            => self.mode = PixelPerfect,
+                    SimplifyAndSortWhole    => self.mode = SimplifyAndSortWhole,
+                    SimplifyAndSortByParts  => self.mode = SimplifyAndSortByParts,
                     _ => panic!("malformed value: {}", value),
                 };
             }

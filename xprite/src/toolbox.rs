@@ -2,7 +2,6 @@ use crate::prelude::*;
 
 use std::rc::Rc;
 use std::cell::RefCell;
-use std::collections::BTreeMap;
 
 use crate::tools::{
     Tool,
@@ -12,47 +11,40 @@ use crate::tools::{
 };
 
 pub struct Toolbox {
-    /// tool singletons
-    pub tools: BTreeMap<ToolType, Rc<RefCell<Tool>>>,
-    pub selected: Rc<RefCell<Tool>>,
+    pub pencil:         Rc<RefCell<Pencil>>,
+    pub paint_bucket:   Rc<RefCell<PaintBucket>>,
+    pub line:           Rc<RefCell<Line>>,
+    pub selected:       ToolType,
 }
 
 impl Toolbox {
     pub fn new() -> Self {
-        let mut tools: BTreeMap<ToolType, Rc<RefCell<Tool>>> = BTreeMap::new();
-
         let pencil = Rc::new(RefCell::new(Pencil::new()));
-        tools.insert(ToolType::Pencil, pencil.clone());
-
         let line = Rc::new(RefCell::new(Line::new()));
-        tools.insert(ToolType::Line, line.clone());
-
         let paint_bucket = Rc::new(RefCell::new(PaintBucket::new()));
-        tools.insert(ToolType::PaintBucket, paint_bucket.clone());
 
-        let selected = pencil;
-
+        let selected = ToolType::Pencil;
         Toolbox {
-            tools,
+            pencil,
+            line,
+            paint_bucket,
             selected,
         }
     }
 
     pub fn tool(&mut self) -> Rc<RefCell<Tool>> {
-        self.selected.clone()
+        self.get(&self.selected)
     }
 
-    pub fn get(&self, name: &ToolType) -> Option<Rc<RefCell<Tool>>> {
-        if let Some(tool) = self.tools.get(name) {
-            Some(tool.clone())
-        } else {
-            None
+    pub fn get(&self, name: &ToolType) -> Rc<RefCell<Tool>> {
+        match name {
+            Pencil => self.pencil.clone(),
+            Line => self.line.clone(),
+            PaintBucket => self.paint_bucket.clone(),
         }
     }
 
-    pub fn change_to(&mut self, name: &ToolType) {
-        if let Some(tool) = self.tools.get(name) {
-            self.selected = tool.clone();
-        }
+    pub fn change_tool(&mut self, tool: &ToolType) {
+        self.selected = tool.clone();
     }
 }

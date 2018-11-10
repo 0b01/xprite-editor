@@ -1,7 +1,6 @@
 use crate::state::State;
 use crate::ui::tools;
-use imgui::*;
-use xprite::prelude::*;
+use crate::prelude::*;
 use xprite::rendering::Renderer;
 
 
@@ -10,8 +9,8 @@ use xprite::rendering::Renderer;
 /// 2. handle mouse and keyboard input, change state
 /// 3. update by calling draw method which takes in a renderer
 pub fn draw(rdr: &Renderer, state: &mut State, ui: &Ui) -> bool {
-    main_menu_bar(rdr, state, ui);
-    toolbar(state, ui);
+    draw_menu(rdr, state, ui);
+    draw_toolbar(state, ui);
     draw_canvas(rdr, state, ui);
     draw_settings(rdr, state, ui);
     tool_panel(rdr, state, ui);
@@ -25,7 +24,7 @@ fn tool_panel(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     .window(im_str!("Tool Options: {}", selected.as_str()))
     .position((sz.0 as f32 - 300., 20.), ImGuiCond::Appearing)
     .size((300., sz.1 as f32 - 20.), ImGuiCond::Appearing)
-    .movable(false)
+    .movable(true)
     .collapsible(false)
     .resizable(false)
     .build(|| {
@@ -33,7 +32,7 @@ fn tool_panel(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     })
 }
 
-fn toolbar(state: &mut State, ui: &Ui) {
+fn draw_toolbar(state: &mut State, ui: &Ui) {
     ui
     .window(im_str!("toolbox"))
     .position((0.,20.), ImGuiCond::Appearing)
@@ -42,7 +41,7 @@ fn toolbar(state: &mut State, ui: &Ui) {
     .collapsible(false)
     .resizable(false)
     .build(|| {
-        let tools: Vec<ToolType> = state.xpr.toolbox.tools.keys().cloned().collect();
+        let tools = ToolType::VARIANTS;
         for (_index, name) in tools.iter().enumerate() {
             let is_sel = &state.xpr.toolbox.tool().borrow().tool_type() == name;
             if ui.selectable(
@@ -64,7 +63,7 @@ fn draw_settings(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     })
 }
 
-fn main_menu_bar(_rdr: &Renderer, state: &mut State, ui: &Ui) {
+fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     ui.main_menu_bar(|| {
         ui.menu(im_str!("File")).build(|| {
             ui.menu_item(im_str!("Load")).shortcut(im_str!("Ctrl+O")).build();

@@ -22,4 +22,10 @@ impl ToolType {
             ToolType::PaintBucket => "PaintBucket",
         }
     }
+
+    pub const VARIANTS: [ToolType; 3] = [
+        ToolType::Pencil,
+        ToolType::Line,
+        ToolType::PaintBucket,
+    ];
 }

@@ -80,15 +80,12 @@ impl Xprite {
     }
 
     pub fn set_option_for_tool(&mut self, name: &ToolType, opt: &str, val: &str) {
-        if let Some(tool) = self.toolbox.get(name) {
-            tool.borrow_mut().set(self, opt, val);
-        } else {
-            panic!("toolbox does not contain {}", name.as_str());
-        }
+        let tool = self.toolbox.get(name);
+        tool.borrow_mut().set(self, opt, val);
     }
 
     pub fn change_tool(&mut self, name: &ToolType) {
-        self.toolbox.change_to(name);
+        self.toolbox.change_tool(name);
     }
 
     pub fn color(&self) -> Color {
