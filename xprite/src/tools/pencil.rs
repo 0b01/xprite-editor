@@ -122,14 +122,12 @@ impl Tool for Pencil {
         let button = self.is_mouse_down.clone().unwrap();
         if button == InputItem::Left {
             // xpr.history.undo();
+            self.buffer.clear();
             let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
             let perfect = pixel_perfect(&line_pixs);
             let pixs = Pixels::from_slice(&perfect);
             // debug!("-------------");
-            // debug!("{:#?}", self.buffer);
-            // debug!("{:#?}", pixs);
             self.buffer.extend(&pixs);
-            // debug!("{:#?}", self.buffer);
         } else if button == InputItem::Right {
             // xpr.remove_pixels(&pixels.unwrap());
         }
@@ -173,6 +171,7 @@ impl Tool for Pencil {
                 self.draw_polyline(xpr, &simple, false, true);
             }
             PixelPerfect => {
+                self.buffer.clear();
                 let points = self.current_polyline.connect_with_line(xpr)?;
                 let perfect = &pixel_perfect(&points);
                 let mut pixs = Pixels::from_slice(&perfect);
@@ -192,12 +191,9 @@ impl Tool for Pencil {
         xpr.history.enter();
         xpr.history.current_pixels_mut().extend(&self.buffer);
 
-        info!("{:#?}", xpr.history);
-
         self.current_polyline.clear();
-        self.is_mouse_down = None;
         self.buffer.clear();
-
+        self.is_mouse_down = None;
 
         self.draw(xpr);
         Some(())

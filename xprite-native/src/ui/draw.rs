@@ -104,7 +104,6 @@ fn bind_input(state: &mut State, ui: &Ui) {
 
     if state.last_mouse_pos.0 != x
     || state.last_mouse_pos.1 != y {
-        info!("{} {}", x, y);
         state.xpr.mouse_move(&MouseMove{ x, y });
     }
 

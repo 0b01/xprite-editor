@@ -4,10 +4,16 @@ use std::slice::Iter;
 use std::hash::{Hash, Hasher};
 use std::fmt::{Debug, Formatter, Error};
 
-#[derive(Copy, Clone, PartialEq, Eq)]
+#[derive(Copy, Clone, Eq)]
 pub struct Pixel {
     pub point: Point2D<f32>,
     pub color: ColorOption,
+}
+
+impl PartialEq for Pixel {
+    fn eq(&self, other: &Self) -> bool {
+        self.point == other.point
+    }
 }
 
 impl Debug for Pixel {
@@ -38,9 +44,10 @@ macro_rules! pixel {
 }
 
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 /// dual repr
 pub struct Pixels(pub Vec<Pixel>, pub HashSet<Pixel>);
+
 impl Pixels {
     pub fn new() -> Self {
         Pixels(Vec::new(), HashSet::new())
@@ -109,5 +116,17 @@ impl Debug for Pixels {
             // _ => write!(f, "Pixels[{}]([{:?}..{:?}])", self.0.len(), self.0[0], self.0.last().unwrap()),
             _ => write!(f, "Pixels[{}]([{:?}])", self.0.len(), self.0),
         }
+    }
+}
+
+
+mod tests {
+    use super::*;
+    #[test]
+    fn test_extend() {
+        let mut v1 = Pixels::from_slice(&vec![pixel!(0.,0.), pixel!(0.,1.)]);
+        let v2 = Pixels::from_slice(&vec![pixel!(0.,1.)]);
+        v1.extend(&v2);
+        assert_eq!(Pixels::from_slice(&vec![pixel!(0.,0.), pixel!(0.,1.)]), v1);
     }
 }
