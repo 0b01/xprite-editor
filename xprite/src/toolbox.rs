@@ -11,8 +11,8 @@ use crate::tools::{
 
 pub struct Toolbox {
     /// tool singletons
-    tools: HashMap<&'static str, Rc<RefCell<Tool>>>,
-    selected: Rc<RefCell<Tool>>,
+    pub tools: HashMap<&'static str, Rc<RefCell<Tool>>>,
+    pub selected: Rc<RefCell<Tool>>,
 }
 
 impl Toolbox {
@@ -36,7 +36,7 @@ impl Toolbox {
         }
     }
 
-    pub fn tool(&self) -> Rc<RefCell<Tool>> {
+    pub fn tool(&mut self) -> Rc<RefCell<Tool>> {
         self.selected.clone()
     }
 

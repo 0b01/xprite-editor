@@ -11,7 +11,7 @@ pub struct Pixel {
 
 impl Debug for Pixel {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "({},{})", self.point.x, self.point.y)
+        write!(f, "@({},{})", self.point.x, self.point.y)
     }
 }
 
@@ -37,7 +37,7 @@ macro_rules! pixel {
 }
 
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Pixels(pub Vec<Pixel>);
 impl Pixels {
     pub fn new() -> Self {
@@ -82,5 +82,15 @@ impl Pixels {
             .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
             .collect::<Vec<_>>();
         self
+    }
+}
+
+impl Debug for Pixels {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        match self.0.len() {
+            0 => write!(f, "Pixels(empty)"),
+            1 => write!(f, "Pixels([{:?}])", self.0[0]),
+            _ => write!(f, "Pixels([{:?}..{:?}])", self.0[0], self.0.last().unwrap()),
+        }
     }
 }

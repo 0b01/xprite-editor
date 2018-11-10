@@ -17,12 +17,7 @@ pub fn draw(rdr: &Renderer, state: &mut State, ui: &Ui) -> bool {
 
 fn toolbar(state: &mut State, ui: &Ui) {
     ui.window(im_str!("toolbox")).build(|| {
-        let tools = [
-            "pencil",
-            "line",
-            "3",
-            "4",
-        ];
+        let tools: Vec<&str> = state.xpr.toolbox.tools.keys().cloned().collect();
         for (_index, name) in tools.iter().enumerate() {
             let is_sel = &state.xpr.toolbox.tool().borrow().get_name() == name;
             if ui.selectable(
