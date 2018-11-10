@@ -3,6 +3,7 @@ pub enum InputItem {
     Ctrl,
     Shift,
     Z,
+    Y,
     Left,
     Right,
 }
@@ -36,6 +37,7 @@ pub struct InputState {
     pub ctrl: bool,
     pub shift: bool,
     pub z: bool,
+    pub y: bool,
 }
 
 impl Default for InputState {
@@ -46,6 +48,7 @@ impl Default for InputState {
             ctrl: false,
             shift: false,
             z: false,
+            y: false,
         }
     }
 }
@@ -56,7 +59,7 @@ impl InputState {
         macro_rules! debounce {
             ($a:ident) => {
                 if self.$a != new_state {
-                    self.$a = new_state;
+                    self.$a = !self.$a;
                     true
                 } else {
                     false
@@ -64,11 +67,12 @@ impl InputState {
             };
         }
         match item {
-            Ctrl => debounce!(ctrl),
-            Shift => debounce!(shift),
-            Z => debounce!(z),
-            Left => debounce!(left),
-            Right => debounce!(right),
+            InputItem::Ctrl => debounce!(ctrl),
+            InputItem::Shift => debounce!(shift),
+            InputItem::Z => debounce!(z),
+            InputItem::Y => debounce!(y),
+            InputItem::Left => debounce!(left),
+            InputItem::Right => debounce!(right),
         }
     }
 }

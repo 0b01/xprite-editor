@@ -112,8 +112,8 @@ fn bind_input(state: &mut State, ui: &Ui) {
         state.xpr.mouse_move(&MouseMove{ x, y });
     }
 
-    let left_mouse_down = ui.imgui().is_mouse_down(ImMouseButton::Left);
-    let right_mouse_down = ui.imgui().is_mouse_down(ImMouseButton::Right);
+    let left = ui.imgui().is_mouse_down(ImMouseButton::Left);
+    let right = ui.imgui().is_mouse_down(ImMouseButton::Right);
 
     // middle key for scrolling
     if ui.is_window_hovered() && !ui.is_item_active() &&
@@ -126,59 +126,75 @@ fn bind_input(state: &mut State, ui: &Ui) {
 
     if ui.is_window_hovered() && !ui.is_item_active()
     {
-        state.xpr.canvas.scale += wheel_delta;
+        state.xpr.canvas.scale += wheel_delta
     }
 
-    // right up
-    if state.inputs.right && !right_mouse_down {
-        // state.xpr.mouse_up(&MouseUp{ x, y });
-        state.inputs.right = false;
-    }
-
-    // left up
-    if state.inputs.left && !left_mouse_down {
-        state.xpr.mouse_up(&MouseUp{ x, y });
-        state.inputs.left = false;
-    }
-
-    // left down
-    if ui.is_window_hovered() && !ui.is_item_active() &&
-        left_mouse_down && !state.inputs.left
-    {
-        println!("mouse left down");
-        state.xpr.mouse_down(&MouseDown{ x, y, button: Left });
-        state.inputs.left = true;
-    }
-
-    // right down
-    if ui.is_window_hovered() && !ui.is_item_active() &&
-        ui.imgui().is_mouse_down(ImMouseButton::Right)
-    {
-        let (x, y) = ui.imgui().mouse_pos();
-        state.xpr.mouse_down(&MouseDown{ x, y, button: Right });
-    }
-
-    let ctrl_down = ui.imgui().key_ctrl();
-
-    // ctrl down
-    if state.inputs.debounce(InputItem::Ctrl, ctrl_down) {
-        if ctrl_down {
-            println!("ctrl down");
+    // left
+    if state.inputs.debounce(InputItem::Left, left) {
+        if left {
+            debug!("mouse left down");
+            state.xpr.mouse_down(&MouseDown{ x, y, button: Left });
         } else {
-            println!("ctrl up");
+            debug!("mouse left up");
+            state.xpr.mouse_up(&MouseUp{ x, y });
         }
     }
 
+    // right
+    if state.inputs.debounce(InputItem::Right, right) {
+        if right {
+            let (x, y) = ui.imgui().mouse_pos();
+            state.xpr.mouse_down(&MouseDown{ x, y, button: Right });
+        }
+    }
+
+    // ctrl
+    let ctrl = ui.imgui().key_ctrl();
+    if state.inputs.debounce(InputItem::Ctrl, ctrl) {
+        if ctrl {
+            debug!("ctrl down");
+        } else {
+            debug!("ctrl up");
+        }
+    }
+
+
     // z
-    let key = ui.imgui().get_key_index(ImGuiKey::Z);
-    if !state.inputs.z && ui.imgui().is_key_down(key) {
-        state.inputs.z = true;
-        println!("Z is being held!");
+    let key_z = ui.imgui().get_key_index(ImGuiKey::Z);
+    let z = ui.imgui().is_key_down(key_z);
+    if state.inputs.debounce(InputItem::Z, z) {
+        if z {
+            debug!("z down");
+            if state.inputs.ctrl {
+                state.xpr.undo();
+                debug!("ctrl+z");
+            }
+        } else {
+            debug!("z up");
+        }
     }
-    if state.inputs.z && !ui.imgui().is_key_down(key) {
-        state.inputs.z = false;
-        println!("Z is released!");
+
+    // y
+    let key_y = ui.imgui().get_key_index(ImGuiKey::Y);
+    let is_y_down = ui.imgui().is_key_down(key_y);
+    if state.inputs.debounce(InputItem::Y, is_y_down) {
+        if is_y_down {
+            debug!("Y down");
+            if state.inputs.ctrl {
+                state.xpr.redo();
+                debug!("ctrl+y");
+            }
+        } else {
+            debug!("y up");
+        }
     }
+
+    // for i in 0..512 {
+    //     if ui.imgui().is_key_down(i) {
+    //         println!("{}", i);
+    //     }
+    // }
+
 
     state.update_mouse_pos(x, y);
 }
