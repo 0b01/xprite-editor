@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use crate::tools::{
     Tool,
@@ -11,13 +11,13 @@ use crate::tools::{
 
 pub struct Toolbox {
     /// tool singletons
-    pub tools: HashMap<&'static str, Rc<RefCell<Tool>>>,
+    pub tools: BTreeMap<&'static str, Rc<RefCell<Tool>>>,
     pub selected: Rc<RefCell<Tool>>,
 }
 
 impl Toolbox {
     pub fn new() -> Self {
-        let mut tools: HashMap<&'static str, Rc<RefCell<Tool>>> = HashMap::new();
+        let mut tools: BTreeMap<&'static str, Rc<RefCell<Tool>>> = BTreeMap::new();
 
         let pencil = Rc::new(RefCell::new(Pencil::new()));
         tools.insert("pencil", pencil.clone());
@@ -28,7 +28,7 @@ impl Toolbox {
         let paint_bucket = Rc::new(RefCell::new(PaintBucket::new()));
         tools.insert("paint_bucket", paint_bucket.clone());
 
-        let selected = line;
+        let selected = pencil;
 
         Toolbox {
             tools,

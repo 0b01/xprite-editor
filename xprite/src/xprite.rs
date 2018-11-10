@@ -10,7 +10,7 @@ pub struct Xprite {
     pub toolbox: Toolbox,
     pub art_h: f32,
     pub art_w: f32,
-    pub cursor_pos: Option<Pixel>,
+    pub cursor_pos: Pixels,
 }
 
 impl Xprite {
@@ -18,7 +18,7 @@ impl Xprite {
         let event_queue = Vec::new();
         let selected_color = Color {r: 0, g: 0, b: 0, a: 255};
         let history = History::new();
-        let cursor_pos = None;
+        let cursor_pos = Pixels::new();
         let toolbox = Toolbox::new();
         let canvas = Canvas::new(art_w, art_h);
         let buffer = Pixels::new();
@@ -103,24 +103,37 @@ impl Xprite {
         self.pixels_mut().clear();
     }
 
-    pub fn print_cursor_location(&self) {
-        if self.cursor_pos.is_none() { return; }
-        let pos = self.cursor_pos.unwrap();;
-        panic!("cursor: ({}, {})", pos.point.x, pos.point.y);
+    pub fn set_cursor(&mut self, pos: Pixels) {
+        self.cursor_pos = pos;
     }
 
+    // pub fn print_cursor_location(&self) {
+    //     let pos = self.cursor_pos;
+    //     panic!("cursor: ({}, {})", pos.point.x, pos.point.y);
+    // }
+
+}
+
+impl Xprite {
+    /// render to canvas
     pub fn render(&self, rdr: &Renderer) {
         self.canvas.draw_canvas(rdr);
         self.canvas.draw_grid(rdr);
         for &Pixel{point, color: _ } in self.history.current_pixels().iter() {
             let Point2D {x, y} = point;
-            self.canvas.draw_pixel(rdr, x, y, BLACK);
+            self.canvas.draw_pixel(rdr, x, y, BLACK, true);
         }
         for &Pixel{point, color: _ } in self.pixels().iter() {
             let Point2D {x, y} = point;
-            self.canvas.draw_pixel(rdr, x, y, BLACK);
+            self.canvas.draw_pixel(rdr, x, y, BLACK, true);
+        }
+
+        for p in self.cursor_pos.iter() {
+            let Point2D {x, y} = p.point;
+            self.canvas.draw_pixel(rdr, x, y, RED, false);
         }
     }
+
 }
 
 
@@ -151,8 +164,7 @@ impl Xprite {
         if let &InputEvent::MouseMove{x, y} = evt {
             let p = Point2D::new(x, y);
             let point = self.canvas.shrink_size(&p);
-            let color = ColorOption::Set(self.color());
-            self.cursor_pos = Some(Pixel{point, color});
+            // self.cursor_pos = pixel!(point.x, point.y, self.color());
 
             let tool = self.toolbox.tool();
             tool.borrow_mut().mouse_move(self, p);

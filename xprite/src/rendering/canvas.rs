@@ -65,7 +65,7 @@ impl Canvas {
         self.canvas_h = canvas_h;
     }
 
-    pub fn draw_pixel(&self, rdr: &Renderer, x: f32, y: f32, color: [f32;4]) {
+    pub fn draw_pixel(&self, rdr: &Renderer, x: f32, y: f32, color: [f32;4], filled: bool) {
         let o = self.origin();
         if x >= self.art_w { return; }
         if y >= self.art_h { return; }
@@ -78,7 +78,7 @@ impl Canvas {
             o.1 + self.scale * (y+1.),
         ];
 
-        rdr.rect( p0, p1, color);
+        rdr.rect(p0, p1, color, filled);
     }
 
     pub fn origin(&self) -> (f32, f32) {
@@ -97,6 +97,7 @@ impl Canvas {
                 o.1 + self.art_h * self.scale,
             ],
             GREY,
+            true,
         );
     }
 
@@ -136,21 +137,4 @@ impl Canvas {
         }
     }
 
-    pub fn to_pixels(&self, p: Point2D<f32>, brush: &Brush, color: Color) -> Option<Pixels> {
-        let Point2D {x, y} = self.shrink_size(&p);
-
-        let (brush_w, brush_h) = brush.size;
-
-        if (x + brush_w) >= self.art_w || (y + brush_h) >= self.art_h {
-            None
-        } else {
-            let ret = brush.shape.iter().map(
-                |Pixel {point,..}| Pixel {
-                    point: Point2D::new(point.x+x, point.y+y),
-                    color: ColorOption::Set(color),
-                }
-            ).collect();
-            Some(Pixels(ret))
-        }
-    }
 }

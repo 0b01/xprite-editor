@@ -3,6 +3,7 @@ use crate::prelude::*;
 pub struct Brush {
     pub shape: PixelOffsets,
     pub size: (f32, f32),
+    pub offset: (f32, f32),
 }
 
 impl Brush {
@@ -13,6 +14,7 @@ impl Brush {
         Self {
             shape: pxs,
             size: (1., 1.),
+            offset: (0., 0.),
         }
     }
 
@@ -27,6 +29,7 @@ impl Brush {
         Self {
             shape: pxs,
             size: (3., 3.),
+            offset: (-1., -1.),
         }
     }
 }

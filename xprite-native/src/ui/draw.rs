@@ -167,6 +167,18 @@ fn bind_input(state: &mut State, ui: &Ui) {
         }
     }
 
+    // alt
+    let alt = ui.imgui().key_alt();
+    if state.inputs.debounce(InputItem::Alt, alt) {
+        if alt {
+            trace!("alt down");
+            state.xpr.event(&KeyDown{ key: Alt });
+        } else {
+            trace!("alt up");
+            state.xpr.event(&KeyUp{ key: Alt });
+        }
+    }
+
     // z
     let key_z = ui.imgui().get_key_index(ImGuiKey::Z);
     let z = ui.imgui().is_key_down(key_z);

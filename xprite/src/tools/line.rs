@@ -21,10 +21,12 @@ impl Line {
         }
     }
 
-    fn draw_cursor(&self, xpr: &mut Xprite) -> Option<()> {
+    fn set_cursor(&self, xpr: &mut Xprite) -> Option<()> {
         if let Some(pix) = self.cursor_pos {
             let c = pixel!(pix.point.x, pix.point.y, Color::red());
-            xpr.add_pixel(c);
+            let mut pixels = Pixels::new();
+            pixels.push(c);
+            xpr.set_cursor(pixels);
         }
         Some(())
     }
@@ -94,7 +96,7 @@ impl Tool for Line {
     fn draw(&self, xpr: &mut Xprite) -> Option<()> {
         xpr.new_frame();
         self.draw_line(xpr);
-        self.draw_cursor(xpr);
+        self.set_cursor(xpr);
         Some(())
     }
 
@@ -116,7 +118,10 @@ impl Tool for Line {
                 }
                 self.draw(xpr);
             }
-            _ => panic!("unimpl: {}", option)
+            "alt" => {
+                info!("alt pressed (unimplemented)");
+            }
+            _ => panic!("unimplemented option: {}", option)
         }
         Some(())
     }

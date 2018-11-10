@@ -4,7 +4,7 @@ use crate::algorithms::pixel_perfect::pixel_perfect;
 
 #[derive(Eq, PartialEq, Clone, Copy)]
 pub enum PencilMode {
-    /// just run pixel perfect - nothing else
+    /// pixel perfect - nothing else
     PixelPerfect,
     /// convert to vector and sort everything by slope
     SimplifyAndSortWhole,
@@ -28,7 +28,7 @@ impl Pencil {
         let is_mouse_down = None;
         let cursor = None;
         let cursor_pos = None;
-        let brush = Brush::pixel();
+        let brush = Brush::cross();
         let current_polyline = Polyline::new();
 
         Self {
@@ -67,11 +67,30 @@ impl Pencil {
 
     }
 
-    fn draw_cursor(&self, xpr: &mut Xprite) -> Option<()> {
+    fn set_cursor(&self, xpr: &mut Xprite) -> Option<()> {
         if self.cursor.is_none() { return None; }
         let cursor = self.cursor.clone().unwrap();
-        xpr.add_pixels(&cursor);
+        xpr.set_cursor(cursor);
         Some(())
+    }
+
+    pub fn to_pixels(&self, xpr: &Xprite, p: Point2D<f32>, color: Color) -> Option<Pixels> {
+        let Point2D {x, y} = xpr.canvas.shrink_size(&p);
+
+        let (brush_w, brush_h) = self.brush.size;
+
+        if (x + brush_w) >= xpr.canvas.art_w || (y + brush_h) >= xpr.canvas.art_h {
+            None
+        } else {
+            let (offset_x, offset_y) = self.brush.offset;
+            let ret = self.brush.shape.iter().map(
+                |Pixel {point,..}| Pixel {
+                    point: Point2D::new(point.x+x + offset_x, point.y+y + offset_y),
+                    color: ColorOption::Set(color),
+                }
+            ).collect();
+            Some(Pixels(ret))
+        }
     }
 
 }
@@ -83,7 +102,7 @@ impl Tool for Pencil {
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
-        let pixels = xpr.canvas.to_pixels(p, &self.brush, xpr.color());
+        let pixels = self.to_pixels(xpr, p, xpr.color());
         self.cursor = pixels.clone();
         let point = xpr.canvas.shrink_size(&p);
         let color = ColorOption::Set(xpr.color());
@@ -115,7 +134,7 @@ impl Tool for Pencil {
 
         self.current_polyline.push(p);
 
-        let pixels = xpr.canvas.to_pixels(p, &self.brush, xpr.color());
+        let pixels = self.to_pixels(xpr, p, xpr.color());
         if let Some(pixels) = pixels {
             if button == InputItem::Left {
                 xpr.add_pixels(&pixels);
@@ -167,7 +186,8 @@ impl Tool for Pencil {
 
     fn draw(&self, xpr: &mut Xprite) -> Option<()> {
         // xpr.canvas.clear_all();
-        self.draw_cursor(xpr)
+        xpr.new_frame();
+        self.set_cursor(xpr)
     }
 
     fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) -> Option<()> {
