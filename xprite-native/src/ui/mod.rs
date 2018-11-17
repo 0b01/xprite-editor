@@ -1,9 +1,10 @@
-pub mod tool_panel;
-pub mod toolbar;
-pub mod menu;
-pub mod canvas;
-pub mod settings;
-pub mod tools;
+mod tool_panel;
+mod toolbar;
+mod menu;
+mod canvas;
+mod settings;
+mod tools;
+mod layers;
 
 use crate::prelude::*;
 use xprite::rendering::Renderer;
@@ -17,6 +18,7 @@ pub fn draw(rdr: &Renderer, state: &mut State, ui: &Ui) -> bool {
     self::toolbar::draw_toolbar(state, ui);
     self::canvas::draw_canvas(rdr, state, ui);
     self::settings::draw_settings(rdr, state, ui);
-    self::tool_panel::tool_panel(rdr, state, ui);
+    self::tool_panel::draw_tool_panel(rdr, state, ui);
+    self::layers::draw_layers(rdr, state, ui);
     true
 }

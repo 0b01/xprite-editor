@@ -45,7 +45,7 @@ impl Line {
     fn finalize_line(&mut self, xpr: &mut Xprite) {
         if let Some(pixs) = self.get_line() {
             xpr.history.enter();
-            xpr.history.current_pixels_mut().extend_vec(&pixs);
+            xpr.history.top().selected_layer.borrow_mut().content.extend_vec(&pixs);
         }
     }
 

@@ -3,13 +3,13 @@ use crate::prelude::*;
 
 #[derive(Debug)]
 pub struct History {
-    stack: Vec<Pixels>,
-    redos: Vec<Pixels>,
+    stack: Vec<Layers>,
+    redos: Vec<Layers>,
 }
 
 impl History {
     pub fn new() -> Self {
-        let stack = vec![Pixels::new()];
+        let stack = vec![Layers::new()];
         let redos = vec![];
         History {
             stack,
@@ -23,23 +23,24 @@ impl History {
     }
 
     pub fn duplicate(&mut self) {
-        let latest = self.current_pixels().clone();
+        let latest = self.top().clone();
         self.stack.push(latest);
     }
 
-    pub fn current_pixels_mut(&mut self) -> &mut Pixels {
+    pub fn top_mut(&mut self) -> &mut Layers {
         self.stack.last_mut().unwrap()
     }
 
-    pub fn current_pixels(&self) -> &Pixels {
+    pub fn top(&self) -> &Layers {
         self.stack.last().unwrap()
     }
 
     pub fn clear_redo(&mut self) {
-        self.redos = Vec::new();
+        self.redos.clear();
     }
 
     pub fn undo(&mut self) {
+        info!("undo");
         // invariant: must have 1 item(empty canvas)
         if self.stack.len() == 1 {
             return;

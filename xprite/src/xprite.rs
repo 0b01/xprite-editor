@@ -6,7 +6,7 @@ use crate::rendering::Renderer;
 pub struct Xprite {
     pub event_queue: Vec<InputEvent>,
     pub history: History,
-    pub layers: Layers,
+    pub im_buf: Pixels,
     pub canvas: Canvas,
     pub selected_color: Color,
     pub toolbox: Toolbox,
@@ -23,12 +23,12 @@ impl Xprite {
         let cursor_pos = Pixels::new();
         let toolbox = Toolbox::new();
         let canvas = Canvas::new(art_w, art_h);
-        let layers = Layers::new();
+        let im_buf = Pixels::new();
 
         Xprite {
             event_queue,
             history,
-            layers,
+            im_buf,
             canvas,
             selected_color,
             cursor_pos,
@@ -46,31 +46,31 @@ impl Xprite {
         self.history.redo();
     }
 
-    /// add stroke to temp layers
+    /// add stroke to temp im_buf
     pub fn add_stroke(&mut self, pixels: &[Pixel]) {
         for &pixel in pixels.iter() {
             self.add_pixel(pixel);
         }
     }
 
-    /// add pixels to temp layers
+    /// add pixels to temp im_buf
     pub fn add_pixels(&mut self, pixels: &Pixels) {
         for &pixel in pixels.iter() {
             self.add_pixel(pixel);
         }
     }
 
-    /// add pixel to temp layers
+    /// add pixel to temp im_buf
     pub fn add_pixel(&mut self, pixel: Pixel) {
         self.pixels_mut().push(pixel);
     }
 
-    pub fn pixels_mut(&self) -> RefMut<'_, Pixels> {
-        self.layers.pixels_mut()
+    pub fn pixels_mut(&mut self) -> &mut Pixels {
+        &mut self.im_buf
     }
 
-    pub fn pixels(&self) -> Ref<'_, Pixels> {
-        self.layers.pixels()
+    pub fn pixels(&self) -> &Pixels {
+        &self.im_buf
     }
 
     pub fn set_option(&mut self, opt: &str, val: &str) -> Option<()> {
@@ -112,7 +112,13 @@ impl Xprite {
 
 }
 
+use std::rc::Rc;
+use std::cell::RefCell;
+
 impl Xprite {
+    pub fn switch_layer(&mut self, layer: Rc<RefCell<Layer>>) {
+        self.history.top_mut().selected_layer = layer;
+    }
 }
 
 impl Xprite {
@@ -120,14 +126,26 @@ impl Xprite {
     pub fn render(&self, rdr: &Renderer) {
         self.canvas.draw_canvas(rdr);
         self.canvas.draw_grid(rdr);
-        for &Pixel{point, color: _ } in self.history.current_pixels().iter() {
-            let Point2D {x, y} = point;
-            self.canvas.draw_pixel(rdr, x, y, BLACK, true);
+
+        let top = self.history.top();
+        for layer in top.layers.iter() {
+            if !layer.borrow().visible {
+                continue;
+            }
+            for &Pixel{point, color: _ } in layer.borrow().content.iter() {
+                let Point2D {x, y} = point;
+                self.canvas.draw_pixel(rdr, x, y, BLACK, true);
+            }
         }
+
+        // draw current layer pixels
         for &Pixel{point, color: _ } in self.pixels().iter() {
             let Point2D {x, y} = point;
             self.canvas.draw_pixel(rdr, x, y, BLACK, true);
         }
+
+
+        // draw cursor
         for p in self.cursor_pos.iter() {
             let Point2D {x, y} = p.point;
             self.canvas.draw_pixel(rdr, x, y, RED, false);

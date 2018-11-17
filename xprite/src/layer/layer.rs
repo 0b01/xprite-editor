@@ -1,5 +1,6 @@
 use crate::prelude::*;
 
+#[derive(PartialEq, Eq, Debug, Clone)]
 pub struct Layer {
     pub name: String,
     pub content: Pixels,
@@ -7,8 +8,7 @@ pub struct Layer {
 }
 
 impl Layer {
-    pub fn new(name: &str) -> Self {
-        let name = name.to_owned();
+    pub fn new(name: String) -> Self {
         let content = Pixels::new();
         let visible = true;
 

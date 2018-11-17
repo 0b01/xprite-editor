@@ -233,7 +233,11 @@ impl Tool for Pencil {
         }
 
         xpr.history.enter();
-        xpr.history.current_pixels_mut().extend(&self.buffer);
+        xpr.history.top()
+            .selected_layer
+            .borrow_mut()
+            .content
+            .extend(&self.buffer);
 
         self.current_polyline.clear();
         self.buffer.clear();
