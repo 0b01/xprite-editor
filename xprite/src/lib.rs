@@ -15,4 +15,5 @@ pub mod prelude;
 pub mod xprite;
 
 pub mod input;
+pub mod layer;
 pub mod rendering;

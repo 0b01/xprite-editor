@@ -88,8 +88,8 @@ fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
     ui.window(im_str!("canvas"))
         .position((100.0, 20.0), ImGuiCond::Appearing)
         .size((sz.0 as f32 - 400., sz.1 as f32 - 20.), ImGuiCond::Appearing)
-        .resizable(false)
-        .movable(false)
+        .resizable(true)
+        .movable(true)
         .collapsible(false)
         .build(|| {
             // // checkbox for show grid

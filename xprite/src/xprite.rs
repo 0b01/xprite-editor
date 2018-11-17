@@ -1,10 +1,12 @@
+use std::cell::{Ref, RefMut};
+
 use crate::prelude::*;
 use crate::rendering::Renderer;
 
 pub struct Xprite {
     pub event_queue: Vec<InputEvent>,
     pub history: History,
-    pub buffer: Pixels,
+    pub layers: Layers,
     pub canvas: Canvas,
     pub selected_color: Color,
     pub toolbox: Toolbox,
@@ -21,12 +23,12 @@ impl Xprite {
         let cursor_pos = Pixels::new();
         let toolbox = Toolbox::new();
         let canvas = Canvas::new(art_w, art_h);
-        let buffer = Pixels::new();
+        let layers = Layers::new();
 
         Xprite {
             event_queue,
             history,
-            buffer,
+            layers,
             canvas,
             selected_color,
             cursor_pos,
@@ -36,7 +38,6 @@ impl Xprite {
         }
     }
 
-
     pub fn undo(&mut self) {
         self.history.undo();
     }
@@ -45,31 +46,31 @@ impl Xprite {
         self.history.redo();
     }
 
-    /// add stroke to temp buffer
+    /// add stroke to temp layers
     pub fn add_stroke(&mut self, pixels: &[Pixel]) {
         for &pixel in pixels.iter() {
             self.add_pixel(pixel);
         }
     }
 
-    /// add pixels to temp buffer
+    /// add pixels to temp layers
     pub fn add_pixels(&mut self, pixels: &Pixels) {
         for &pixel in pixels.iter() {
             self.add_pixel(pixel);
         }
     }
 
-    /// add pixel to temp buffer
+    /// add pixel to temp layers
     pub fn add_pixel(&mut self, pixel: Pixel) {
         self.pixels_mut().push(pixel);
     }
 
-    pub fn pixels_mut(&mut self) -> &mut Pixels {
-        &mut self.buffer
+    pub fn pixels_mut(&self) -> RefMut<'_, Pixels> {
+        self.layers.pixels_mut()
     }
 
-    pub fn pixels(&self) -> &Pixels {
-        &self.buffer
+    pub fn pixels(&self) -> Ref<'_, Pixels> {
+        self.layers.pixels()
     }
 
     pub fn set_option(&mut self, opt: &str, val: &str) -> Option<()> {

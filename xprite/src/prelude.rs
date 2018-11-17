@@ -10,6 +10,7 @@ pub use crate::brush::Brush;
 pub use crate::geom::{Point2D, CubicBezierSegment};
 pub use crate::input::{InputEvent, InputItem};
 pub use crate::rendering::canvas::Canvas;
+pub use crate::layer::{Layer, Layers};
 
 pub type PixelOffsets = Pixels;
 
