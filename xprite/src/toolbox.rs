@@ -37,7 +37,8 @@ impl Toolbox {
     }
 
     pub fn get(&self, name: &ToolType) -> Rc<RefCell<Tool>> {
-        match name {
+        use self::ToolType::*;
+        match &name {
             Pencil => self.pencil.clone(),
             Line => self.line.clone(),
             PaintBucket => self.paint_bucket.clone(),

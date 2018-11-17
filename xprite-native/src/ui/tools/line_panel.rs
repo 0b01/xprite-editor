@@ -1,5 +1,4 @@
 use crate::prelude::*;
 
-pub fn draw(state: &mut State, ui: &Ui) {
-
+pub fn draw(_state: &mut State, _ui: &Ui) {
 }

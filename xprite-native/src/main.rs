@@ -1,5 +1,3 @@
-#![feature(associated_consts)]
-
 extern crate fern;
 #[macro_use]
 extern crate log;

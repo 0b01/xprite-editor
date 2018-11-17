@@ -1,10 +1,9 @@
 use crate::prelude::*;
-use std::cell::{Ref, RefMut};
 
 pub struct Layer {
-    name: String,
-    content: Pixels,
-    visible: bool,
+    pub name: String,
+    pub content: Pixels,
+    pub visible: bool,
 }
 
 impl Layer {
@@ -18,6 +17,11 @@ impl Layer {
             content,
             visible,
         }
+    }
+
+    pub fn with_pixels(mut self, content: &Pixels) -> Self {
+        self.content = content.to_owned();
+        self
     }
 
     pub fn pixels(&self) -> &Pixels {
