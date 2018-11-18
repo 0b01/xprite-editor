@@ -12,18 +12,18 @@ pub struct Layers {
     pub selected_layer: Rc<RefCell<Layer>>,
 }
 
-impl Clone for Layers {
-    fn clone(&self) -> Self {
+impl Layers {
+    pub fn deepcopy(&self) -> Option<Layers> {
         let layers: Vec<_> = self.layers.iter().map(|i|
             Rc::new(RefCell::new(i.borrow().clone()))
         ).collect();
 
-        let selected_layer = Layers::_find(&layers, &self.selected_layer);
+        let selected_layer = Layers::_find(&layers, &self.selected_layer)?;
 
-        Self {
+        Some(Self {
             layers,
             selected_layer,
-        }
+        })
     }
 }
 
@@ -42,19 +42,18 @@ impl Layers {
     }
 
     /// find a layer that is structurally equal
-    pub fn find(&self, old: &Rc<RefCell<Layer>>) -> Rc<RefCell<Layer>> {
+    pub fn find(&self, old: &Rc<RefCell<Layer>>) -> Option<Rc<RefCell<Layer>>> {
         Layers::_find(&self.layers, old)
     }
 
     /// find a layer that is structurally equal
-    fn _find(layers: &[Rc<RefCell<Layer>>], old: &Rc<RefCell<Layer>>) -> Rc<RefCell<Layer>> {
+    fn _find(layers: &[Rc<RefCell<Layer>>], old: &Rc<RefCell<Layer>>) -> Option<Rc<RefCell<Layer>>> {
         let new = layers.iter()
             .find(|i|
                 *i.borrow() == *old.borrow()
-            )
-            .unwrap()
+            )?
             .clone();
-        new
+        Some(new)
     }
 
 
@@ -78,7 +77,7 @@ impl Layers {
     }
 
     pub fn remove_layer(&mut self, to_remove: &Rc<RefCell<Layer>>) {
-        let i = self.find(to_remove);
+        let i = self.find(to_remove).unwrap();
         self.layers.remove_item(&i);
     }
 

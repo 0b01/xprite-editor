@@ -17,14 +17,16 @@ impl History {
         }
     }
 
-    pub fn enter(&mut self) {
-        self.duplicate();
+    pub fn enter(&mut self) -> Option<()> {
+        self.duplicate()?;
         self.clear_redo();
+        Some(())
     }
 
-    pub fn duplicate(&mut self) {
-        let latest = self.top().clone();
+    pub fn duplicate(&mut self) -> Option<()> {
+        let latest = self.top().deepcopy()?;
         self.stack.push(latest);
+        Some(())
     }
 
     pub fn top_mut(&mut self) -> &mut Layers {

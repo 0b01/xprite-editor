@@ -1,5 +1,3 @@
-use std::cell::{Ref, RefMut};
-
 use crate::prelude::*;
 use crate::rendering::Renderer;
 
@@ -121,23 +119,26 @@ impl Xprite {
         self.history.top_mut().selected_layer = layer;
     }
 
-    pub fn toggle_layer_visibility(&mut self, old: &Rc<RefCell<Layer>>) {
-        self.history.enter();
+    pub fn toggle_layer_visibility(&mut self, old: &Rc<RefCell<Layer>>) -> Option<()> {
+        self.history.enter()?;
         let layers = self.history.top();
-        let new_layer = layers.find(&old);
+        let new_layer = layers.find(&old).unwrap();
         new_layer.borrow_mut().toggle_visible();
+        Some(())
     }
 
-    pub fn remove_layer(&mut self, old: &Rc<RefCell<Layer>>) {
-        self.history.enter();
-        let mut layers = self.history.top_mut();
+    pub fn remove_layer(&mut self, old: &Rc<RefCell<Layer>>) -> Option<()> {
+        self.history.enter()?;
+        let layers = self.history.top_mut();
         layers.remove_layer(&old);
+        Some(())
     }
 
-    pub fn rename_layer(&mut self, name: &str) {
-        self.history.enter();
-        let mut layers = self.history.top_mut();
+    pub fn rename_layer(&mut self, name: &str) -> Option<()> {
+        self.history.enter()?;
+        let layers = self.history.top_mut();
         layers.selected_layer.borrow_mut().name = name.to_owned();
+        Some(())
     }
 
 }

@@ -41,11 +41,12 @@ impl Line {
         }
     }
 
-    fn finalize_line(&mut self, xpr: &mut Xprite) {
+    fn finalize_line(&mut self, xpr: &mut Xprite) -> Option<()> {
         if let Some(pixs) = self.get_line() {
-            xpr.history.enter();
+            xpr.history.enter()?;
             xpr.history.top().selected_layer.borrow_mut().content.extend_vec(&pixs);
         }
+        Some(())
     }
 
     fn draw_line(&self, xpr: &mut Xprite) -> Option<()> {
@@ -76,7 +77,7 @@ impl Tool for Line {
         let point = xpr.canvas.shrink_size(&p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel {point, color});
-        self.finalize_line(xpr);
+        self.finalize_line(xpr)?;
         self.is_mouse_down = None;
         self.start_pos = None;
         self.draw(xpr);

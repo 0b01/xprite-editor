@@ -232,7 +232,7 @@ impl Tool for Pencil {
             }
         }
 
-        xpr.history.enter();
+        xpr.history.enter()?;
         xpr.history.top()
             .selected_layer
             .borrow_mut()
