@@ -119,6 +119,12 @@ impl Xprite {
     pub fn switch_layer(&mut self, layer: Rc<RefCell<Layer>>) {
         self.history.top_mut().selected_layer = layer;
     }
+    pub fn toggle_visible(&mut self, old: &Rc<RefCell<Layer>>) {
+        self.history.enter();
+        let layers = self.history.top();
+        let new_layer = layers.find(&old);
+        new_layer.borrow_mut().toggle_visible();
+    }
 }
 
 impl Xprite {

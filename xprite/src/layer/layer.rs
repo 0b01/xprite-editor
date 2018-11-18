@@ -31,4 +31,9 @@ impl Layer {
     pub fn pixels_mut(&mut self) -> &mut Pixels {
         &mut self.content
     }
+
+    pub fn toggle_visible(&mut self) {
+        self.visible = !self.visible;
+        info!("toggled {} to: {}", self.name, self.visible);
+    }
 }

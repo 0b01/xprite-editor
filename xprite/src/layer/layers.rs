@@ -14,15 +14,11 @@ pub struct Layers {
 
 impl Clone for Layers {
     fn clone(&self) -> Self {
-        let layers: Vec<Rc<RefCell<Layer>>> = self.layers.iter().map(|i|
+        let layers: Vec<_> = self.layers.iter().map(|i|
             Rc::new(RefCell::new(i.borrow().clone()))
         ).collect();
-        let selected_layer = layers.iter()
-            .find(|i|
-                i.borrow().name == self.selected_layer.borrow().name
-            )
-            .unwrap()
-            .clone();
+
+        let selected_layer = Layers::_find(&layers, &self.selected_layer);
 
         Self {
             layers,
@@ -44,6 +40,21 @@ impl Layers {
     pub fn is_selected(&self, layer: &Rc<RefCell<Layer>>) -> bool {
         &self.selected_layer == layer
     }
+
+    pub fn find(&self, old: &Rc<RefCell<Layer>>) -> Rc<RefCell<Layer>> {
+        Layers::_find(&self.layers, old)
+    }
+
+    fn _find(layers: &[Rc<RefCell<Layer>>], old: &Rc<RefCell<Layer>>) -> Rc<RefCell<Layer>> {
+        let new = layers.iter()
+            .find(|i|
+                *i.borrow() == *old.borrow()
+            )
+            .unwrap()
+            .clone();
+        new
+    }
+
 
     pub fn add(&mut self, name: Option<&str>) {
         let name = name
