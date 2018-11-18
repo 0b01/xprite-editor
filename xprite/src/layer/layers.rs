@@ -41,10 +41,12 @@ impl Layers {
         &self.selected_layer == layer
     }
 
+    /// find a layer that is structurally equal
     pub fn find(&self, old: &Rc<RefCell<Layer>>) -> Rc<RefCell<Layer>> {
         Layers::_find(&self.layers, old)
     }
 
+    /// find a layer that is structurally equal
     fn _find(layers: &[Rc<RefCell<Layer>>], old: &Rc<RefCell<Layer>>) -> Rc<RefCell<Layer>> {
         let new = layers.iter()
             .find(|i|
@@ -66,23 +68,18 @@ impl Layers {
         self.layers.push(layer);
     }
 
-    pub fn duplicate_layer(&mut self, name: &str) -> Option<()> {
-        let new_layer = {
-            let layer = self.layers.iter().find(|&layer| layer.borrow().name == name)?;
-            let b = layer.borrow();
-            let old_content = b.pixels();
-            Layer::new(format!("{}(copy)", name)).with_pixels(old_content)
-        };
+    pub fn duplicate_layer(&mut self, orig: &Rc<RefCell<Layer>>) {
+        let new_layer = orig.borrow().clone();
         self.layers.push(Rc::new(RefCell::new(new_layer)));
-        Some(())
     }
 
-    pub fn duplicate_current(&mut self) -> Option<()> {
-        let current_name = {
-            let b = self.selected_layer.borrow();
-            b.name.to_owned()
-        };
-        self.duplicate_layer(&current_name)
+    pub fn duplicate_current(&mut self) {
+        self.duplicate_layer(&self.selected_layer.clone());
+    }
+
+    pub fn remove_layer(&mut self, to_remove: &Rc<RefCell<Layer>>) {
+        let i = self.find(to_remove);
+        self.layers.remove_item(&i);
     }
 
     pub fn pixels(&self) -> Ref<'_, Pixels> {

@@ -12,9 +12,34 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     .resizable(false)
     .build(|| {
 
-        if ui.button(im_str!("add"), (60.,20.)) {
+        if ui.button(im_str!("+"), (20.,20.)) {
             state.xpr.history.top_mut().add(None);
         }
+
+        ui.popup_modal(im_str!("Rename Layer"))
+          .inputs(true)
+          .collapsible(false)
+          .resizable(false)
+          .movable(false)
+          .build(|| {
+            let name = {
+                let layers = state.xpr.history.top_mut();
+                layers.selected_layer.borrow_mut().name.to_owned()
+            };
+            let mut im = ImString::new(name);
+            ui.with_item_width(100., ||{
+                if ui
+                .input_text(im_str!(""), &mut im)
+                .auto_select_all(true)
+                .enter_returns_true(true)
+                .build() {
+                    let name : &str = im.as_ref();
+                    info!("renameing: {}", name);
+                    state.xpr.rename_layer(&im.as_ref());
+                    ui.close_current_popup();
+                }
+            });
+        });
 
         let (layers, selected_layer) = {
             let layer_manager = state.xpr.history.top_mut();
@@ -32,9 +57,13 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 if ui.selectable(
                     im_str!("{}", name),
                     is_sel,
-                    ImGuiSelectableFlags::empty(),
+                    ImGuiSelectableFlags::AllowDoubleClick,
                     (50.,0.)
                 ) {
+                    if ui.imgui().is_mouse_double_clicked(imgui::ImMouseButton::Left) {
+                        info!("double clicked");
+                        ui.open_popup(im_str!("Rename Layer"));
+                    }
                     state.xpr.history.top_mut().selected_layer = layer.clone();
                 }
             }
@@ -45,10 +74,15 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 if ui.checkbox(im_str!(""), &mut layer_ref.visible) {
                     layer_ref.visible = !layer_ref.visible; // undo imgui checkbox mutation
                     drop(layer_ref); // drop borrow
-                    state.xpr.toggle_visible(&layer); // enter history frame and toggle
+                    state.xpr.toggle_layer_visibility(&layer); // enter history frame and toggle
                 }
-            })
-
+            });
+            ui.same_line(140.);
+            ui.with_id(i as i32, || {
+                if ui.button(im_str!("X"), (20.,20.)) {
+                    state.xpr.remove_layer(&layer);
+                }
+            });
         }
     })
 }

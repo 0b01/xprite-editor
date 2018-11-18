@@ -21,7 +21,7 @@ pub fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
 
             ui.with_style_and_color_vars(&styles, &colors, || {
                 let win_sz = ui.get_window_size();
-                let child_frame_sz = (win_sz.0, win_sz.1 - 100.);
+                let child_frame_sz = (win_sz.0, win_sz.1);
                 ui.child_frame(im_str!("scrolling_region"), child_frame_sz)
                     .show_scrollbar(false)
                     .movable(false)
@@ -34,11 +34,11 @@ pub fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
                     });
             });
 
-            ui.drag_float(im_str!("scale"), &mut state.xpr.canvas.scale)
-              .min(1.)
-              .max(50.)
-              .speed(0.1)
-              .build();
+            // ui.drag_float(im_str!("scale"), &mut state.xpr.canvas.scale)
+            //   .min(1.)
+            //   .max(50.)
+            //   .speed(0.1)
+            //   .build();
 
         });
 }

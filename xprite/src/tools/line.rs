@@ -32,14 +32,13 @@ impl Line {
     }
 
     fn get_line(&self) -> Option<Vec<Pixel>> {
-        if let Some(start) = self.start_pos {
-        if let Some(stop) = self.cursor_pos {
-            if self.snap {
-                Some(snapped_line(self.is_snap_45, &start, &stop))
-            } else {
-                Some(bresenham(&start.point.into(), &stop.point.into()))
-            }
-        } else {None}} else { None }
+        let start = self.start_pos?;
+        let stop = self.cursor_pos?;
+        if self.snap {
+            Some(snapped_line(self.is_snap_45, &start, &stop))
+        } else {
+            Some(bresenham(&start.point.into(), &stop.point.into()))
+        }
     }
 
     fn finalize_line(&mut self, xpr: &mut Xprite) {

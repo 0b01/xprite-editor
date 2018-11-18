@@ -116,15 +116,30 @@ use std::rc::Rc;
 use std::cell::RefCell;
 
 impl Xprite {
+
     pub fn switch_layer(&mut self, layer: Rc<RefCell<Layer>>) {
         self.history.top_mut().selected_layer = layer;
     }
-    pub fn toggle_visible(&mut self, old: &Rc<RefCell<Layer>>) {
+
+    pub fn toggle_layer_visibility(&mut self, old: &Rc<RefCell<Layer>>) {
         self.history.enter();
         let layers = self.history.top();
         let new_layer = layers.find(&old);
         new_layer.borrow_mut().toggle_visible();
     }
+
+    pub fn remove_layer(&mut self, old: &Rc<RefCell<Layer>>) {
+        self.history.enter();
+        let mut layers = self.history.top_mut();
+        layers.remove_layer(&old);
+    }
+
+    pub fn rename_layer(&mut self, name: &str) {
+        self.history.enter();
+        let mut layers = self.history.top_mut();
+        layers.selected_layer.borrow_mut().name = name.to_owned();
+    }
+
 }
 
 impl Xprite {
