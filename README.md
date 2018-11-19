@@ -10,20 +10,21 @@ Pixel art editor with algorithmic tools.
 
 * [x] Canvas
 * [x] Renderer
-* [ ] Layer
+* [x] Layer
 
 1. Basic tools
 
-* [ ] Pencil
-* [ ] Line
+* [x] Pencil
+* [x] Line
 * [ ] Vector tools
+* [ ] Shapes
+* [ ] Selection
 * [ ] Brush
 * [ ] Paint Bucket
 
 2. Layers
 
 * [ ] Load / Save
-* [ ] major refactor
 
 3. Animation support
 
