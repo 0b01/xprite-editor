@@ -234,6 +234,8 @@ pub fn run<F: FnMut(&Ui) -> bool>(title: &str, clear_color: [f32; 4], mut run_ui
             hidpi_factor,
         };
 
+        ::std::thread::sleep(::std::time::Duration::from_millis(15));
+
         let ui = imgui.frame(frame_size, delta_s);
         if !run_ui(&ui) {
             break;
