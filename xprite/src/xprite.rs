@@ -119,6 +119,11 @@ impl Xprite {
         self.history.top_mut().selected_layer = layer;
     }
 
+    pub fn current_layer(&self) -> Rc<RefCell<Layer>> {
+        self.history.top().selected_layer.clone()
+    }
+
+
     pub fn toggle_layer_visibility(&mut self, old: &Rc<RefCell<Layer>>) -> Option<()> {
         self.history.enter()?;
         let layers = self.history.top();

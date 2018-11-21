@@ -248,7 +248,6 @@ impl Tool for Pencil {
     }
 
     fn draw(&self, xpr: &mut Xprite) -> Option<()> {
-        // xpr.canvas.clear_all();
         xpr.new_frame();
         self.set_cursor(xpr);
         xpr.add_pixels(&self.buffer);

@@ -1,10 +1,10 @@
-#[derive(Debug, Clone, Eq, Copy, PartialEq)]
+#[derive(Debug, Hash, Clone, Eq, Copy, PartialEq)]
 pub enum ColorOption {
     Unset,
     Set(Color),
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Hash, Copy, Clone, Eq, PartialEq)]
 pub struct Color {
     pub r: u8,
     pub g: u8,
@@ -36,6 +36,13 @@ impl Color {
             r: 255, g: 0, b: 0, a: 255,
         }
     }
+
+    pub fn black() -> Color {
+        Color {
+            r: 0, g: 0, b: 0, a: 255,
+        }
+    }
+
 
     pub fn blue() -> Color {
         Color {

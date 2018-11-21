@@ -10,43 +10,61 @@ pub struct Pixel {
     pub color: ColorOption,
 }
 
+impl Pixel {
+    pub fn with_color(&self, col: Color) -> Self {
+        let mut self_ = self.clone();
+        self_.color = ColorOption::Set(col);
+        self_
+    }
+}
+
 impl PartialEq for Pixel {
     fn eq(&self, other: &Self) -> bool {
-        self.point == other.point
+        (self.point == other.point) &&
+        (self.color == other.color)
     }
 }
 
 impl Debug for Pixel {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "@({},{})", self.point.x, self.point.y)
+        write!(f, "@({},{},{:#?})", self.point.x, self.point.y, self.color)
     }
 }
 
 impl Hash for Pixel {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.point.hash(state);
+        self.color.hash(state);
     }
 }
 
 macro_rules! pixel {
     ($i:expr, $j: expr) => {
         Pixel {
-            point: Point2D::new($i, $j),
+            point: Point2D::new($i as f32, $j as f32),
             color: ColorOption::Unset,
         }
     };
     ($i:expr, $j: expr, $k: expr) => {
         Pixel {
-            point: Point2D::new($i, $j),
+            point: Point2D::new($i as f32, $j as f32),
             color: ColorOption::Set($k),
         }
     };
 }
 
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, Eq)]
 /// dual repr
 pub struct Pixels(pub Vec<Pixel>, pub HashSet<Pixel>);
+
+impl PartialEq for Pixels {
+    fn eq(&self, other: &Self) -> bool {
+        self.1.is_subset(&other.1)
+        &&
+        other.1.is_subset(&self.1)
+    }
+}
 
 impl Pixels {
     pub fn new() -> Self {
@@ -79,6 +97,7 @@ impl Pixels {
     pub fn push(&mut self, px: Pixel) {
         if !self.1.contains(&px) {
             self.0.push(px);
+            self.1.insert(px);
         }
     }
     pub fn contains(&mut self, px: &Pixel) -> bool {
@@ -116,6 +135,33 @@ impl Debug for Pixels {
             // _ => write!(f, "Pixels[{}]([{:?}..{:?}])", self.0.len(), self.0[0], self.0.last().unwrap()),
             _ => write!(f, "Pixels[{}]([{:?}])", self.0.len(), self.0),
         }
+    }
+}
+
+impl From<Pixel> for Pixels {
+    fn from(p: Pixel) -> Pixels {
+        let mut pix = Pixels::new();
+        pix.push(p);
+        pix
+    }
+}
+
+impl Pixels {
+    pub fn as_arr(&self, w: usize, h: usize) -> Vec<Vec<Pixel>> {
+        let mut arr = vec![];
+        for i in 0..h {
+            let mut row = vec![];
+            for j in 0..w {
+                row.push(pixel!(i as f32, j as f32));
+            }
+            arr.push(row);
+        }
+        for p in self.0.iter() {
+            let Pixel{point, ..} = p;
+            let Point2D {x, y} = point;
+            arr[*x as usize][*y as usize] = p.clone();
+        }
+        arr
     }
 }
 
