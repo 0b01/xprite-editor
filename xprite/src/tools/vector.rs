@@ -5,29 +5,29 @@ use crate::algorithms::pixel_perfect::pixel_perfect;
 pub struct Vector {
     is_mouse_down: Option<InputItem>,
     current_polyline: Polyline,
-    cursor: Option<Pixels>,
     cursor_pos: Option<Pixel>,
     brush: Brush,
     tolerence: f32,
     buffer: Pixels,
+    circ_buf: Pixels,
 }
 impl Vector {
     pub fn new() -> Self {
         let is_mouse_down = None;
-        let cursor = None;
         let cursor_pos = None;
         let brush = Brush::pixel();
         let buffer = Pixels::new();
         let current_polyline = Polyline::new();
+        let circ_buf = Pixels::new();
 
         Self {
             is_mouse_down,
             current_polyline,
-            cursor,
             cursor_pos,
             brush,
             tolerence: 2.,
             buffer,
+            circ_buf,
         }
     }
 
@@ -43,7 +43,7 @@ impl Vector {
             let Point2D{x, y} = xpr.canvas.shrink_size_no_floor(&p);
             // let color = Color::blue();
             // rasterized.push(pixel!(x,y,color));
-            xpr.render_circle_list.push(pixel!(x, y, Color::blue()));
+            self.circ_buf.push(pixel!(x, y, Color::blue()));
         }
 
         // plot control points
@@ -53,19 +53,12 @@ impl Vector {
                 let Point2D{x, y} = xpr.canvas.shrink_size_no_floor(p);
                 // let color = Color::red();
                 // rasterized.push(pixel!(x,y,color));
-                xpr.render_circle_list.push(pixel!(x, y, Color::red()));
+                self.circ_buf.push(pixel!(x, y, Color::red()));
             }
         }
 
         rasterized
 
-    }
-
-    fn set_cursor(&self, xpr: &mut Xprite) -> Option<()> {
-        if self.cursor.is_none() { return None; }
-        let cursor = self.cursor.clone().unwrap();
-        xpr.set_cursor(&cursor);
-        Some(())
     }
 
     /// convert brush shape to actual pixel on canvas
@@ -98,7 +91,6 @@ impl Tool for Vector {
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
         let pixels = self.brush2pixs(xpr, p, xpr.color());
-        self.cursor = pixels.clone();
         let point = xpr.canvas.shrink_size(&p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel{point, color});
@@ -168,8 +160,8 @@ impl Tool for Vector {
 
     fn draw(&self, xpr: &mut Xprite) -> Option<()> {
         xpr.new_frame();
-        self.set_cursor(xpr);
         xpr.add_pixels(&self.buffer);
+        xpr.draw_circ_buf.extend(&self.circ_buf);
 
         Some(())
     }

@@ -4,12 +4,14 @@ use crate::input::InputState;
 
 pub struct Xprite {
     pub history: History,
+
     pub im_buf: Pixels,
+    pub draw_circ_buf: Pixels,
+
     pub canvas: Canvas,
     pub selected_color: Color,
     pub toolbox: Toolbox,
     pub cursor_pos: Pixels,
-    pub render_circle_list: Pixels,
     pub last_mouse_pos: (f32, f32),
     pub inputs: InputState,
 }
@@ -22,7 +24,7 @@ impl Xprite {
         let toolbox = Toolbox::new();
         let canvas = Canvas::new(art_w, art_h);
         let im_buf = Pixels::new();
-        let render_circle_list = Pixels::new();
+        let draw_circ_buf = Pixels::new();
 
         Xprite {
             last_mouse_pos: (0., 0.),
@@ -33,7 +35,7 @@ impl Xprite {
             selected_color,
             cursor_pos,
             toolbox,
-            render_circle_list,
+            draw_circ_buf,
         }
     }
 
@@ -195,7 +197,7 @@ impl Xprite {
         }
 
         // draw circles
-        for p in self.render_circle_list.iter() {
+        for p in self.draw_circ_buf.iter() {
             let Point2D {x, y} = p.point;
             let c = if let ColorOption::Set(c) = p.color {c.into()}
                 else {self.color().into()};
