@@ -1,5 +1,24 @@
 use crate::prelude::*;
 
+#[derive(PartialEq, Eq, Clone)]
+pub enum BrushType {
+    Pixel,
+    Cross,
+}
+
+impl BrushType {
+    pub fn as_str(&self) -> &str {
+        match self {
+            BrushType::Pixel => ".",
+            BrushType::Cross => "+",
+        }
+    }
+    pub const VARIANTS: [BrushType; 2] = [
+        BrushType::Pixel,
+        BrushType::Cross,
+    ];
+}
+
 pub struct Brush {
     pub shape: PixelOffsets,
     pub size: (f32, f32),

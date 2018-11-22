@@ -155,13 +155,24 @@ impl Xprite {
         self.canvas.draw_grid(rdr);
 
         let top = self.history.top();
+
+        // draw layers
         for layer in top.layers.iter() {
+            // skip invisible layers
             if !layer.borrow().visible {
                 continue;
             }
-            for &Pixel{point, color: _ } in layer.borrow().content.iter() {
+            for &Pixel{point, color } in layer.borrow().content.iter() {
                 let Point2D {x, y} = point;
-                self.canvas.draw_pixel(rdr, x, y, BLACK, true);
+                if let ColorOption::Set(color) = color {
+                    // let c = color.into();
+                    // println!("{:#?}", c);
+                    // TODO:
+                    let c = RED;
+                    self.canvas.draw_pixel(rdr, x, y, c, true);
+                } else {
+                    self.canvas.draw_pixel(rdr, x, y, self.color().into(), true);
+                }
             }
         }
 
@@ -207,9 +218,6 @@ impl Xprite {
     pub fn mouse_move(&mut self, evt: &InputEvent) -> Option<()> {
         if let &InputEvent::MouseMove{x, y} = evt {
             let p = Point2D::new(x, y);
-            let point = self.canvas.shrink_size(&p);
-            // self.cursor_pos = pixel!(point.x, point.y, self.color());
-
             let tool = self.toolbox.tool();
             tool.borrow_mut().mouse_move(self, p);
         }

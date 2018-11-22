@@ -23,6 +23,17 @@ impl ToString for Color {
     }
 }
 
+/// [f32;4] = [0.,0.,0.,0.9];
+impl From<Color> for [f32; 4] {
+    fn from(c: Color) -> Self {
+        [c.r as f32,
+         c.g as f32,
+         c.b as f32,
+         c.a as f32/ 255. - 0.1,
+        ]
+    }
+}
+
 
 impl Color {
     pub fn new(r:u8, g:u8, b:u8) -> Color {

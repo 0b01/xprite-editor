@@ -1,7 +1,6 @@
 use std::f32;
 use std::cmp::{min, max};
 use crate::prelude::*;
-use super::sorter;
 use super::pixel_perfect::pixel_perfect;
 
 fn convert(p1: Point2D<f32>, p2: Point2D<f32>, p3: Point2D<f32>, p4: Point2D<f32>) -> CubicBezierSegment<f32> {
@@ -156,26 +155,20 @@ impl Path {
         }
     }
 
-    pub fn rasterize(&self, xpr: &Xprite, sort_parts: bool, sort_whole: bool) -> Option<Pixels> {
+    pub fn rasterize(&self, xpr: &Xprite) -> Option<Pixels> {
         let mut ret = Vec::new();
         // convert each segment
         for seg in &self.segments {
-            let pixs = Path::convert_path_to_pixel(xpr, seg, sort_parts)?;
+            let pixs = Path::convert_path_to_pixel(xpr, seg)?;
             ret.extend(&pixs);
         }
 
-        if sort_whole {
-            let sorted = sorter::sort_path(ret.as_mut_slice())?;
-            let points = pixel_perfect(&sorted);
-            Some(Pixels::from_slice(&points))
-        } else {
-            let points = pixel_perfect(&ret);
-            Some(Pixels::from_slice(&points))
-        }
+        let points = pixel_perfect(&ret);
+        Some(Pixels::from_slice(&points))
     }
 
     /// rasterize a single bezier curve by sampling
-    fn convert_path_to_pixel(xpr: &Xprite, seg: &CubicBezierSegment<f32>, sorted: bool) -> Option<Vec<Pixel>> {
+    fn convert_path_to_pixel(xpr: &Xprite, seg: &CubicBezierSegment<f32>) -> Option<Vec<Pixel>> {
         let mut path = Vec::new();
 
         let mut set = Pixels::new();
@@ -200,11 +193,7 @@ impl Path {
 
         let mut points = pixel_perfect(&path);
 
-        if sorted {
-            sorter::sort_path(&mut points)
-        } else {
-            Some(points)
-        }
+        Some(points)
     }
 
 }

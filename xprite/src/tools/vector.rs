@@ -1,59 +1,21 @@
 use crate::prelude::*;
 use crate::algorithms::sorter::sort_path;
 use crate::algorithms::pixel_perfect::pixel_perfect;
-use crate::brush::BrushType;
 
-#[derive(Eq, PartialEq, Clone, Copy)]
-pub enum PencilMode {
-    /// raw - no processing
-    Raw,
-    /// pixel perfect - nothing else
-    PixelPerfect,
-    /// sort each monotonic segment
-    SortedMonotonic,
-}
-
-impl PencilMode {
-    pub fn as_str(&self) -> &str {
-        match self {
-            PencilMode::Raw => "Raw",
-            PencilMode::PixelPerfect => "Pixel Perfect",
-            PencilMode::SortedMonotonic => "Sorted Monotonic",
-        }
-    }
-    pub fn from_str(string: &str) -> Self {
-        match string {
-            "Raw" => PencilMode::Raw,
-            "Pixel Perfect" => PencilMode::PixelPerfect,
-            "Sorted Monotonic" => PencilMode::SortedMonotonic,
-            _ => unimplemented!(),
-        }
-    }
-
-
-    pub const VARIANTS: [PencilMode; 3] = [
-        PencilMode::Raw,
-        PencilMode::PixelPerfect,
-        PencilMode::SortedMonotonic,
-    ];
-}
-
-pub struct Pencil {
+pub struct Vector {
     is_mouse_down: Option<InputItem>,
     current_polyline: Polyline,
     cursor: Option<Pixels>,
     cursor_pos: Option<Pixel>,
     brush: Brush,
-    pub mode: PencilMode,
-    pub brush_type: BrushType,
+    tolerence: f32,
     buffer: Pixels,
 }
-impl Pencil {
+impl Vector {
     pub fn new() -> Self {
         let is_mouse_down = None;
         let cursor = None;
         let cursor_pos = None;
-        let brush_type = BrushType::Pixel;
         let brush = Brush::pixel();
         let buffer = Pixels::new();
         let current_polyline = Polyline::new();
@@ -64,18 +26,37 @@ impl Pencil {
             cursor,
             cursor_pos,
             brush,
-            brush_type,
-            mode: PencilMode::PixelPerfect,
+            tolerence: 2.,
             buffer,
         }
     }
 
     pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline) -> Pixels {
+
         let path = polyline.interp();
         let mut rasterized = path.rasterize(xpr).unwrap();
         rasterized.set_color(&Color::grey());
         // self.buffer.extend(&pixels);
+
+        // plot anchors
+        for &p in polyline.pos.iter() {
+            let Point2D{x, y} = xpr.canvas.shrink_size(&p);
+            let color = Color::blue();
+            rasterized.push(pixel!(x,y,color));
+        }
+
+        // plot control points
+        for seg in &path.segments {
+            let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
+            for point in vec![ctrl1, ctrl2] {
+                let Point2D{x, y} = xpr.canvas.shrink_size(point);
+                let color = Color::red();
+                rasterized.push(pixel!(x,y,color));
+            }
+        }
+
         rasterized
+
     }
 
     fn set_cursor(&self, xpr: &mut Xprite) -> Option<()> {
@@ -107,10 +88,10 @@ impl Pencil {
 
 }
 
-impl Tool for Pencil {
+impl Tool for Vector {
 
     fn tool_type(&self) -> ToolType {
-        ToolType::Pencil
+        ToolType::Vector
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
@@ -131,11 +112,9 @@ impl Tool for Pencil {
         if button == InputItem::Left {
                 self.buffer.clear();
                 let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
-                let pixs = if self.mode != PencilMode::Raw {
+                let pixs = {
                     let perfect = pixel_perfect(&line_pixs);
                     Pixels::from_slice(&perfect)
-                } else {
-                    Pixels::from_slice(&line_pixs)
                 };
                 self.buffer.extend(&pixs);
         } else if button == InputItem::Right {
@@ -165,34 +144,10 @@ impl Tool for Pencil {
         let button = self.is_mouse_down.clone().unwrap();
         if button == InputItem::Right { return Some(()); }
 
-        use self::PencilMode::*;
-        match self.mode {
-            Raw => {
-                // no processing
-            }
-            PixelPerfect => {
-                // if there is only one pixel in the buffer
-                if self.buffer.0.len() == 1 {
-                    // noop
-                } else {
-                    self.buffer.clear();
-                    let points = self.current_polyline.connect_with_line(xpr)?;
-                    let perfect = &pixel_perfect(&points);
-                    let mut pixs = Pixels::from_slice(&perfect);
-                    pixs.set_color(&Color::grey());
-                    self.buffer.extend(&pixs);
-                }
-            }
-            SortedMonotonic => {
-                self.buffer.clear();
-                let points = self.current_polyline.connect_with_line(xpr)?;
-                let mut perfect = pixel_perfect(&points);
-                let sorted = sort_path(&mut perfect)?;
-                let mut pixs = Pixels::from_slice(&sorted);
-                pixs.set_color(&Color::grey());
-                self.buffer.extend(&pixs);
-            }
-        }
+        self.buffer.clear();
+        let simple = self.current_polyline.reumann_witkam(self.tolerence)?;
+        let pixs = self.draw_polyline(xpr, &simple);
+        self.buffer.extend(&pixs);
 
         xpr.history.enter()?;
         xpr.history.top()
@@ -219,18 +174,17 @@ impl Tool for Pencil {
 
     fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) -> Option<()> {
         match option {
-            "mode" => {
-                use self::PencilMode::*;
-                match PencilMode::from_str(value) {
-                    SortedMonotonic         => self.mode = SortedMonotonic,
-                    PixelPerfect            => self.mode = PixelPerfect,
-                    _ => panic!("malformed value: {}", value),
-                };
+            "tolerence" => {
+                if let Ok(val) = value.parse() {
+                    self.tolerence = val;
+                } else {
+                    panic!("cannot parse val: {}", value);
+                }
             }
             "brush" => {
                 match value {
-                    "+" => self.brush = Brush::cross(),
-                    "." => self.brush = Brush::pixel(),
+                    "cross" => self.brush = Brush::cross(),
+                    "pixel" => self.brush = Brush::pixel(),
                     _ => panic!("malformed value: {}", value),
                 }
             }
