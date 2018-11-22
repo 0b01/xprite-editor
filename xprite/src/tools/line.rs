@@ -26,7 +26,7 @@ impl Line {
             let c = pixel!(pix.point.x, pix.point.y, Color::red());
             let mut pixels = Pixels::new();
             pixels.push(c);
-            xpr.set_cursor(pixels);
+            xpr.set_cursor(&pixels);
         }
         Some(())
     }

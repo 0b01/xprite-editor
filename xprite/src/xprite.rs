@@ -99,8 +99,8 @@ impl Xprite {
         self.pixels_mut().clear();
     }
 
-    pub fn set_cursor(&mut self, pos: Pixels) {
-        self.cursor_pos = pos;
+    pub fn set_cursor(&mut self, pos: &Pixels) {
+        self.cursor_pos = pos.clone();
     }
 
     // pub fn print_cursor_location(&self) {

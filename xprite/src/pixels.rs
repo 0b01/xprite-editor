@@ -147,6 +147,23 @@ impl From<Pixel> for Pixels {
 }
 
 impl Pixels {
+    pub fn as_bool_arr(&self, w: usize, h: usize) -> Vec<Vec<bool>> {
+        let mut arr = vec![];
+        for i in 0..h {
+            let mut row = vec![];
+            for j in 0..w {
+                row.push(false);
+            }
+            arr.push(row);
+        }
+        for p in self.0.iter() {
+            let Pixel{point, ..} = p;
+            let Point2D {x, y} = point;
+            arr[*x as usize][*y as usize] = true;
+        }
+        arr
+    }
+
     pub fn as_arr(&self, w: usize, h: usize) -> Vec<Vec<Pixel>> {
         let mut arr = vec![];
         for i in 0..h {

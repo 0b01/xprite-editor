@@ -1,35 +1,24 @@
 use crate::prelude::*;
 use crate::algorithms;
 
-#[derive(Clone)]
-pub struct PaintBucket {
-    cursor: Option<Pixel>,
-}
+const MAX_CURSOR_NUM: usize = 256;
 
+#[derive(Clone)]
+pub struct PaintBucket { }
 
 impl PaintBucket {
     pub fn new() -> Self {
-        let cursor = None;
-        PaintBucket {
-            cursor,
-        }
+        PaintBucket { }
     }
 
-    fn set_cursor(&self, xpr: &mut Xprite) -> Option<()> {
-        if self.cursor.is_none() { return None; }
-        let cursor = self.cursor.clone().unwrap();
-        xpr.set_cursor(cursor.into());
-        Some(())
-    }
-
-    fn floodfill(&mut self, xpr: &mut Xprite) -> Option<Pixels> {
+    pub fn ff(&self, xpr: &Xprite, p: Pixel) -> Option<Pixels> {
         let current_layer = xpr.current_layer();
         let pixs = &current_layer.borrow().content;
         let w = xpr.canvas.art_w;
         let h = xpr.canvas.art_h;
         // info!("{:#?}, {:#?},{:#?},{:#?},{:#?},", w, h, pixs, self.cursor?, xpr.color());
-        let filled = algorithms::floodfill::floodfill(w, h, pixs, self.cursor?, xpr.color());
-        Some(filled)
+        let buffer = algorithms::floodfill::floodfill(w, h, pixs, p, xpr.color());
+        Some(buffer)
     }
 
 }
@@ -43,7 +32,7 @@ impl Tool for PaintBucket {
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
         let color = ColorOption::Unset;
-        self.cursor = Some(Pixel {point, color});
+        xpr.set_cursor(&(Pixel {point, color}).into());
         self.draw(xpr);
         Some(())
     }
@@ -51,10 +40,8 @@ impl Tool for PaintBucket {
     fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
         let color = ColorOption::Unset;
-        self.cursor = Some(Pixel {point, color});
-        let buffer = self.floodfill(xpr)?;
-        info!("mouse: {:#?}", self.cursor);
-        info!("{:#?}", buffer);
+        let p = Pixel {point, color};
+        let buffer = self.ff(xpr, p)?;
 
         xpr.history.enter()?;
         xpr.history.top()
@@ -65,21 +52,31 @@ impl Tool for PaintBucket {
         Some(())
     }
 
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, _button: InputItem) -> Option<()> {
+        let point = xpr.canvas.shrink_size(&p);
+        let color = ColorOption::Unset;
+        let p = Pixel {point, color};
+        let buffer = self.ff(xpr, p)?;
+        if buffer.1.len() > MAX_CURSOR_NUM {
+            let w = xpr.canvas.art_w;
+            let h = xpr.canvas.art_h;
+            xpr.set_cursor(&algorithms::perimeter::find_perimeter(w as usize, h as usize, &buffer));
+        } else {
+            xpr.set_cursor(&buffer);
+        }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: InputItem) -> Option<()> {
-        // noop
         Some(())
     }
 
     fn draw(&self, xpr: &mut Xprite) -> Option<()> {
         xpr.new_frame();
-        self.set_cursor(xpr);
+        // noop
         Some(())
     }
 
     fn set(&mut self, xpr: &mut Xprite, option: &str, value: &str) -> Option<()> {
         match option {
-            _ => panic!("unimpl: {}", option)
+            _ => (), // noop
         }
         Some(())
     }

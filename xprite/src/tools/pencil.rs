@@ -106,7 +106,7 @@ impl Pencil {
     fn set_cursor(&self, xpr: &mut Xprite) -> Option<()> {
         if self.cursor.is_none() { return None; }
         let cursor = self.cursor.clone().unwrap();
-        xpr.set_cursor(cursor);
+        xpr.set_cursor(&cursor);
         Some(())
     }
 
