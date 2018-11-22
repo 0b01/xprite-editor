@@ -1,8 +1,6 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
-
-/// type alias for on-screen pixels (as opposed to art pixels)
-type ScreenPixels = Pixels;
+use crate::input::InputState;
 
 pub struct Xprite {
     pub history: History,
@@ -12,6 +10,8 @@ pub struct Xprite {
     pub toolbox: Toolbox,
     pub cursor_pos: Pixels,
     pub render_circle_list: Pixels,
+    pub last_mouse_pos: (f32, f32),
+    pub inputs: InputState,
 }
 
 impl Xprite {
@@ -25,6 +25,8 @@ impl Xprite {
         let render_circle_list = Pixels::new();
 
         Xprite {
+            last_mouse_pos: (0., 0.),
+            inputs: InputState::default(),
             history,
             im_buf,
             canvas,
@@ -41,6 +43,11 @@ impl Xprite {
 
     pub fn redo(&mut self) {
         self.history.redo();
+    }
+
+    pub fn update_mouse_pos(&mut self, x: f32, y: f32) {
+        self.last_mouse_pos.0 = x;
+        self.last_mouse_pos.1 = y;
     }
 
     /// add stroke to temp im_buf
@@ -187,15 +194,19 @@ impl Xprite {
             self.canvas.draw_pixel(rdr, x, y, RED, false);
         }
 
-        info!("------------");
-
         // draw circles
         for p in self.render_circle_list.iter() {
             let Point2D {x, y} = p.point;
             let c = if let ColorOption::Set(c) = p.color {c.into()}
                 else {self.color().into()};
+
             self.canvas.draw_circle(rdr, x, y, 0.5, c, true);
+
+            // if mouse position is near a circle
+            self.canvas.within_circle(rdr, x, y, 0.5, self.last_mouse_pos);
+
         }
+
     }
 }
 

@@ -74,6 +74,24 @@ impl Canvas {
         rdr.circ(p0, self.scale * radius, color, filled);
     }
 
+    pub fn within_circle(&self, rdr: &Renderer, x: f32, y: f32, radius: f32, mouse: (f32, f32)) {
+        let o = self.origin();
+        let p0 = (
+            o.0 + self.scale * x,
+            o.1 + self.scale * y,
+        );
+        let rad = self.scale * radius;
+
+        if mouse.0 < p0.0 + rad
+        && mouse.0 > p0.0 - rad
+        && mouse.1 < p0.1 + rad
+        && mouse.1 > p0.1 - rad {
+            rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Move);
+        }
+
+    }
+
+
     pub fn draw_pixel(&self, rdr: &Renderer, x: f32, y: f32, color: [f32;4], filled: bool) {
         let o = self.origin();
         if x >= self.art_w { return; }

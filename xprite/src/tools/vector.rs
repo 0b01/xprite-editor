@@ -112,13 +112,13 @@ impl Tool for Vector {
 
         let button = self.is_mouse_down.clone().unwrap();
         if button == InputItem::Left {
-                self.buffer.clear();
-                let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
-                let pixs = {
-                    let perfect = pixel_perfect(&line_pixs);
-                    Pixels::from_slice(&perfect)
-                };
-                self.buffer.extend(&pixs);
+            self.buffer.clear();
+            let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
+            let pixs = {
+                let perfect = pixel_perfect(&line_pixs);
+                Pixels::from_slice(&perfect)
+            };
+            self.buffer.extend(&pixs);
         } else if button == InputItem::Right {
             // xpr.remove_pixels(&pixels.unwrap());
         }

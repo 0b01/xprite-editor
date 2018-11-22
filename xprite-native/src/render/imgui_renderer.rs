@@ -1,6 +1,6 @@
 use imgui::*;
 
-use xprite::rendering::Renderer;
+use xprite::rendering::{Renderer, MouseCursorType};
 
 pub struct ImguiRenderer<'ui> {
     pub ui: &'ui Ui<'ui>,
@@ -24,7 +24,6 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
             .build();
     }
 
-
     fn rect(&self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
         let draw_list = self.ui.get_window_draw_list();
         draw_list
@@ -38,6 +37,13 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         draw_list
             .add_line(p0, p1, color)
             .build();
+    }
+
+    fn set_mouse_cursor(&self, cursor_type: MouseCursorType) {
+        let c = match cursor_type {
+            MouseCursorType::Move => ImGuiMouseCursor::Move,
+        };
+        self.ui.imgui().set_mouse_cursor(c);
     }
 
 }
