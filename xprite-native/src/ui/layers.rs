@@ -11,7 +11,6 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     .collapsible(false)
     .resizable(false)
     .build(|| {
-
         if ui.button(im_str!("+"), (20.,20.)) {
             state.xpr.history.top_mut().add(None);
         }

@@ -16,6 +16,15 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         self.ui.get_window_size().1 as u32
     }
 
+    fn circ(&self, p0:[f32;2], r:f32, color:[f32;4], filled: bool) {
+        let draw_list = self.ui.get_window_draw_list();
+        draw_list
+            .add_circle(p0, r, color)
+            .filled(filled)
+            .build();
+    }
+
+
     fn rect(&self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
         let draw_list = self.ui.get_window_draw_list();
         draw_list

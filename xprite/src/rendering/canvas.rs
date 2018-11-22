@@ -65,6 +65,15 @@ impl Canvas {
         self.canvas_h = canvas_h;
     }
 
+    pub fn draw_circle(&self, rdr: &Renderer, x: f32, y: f32, radius: f32, color: [f32;4], filled: bool) {
+        let o = self.origin();
+        let p0 = [
+            o.0 + self.scale * x,
+            o.1 + self.scale * y,
+        ];
+        rdr.circ(p0, self.scale * radius, color, filled);
+    }
+
     pub fn draw_pixel(&self, rdr: &Renderer, x: f32, y: f32, color: [f32;4], filled: bool) {
         let o = self.origin();
         if x >= self.art_w { return; }
@@ -124,6 +133,16 @@ impl Canvas {
                 color
             );
             y += self.scale;
+        }
+    }
+
+    /// convert screen pos to pixel location
+    pub fn shrink_size_no_floor(&self, p: &Point2D<f32>) -> Point2D<f32> {
+        let Point2D {x: cli_x , y: cli_y} = p;
+        let o = self.origin();
+        Point2D {
+            x: ((cli_x - o.0) / self.scale),
+            y: ((cli_y - o.1) / self.scale),
         }
     }
 

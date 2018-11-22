@@ -11,7 +11,12 @@ pub fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
         .collapsible(false)
         .build(|| {
             // // checkbox for show grid
-            // ui.checkbox(im_str!("grid"), &mut state.xpr.canvas.show_grid);
+            ui.checkbox(im_str!("grid"), &mut state.xpr.canvas.show_grid);
+            ui.text(
+                im_str!("{}, {}",
+                state.last_mouse_pos.0,
+                state.last_mouse_pos.1)
+            );
 
             let styles = [
                 StyleVar::FramePadding(ImVec2::new(1., 1.)),

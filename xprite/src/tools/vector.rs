@@ -35,23 +35,25 @@ impl Vector {
 
         let path = polyline.interp();
         let mut rasterized = path.rasterize(xpr).unwrap();
-        rasterized.set_color(&Color::grey());
+        rasterized.set_color(&Color::orange());
         // self.buffer.extend(&pixels);
 
         // plot anchors
         for &p in polyline.pos.iter() {
-            let Point2D{x, y} = xpr.canvas.shrink_size(&p);
-            let color = Color::blue();
-            rasterized.push(pixel!(x,y,color));
+            let Point2D{x, y} = xpr.canvas.shrink_size_no_floor(&p);
+            // let color = Color::blue();
+            // rasterized.push(pixel!(x,y,color));
+            xpr.render_circle_list.push(pixel!(x, y, Color::blue()));
         }
 
         // plot control points
         for seg in &path.segments {
             let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
-            for point in vec![ctrl1, ctrl2] {
-                let Point2D{x, y} = xpr.canvas.shrink_size(point);
-                let color = Color::red();
-                rasterized.push(pixel!(x,y,color));
+            for p in vec![ctrl1, ctrl2] {
+                let Point2D{x, y} = xpr.canvas.shrink_size_no_floor(p);
+                // let color = Color::red();
+                // rasterized.push(pixel!(x,y,color));
+                xpr.render_circle_list.push(pixel!(x, y, Color::red()));
             }
         }
 

@@ -61,9 +61,15 @@ impl Color {
         }
     }
 
+    pub fn orange() -> Color {
+        Color {
+            r: 255, g: 128, b: 0, a: 255,
+        }
+    }
+
     pub fn grey() -> Color {
         Color {
-            r: 200, g: 200, b: 200, a: 255,
+            r: 1, g: 1, b: 1, a: 255,
         }
     }
 }

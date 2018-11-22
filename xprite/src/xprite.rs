@@ -1,38 +1,37 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
 
+/// type alias for on-screen pixels (as opposed to art pixels)
+type ScreenPixels = Pixels;
+
 pub struct Xprite {
-    pub event_queue: Vec<InputEvent>,
     pub history: History,
     pub im_buf: Pixels,
     pub canvas: Canvas,
     pub selected_color: Color,
     pub toolbox: Toolbox,
-    pub art_h: f32,
-    pub art_w: f32,
     pub cursor_pos: Pixels,
+    pub render_circle_list: Pixels,
 }
 
 impl Xprite {
     pub fn new(art_w: f32, art_h: f32) -> Xprite {
-        let event_queue = Vec::new();
-        let selected_color = Color {r: 0, g: 0, b: 0, a: 255};
+        let selected_color = Color {r: 100, g: 100, b: 100, a: 255};
         let history = History::new();
         let cursor_pos = Pixels::new();
         let toolbox = Toolbox::new();
         let canvas = Canvas::new(art_w, art_h);
         let im_buf = Pixels::new();
+        let render_circle_list = Pixels::new();
 
         Xprite {
-            event_queue,
             history,
             im_buf,
             canvas,
             selected_color,
             cursor_pos,
-            art_h,
-            art_w,
             toolbox,
+            render_circle_list,
         }
     }
 
@@ -165,10 +164,9 @@ impl Xprite {
             for &Pixel{point, color } in layer.borrow().content.iter() {
                 let Point2D {x, y} = point;
                 if let ColorOption::Set(color) = color {
-                    // let c = color.into();
+                    let c: [f32;4] = color.into();
                     // println!("{:#?}", c);
-                    // TODO:
-                    let c = RED;
+                    // let c = RED;
                     self.canvas.draw_pixel(rdr, x, y, c, true);
                 } else {
                     self.canvas.draw_pixel(rdr, x, y, self.color().into(), true);
@@ -187,6 +185,16 @@ impl Xprite {
         for p in self.cursor_pos.iter() {
             let Point2D {x, y} = p.point;
             self.canvas.draw_pixel(rdr, x, y, RED, false);
+        }
+
+        info!("------------");
+
+        // draw circles
+        for p in self.render_circle_list.iter() {
+            let Point2D {x, y} = p.point;
+            let c = if let ColorOption::Set(c) = p.color {c.into()}
+                else {self.color().into()};
+            self.canvas.draw_circle(rdr, x, y, 0.5, c, true);
         }
     }
 }
