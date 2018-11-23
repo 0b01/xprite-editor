@@ -123,7 +123,7 @@ impl Canvas {
                 o.0 + self.art_w * self.scale,
                 o.1 + self.art_h * self.scale,
             ],
-            GREY,
+            LIGHT_GREY,
             true,
         );
     }

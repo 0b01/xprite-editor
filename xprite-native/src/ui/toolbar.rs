@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use super::*;
 // use xprite::prelude::*;
 // use xprite::rendering::Renderer;
 
@@ -6,7 +7,7 @@ pub fn draw_toolbar(state: &mut State, ui: &Ui) {
     ui
     .window(im_str!("toolbox"))
     .position((0.,20.), ImGuiCond::Appearing)
-    .size((100., 100.), ImGuiCond::Appearing)
+    .size((LEFT_SIDE_WIDTH, 200.), ImGuiCond::Appearing)
     .movable(false)
     .collapsible(false)
     .resizable(false)

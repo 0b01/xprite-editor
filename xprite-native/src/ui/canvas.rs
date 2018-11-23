@@ -1,16 +1,17 @@
 use crate::prelude::*;
+use super::*;
 use xprite::rendering::Renderer;
 
 pub fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
     ui.window(im_str!("canvas"))
-        .position((100.0, 20.0), ImGuiCond::Appearing)
-        .size((sz.0 as f32 - 400., sz.1 as f32 - 20.), ImGuiCond::Appearing)
-        .resizable(true)
-        .movable(true)
+        .position((LEFT_SIDE_WIDTH, 20.0), ImGuiCond::Always)
+        .size((sz.0 as f32 - RIGHT_SIDE_WIDTH - LEFT_SIDE_WIDTH, sz.1 as f32 - 20.), ImGuiCond::Always)
+        .resizable(false)
+        .movable(false)
         .collapsible(false)
         .build(|| {
-            // // checkbox for show grid
+            // checkbox for show grid
             ui.checkbox(im_str!("grid"), &mut state.xpr.canvas.show_grid);
             ui.text(
                 im_str!("{}, {}",
@@ -35,7 +36,6 @@ pub fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
                         state.xpr.render(rdr);
                         // draw_grid(state, ui);
                         bind_input(state, ui);
-
                     });
             });
 
