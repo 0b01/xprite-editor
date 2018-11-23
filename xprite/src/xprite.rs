@@ -205,7 +205,9 @@ impl Xprite {
             self.canvas.draw_circle(rdr, x, y, 0.5, c, true);
 
             // if mouse position is near a circle
-            self.canvas.within_circle(rdr, x, y, 0.5, self.last_mouse_pos);
+            if self.canvas.within_circle(x, y, 0.5, self.last_mouse_pos) {
+                rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Move);
+            }
 
         }
 

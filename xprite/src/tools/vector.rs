@@ -2,37 +2,37 @@ use crate::prelude::*;
 use crate::algorithms::sorter::sort_path;
 use crate::algorithms::pixel_perfect::pixel_perfect;
 
+type Circle = Pixels;
+
 pub struct Vector {
     is_mouse_down: Option<InputItem>,
-    current_polyline: Polyline,
     cursor_pos: Option<Pixel>,
     brush: Brush,
     tolerence: f32,
     buffer: Pixels,
-    circ_buf: Pixels,
+    current_polyline: Polyline,
 }
+
 impl Vector {
     pub fn new() -> Self {
         let is_mouse_down = None;
         let cursor_pos = None;
         let brush = Brush::pixel();
-        let buffer = Pixels::new();
         let current_polyline = Polyline::new();
-        let circ_buf = Pixels::new();
+        let buffer = Pixels::new();
 
         Self {
             is_mouse_down,
             current_polyline,
             cursor_pos,
             brush,
-            tolerence: 2.,
             buffer,
-            circ_buf,
+            tolerence: 2.,
         }
     }
 
-    pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline) -> Pixels {
-
+    pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline) -> (Pixels, Circle) {
+        let mut circ_buf = Pixels::new();
         let path = polyline.interp();
         let mut rasterized = path.rasterize(xpr).unwrap();
         rasterized.set_color(&Color::orange());
@@ -41,9 +41,7 @@ impl Vector {
         // plot anchors
         for &p in polyline.pos.iter() {
             let Point2D{x, y} = xpr.canvas.shrink_size_no_floor(&p);
-            // let color = Color::blue();
-            // rasterized.push(pixel!(x,y,color));
-            self.circ_buf.push(pixel!(x, y, Color::blue()));
+            circ_buf.push(pixel!(x, y, Color::blue()));
         }
 
         // plot control points
@@ -51,14 +49,11 @@ impl Vector {
             let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
             for p in vec![ctrl1, ctrl2] {
                 let Point2D{x, y} = xpr.canvas.shrink_size_no_floor(p);
-                // let color = Color::red();
-                // rasterized.push(pixel!(x,y,color));
-                self.circ_buf.push(pixel!(x, y, Color::red()));
+                circ_buf.push(pixel!(x, y, Color::red()));
             }
         }
 
-        rasterized
-
+        (rasterized, circ_buf)
     }
 
     /// convert brush shape to actual pixel on canvas
@@ -90,21 +85,21 @@ impl Tool for Vector {
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
+        // update cursor pos
         let pixels = self.brush2pixs(xpr, p, xpr.color());
         let point = xpr.canvas.shrink_size(&p);
         let color = ColorOption::Set(xpr.color());
         self.cursor_pos = Some(Pixel{point, color});
 
-        // if mouse is done
         if self.is_mouse_down.is_none() || pixels.is_none() {
             return self.draw(xpr);
         }
 
+        // the rest handles when left button is pressed
         self.current_polyline.push(p);
 
         let button = self.is_mouse_down.clone().unwrap();
         if button == InputItem::Left {
-            self.buffer.clear();
             let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
             let pixs = {
                 let perfect = pixel_perfect(&line_pixs);
@@ -140,7 +135,7 @@ impl Tool for Vector {
 
         self.buffer.clear();
         let simple = self.current_polyline.reumann_witkam(self.tolerence)?;
-        let pixs = self.draw_polyline(xpr, &simple);
+        let (pixs, circ_buf) = self.draw_polyline(xpr, &simple);
         self.buffer.extend(&pixs);
 
         xpr.history.enter()?;
@@ -149,6 +144,8 @@ impl Tool for Vector {
             .borrow_mut()
             .content
             .extend(&self.buffer);
+
+        xpr.draw_circ_buf.extend(&circ_buf);
 
         self.current_polyline.clear();
         self.buffer.clear();
@@ -161,7 +158,6 @@ impl Tool for Vector {
     fn draw(&self, xpr: &mut Xprite) -> Option<()> {
         xpr.new_frame();
         xpr.add_pixels(&self.buffer);
-        xpr.draw_circ_buf.extend(&self.circ_buf);
 
         Some(())
     }

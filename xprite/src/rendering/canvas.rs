@@ -77,7 +77,7 @@ impl Canvas {
         rdr.circ(p0, self.scale * radius, color, filled);
     }
 
-    pub fn within_circle(&self, rdr: &Renderer, x: f32, y: f32, radius: f32, mouse: (f32, f32)) {
+    pub fn within_circle(&self, x: f32, y: f32, radius: f32, mouse: (f32, f32)) -> bool {
         let o = self.origin();
         let p0 = (
             o.0 + self.scale * x,
@@ -89,9 +89,10 @@ impl Canvas {
         && mouse.0 > p0.0 - rad
         && mouse.1 < p0.1 + rad
         && mouse.1 > p0.1 - rad {
-            rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Move);
+            true
+        } else {
+            false
         }
-
     }
 
 

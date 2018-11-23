@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use super::*;
 use xprite::rendering::Renderer;
 
 pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {

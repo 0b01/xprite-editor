@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use super::*;
 use xprite::rendering::Renderer;
 
 pub fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
