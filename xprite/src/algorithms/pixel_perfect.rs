@@ -8,15 +8,12 @@ pub fn pixel_perfect(path: &[Pixel]) -> Vec<Pixel> {
     let mut c = 0;
 
     while c < path.len() {
-
-      // We ignore a pixel that is between other two pixels in the
-      // corner of a L-like shape.
       if c > 0 && c+1 < path.len()
         && (path[c-1].point.x == path[c].point.x || path[c-1].point.y == path[c].point.y)
         && (path[c+1].point.x == path[c].point.x || path[c+1].point.y == path[c].point.y)
         && path[c-1].point.x != path[c+1].point.x
-        && path[c-1].point.y != path[c+1].point.y {
-
+        && path[c-1].point.y != path[c+1].point.y
+      {
         c += 1;
       }
 

@@ -15,7 +15,7 @@ mod prelude;
 mod ui;
 mod state;
 
-const BGCOLOR: [f32; 4] = [0.,0.,0.,0.];
+
 
 fn main() {
     init_logger();

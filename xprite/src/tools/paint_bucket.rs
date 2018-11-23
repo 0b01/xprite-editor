@@ -1,8 +1,6 @@
 use crate::prelude::*;
 use crate::algorithms;
 
-const MAX_CURSOR_NUM: usize = 256;
-
 #[derive(Clone)]
 pub struct PaintBucket { }
 

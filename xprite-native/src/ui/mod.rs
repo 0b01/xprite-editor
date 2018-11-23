@@ -6,8 +6,6 @@ mod settings;
 mod tools;
 mod layers;
 
-pub const RIGHT_SIDE_WIDTH: f32 = 200.;
-pub const LEFT_SIDE_WIDTH: f32 = 50.;
 
 use crate::prelude::*;
 use xprite::rendering::Renderer;

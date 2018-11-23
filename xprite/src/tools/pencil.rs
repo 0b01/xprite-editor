@@ -222,8 +222,9 @@ impl Tool for Pencil {
             "mode" => {
                 use self::PencilMode::*;
                 match PencilMode::from_str(value) {
-                    SortedMonotonic         => self.mode = SortedMonotonic,
-                    PixelPerfect            => self.mode = PixelPerfect,
+                    Raw             => self.mode = Raw,
+                    SortedMonotonic => self.mode = SortedMonotonic,
+                    PixelPerfect    => self.mode = PixelPerfect,
                     _ => panic!("malformed value: {}", value),
                 };
             }

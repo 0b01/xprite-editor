@@ -25,6 +25,7 @@ pub struct Canvas {
     pub art_h: f32,
     pub scroll: Scroll,
     pub show_grid: bool,
+    pub initialized: bool,
 }
 
 impl Default for Canvas {
@@ -43,6 +44,8 @@ impl Default for Canvas {
 
             scroll: Scroll::default(),
             show_grid: false,
+
+            initialized: false,
         }
     }
 }

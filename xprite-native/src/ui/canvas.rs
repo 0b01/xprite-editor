@@ -8,26 +8,18 @@ pub fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
         .position((LEFT_SIDE_WIDTH, 20.0), ImGuiCond::Always)
         .size((sz.0 as f32 - RIGHT_SIDE_WIDTH - LEFT_SIDE_WIDTH, sz.1 as f32 - 20.), ImGuiCond::Always)
         .resizable(false)
+        .title_bar(false)
         .movable(false)
         .collapsible(false)
         .build(|| {
-            // checkbox for show grid
-            ui.checkbox(im_str!("grid"), &mut state.xpr.canvas.show_grid);
-            ui.text(
-                im_str!("{}, {}",
-                state.xpr.last_mouse_pos.0,
-                state.xpr.last_mouse_pos.1)
-            );
-
             let styles = [
-                StyleVar::FramePadding(ImVec2::new(1., 1.)),
+                StyleVar::FramePadding(ImVec2::new(0., 0.)),
                 StyleVar::WindowPadding(ImVec2::new(0., 0.)),
             ];
             let colors = [ (ImGuiCol::ChildBg, GREY) ];
-
             ui.with_style_and_color_vars(&styles, &colors, || {
                 let win_sz = ui.get_window_size();
-                let child_frame_sz = (win_sz.0, win_sz.1);
+                let child_frame_sz = (win_sz.0, win_sz.1 - 10.);
                 ui.child_frame(im_str!("scrolling_region"), child_frame_sz)
                     .show_scrollbar(false)
                     .movable(false)
@@ -44,16 +36,34 @@ pub fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
             //   .max(50.)
             //   .speed(0.1)
             //   .build();
+            // checkbox for show grid
+
+            // ui.checkbox(im_str!("grid"), &mut state.xpr.canvas.show_grid);
+            // ui.text(
+            //     im_str!("{}, {}",
+            //     state.xpr.last_mouse_pos.0,
+            //     state.xpr.last_mouse_pos.1)
+            // );
+
 
         });
 }
 
 fn update_viewport(state: &mut State, ui: &Ui) {
+    let cvs = &mut state.xpr.canvas;
     let win_pos = ui.get_cursor_screen_pos();
-    state.xpr.canvas.update_pos(win_pos.0, win_pos.1);
+    cvs.update_pos(win_pos.0, win_pos.1);
 
     let canvas_sz = ui.get_window_size();
-    state.xpr.canvas.update_sz(canvas_sz.0, canvas_sz.1);
+    cvs.update_sz(canvas_sz.0, canvas_sz.1);
+
+    if !cvs.initialized {
+        cvs.scale = cvs.canvas_w / cvs.art_w / CANVAS_INIT_SCALE;
+        cvs.scroll.x = (cvs.canvas_w - cvs.scale * cvs.art_w) / 2.;
+        cvs.scroll.y = (cvs.canvas_h - cvs.scale * cvs.art_h) / 2.;
+    }
+
+    state.xpr.canvas.initialized = true;
 }
 
 fn bind_input(state: &mut State, ui: &Ui) {
