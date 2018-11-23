@@ -47,7 +47,7 @@ fn line_finite_diff(points: &[Point2D<f32>]) -> Vec<f32> {
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Path {
     pub segments: Vec<CubicBezierSegment<f32>>,
 }
@@ -105,6 +105,23 @@ impl Path {
             tangents.push(Point2D::new(s, m[i] * s));
         }
         tangents
+    }
+
+
+    /// get control points
+    pub fn control_points(&self, xpr: &Xprite) -> Circles {
+        let mut circ_buf = Pixels::new();
+
+        // circles: control points
+        for seg in &self.segments {
+            let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
+            for p in vec![ctrl1, ctrl2] {
+                let Point2D{x, y} = xpr.canvas.shrink_size_no_floor(p);
+                circ_buf.push(pixel!(x, y, Color::red()));
+            }
+        }
+
+        circ_buf
     }
 
     #[allow(unused)]

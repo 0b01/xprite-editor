@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use crate::algorithms::line::bresenham;
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Polyline {
     pub pos: Vec<Point2D<f32>>,
 }
@@ -20,6 +20,15 @@ impl Polyline {
 
     pub fn clear(&mut self) {
         self.pos.clear()
+    }
+
+    pub fn anchors(&self, xpr: &Xprite) -> Circles {
+        let mut circ_buf = Pixels::new();
+        for &p in self.pos.iter() {
+            let Point2D{x, y} = xpr.canvas.shrink_size_no_floor(&p);
+            circ_buf.push(pixel!(x, y, Color::blue()));
+        }
+        circ_buf
     }
 
     /// line simplification algorithm

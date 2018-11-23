@@ -132,83 +132,63 @@ fn bind_input(state: &mut State, ui: &Ui) {
         }
     }
 
-    // ctrl
-    let ctrl = ui.imgui().key_ctrl();
-    if state.xpr.inputs.debounce(InputItem::Ctrl, ctrl) {
-        if ctrl {
-            trace!("ctrl down");
-            state.xpr.event(&KeyDown{ key: Ctrl });
-        } else {
-            trace!("ctrl up");
-            state.xpr.event(&KeyUp{ key: Ctrl });
-        }
+    macro_rules! handle_input {
+        ($boolval: expr, $key_upper: ident) => {
+            if state.xpr.inputs.debounce(InputItem::$key_upper, $boolval) {
+                if $boolval {
+                    state.xpr.event(&KeyDown{ key: $key_upper });
+                } else {
+                    state.xpr.event(&KeyUp{ key: $key_upper });
+                }
+            }
+        };
+
+        ($boolval: expr, $key_upper: ident, $tblock: block, $fblock: block) => {
+            if state.xpr.inputs.debounce(InputItem::$key_upper, $boolval) {
+                if $boolval {
+                    state.xpr.event(&KeyDown{ key: $key_upper });
+                    $tblock
+                } else {
+                    state.xpr.event(&KeyUp{ key: $key_upper });
+                    $fblock
+                }
+            }
+        };
     }
 
-    // shift
-    let shift = ui.imgui().key_shift();
-    if state.xpr.inputs.debounce(InputItem::Shift, shift) {
-        if shift {
-            trace!("shift down");
-            state.xpr.event(&KeyDown{ key: Shift });
-        } else {
-            trace!("shift up");
-            state.xpr.event(&KeyUp{ key: Shift });
-        }
-    }
 
-    // space
-    let space = ui.imgui().is_key_down(19);
-    if state.xpr.inputs.debounce(InputItem::Space, space) {
-        if space {
-            trace!("space down");
-            state.xpr.event(&KeyDown{ key: Space });
-        } else {
-            trace!("space up");
-            state.xpr.event(&KeyUp{ key: Space });
-        }
-    }
+    let is_ctrl = ui.imgui().key_ctrl();
+    handle_input!(is_ctrl, Ctrl);
 
-    // alt
-    let alt = ui.imgui().key_alt();
-    if state.xpr.inputs.debounce(InputItem::Alt, alt) {
-        if alt {
-            trace!("alt down");
-            state.xpr.event(&KeyDown{ key: Alt });
-        } else {
-            trace!("alt up");
-            state.xpr.event(&KeyUp{ key: Alt });
-        }
-    }
+    let is_shift = ui.imgui().key_shift();
+    handle_input!(is_shift, Shift);
 
-    // z
+    let is_space = ui.imgui().is_key_down(19);
+    handle_input!(is_space, Space);
+
+    let is_alt = ui.imgui().key_alt();
+    handle_input!(is_alt, Alt);
+
     let key_z = ui.imgui().get_key_index(ImGuiKey::Z);
-    let z = ui.imgui().is_key_down(key_z);
-    if state.xpr.inputs.debounce(InputItem::Z, z) {
-        if z {
-            trace!("z down");
-            if state.xpr.inputs.ctrl {
-                state.xpr.undo();
-                trace!("ctrl+z");
-            }
-        } else {
-            trace!("z up");
+    let is_z = ui.imgui().is_key_down(
+        key_z);
+    handle_input!(is_z, Z, {
+        if state.xpr.inputs.ctrl {
+            state.xpr.undo();
         }
-    }
+    }, {});
 
-    // y
     let key_y = ui.imgui().get_key_index(ImGuiKey::Y);
-    let is_y_down = ui.imgui().is_key_down(key_y);
-    if state.xpr.inputs.debounce(InputItem::Y, is_y_down) {
-        if is_y_down {
-            trace!("Y down");
-            if state.xpr.inputs.ctrl {
-                state.xpr.redo();
-                trace!("ctrl+y");
-            }
-        } else {
-            trace!("y up");
+    let is_y = ui.imgui().is_key_down(key_y);
+    handle_input!(is_y, Y, {
+        if state.xpr.inputs.ctrl {
+            state.xpr.redo();
         }
-    }
+    }, {});
+
+    let is_enter = ui.imgui().is_key_down(11);
+    handle_input!(is_enter, Enter);
+
 
     // for i in 0..512 {
     //     if ui.imgui().is_key_down(i) {

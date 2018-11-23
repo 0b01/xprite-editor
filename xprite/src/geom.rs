@@ -79,7 +79,7 @@ impl From<Point2D<u32>> for Point2D<f32> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct CubicBezierSegment<S: Copy> {
     pub from: Point2D<S>,
     pub ctrl1: Point2D<S>,

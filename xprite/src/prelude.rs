@@ -13,6 +13,7 @@ pub use crate::rendering::canvas::Canvas;
 pub use crate::layer::{Layer, Layers};
 
 pub type PixelOffsets = Pixels;
+pub type Circles = Pixels;
 
 pub const BGCOLOR: [f32; 4] = [0.,0.,0.,0.];
 pub const RIGHT_SIDE_WIDTH: f32 = 200.;

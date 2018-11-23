@@ -6,7 +6,6 @@ pub struct Xprite {
     pub history: History,
 
     pub im_buf: Pixels,
-    pub draw_circ_buf: Pixels,
 
     pub canvas: Canvas,
     pub selected_color: Color,
@@ -24,7 +23,6 @@ impl Xprite {
         let toolbox = Toolbox::new();
         let canvas = Canvas::new(art_w, art_h);
         let im_buf = Pixels::new();
-        let draw_circ_buf = Pixels::new();
 
         Xprite {
             last_mouse_pos: (0., 0.),
@@ -35,7 +33,6 @@ impl Xprite {
             selected_color,
             cursor_pos,
             toolbox,
-            draw_circ_buf,
         }
     }
 
@@ -181,6 +178,26 @@ impl Xprite {
                     self.canvas.draw_pixel(rdr, x, y, self.color().into(), true);
                 }
             }
+
+            // draw circles
+            for (polyline, path) in layer.borrow().paths.iter() {
+                // circ_buf.extend(&polyline.get_anchors(xpr));
+                let mut circ_buf = Pixels::new();
+                circ_buf.extend(&polyline.anchors(self));
+                circ_buf.extend(&path.control_points(self));
+
+                for p in circ_buf.iter() {
+                    let Point2D {x, y} = p.point;
+                    let c = if let ColorOption::Set(c) = p.color {c.into()}
+                            else {self.color().into()};
+                    self.canvas.draw_circle(rdr, x, y, 0.5, c, true);
+
+                    // if mouse position is near a circle
+                    if self.canvas.within_circle(x, y, 0.5, self.last_mouse_pos) {
+                        rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Move);
+                    }
+                }
+            }
         }
 
         // draw current layer pixels
@@ -196,20 +213,6 @@ impl Xprite {
             self.canvas.draw_pixel(rdr, x, y, RED, false);
         }
 
-        // draw circles
-        for p in self.draw_circ_buf.iter() {
-            let Point2D {x, y} = p.point;
-            let c = if let ColorOption::Set(c) = p.color {c.into()}
-                else {self.color().into()};
-
-            self.canvas.draw_circle(rdr, x, y, 0.5, c, true);
-
-            // if mouse position is near a circle
-            if self.canvas.within_circle(x, y, 0.5, self.last_mouse_pos) {
-                rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Move);
-            }
-
-        }
 
     }
 }

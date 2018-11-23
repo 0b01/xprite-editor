@@ -8,6 +8,7 @@ pub enum InputItem {
     Y,
     Left,
     Right,
+    Enter,
 }
 
 impl InputItem {
@@ -19,7 +20,9 @@ impl InputItem {
             InputItem::Alt => "alt",
             InputItem::Z => "z",
             InputItem::Y => "y",
-            _ => unimplemented!(),
+            InputItem::Left => "left",
+            InputItem::Right => "right",
+            InputItem::Enter => "enter",
         }
     }
 }
@@ -58,6 +61,7 @@ pub struct InputState {
     pub alt: bool,
     pub z: bool,
     pub y: bool,
+    pub enter: bool,
 }
 
 impl Default for InputState {
@@ -71,6 +75,7 @@ impl Default for InputState {
             alt: false,
             z: false,
             y: false,
+            enter: false,
         }
     }
 }
@@ -97,6 +102,7 @@ impl InputState {
             InputItem::Y => debounce!(y),
             InputItem::Left => debounce!(left),
             InputItem::Right => debounce!(right),
+            InputItem::Enter => debounce!(enter),
         }
     }
 }

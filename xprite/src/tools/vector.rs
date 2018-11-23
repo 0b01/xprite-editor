@@ -1,15 +1,13 @@
 use crate::prelude::*;
-use crate::algorithms::sorter::sort_path;
+// use crate::algorithms::sorter::sort_path;
 use crate::algorithms::pixel_perfect::pixel_perfect;
-
-type Circle = Pixels;
 
 pub struct Vector {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,
     brush: Brush,
     tolerence: f32,
-    buffer: Pixels,
+    pixs_buf: Pixels,
     current_polyline: Polyline,
 }
 
@@ -19,41 +17,24 @@ impl Vector {
         let cursor_pos = None;
         let brush = Brush::pixel();
         let current_polyline = Polyline::new();
-        let buffer = Pixels::new();
+        let pixs_buf = Pixels::new();
 
         Self {
             is_mouse_down,
             current_polyline,
             cursor_pos,
             brush,
-            buffer,
+            pixs_buf,
             tolerence: 2.,
         }
     }
 
-    pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline) -> (Pixels, Circle) {
+    pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline) -> (Path, Pixels) {
         let mut circ_buf = Pixels::new();
         let path = polyline.interp();
         let mut rasterized = path.rasterize(xpr).unwrap();
         rasterized.set_color(&Color::orange());
-        // self.buffer.extend(&pixels);
-
-        // plot anchors
-        for &p in polyline.pos.iter() {
-            let Point2D{x, y} = xpr.canvas.shrink_size_no_floor(&p);
-            circ_buf.push(pixel!(x, y, Color::blue()));
-        }
-
-        // plot control points
-        for seg in &path.segments {
-            let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
-            for p in vec![ctrl1, ctrl2] {
-                let Point2D{x, y} = xpr.canvas.shrink_size_no_floor(p);
-                circ_buf.push(pixel!(x, y, Color::red()));
-            }
-        }
-
-        (rasterized, circ_buf)
+        (path, rasterized)
     }
 
     /// convert brush shape to actual pixel on canvas
@@ -105,7 +86,7 @@ impl Tool for Vector {
                 let perfect = pixel_perfect(&line_pixs);
                 Pixels::from_slice(&perfect)
             };
-            self.buffer.extend(&pixs);
+            self.pixs_buf.extend(&pixs);
         } else if button == InputItem::Right {
             // xpr.remove_pixels(&pixels.unwrap());
         }
@@ -116,11 +97,11 @@ impl Tool for Vector {
         self.is_mouse_down = Some(button);
 
         self.current_polyline.push(p);
-        self.buffer.clear();
+        self.pixs_buf.clear();
         let pixels = self.brush2pixs(xpr, p, xpr.color());
         if let Some(pixels) = pixels {
             if button == InputItem::Left {
-                self.buffer.extend(&pixels);
+                self.pixs_buf.extend(&pixels);
             } else {
                 // xpr.remove_pixels(&pixels);
             }
@@ -133,22 +114,26 @@ impl Tool for Vector {
         let button = self.is_mouse_down.clone().unwrap();
         if button == InputItem::Right { return Some(()); }
 
-        self.buffer.clear();
+        self.pixs_buf.clear();
         let simple = self.current_polyline.reumann_witkam(self.tolerence)?;
-        let (pixs, circ_buf) = self.draw_polyline(xpr, &simple);
-        self.buffer.extend(&pixs);
+        let (path, pixs_buf) = self.draw_polyline(xpr, &simple);
+        self.pixs_buf.extend(&pixs_buf);
 
         xpr.history.enter()?;
+        // commit pixels
         xpr.history.top()
             .selected_layer
             .borrow_mut()
             .content
-            .extend(&self.buffer);
-
-        xpr.draw_circ_buf.extend(&circ_buf);
+            .extend(&self.pixs_buf);
+        xpr.history.top()
+            .selected_layer
+            .borrow_mut()
+            .paths
+            .push((simple.clone(), path));
 
         self.current_polyline.clear();
-        self.buffer.clear();
+        self.pixs_buf.clear();
         self.is_mouse_down = None;
 
         self.draw(xpr);
@@ -157,8 +142,7 @@ impl Tool for Vector {
 
     fn draw(&self, xpr: &mut Xprite) -> Option<()> {
         xpr.new_frame();
-        xpr.add_pixels(&self.buffer);
-
+        xpr.add_pixels(&self.pixs_buf);
         Some(())
     }
 
