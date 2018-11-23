@@ -10,9 +10,9 @@ struct MouseState {
 
 fn set_style(imgui: &mut ImGui) {
     let mut style = imgui.style_mut();
-    style.window_rounding = 3.0;
-    style.frame_rounding = 2.3;
-    style.grab_rounding = 2.3;
+    style.window_rounding = 0.0;
+    style.frame_rounding  = 0.0;
+    style.grab_rounding   = 0.0;
     style.scrollbar_rounding = 5.0;
     style.frame_border_size = 1.0;
     style.item_spacing.y = 6.5;
@@ -29,15 +29,15 @@ fn set_style(imgui: &mut ImGui) {
 
     style.colors[find!(Text)]                  = ImVec4::new(0.860, 0.930, 0.890, 0.78);
     style.colors[find!(TextDisabled)]          = ImVec4::new(0.860, 0.930, 0.890, 0.28);
-    style.colors[find!(WindowBg)]              = ImVec4::new(0., 0., 0., 1.00);
-    style.colors[find!(PopupBg)]               = ImVec4::new(0.200, 0.220, 0.270, 0.9);
-    style.colors[find!(Border)]                = ImVec4::new(0.502, 0.075, 0.256, 1.00);
-    style.colors[find!(BorderShadow)]          = ImVec4::new(0.00, 0.00, 0.00, 0.00);
+    style.colors[find!(WindowBg)]              = ImVec4::new(0.000, 0.000, 0.000, 1.00);
+    style.colors[find!(PopupBg)]               = ImVec4::new(0.200, 0.220, 0.270, 0.90);
+    style.colors[find!(Border)]                = ImVec4::new(1.000, 0.200, 0.000, 1.00);
+    style.colors[find!(BorderShadow)]          = ImVec4::new(0.000, 0.000, 0.000, 0.00);
     style.colors[find!(FrameBg)]               = ImVec4::new(0.200, 0.220, 0.270, 1.00);
     style.colors[find!(FrameBgHovered)]        = ImVec4::new(0.455, 0.198, 0.301, 0.78);
     style.colors[find!(FrameBgActive)]         = ImVec4::new(0.455, 0.198, 0.301, 1.00);
     style.colors[find!(TitleBg)]               = ImVec4::new(0.232, 0.201, 0.271, 1.00);
-    style.colors[find!(TitleBgActive)]         = ImVec4::new(0.502, 0.075, 0.256, 1.00);
+    style.colors[find!(TitleBgActive)]         = ImVec4::new(1.000, 0.200, 0.000, 1.00);
     style.colors[find!(TitleBgCollapsed)]      = ImVec4::new(0.200, 0.220, 0.270, 0.75);
     style.colors[find!(MenuBarBg)]             = ImVec4::new(0.200, 0.220, 0.270, 0.47);
     style.colors[find!(ScrollbarBg)]           = ImVec4::new(0.200, 0.220, 0.270, 1.00);
@@ -52,7 +52,7 @@ fn set_style(imgui: &mut ImGui) {
     style.colors[find!(ButtonActive)]          = ImVec4::new(0.455, 0.198, 0.301, 1.00);
     style.colors[find!(Header)]                = ImVec4::new(0.455, 0.198, 0.301, 0.76);
     style.colors[find!(HeaderHovered)]         = ImVec4::new(0.455, 0.198, 0.301, 0.86);
-    style.colors[find!(HeaderActive)]          = ImVec4::new(0.502, 0.075, 0.256, 1.00);
+    style.colors[find!(HeaderActive)]          = ImVec4::new(1.000, 0.200, 0.000, 1.00);
     style.colors[find!(ResizeGrip)]            = ImVec4::new(0.47, 0.77, 0.83, 0.04);
     style.colors[find!(ResizeGripHovered)]     = ImVec4::new(0.455, 0.198, 0.301, 0.78);
     style.colors[find!(ResizeGripActive)]      = ImVec4::new(0.455, 0.198, 0.301, 1.00);
