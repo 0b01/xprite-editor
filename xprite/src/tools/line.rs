@@ -93,7 +93,7 @@ impl Tool for Line {
         Some(())
     }
 
-    fn draw(&self, xpr: &mut Xprite) -> Option<()> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Option<()> {
         xpr.new_frame();
         self.draw_line(xpr);
         self.set_cursor(xpr);
@@ -106,7 +106,7 @@ impl Tool for Line {
                 match value {
                     "true" => { self.snap = true; self.is_snap_45 = true }
                     "false" => { self.snap = false }
-                    _ => panic!("unimpl for ctrl: {}", value)
+                    _ => error!("unimpl for ctrl: {}", value)
                 }
                 self.draw(xpr);
             }
@@ -114,14 +114,14 @@ impl Tool for Line {
                 match value {
                     "true" => { self.snap = true; self.is_snap_45 = false }
                     "false" => { self.snap = false }
-                    _ => panic!("unimpl for ctrl: {}", value)
+                    _ => error!("unimpl for ctrl: {}", value)
                 }
                 self.draw(xpr);
             }
             "alt" => {
                 info!("alt pressed (unimplemented)");
             }
-            _ => panic!("unimplemented option: {}", option)
+            _ => info!("unimplemented option: {}", option)
         }
         Some(())
     }

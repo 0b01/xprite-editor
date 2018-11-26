@@ -1,6 +1,7 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
 
+#[derive(Clone, Copy)]
 pub struct Scroll {
     pub x: f32,
     pub y: f32,
@@ -74,7 +75,8 @@ impl Canvas {
             o.0 + self.scale * x,
             o.1 + self.scale * y,
         ];
-        rdr.circ(p0, self.scale * radius, color, filled);
+        let rad = self.scale * radius;
+        rdr.circ(p0, rad, color, filled);
     }
 
     pub fn within_circle(&self, x: f32, y: f32, radius: f32, mouse: (f32, f32)) -> bool {
@@ -177,5 +179,15 @@ impl Canvas {
             y: ((cli_y - o.1) / self.scale).floor(),
         }
     }
+    /// snap point to grid
+    pub fn snap(&self, p: &Point2D<f32>) -> Point2D<f32> {
+        let Point2D {x: cli_x , y: cli_y} = p;
+        let o = self.origin();
+        Point2D {
+            x: cli_x.floor(),
+            y: cli_y.floor(),
+        }
+    }
+
 
 }

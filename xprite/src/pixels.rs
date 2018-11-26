@@ -184,9 +184,9 @@ impl Pixels {
 
 
 mod tests {
-    use super::*;
     #[test]
     fn test_extend() {
+        use crate::prelude::*;
         let mut v1 = Pixels::from_slice(&vec![pixel!(0.,0.), pixel!(0.,1.)]);
         let v2 = Pixels::from_slice(&vec![pixel!(0.,1.)]);
         v1.extend(&v2);

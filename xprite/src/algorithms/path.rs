@@ -116,8 +116,8 @@ impl Path {
         for seg in &self.segments {
             let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
             for p in vec![ctrl1, ctrl2] {
-                let Point2D{x, y} = xpr.canvas.shrink_size_no_floor(p);
-                circ_buf.push(pixel!(x, y, Color::red()));
+                // let Point2D{x, y} = xpr.canvas.snap(p);
+                circ_buf.push(pixel!(p.x, p.y, Color::red()));
             }
         }
 
@@ -195,11 +195,8 @@ impl Path {
             let t = i as f32 / 100.;
             let point = seg.sample(t);
 
-            let Point2D {x, y} = xpr.canvas.shrink_size(&point);
-            let pixel = Pixel {
-                point: Point2D::new(x, y),
-                color: ColorOption::Unset,
-            };
+            let Point2D {x, y} = xpr.canvas.snap(&point);
+            let pixel = pixel!(x, y);
 
             // don't allow duplicate pixels
             if !set.contains(&pixel) {

@@ -66,7 +66,7 @@ impl Tool for PaintBucket {
         Some(())
     }
 
-    fn draw(&self, xpr: &mut Xprite) -> Option<()> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Option<()> {
         xpr.new_frame();
         // noop
         Some(())

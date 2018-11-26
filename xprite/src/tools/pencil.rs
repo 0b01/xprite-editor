@@ -209,7 +209,7 @@ impl Tool for Pencil {
         Some(())
     }
 
-    fn draw(&self, xpr: &mut Xprite) -> Option<()> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Option<()> {
         xpr.new_frame();
         self.set_cursor(xpr);
         xpr.add_pixels(&self.buffer);
@@ -225,14 +225,14 @@ impl Tool for Pencil {
                     Raw             => self.mode = Raw,
                     SortedMonotonic => self.mode = SortedMonotonic,
                     PixelPerfect    => self.mode = PixelPerfect,
-                    _ => panic!("malformed value: {}", value),
+                    _ => error!("malformed value: {}", value),
                 };
             }
             "brush" => {
                 match value {
                     "+" => self.brush = Brush::cross(),
                     "." => self.brush = Brush::pixel(),
-                    _ => panic!("malformed value: {}", value),
+                    _ => error!("malformed value: {}", value),
                 }
             }
             _ => (),

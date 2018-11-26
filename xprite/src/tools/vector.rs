@@ -8,7 +8,7 @@ pub struct Vector {
     brush: Brush,
     tolerence: f32,
     pixs_buf: Pixels,
-    current_polyline: Polyline,
+    current_polyline: Option<Polyline>,
 }
 
 impl Vector {
@@ -16,7 +16,7 @@ impl Vector {
         let is_mouse_down = None;
         let cursor_pos = None;
         let brush = Brush::pixel();
-        let current_polyline = Polyline::new();
+        let current_polyline = Some(Polyline::new());
         let pixs_buf = Pixels::new();
 
         Self {
@@ -25,17 +25,10 @@ impl Vector {
             cursor_pos,
             brush,
             pixs_buf,
-            tolerence: 2.,
+            tolerence: 1.,
         }
     }
 
-    pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline) -> (Path, Pixels) {
-        let mut circ_buf = Pixels::new();
-        let path = polyline.interp();
-        let mut rasterized = path.rasterize(xpr).unwrap();
-        rasterized.set_color(&Color::orange());
-        (path, rasterized)
-    }
 
     /// convert brush shape to actual pixel on canvas
     pub fn brush2pixs(&self, xpr: &Xprite, cursor: Point2D<f32>, color: Color) -> Option<Pixels> {
@@ -77,35 +70,37 @@ impl Tool for Vector {
         }
 
         // the rest handles when left button is pressed
-        self.current_polyline.push(p);
+        let p = xpr.canvas.shrink_size_no_floor(&p);
+        self.current_polyline.as_mut()?.push(p);
 
-        let button = self.is_mouse_down.clone().unwrap();
-        if button == InputItem::Left {
-            let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
-            let pixs = {
-                let perfect = pixel_perfect(&line_pixs);
-                Pixels::from_slice(&perfect)
-            };
-            self.pixs_buf.extend(&pixs);
-        } else if button == InputItem::Right {
-            // xpr.remove_pixels(&pixels.unwrap());
-        }
+        // let button = self.is_mouse_down.clone().unwrap();
+        // if button == InputItem::Left {
+        //     let line_pixs = self.current_polyline.as_mut()?.connect_with_line(&xpr)?;
+        //     let pixs = {
+        //         let perfect = pixel_perfect(&line_pixs);
+        //         Pixels::from_slice(&perfect)
+        //     };
+        //     self.pixs_buf.extend(&pixs);
+        // } else if button == InputItem::Right {
+        //     // xpr.remove_pixels(&pixels.unwrap());
+        // }
         self.draw(xpr)
     }
 
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: InputItem) -> Option<()>{
         self.is_mouse_down = Some(button);
 
-        self.current_polyline.push(p);
-        self.pixs_buf.clear();
-        let pixels = self.brush2pixs(xpr, p, xpr.color());
-        if let Some(pixels) = pixels {
-            if button == InputItem::Left {
-                self.pixs_buf.extend(&pixels);
-            } else {
-                // xpr.remove_pixels(&pixels);
-            }
-        }
+        let p = xpr.canvas.shrink_size_no_floor(&p);
+        self.current_polyline.as_mut()?.push(p);
+        // self.pixs_buf.clear();
+        // let pixels = self.brush2pixs(xpr, p, xpr.color());
+        // if let Some(pixels) = pixels {
+        //     if button == InputItem::Left {
+        //         self.pixs_buf.extend(&pixels);
+        //     } else {
+        //         // xpr.remove_pixels(&pixels);
+        //     }
+        // }
         self.draw(xpr)
     }
 
@@ -114,34 +109,47 @@ impl Tool for Vector {
         let button = self.is_mouse_down.clone().unwrap();
         if button == InputItem::Right { return Some(()); }
 
-        self.pixs_buf.clear();
-        let simple = self.current_polyline.reumann_witkam(self.tolerence)?;
-        let (path, pixs_buf) = self.draw_polyline(xpr, &simple);
-        self.pixs_buf.extend(&pixs_buf);
+        // xpr.history.enter()?;
+        // // commit pixels
+        // xpr.history.top()
+        //     .selected_layer
+        //     .borrow_mut()
+        //     .content
+        //     .extend(&self.pixs_buf);
 
-        xpr.history.enter()?;
-        // commit pixels
-        xpr.history.top()
-            .selected_layer
-            .borrow_mut()
-            .content
-            .extend(&self.pixs_buf);
-        xpr.history.top()
-            .selected_layer
-            .borrow_mut()
-            .paths
-            .push((simple.clone(), path));
+        // xpr.history.top()
+        //     .selected_layer
+        //     .borrow_mut()
+        //     .paths
+        //     .push((simple.clone(), path));
 
-        self.current_polyline.clear();
-        self.pixs_buf.clear();
+        // self.current_polyline.clear();
+        // self.pixs_buf.clear();
+
         self.is_mouse_down = None;
 
         self.draw(xpr);
         Some(())
     }
 
-    fn draw(&self, xpr: &mut Xprite) -> Option<()> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Option<()> {
         xpr.new_frame();
+
+        self.pixs_buf.clear();
+        let simple = self.current_polyline.as_ref()?.reumann_witkam(self.tolerence)?;
+
+        let (path, pixs_buf) = {
+            let path = simple.interp();
+            let mut rasterized = path.rasterize(xpr).unwrap();
+            rasterized.set_color(&Color::orange());
+            (path, rasterized)
+        };
+
+        self.pixs_buf.extend(&pixs_buf);
+
+        xpr.cc_buf.extend(&simple.anchors(xpr));
+        xpr.cc_buf.extend(&path.control_points(xpr));
+
         xpr.add_pixels(&self.pixs_buf);
         Some(())
     }
@@ -152,14 +160,14 @@ impl Tool for Vector {
                 if let Ok(val) = value.parse() {
                     self.tolerence = val;
                 } else {
-                    panic!("cannot parse val: {}", value);
+                    error!("cannot parse val: {}", value);
                 }
             }
             "brush" => {
                 match value {
                     "cross" => self.brush = Brush::cross(),
                     "pixel" => self.brush = Brush::pixel(),
-                    _ => panic!("malformed value: {}", value),
+                    _ => error!("malformed value: {}", value),
                 }
             }
             _ => (),

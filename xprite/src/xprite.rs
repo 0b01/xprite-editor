@@ -6,6 +6,7 @@ pub struct Xprite {
     pub history: History,
 
     pub im_buf: Pixels,
+    pub cc_buf: Circles,
 
     pub canvas: Canvas,
     pub selected_color: Color,
@@ -23,12 +24,14 @@ impl Xprite {
         let toolbox = Toolbox::new();
         let canvas = Canvas::new(art_w, art_h);
         let im_buf = Pixels::new();
+        let cc_buf = Circles::new();
 
         Xprite {
             last_mouse_pos: (0., 0.),
             inputs: InputState::default(),
             history,
             im_buf,
+            cc_buf,
             canvas,
             selected_color,
             cursor_pos,
@@ -102,17 +105,12 @@ impl Xprite {
 
     pub fn new_frame(&mut self) {
         self.pixels_mut().clear();
+        self.cc_buf.clear();
     }
 
     pub fn set_cursor(&mut self, pos: &Pixels) {
         self.cursor_pos = pos.clone();
     }
-
-    // pub fn print_cursor_location(&self) {
-    //     let pos = self.cursor_pos;
-    //     panic!("cursor: ({}, {})", pos.point.x, pos.point.y);
-    // }
-
 }
 
 use std::rc::Rc;
@@ -169,36 +167,21 @@ impl Xprite {
             }
             for &Pixel{point, color } in layer.borrow().content.iter() {
                 let Point2D {x, y} = point;
-                if let ColorOption::Set(color) = color {
-                    let c: [f32;4] = color.into();
-                    // println!("{:#?}", c);
-                    // let c = RED;
-                    self.canvas.draw_pixel(rdr, x, y, c, true);
-                } else {
-                    self.canvas.draw_pixel(rdr, x, y, self.color().into(), true);
-                }
+                let c = if let ColorOption::Set(color) = color { color.into() }
+                        else { self.color().into() };
+                self.canvas.draw_pixel(rdr, x, y, c, true);
             }
 
-            // draw circles
-            for (polyline, path) in layer.borrow().paths.iter() {
-                // circ_buf.extend(&polyline.get_anchors(xpr));
-                let mut circ_buf = Pixels::new();
-                circ_buf.extend(&polyline.anchors(self));
-                circ_buf.extend(&path.control_points(self));
-
-                for p in circ_buf.iter() {
-                    let Point2D {x, y} = p.point;
-                    let c = if let ColorOption::Set(c) = p.color {c.into()}
-                            else {self.color().into()};
-                    self.canvas.draw_circle(rdr, x, y, 0.5, c, true);
-
-                    // if mouse position is near a circle
-                    if self.canvas.within_circle(x, y, 0.5, self.last_mouse_pos) {
-                        rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Move);
-                    }
-                }
-            }
         }
+
+        // info!("------------");
+        // for (polyline, path) in cc_buf.iter() {
+        //     // let mut circ_buf = Pixels::new();
+        //     // circ_buf.extend(&polyline.anchors(self));
+        //     // circ_buf.extend(&path.control_points(self));
+
+        // }
+
 
         // draw current layer pixels
         for &Pixel{point, color: _ } in self.pixels().iter() {
@@ -206,13 +189,24 @@ impl Xprite {
             self.canvas.draw_pixel(rdr, x, y, BLACK, true);
         }
 
-
         // draw cursor
         for p in self.cursor_pos.iter() {
             let Point2D {x, y} = p.point;
             self.canvas.draw_pixel(rdr, x, y, RED, false);
         }
 
+        // draw circles
+        for p in self.cc_buf.iter() {
+            let Point2D {x, y} = p.point;
+            let c = if let ColorOption::Set(c) = p.color {c.into()}
+                    else {self.color().into()};
+            self.canvas.draw_circle(rdr, x, y, 0.5, c, true);
+
+            // if mouse position is near a circle
+            if self.canvas.within_circle(x, y, 0.5, self.last_mouse_pos) {
+                rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Move);
+            }
+        }
 
     }
 }

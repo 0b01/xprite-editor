@@ -4,20 +4,17 @@ use crate::prelude::*;
 pub struct Layer {
     pub name: String,
     pub content: Pixels,
-    pub paths: Vec<(Polyline, Path)>,
     pub visible: bool,
 }
 
 impl Layer {
     pub fn new(name: String) -> Self {
         let content = Pixels::new();
-        let paths = Vec::new();
         let visible = true;
 
         Self {
             name,
             content,
-            paths,
             visible,
         }
     }
