@@ -22,15 +22,6 @@ impl Polyline {
         self.pos.clear()
     }
 
-    pub fn anchors(&self, xpr: &Xprite) -> Circles {
-        let mut circ_buf = Pixels::new();
-        for &p in self.pos.iter() {
-            // let Point2D{x, y} = xpr.canvas.snap(&p);
-            circ_buf.push(pixel!(p.x, p.y, Color::blue()));
-        }
-        circ_buf
-    }
-
     /// line simplification algorithm
     pub fn reumann_witkam(&self, tol: f32) -> Option<Polyline> {
         if self.pos.len() < 10 {

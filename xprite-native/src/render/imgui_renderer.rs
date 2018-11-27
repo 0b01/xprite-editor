@@ -24,6 +24,16 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
             .build();
     }
 
+    fn bezier(&self, p0:[f32;2], cp1:[f32;2], cp2: [f32;2], p1:[f32;2], color:[f32;4]) {
+        let draw_list = self.ui.get_window_draw_list();
+        draw_list
+            .add_bezier_curve(p0, cp1, cp2, p1, color)
+            // .filled(filled)
+            .thickness(10.)
+            .build();
+    }
+
+
     fn rect(&self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
         let draw_list = self.ui.get_window_draw_list();
         draw_list

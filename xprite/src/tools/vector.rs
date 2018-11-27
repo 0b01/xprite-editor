@@ -147,10 +147,11 @@ impl Tool for Vector {
 
         self.pixs_buf.extend(&pixs_buf);
 
-        xpr.cc_buf.extend(&simple.anchors(xpr));
-        xpr.cc_buf.extend(&path.control_points(xpr));
+        // xpr.cc_buf.extend(&path.anchors(xpr));
+        // xpr.cc_buf.extend(&path.control_points(xpr));
+        xpr.bz_buf.extend(path.segments);
 
-        xpr.add_pixels(&self.pixs_buf);
+        // xpr.add_pixels(&self.pixs_buf);
         Some(())
     }
 

@@ -70,6 +70,13 @@ impl<T: Copy + Add<Output=T>> Add for Point2D<T> {
     }
 }
 
+impl From<Point2D<f32>> for [f32;2] {
+    fn from(p: Point2D<f32>) -> Self {
+        [p.x, p.y]
+    }
+}
+
+
 impl From<Point2D<u32>> for Point2D<f32> {
     fn from(p: Point2D<u32>) -> Self {
         Point2D {

@@ -6,7 +6,7 @@ pub struct Xprite {
     pub history: History,
 
     pub im_buf: Pixels,
-    pub cc_buf: Circles,
+    pub bz_buf: Vec<CubicBezierSegment<f32>>,
 
     pub canvas: Canvas,
     pub selected_color: Color,
@@ -24,14 +24,14 @@ impl Xprite {
         let toolbox = Toolbox::new();
         let canvas = Canvas::new(art_w, art_h);
         let im_buf = Pixels::new();
-        let cc_buf = Circles::new();
+        let bz_buf = Vec::new();
 
         Xprite {
             last_mouse_pos: (0., 0.),
             inputs: InputState::default(),
             history,
             im_buf,
-            cc_buf,
+            bz_buf,
             canvas,
             selected_color,
             cursor_pos,
@@ -105,7 +105,7 @@ impl Xprite {
 
     pub fn new_frame(&mut self) {
         self.pixels_mut().clear();
-        self.cc_buf.clear();
+        self.bz_buf.clear();
     }
 
     pub fn set_cursor(&mut self, pos: &Pixels) {
@@ -195,18 +195,29 @@ impl Xprite {
             self.canvas.draw_pixel(rdr, x, y, RED, false);
         }
 
-        // draw circles
-        for p in self.cc_buf.iter() {
-            let Point2D {x, y} = p.point;
-            let c = if let ColorOption::Set(c) = p.color {c.into()}
-                    else {self.color().into()};
-            self.canvas.draw_circle(rdr, x, y, 0.5, c, true);
+        for seg in &self.bz_buf {
+            let &CubicBezierSegment { ctrl1, ctrl2, from, to } = seg;
+            self.canvas.draw_bezier(rdr, from, ctrl1, ctrl2, to);
 
-            // if mouse position is near a circle
-            if self.canvas.within_circle(x, y, 0.5, self.last_mouse_pos) {
-                rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Move);
-            }
+            let red = Color::red().into();
+            let blue = Color::blue().into();
+            self.canvas.draw_circle(rdr, ctrl1.x, ctrl1.y, 0.5, red, true);
+            self.canvas.draw_circle(rdr, ctrl2.x, ctrl2.y, 0.5, red, true);
+            self.canvas.draw_circle(rdr, from.x, from.y, 0.5, blue, true);
+            self.canvas.draw_circle(rdr, to.x, to.y, 0.5, blue, true);
         }
+
+        // // draw circles
+        // for p in self.cc_buf.iter() {
+        //     let Point2D {x, y} = p.point;
+        //     let c = if let ColorOption::Set(c) = p.color {c.into()}
+        //             else {self.color().into()};
+        //     self.canvas.draw_circle(rdr, x, y, 0.5, c, true);
+        //     // if mouse position is near a circle
+        //     if self.canvas.within_circle(x, y, 0.5, self.last_mouse_pos) {
+        //         rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Move);
+        //     }
+        // }
 
     }
 }
