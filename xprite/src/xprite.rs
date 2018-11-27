@@ -197,14 +197,17 @@ impl Xprite {
 
         for seg in &self.bz_buf {
             let &CubicBezierSegment { ctrl1, ctrl2, from, to } = seg;
-            self.canvas.draw_bezier(rdr, from, ctrl1, ctrl2, to);
+            self.canvas.draw_bezier(rdr, from, ctrl1, ctrl2, to, Color::grey().into());
 
             let red = Color::red().into();
             let blue = Color::blue().into();
-            self.canvas.draw_circle(rdr, ctrl1.x, ctrl1.y, 0.5, red, true);
-            self.canvas.draw_circle(rdr, ctrl2.x, ctrl2.y, 0.5, red, true);
-            self.canvas.draw_circle(rdr, from.x, from.y, 0.5, blue, true);
-            self.canvas.draw_circle(rdr, to.x, to.y, 0.5, blue, true);
+            self.canvas.draw_circle(rdr, ctrl1, 0.12, red, true);
+            self.canvas.draw_circle(rdr, ctrl2, 0.12, red, true);
+            self.canvas.draw_circle(rdr, from, 0.12, blue, true);
+            self.canvas.draw_circle(rdr, to, 0.12, blue, true);
+
+            self.canvas.draw_line(rdr, from, ctrl1, blue);
+            self.canvas.draw_line(rdr, to, ctrl2, blue);
         }
 
         // // draw circles

@@ -56,18 +56,53 @@ impl Path {
     pub fn from_polyline(polyline: &Polyline) -> Self {
         let points = &polyline.pos;
         let mut segments = Vec::new();
-        let tangents = Path::_monotonic_cubic_tangents(&points);
 
-        let mut i = 0;
-        for _ in 0..(points.len()-1) {
-            let line = CubicBezierSegment {
-                from: points[i],
-                ctrl1: points[i] + tangents[i],
-                ctrl2: points[i+1] + tangents[i+1],
-                to: points[i+1]
-            };
-            segments.push(line);
-            i += 1;
+        if points.len() < 3 {
+            return Path {segments: Vec::new()}
+        }
+        let tangents = Path::d3_svg_line_monotone(&points);
+        // let tangents = Path::d3_svg_line_cardinal_tangents(&points, 0.7);
+
+        // let mut i = 0;
+        // for _ in 0..(points.len()-1) {
+        //     let line = CubicBezierSegment {
+        //         from: points[i],
+        //         ctrl1: points[i] + tangents[i],
+        //         ctrl2: points[i+1] + tangents[i+1],
+        //         to: points[i+1]
+        //     };
+        //     segments.push(line);
+        //     i += 1;
+        // }
+
+        let mut pi = 1;
+        let p0 = points[0];
+        let t0 = tangents[0];
+        if tangents.len() > 1 {
+            let t = tangents[1];
+            let p = points[pi];
+            pi += 1;
+
+            let from = p0;
+            let ctrl1 = Point2D::new(p0.x + t0.x, p0.y + t0.y);
+            let ctrl2 = Point2D::new(p.x - t.x, p.y - t.y);
+            let to =  Point2D::new(p.x, p.y);
+            let curve = CubicBezierSegment {from, ctrl1, ctrl2, to};
+            segments.push(curve);
+
+            let mut i = 2;
+            while i < tangents.len() {
+                let p = points[pi];
+                let t = tangents[i];
+                let from = points[pi - 1];
+                let ctrl1 = Point2D::new(from.x + tangents[i-1].x, from.y + tangents[i-1].y);
+                let ctrl2 = Point2D::new(p.x - t.x, p.y - t.y);
+                let to = p;
+                let curve = CubicBezierSegment {from, ctrl1, ctrl2, to};
+                segments.push(curve);
+                i += 1;
+                pi += 1;
+            }
         }
 
         Path { segments }
@@ -75,8 +110,7 @@ impl Path {
 
     /// from d3:
     ///     https://github.com/d3/d3/blob/a40a611d6b9fc4ff3815ca830d86b6c00d130995/src/svg/line.js#L377
-    /// get tangent_lines
-    pub fn _monotonic_cubic_tangents(points: &[Point2D<f32>]) -> Vec<Point2D<f32>> {
+    pub fn d3_svg_line_monotone(points: &[Point2D<f32>]) -> Vec<Point2D<f32>> {
         let mut tangents = Vec::new();
 
         let mut m = line_finite_diff(&points);
@@ -105,6 +139,30 @@ impl Path {
             tangents.push(Point2D::new(s, m[i] * s));
         }
         tangents
+    }
+
+    // Generates tangents for a cardinal spline.
+    pub fn d3_svg_line_cardinal_tangents(points: &[Point2D<f32>], tension: f32) -> Vec<Point2D<f32>> {
+        let mut tangents = Vec::new();
+
+        let a = (1. - tension) / 2.;
+        let mut p0;
+        let mut p1 = points[0];
+        let mut p2 = points[1];
+        let mut i = 1;
+        let n = points.len();
+        i += 1;
+        while i < n {
+            p0 = p1;
+            p1 = p2;
+            p2 = points[i];
+            tangents.push(Point2D::new(
+                a * (p2.x - p0.x),
+                a * (p2.y - p0.y)
+            ));
+            i += 1;
+        }
+        return tangents;
     }
 
 
@@ -246,7 +304,7 @@ mod test {
                 Point2D::new(6.666666666666667, 0.0),
                 Point2D::new(6.666666666666667, 0.0)
             ],
-            Path::_monotonic_cubic_tangents(&points),
+            Path::d3_svg_lineMonotone(&points),
         )
 
     }

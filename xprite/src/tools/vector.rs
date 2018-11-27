@@ -6,7 +6,7 @@ pub struct Vector {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,
     brush: Brush,
-    tolerence: f32,
+    pub tolerence: f32,
     pixs_buf: Pixels,
     current_polyline: Option<Polyline>,
 }
@@ -146,12 +146,9 @@ impl Tool for Vector {
         };
 
         self.pixs_buf.extend(&pixs_buf);
-
-        // xpr.cc_buf.extend(&path.anchors(xpr));
-        // xpr.cc_buf.extend(&path.control_points(xpr));
         xpr.bz_buf.extend(path.segments);
 
-        // xpr.add_pixels(&self.pixs_buf);
+        xpr.add_pixels(&self.pixs_buf);
         Some(())
     }
 

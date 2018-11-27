@@ -29,7 +29,7 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         draw_list
             .add_bezier_curve(p0, cp1, cp2, p1, color)
             // .filled(filled)
-            .thickness(10.)
+            .thickness(1.)
             .build();
     }
 

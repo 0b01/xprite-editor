@@ -69,9 +69,9 @@ impl Canvas {
         self.canvas_h = canvas_h;
     }
 
-    pub fn draw_circle(&self, rdr: &Renderer, x: f32, y: f32, radius: f32, color: [f32;4], filled: bool) {
+    pub fn draw_circle(&self, rdr: &Renderer, p0: Point2D<f32>, radius: f32, color: [f32;4], filled: bool) {
         let o = self.origin();
-        let p0 = self.to_cli(Point2D::new(x, y)).into();
+        let p0 = self.to_cli(p0).into();
         let rad = self.scale * radius;
         rdr.circ(p0, rad, color, filled);
     }
@@ -81,12 +81,13 @@ impl Canvas {
                        from: Point2D<f32>,
                        ctrl1:Point2D<f32>,
                        ctrl2: Point2D<f32>,
-                       to:Point2D<f32>) {
+                       to:Point2D<f32>,
+                       c: [f32;4],
+                       ) {
         let p0 = self.to_cli(from).into();
         let p1 = self.to_cli(to).into();
         let cp0 = self.to_cli(ctrl1).into();
         let cp1 = self.to_cli(ctrl2).into();
-        let c = Color::red().into();
         rdr.bezier(p0, cp0, cp1, p1, c);
     }
 
@@ -177,6 +178,13 @@ impl Canvas {
             );
             y += self.scale;
         }
+    }
+
+    pub fn draw_line(&self, rdr: &Renderer, p0: Point2D<f32>, p1: Point2D<f32>, c:[f32;4]) {
+        let p0 = self.to_cli(p0).into();
+        let p1 = self.to_cli(p1).into();
+
+        rdr.line(p0, p1, c);
     }
 
     /// convert screen pos to pixel location
