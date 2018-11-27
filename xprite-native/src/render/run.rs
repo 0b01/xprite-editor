@@ -1,6 +1,8 @@
 use imgui::{ImGui, FontGlyphRange, FrameSize, ImFontConfig, ImGuiMouseCursor, Ui, ImGuiCol, ImVec4};
 use std::time::Instant;
 
+use crate::ui::inputs::KeyCode;
+
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 struct MouseState {
     pos: (i32, i32),
@@ -129,26 +131,59 @@ pub fn run<F: FnMut(&Ui) -> bool>(title: &str, clear_color: [f32; 4], mut run_ui
 
                         let pressed = input.state == Pressed;
                         match input.virtual_keycode {
-                            Some(Key::Tab) => imgui.set_key(0, pressed),
-                            Some(Key::Left) => imgui.set_key(1, pressed),
-                            Some(Key::Right) => imgui.set_key(2, pressed),
-                            Some(Key::Up) => imgui.set_key(3, pressed),
-                            Some(Key::Down) => imgui.set_key(4, pressed),
-                            Some(Key::PageUp) => imgui.set_key(5, pressed),
-                            Some(Key::PageDown) => imgui.set_key(6, pressed),
-                            Some(Key::Home) => imgui.set_key(7, pressed),
-                            Some(Key::End) => imgui.set_key(8, pressed),
-                            Some(Key::Delete) => imgui.set_key(9, pressed),
-                            Some(Key::Back) => imgui.set_key(10, pressed),
-                            Some(Key::Return) => imgui.set_key(11, pressed),
-                            Some(Key::Escape) => imgui.set_key(12, pressed),
-                            Some(Key::A) => imgui.set_key(13, pressed),
-                            Some(Key::C) => imgui.set_key(14, pressed),
-                            Some(Key::V) => imgui.set_key(15, pressed),
-                            Some(Key::X) => imgui.set_key(16, pressed),
-                            Some(Key::Y) => imgui.set_key(17, pressed),
-                            Some(Key::Z) => imgui.set_key(18, pressed),
-                            Some(Key::Space) => imgui.set_key(19, pressed),
+                            Some(Key::Tab) =>       imgui.set_key(KeyCode::Tab, pressed),
+                            Some(Key::Left) =>      imgui.set_key(KeyCode::Left, pressed),
+                            Some(Key::Right) =>     imgui.set_key(KeyCode::Right, pressed),
+                            Some(Key::Up) =>        imgui.set_key(KeyCode::Up, pressed),
+                            Some(Key::Down) =>      imgui.set_key(KeyCode::Down, pressed),
+                            Some(Key::PageUp) =>    imgui.set_key(KeyCode::PageUp, pressed),
+                            Some(Key::PageDown) =>  imgui.set_key(KeyCode::PageDown, pressed),
+                            Some(Key::Home) =>      imgui.set_key(KeyCode::Home, pressed),
+                            Some(Key::End) =>       imgui.set_key(KeyCode::End, pressed),
+                            Some(Key::Delete) =>    imgui.set_key(KeyCode::Delete, pressed),
+                            Some(Key::Back) =>      imgui.set_key(KeyCode::Back, pressed),
+                            Some(Key::Return) =>    imgui.set_key(KeyCode::Return, pressed),
+                            Some(Key::Escape) =>    imgui.set_key(KeyCode::Escape, pressed),
+
+                            Some(Key::A) => imgui.set_key(KeyCode::A, pressed),
+                            Some(Key::B) => imgui.set_key(KeyCode::B, pressed),
+                            Some(Key::C) => imgui.set_key(KeyCode::C, pressed),
+                            Some(Key::D) => imgui.set_key(KeyCode::D, pressed),
+                            Some(Key::E) => imgui.set_key(KeyCode::E, pressed),
+                            Some(Key::F) => imgui.set_key(KeyCode::F, pressed),
+                            Some(Key::G) => imgui.set_key(KeyCode::G, pressed),
+                            Some(Key::H) => imgui.set_key(KeyCode::H, pressed),
+                            Some(Key::I) => imgui.set_key(KeyCode::I, pressed),
+                            Some(Key::J) => imgui.set_key(KeyCode::J, pressed),
+                            Some(Key::K) => imgui.set_key(KeyCode::K, pressed),
+                            Some(Key::L) => imgui.set_key(KeyCode::L, pressed),
+                            Some(Key::M) => imgui.set_key(KeyCode::M, pressed),
+                            Some(Key::N) => imgui.set_key(KeyCode::N, pressed),
+                            Some(Key::O) => imgui.set_key(KeyCode::O, pressed),
+                            Some(Key::P) => imgui.set_key(KeyCode::P, pressed),
+                            Some(Key::Q) => imgui.set_key(KeyCode::Q, pressed),
+                            Some(Key::R) => imgui.set_key(KeyCode::R, pressed),
+                            Some(Key::S) => imgui.set_key(KeyCode::S, pressed),
+                            Some(Key::T) => imgui.set_key(KeyCode::T, pressed),
+                            Some(Key::U) => imgui.set_key(KeyCode::U, pressed),
+                            Some(Key::V) => imgui.set_key(KeyCode::V, pressed),
+                            Some(Key::W) => imgui.set_key(KeyCode::W, pressed),
+                            Some(Key::X) => imgui.set_key(KeyCode::X, pressed),
+                            Some(Key::Y) => imgui.set_key(KeyCode::Y, pressed),
+                            Some(Key::Z) => imgui.set_key(KeyCode::Z, pressed),
+                            Some(Key::Key0) => imgui.set_key(KeyCode::Key0, pressed),
+                            Some(Key::Key1) => imgui.set_key(KeyCode::Key1, pressed),
+                            Some(Key::Key2) => imgui.set_key(KeyCode::Key2, pressed),
+                            Some(Key::Key3) => imgui.set_key(KeyCode::Key3, pressed),
+                            Some(Key::Key4) => imgui.set_key(KeyCode::Key4, pressed),
+                            Some(Key::Key5) => imgui.set_key(KeyCode::Key5, pressed),
+                            Some(Key::Key6) => imgui.set_key(KeyCode::Key6, pressed),
+                            Some(Key::Key7) => imgui.set_key(KeyCode::Key7, pressed),
+                            Some(Key::Key8) => imgui.set_key(KeyCode::Key8, pressed),
+                            Some(Key::Key9) => imgui.set_key(KeyCode::Key9, pressed),
+
+                            Some(Key::Space) => imgui.set_key(KeyCode::Space, pressed),
+
                             Some(Key::LControl) | Some(Key::RControl) => {
                                 imgui.set_key_ctrl(pressed)
                             }

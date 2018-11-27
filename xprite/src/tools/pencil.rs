@@ -1,7 +1,6 @@
 use crate::prelude::*;
 use crate::algorithms::sorter::sort_path;
 use crate::algorithms::pixel_perfect::pixel_perfect;
-use crate::brush::BrushType;
 
 #[derive(Eq, PartialEq, Clone, Copy)]
 pub enum PencilMode {
@@ -225,7 +224,6 @@ impl Tool for Pencil {
                     Raw             => self.mode = Raw,
                     SortedMonotonic => self.mode = SortedMonotonic,
                     PixelPerfect    => self.mode = PixelPerfect,
-                    _ => error!("malformed value: {}", value),
                 };
             }
             "brush" => {

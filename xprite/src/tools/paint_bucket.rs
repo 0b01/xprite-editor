@@ -72,7 +72,7 @@ impl Tool for PaintBucket {
         Some(())
     }
 
-    fn set(&mut self, xpr: &mut Xprite, option: &str, value: &str) -> Option<()> {
+    fn set(&mut self, _xpr: &mut Xprite, option: &str, _value: &str) -> Option<()> {
         match option {
             _ => (), // noop
         }

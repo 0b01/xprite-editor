@@ -10,6 +10,7 @@ extern crate imgui_glium_renderer;
 use xprite::prelude::*;
 use crate::render::imgui_renderer::ImguiRenderer;
 
+mod hotkey;
 mod render;
 mod prelude;
 mod ui;

@@ -12,19 +12,26 @@ Pixel art editor with algorithmic tools.
 * [x] Renderer
 * [x] Layer
 
+0. Core functionalities
+
+* [ ] Hotkeys
+* [ ] Save/Load
+* [ ] Palette
+
 1. Basic tools
 
 * [x] Pencil
 * [x] Line
 * [ ] Vector tools
-* [ ] Shapes
-* [ ] Selection
+* [ ] Shapes - Circle
+* [ ] Shapes - Rect
+* [ ] Erase
+* [ ] Select
 * [ ] Brush
-* [ ] Paint Bucket
+* [ ] Color Picker
+* [x] Paint Bucket
 
 2. Layers
-
-* [ ] Load / Save
 
 3. Animation support
 

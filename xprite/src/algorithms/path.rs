@@ -165,9 +165,8 @@ impl Path {
         return tangents;
     }
 
-
     /// get control points
-    pub fn control_points(&self, xpr: &Xprite) -> Circles {
+    pub fn control_points(&self) -> Circles {
         let mut circ_buf = Pixels::new();
 
         // circles: control points
@@ -263,7 +262,7 @@ impl Path {
             }
         }
 
-        let mut points = pixel_perfect(&path);
+        let points = pixel_perfect(&path);
 
         Some(points)
     }
@@ -304,8 +303,7 @@ mod test {
                 Point2D::new(6.666666666666667, 0.0),
                 Point2D::new(6.666666666666667, 0.0)
             ],
-            Path::d3_svg_lineMonotone(&points),
+            Path::d3_svg_line_monotone(&points),
         )
-
     }
 }

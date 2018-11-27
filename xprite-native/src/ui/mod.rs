@@ -1,10 +1,11 @@
-mod tool_panel;
-mod toolbar;
-mod menu;
-mod canvas;
-mod settings;
-mod tools;
-mod layers;
+pub mod inputs;
+pub mod tool_panel;
+pub mod toolbar;
+pub mod menu;
+pub mod canvas;
+pub mod settings;
+pub mod tools;
+pub mod layers;
 
 
 use crate::prelude::*;
