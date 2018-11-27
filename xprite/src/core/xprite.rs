@@ -1,6 +1,5 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
-use crate::input::InputState;
 
 pub struct Xprite {
     pub history: History,
@@ -93,6 +92,11 @@ impl Xprite {
 
     pub fn change_tool(&mut self, name: &ToolType) {
         self.toolbox.change_tool(name);
+        self.draw();
+    }
+
+    pub fn draw(&mut self) {
+        self.toolbox.tool().borrow_mut().draw(self);
     }
 
     pub fn color(&self) -> Color {
@@ -197,14 +201,14 @@ impl Xprite {
 
         for seg in &self.bz_buf {
             let &CubicBezierSegment { ctrl1, ctrl2, from, to } = seg;
-            self.canvas.draw_bezier(rdr, from, ctrl1, ctrl2, to, Color::grey().into());
+            self.canvas.draw_bezier(rdr, from, ctrl1, ctrl2, to, Color::grey().into(), 4.);
 
             let red = Color::red().into();
             let blue = Color::blue().into();
-            self.canvas.draw_circle(rdr, ctrl1, 0.12, red, true);
-            self.canvas.draw_circle(rdr, ctrl2, 0.12, red, true);
-            self.canvas.draw_circle(rdr, from, 0.12, blue, true);
-            self.canvas.draw_circle(rdr, to, 0.12, blue, true);
+            self.canvas.draw_circle(rdr, ctrl1, 0.3, red, true);
+            self.canvas.draw_circle(rdr, ctrl2, 0.3, red, true);
+            self.canvas.draw_circle(rdr, from, 0.3, blue, true);
+            self.canvas.draw_circle(rdr, to, 0.3, blue, true);
 
             self.canvas.draw_line(rdr, from, ctrl1, blue);
             self.canvas.draw_line(rdr, to, ctrl2, blue);

@@ -1,6 +1,5 @@
 use crate::prelude::*;
 use xprite::tools::pencil;
-use xprite::brush;
 
 pub fn draw(state: &mut State, ui: &Ui) {
     ui
@@ -23,7 +22,7 @@ pub fn draw(state: &mut State, ui: &Ui) {
     ui
     .tree_node(im_str!("Brush"))
     .build(|| {
-        let brushes = brush::BrushType::VARIANTS;
+        let brushes = BrushType::VARIANTS;
         for (_index, brush) in brushes.iter().enumerate() {
             let is_sel = &state.xpr.toolbox.pencil.borrow().brush_type == brush;
             if ui.selectable(
