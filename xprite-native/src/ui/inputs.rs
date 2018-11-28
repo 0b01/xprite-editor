@@ -140,18 +140,6 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
                 }
             }
         };
-
-        // ($boolval: expr, $key_upper: ident, $tblock: block, $fblock: block) => {
-        //     if state.inputs.debounce(InputItem::$key_upper, $boolval) {
-        //         if $boolval {
-        //             state.xpr.event(&KeyDown{ key: $key_upper });
-        //             $tblock
-        //         } else {
-        //             state.xpr.event(&KeyUp{ key: $key_upper });
-        //             $fblock
-        //         }
-        //     }
-        // };
     }
 
 
@@ -161,21 +149,24 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     let is_shift = ui.imgui().key_shift();
     handle_input!(is_shift, Shift);
 
-    let is_space = ui.imgui().is_key_down(KeyCode::Space as usize);
-    handle_input!(is_space, Space);
 
     let is_alt = ui.imgui().key_alt();
     handle_input!(is_alt, Alt);
 
-    let is_z = ui.imgui().is_key_down(KeyCode::Z as usize);
-    handle_input!(is_z, Z);
+    macro_rules! expand_handle_input {
+        ($($key:ident),*) => {
+            $(
+                let i = ui.imgui().is_key_down(KeyCode::$key as usize);
+                handle_input!(i, $key);
+            )*
+        };
+    }
 
-    let is_y = ui.imgui().is_key_down(KeyCode::Y as usize);
-    handle_input!(is_y, Y);
-
-    let is_enter = ui.imgui().is_key_down(KeyCode::Return as usize);
-    handle_input!(is_enter, Enter);
-
+    expand_handle_input!(
+        A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V,
+        W, X, Y, Z, Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9,
+        Return, Space
+    );
 
     // for i in 0..512 {
     //     if ui.imgui().is_key_down(i) {
