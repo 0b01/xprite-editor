@@ -5,6 +5,10 @@ use std::collections::HashMap;
 pub enum Bind {
     Redo,
     Undo,
+    SwitchToolPencil,
+    SwitchToolLine,
+    SwitchToolVector,
+    SwitchToolPaintbucket,
     Unmapped,
 }
 
@@ -14,6 +18,10 @@ impl Bind {
         match self {
             Redo => xpr.redo(),
             Undo => xpr.undo(),
+            SwitchToolPencil => xpr.toolbox.change_tool(&ToolType::Pencil),
+            SwitchToolLine => xpr.toolbox.change_tool(&ToolType::Line),
+            SwitchToolVector => xpr.toolbox.change_tool(&ToolType::Vector),
+            SwitchToolPaintbucket => xpr.toolbox.change_tool(&ToolType::PaintBucket),
             Unmapped => (),
         }
         Some(())
@@ -80,6 +88,11 @@ impl HotkeyController {
             binds.insert( Action::Z(true, false, false), Bind::Undo );
             binds.insert( Action::Z(true, true, false),  Bind::Redo );
             binds.insert( Action::Y(true, false, false), Bind::Redo );
+
+            binds.insert( Action::B(false, false, false), Bind::SwitchToolPencil);
+            binds.insert( Action::L(false, false, false), Bind::SwitchToolLine);
+            binds.insert( Action::V(false, false, false), Bind::SwitchToolVector);
+            binds.insert( Action::P(false, false, false), Bind::SwitchToolPaintbucket);
         }
 
         Self {
