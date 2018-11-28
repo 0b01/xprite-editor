@@ -62,7 +62,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     let (x, y) = ui.imgui().mouse_pos();
 
     if (state.xpr.last_mouse_pos.0 != x || state.xpr.last_mouse_pos.1 != y)
-    && !state.xpr.inputs.space
+    && !state.inputs.space
     {
         state.xpr.mouse_move(&MouseMove{ x, y });
     }
@@ -72,7 +72,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
 
     let using_window = ui.is_window_hovered() && !ui.is_item_active();
 
-    if state.xpr.inputs.space {
+    if state.inputs.space {
         ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Move);
     }
 
@@ -80,7 +80,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     if using_window &&
         (
             ui.imgui().is_mouse_dragging(ImMouseButton::Middle)
-        ||  (state.xpr.inputs.space && state.xpr.inputs.left)
+        ||  (state.inputs.space && state.inputs.left)
         )
     {
         // set cursor
@@ -101,9 +101,9 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     // left
-    if state.xpr.inputs.debounce(InputItem::Left, left)
+    if state.inputs.debounce(InputItem::Left, left)
     && using_window
-    && !state.xpr.inputs.space {
+    && !state.inputs.space {
         if left {
             trace!("mouse left down");
             state.xpr.event(&MouseDown{ x, y, button: Left });
@@ -114,7 +114,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     // right
-    if state.xpr.inputs.debounce(InputItem::Right, right) && using_window {
+    if state.inputs.debounce(InputItem::Right, right) && using_window {
         if right {
             let (x, y) = ui.imgui().mouse_pos();
             state.xpr.event(&MouseDown{ x, y, button: Right });
@@ -123,26 +123,35 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
 
     macro_rules! handle_input {
         ($boolval: expr, $key_upper: ident) => {
-            if state.xpr.inputs.debounce(InputItem::$key_upper, $boolval) {
+            if state.inputs.debounce(InputItem::$key_upper, $boolval) {
                 if $boolval {
                     state.xpr.event(&KeyDown{ key: $key_upper });
+                    state.hotkeys
+                        .lookup(
+                            Action::$key_upper(
+                                state.inputs.ctrl,
+                                state.inputs.shift,
+                                state.inputs.alt,
+                            ),
+                        )
+                        .execute(&mut state.xpr);
                 } else {
                     state.xpr.event(&KeyUp{ key: $key_upper });
                 }
             }
         };
 
-        ($boolval: expr, $key_upper: ident, $tblock: block, $fblock: block) => {
-            if state.xpr.inputs.debounce(InputItem::$key_upper, $boolval) {
-                if $boolval {
-                    state.xpr.event(&KeyDown{ key: $key_upper });
-                    $tblock
-                } else {
-                    state.xpr.event(&KeyUp{ key: $key_upper });
-                    $fblock
-                }
-            }
-        };
+        // ($boolval: expr, $key_upper: ident, $tblock: block, $fblock: block) => {
+        //     if state.inputs.debounce(InputItem::$key_upper, $boolval) {
+        //         if $boolval {
+        //             state.xpr.event(&KeyDown{ key: $key_upper });
+        //             $tblock
+        //         } else {
+        //             state.xpr.event(&KeyUp{ key: $key_upper });
+        //             $fblock
+        //         }
+        //     }
+        // };
     }
 
 
@@ -159,18 +168,10 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     handle_input!(is_alt, Alt);
 
     let is_z = ui.imgui().is_key_down(KeyCode::Z as usize);
-    handle_input!(is_z, Z, {
-        if state.xpr.inputs.ctrl {
-            state.xpr.undo();
-        }
-    }, {});
+    handle_input!(is_z, Z);
 
     let is_y = ui.imgui().is_key_down(KeyCode::Y as usize);
-    handle_input!(is_y, Y, {
-        if state.xpr.inputs.ctrl {
-            state.xpr.redo();
-        }
-    }, {});
+    handle_input!(is_y, Y);
 
     let is_enter = ui.imgui().is_key_down(KeyCode::Return as usize);
     handle_input!(is_enter, Enter);

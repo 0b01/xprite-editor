@@ -4,7 +4,8 @@ use crate::prelude::*;
 pub struct State {
     pub xpr: Xprite,
     pub show_settings: bool,
-    pub hotkeys: Hotkey,
+    pub hotkeys: HotkeyController,
+    pub inputs: InputState,
 }
 
 impl State {
@@ -12,7 +13,8 @@ impl State {
         State {
             xpr,
             show_settings: false,
-            hotkeys: Hotkey::new(),
+            hotkeys: HotkeyController::new(),
+            inputs: InputState::default(),
         }
     }
 

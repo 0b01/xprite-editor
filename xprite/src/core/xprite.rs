@@ -12,7 +12,6 @@ pub struct Xprite {
     pub toolbox: Toolbox,
     pub cursor_pos: Pixels,
     pub last_mouse_pos: (f32, f32),
-    pub inputs: InputState,
 }
 
 impl Xprite {
@@ -27,7 +26,6 @@ impl Xprite {
 
         Xprite {
             last_mouse_pos: (0., 0.),
-            inputs: InputState::default(),
             history,
             im_buf,
             bz_buf,
