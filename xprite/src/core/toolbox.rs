@@ -9,6 +9,7 @@ use crate::tools::{
     line::Line,
     paint_bucket::PaintBucket,
     vector::Vector,
+    color_picker::ColorPicker,
 };
 
 pub struct Toolbox {
@@ -16,6 +17,8 @@ pub struct Toolbox {
     pub paint_bucket:   Rc<RefCell<PaintBucket>>,
     pub line:           Rc<RefCell<Line>>,
     pub vector:         Rc<RefCell<Vector>>,
+    pub color_picker:   Rc<RefCell<ColorPicker>>,
+
     pub selected:       ToolType,
 }
 
@@ -25,6 +28,7 @@ impl Toolbox {
         let line = Rc::new(RefCell::new(Line::new()));
         let paint_bucket = Rc::new(RefCell::new(PaintBucket::new()));
         let vector = Rc::new(RefCell::new(Vector::new()));
+        let color_picker = Rc::new(RefCell::new(ColorPicker::new()));
 
         let selected = ToolType::Pencil;
         Toolbox {
@@ -33,6 +37,7 @@ impl Toolbox {
             paint_bucket,
             selected,
             vector,
+            color_picker,
         }
     }
 
@@ -47,6 +52,7 @@ impl Toolbox {
             Line => self.line.clone(),
             PaintBucket => self.paint_bucket.clone(),
             Vector => self.vector.clone(),
+            ColorPicker => self.color_picker.clone(),
         }
     }
 

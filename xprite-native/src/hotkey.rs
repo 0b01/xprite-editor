@@ -1,10 +1,12 @@
 use crate::prelude::*;
+use xprite::tools::ToolType;
 use std::collections::HashMap;
 
 #[derive(PartialEq, Clone, Copy)]
 pub enum Bind {
     Redo,
     Undo,
+    Tool(ToolType),
     Unmapped,
 }
 
@@ -14,6 +16,7 @@ impl Bind {
         match self {
             Redo => xpr.redo(),
             Undo => xpr.undo(),
+            Tool(tool) => xpr.change_tool(&tool),
             Unmapped => (),
         }
         Some(())
@@ -80,6 +83,14 @@ impl HotkeyController {
             binds.insert( Action::Z(true, false, false), Bind::Undo );
             binds.insert( Action::Z(true, true, false),  Bind::Redo );
             binds.insert( Action::Y(true, false, false), Bind::Redo );
+
+            // tools
+            binds.insert( Action::B(false, false, false), Bind::Tool(ToolType::Pencil) );
+            binds.insert( Action::G(false, false, false), Bind::Tool(ToolType::PaintBucket) );
+            binds.insert( Action::L(false, false, false), Bind::Tool(ToolType::Line) );
+
+            // alt
+            binds.insert( Action::Alt(false, false, true), Bind::Tool(ToolType::ColorPicker) );
         }
 
         Self {

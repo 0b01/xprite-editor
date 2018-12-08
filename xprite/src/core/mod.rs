@@ -7,3 +7,4 @@ pub mod geom;
 pub mod toolbox;
 pub mod input;
 pub mod xprite;
+pub mod palette;
