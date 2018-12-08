@@ -1,6 +1,8 @@
 use crate::prelude::*;
 use crate::algorithms;
 
+const MAX_CURSOR_NUM: usize = 256;
+
 #[derive(Clone)]
 pub struct PaintBucket { }
 
@@ -9,7 +11,7 @@ impl PaintBucket {
         PaintBucket { }
     }
 
-    pub fn ff(&self, xpr: &Xprite, p: Pixel) -> Option<Pixels> {
+    pub fn floodfill(&self, xpr: &Xprite, p: Pixel) -> Option<Pixels> {
         let current_layer = xpr.current_layer();
         let pixs = &current_layer.borrow().content;
         let w = xpr.canvas.art_w;
@@ -39,7 +41,7 @@ impl Tool for PaintBucket {
         let point = xpr.canvas.shrink_size(&p);
         let color = ColorOption::Unset;
         let p = Pixel {point, color};
-        let buffer = self.ff(xpr, p)?;
+        let buffer = self.floodfill(xpr, p)?;
 
         xpr.history.enter()?;
         xpr.history.top()
@@ -54,8 +56,8 @@ impl Tool for PaintBucket {
         let point = xpr.canvas.shrink_size(&p);
         let color = ColorOption::Unset;
         let p = Pixel {point, color};
-        let buffer = self.ff(xpr, p)?;
-        if buffer.1.len() > MAX_CURSOR_NUM {
+        let buffer = self.floodfill(xpr, p)?;
+        if buffer.len() > MAX_CURSOR_NUM {
             let w = xpr.canvas.art_w;
             let h = xpr.canvas.art_h;
             xpr.set_cursor(&algorithms::perimeter::find_perimeter(w as usize, h as usize, &buffer));

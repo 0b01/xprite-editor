@@ -180,6 +180,10 @@ impl Pixels {
         }
         arr
     }
+
+    pub fn len(&self) -> usize {
+        self.1.len()
+    }
 }
 
 

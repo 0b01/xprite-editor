@@ -19,12 +19,8 @@ pub type Circles = Pixels;
 
 // constants
 pub const BGCOLOR: [f32; 4] = [0.,0.,0.,0.];
-pub const RIGHT_SIDE_WIDTH: f32 = 200.;
-pub const LEFT_SIDE_WIDTH: f32 = 50.;
 pub const WHITE: [f32;4] = [1.,1.,1.,1.];
 pub const RED: [f32;4] = [1.,0.,0.,1.];
 pub const GREY: [f32;4] = [0.2,0.2,0.2,1.];
 pub const LIGHT_GREY: [f32;4] = [0.8,0.8,0.8,1.];
 pub const BLACK: [f32;4] = [0.,0.,0.,1.];
-pub const MAX_CURSOR_NUM: usize = 256;
-pub const CANVAS_INIT_SCALE: f32 = 2.;

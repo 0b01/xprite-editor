@@ -3,6 +3,7 @@ pub mod tool_panel;
 pub mod toolbar;
 pub mod menu;
 pub mod canvas;
+pub mod palette;
 pub mod settings;
 pub mod tools;
 pub mod layers;
@@ -21,6 +22,7 @@ pub fn draw(rdr: &Renderer, state: &mut State, ui: &Ui) -> bool {
     self::canvas::draw_canvas(rdr, state, ui);
     self::settings::draw_settings(rdr, state, ui);
     self::tool_panel::draw_tool_panel(rdr, state, ui);
+    self::palette::draw_palette(rdr, state, ui);
     self::layers::draw_layers(rdr, state, ui);
     true
 }
