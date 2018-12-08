@@ -10,18 +10,16 @@ pub fn draw_palette(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     .collapsible(false)
     .resizable(false)
     .build(|| {
-        let tools = ToolType::VARIANTS;
-
-        for (_index, name) in tools.iter().enumerate() {
-            let is_sel = &state.xpr.toolbox.tool().borrow().tool_type() == name;
-            if ui.selectable(
-                im_str!("{}", name.as_str()),
-                is_sel,
-                ImGuiSelectableFlags::empty(),
-                (0.,0.)
-            ) {
-                state.xpr.change_tool(name);
-            }
+        let mut sel: [f32; 4] = state.xpr.selected_color.into();
+        println!("{:?}", sel);
+        if ui.color_picker(im_str!("color"), &mut sel).build() {
+            println!("{:?}", sel);
+            let sel = [sel[0] * 255., sel[1] * 255., sel[2] * 255., sel[3]];
+            println!("{:?}", sel);
+            state.xpr.selected_color = sel.into();
+            println!("-----------------");
         }
+
+
     })
 }

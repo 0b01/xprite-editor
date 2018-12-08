@@ -29,8 +29,20 @@ impl From<Color> for [f32; 4] {
         [c.r as f32,
          c.g as f32,
          c.b as f32,
-         c.a as f32/ 255. - 0.1,
+         c.a as f32/ 255.,
         ]
+    }
+}
+
+/// [f32;4] = [0.,0.,0.,0.9];
+impl From<[f32;4]> for Color {
+    fn from(c: [f32;4]) -> Self {
+        Color {
+            r: c[0].floor() as u8,
+            g: c[1].floor() as u8,
+            b: c[2].floor() as u8,
+            a: (c[3] * 255.).floor() as u8,
+        }
     }
 }
 
