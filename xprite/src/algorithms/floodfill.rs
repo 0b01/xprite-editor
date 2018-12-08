@@ -13,11 +13,11 @@ pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Pixel, col: Color) -> Pix
         if bg_col != canvas[x as usize][y as usize].color { continue }
         // Checking only 4 neighbors
         neighbors.clear();
-        if x < w - 1. { neighbors.push(pixel!(x+1., y, col)) };
-        if x > 0. { neighbors.push(pixel!(x-1., y, col)) };
-        if y < h - 1. { neighbors.push(pixel!(x, y+1., col)) };
-        if y > 0. { neighbors.push(pixel!(x, y-1., col)) };
-        for &Pixel {point: Point2D {x:nx, y:ny}, ..} in neighbors.iter() {
+        if x < w - 1. { neighbors.push((x+1., y)) };
+        if x > 0. { neighbors.push((x-1., y)) };
+        if y < h - 1. { neighbors.push((x, y+1.)) };
+        if y > 0. { neighbors.push((x, y-1.)) };
+        for &(nx, ny) in neighbors.iter() {
             if visited[nx as usize][ny as usize] { continue };
             stack.push(pixel!(nx, ny, col));
             visited[nx as usize][ny as usize] = true;
@@ -51,8 +51,8 @@ mod test {
         // xx
         // oo
         let mut pixs = Pixels::new();
-        pixs.push(pixel!(0., 0., Color::red()));
-        pixs.push(pixel!(0., 1., Color::red()));
+        pixs.push(pixel!(0., 0., Color::black()));
+        pixs.push(pixel!(0., 1., Color::black()));
         let to_fill = floodfill(2., 2., &pixs, pixel!(1, 1,Color::red()), Color::red());
         assert_eq!(
             Pixels::from_slice(&vec![
@@ -95,12 +95,12 @@ mod test {
         // xoox
         //  xx
         let mut pixs = Pixels::new();
-        pixs.push(pixel!(0., 1., Color::red()));
-        pixs.push(pixel!(0., 2., Color::red()));
-        pixs.push(pixel!(1., 0., Color::red()));
-        pixs.push(pixel!(1., 3., Color::red()));
-        pixs.push(pixel!(2., 1., Color::red()));
-        pixs.push(pixel!(2., 2., Color::red()));
+        pixs.push(pixel!(0., 1., Color::black()));
+        pixs.push(pixel!(0., 2., Color::black()));
+        pixs.push(pixel!(1., 0., Color::black()));
+        pixs.push(pixel!(1., 3., Color::black()));
+        pixs.push(pixel!(2., 1., Color::black()));
+        pixs.push(pixel!(2., 2., Color::black()));
 
         let to_fill = floodfill(4., 3., &pixs, pixel!(1, 1,Color::red()), Color::blue());
         assert_eq!(
