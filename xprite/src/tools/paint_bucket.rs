@@ -53,16 +53,16 @@ impl Tool for PaintBucket {
     }
 
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, _button: InputItem) -> Option<()> {
-        let point = xpr.canvas.shrink_size(&p);
-        let bg_color = xpr.current_layer().borrow().get_color(point);
-        let buffer = self.floodfill(xpr, point, bg_color)?;
-        if buffer.len() > MAX_CURSOR_NUM {
-            let w = xpr.canvas.art_w;
-            let h = xpr.canvas.art_h;
-            xpr.set_cursor(&algorithms::perimeter::find_perimeter(w as usize, h as usize, &buffer));
-        } else {
-            xpr.set_cursor(&buffer);
-        }
+        // let point = xpr.canvas.shrink_size(&p);
+        // let bg_color = xpr.current_layer().borrow().get_color(point);
+        // let buffer = self.floodfill(xpr, point, bg_color)?;
+        // if buffer.len() > MAX_CURSOR_NUM {
+        //     let w = xpr.canvas.art_w;
+        //     let h = xpr.canvas.art_h;
+        //     xpr.set_cursor(&algorithms::perimeter::find_perimeter(w as usize, h as usize, &buffer));
+        // } else {
+        //     xpr.set_cursor(&buffer);
+        // }
 
         Some(())
     }

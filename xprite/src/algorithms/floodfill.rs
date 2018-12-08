@@ -9,11 +9,11 @@ pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Vec2D, bg_col: Option<Col
     let mut neighbors = Vec::with_capacity(4);
     while let Some(point) = stack.pop() {
         let Vec2D {x, y} = point;
-        println!("background color: {:?} \n\n ({},{}) {:?}", bg_col, x, y, canvas[x as usize][y as usize]);
+        // println!("background color: {:?} \n\n ({},{}) {:?}", bg_col, x, y, canvas[x as usize][y as usize]);
         match (bg_col, canvas[x as usize][y as usize]) {
             (Some(bg), Some(Pixel{color, ..})) => if bg != color { continue },
             (None, Some(_)) => continue,
-            (Some(_), None) => (),
+            (Some(_), None) => continue,
             (None, None) => (),
         };
         // Checking only 4 neighbors
@@ -59,7 +59,7 @@ mod test {
         let mut pixs = Pixels::new();
         pixs.push(pixel!(0., 0., Color::black()));
         pixs.push(pixel!(0., 1., Color::black()));
-        let to_fill = floodfill(2., 2., &pixs, Vec2D{x:1.,y:1.}, Some(Color::red()), Color::red());
+        let to_fill = floodfill(2., 2., &pixs, Vec2D{x:1.,y:1.}, None, Color::red());
         assert_eq!(
             Pixels::from_slice(&vec![
                 pixel!(1,1,Color::red()),
@@ -80,7 +80,7 @@ mod test {
         pixs.push(pixel!(1., 2., Color::black()));
         pixs.push(pixel!(2., 1., Color::black()));
 
-        let to_fill = floodfill(100., 100., &pixs, Vec2D{x:1., y:1.}, Some(Color::red()), Color::black());
+        let to_fill = floodfill(100., 100., &pixs, Vec2D{ x:1., y:1. }, None, Color::black());
         assert_eq!(
             Pixels::from_slice(&vec![
                 pixel!(1,1,Color::black()),
@@ -110,7 +110,7 @@ mod test {
         pixs.push(pixel!(2., 1., Color::black()));
         pixs.push(pixel!(2., 2., Color::black()));
 
-        let to_fill = floodfill(4., 3., &pixs, Vec2D{x:1., y:1.}, Some(Color::red()), Color::blue());
+        let to_fill = floodfill(4., 3., &pixs, Vec2D{x:1., y:1.}, None, Color::blue());
         assert_eq!(
             Pixels::from_slice(&vec![
                 pixel!(1,1,Color::blue()),

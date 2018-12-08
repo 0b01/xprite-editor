@@ -1,7 +1,7 @@
 use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
 
-/// represents a point in a 2D cartesian plane
+/// represents a 2D vector
 #[derive(PartialEq, Debug, Copy, Clone, PartialOrd)]
 pub struct Vec2D {
     pub x: f32,
