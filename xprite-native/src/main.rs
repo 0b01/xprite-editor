@@ -7,8 +7,11 @@ extern crate glium;
 extern crate imgui;
 extern crate imgui_glium_renderer;
 
+extern crate cairo;
+
 use xprite::prelude::*;
-use crate::render::imgui_renderer::ImguiRenderer;
+
+use crate::render::imgui_cairo_renderer::ImguiCairoRenderer;
 
 mod hotkey;
 mod consts;
@@ -25,7 +28,8 @@ fn main() {
     let xpr = Xprite::new(100., 100.);
     let mut state = state::State::new(xpr);
     render::run("Xprite", BGCOLOR, |ui| {
-        let rdr = ImguiRenderer::new(&ui);
+        // let rdr = ImguiRenderer::new(&ui);
+        let rdr = ImguiCairoRenderer::new(&ui);
         ui::draw(&rdr, &mut state, ui)
     });
 }

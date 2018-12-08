@@ -13,3 +13,5 @@ xprite = { path = "../xprite" }
 fern = "0.5.6"
 log = { version = "0.4", features = ["std"] }
 chrono = "0.4"
+
+cairo = "0.0.4"
