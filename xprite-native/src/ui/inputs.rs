@@ -149,7 +149,6 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     let is_shift = ui.imgui().key_shift();
     handle_input!(is_shift, Shift);
 
-
     let is_alt = ui.imgui().key_alt();
     handle_input!(is_alt, Alt);
 

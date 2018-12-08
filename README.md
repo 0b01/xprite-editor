@@ -14,7 +14,7 @@ Pixel art editor with algorithmic tools.
 
 0. Core functionalities
 
-* [ ] Hotkeys
+* [x] Hotkeys
 * [ ] Save/Load
 * [ ] Palette
 
