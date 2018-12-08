@@ -72,7 +72,7 @@ impl Pencil {
     pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline) -> Pixels {
         let path = polyline.interp();
         let mut rasterized = path.rasterize(xpr).unwrap();
-        rasterized.set_color(&Color::red());
+        rasterized.set_color(&xpr.color());
         // self.buffer.extend(&pixels);
         rasterized
     }
@@ -178,7 +178,7 @@ impl Tool for Pencil {
                     let points = self.current_polyline.connect_with_line(xpr)?;
                     let perfect = &pixel_perfect(&points);
                     let mut pixs = Pixels::from_slice(&perfect);
-                    pixs.set_color(&Color::red());
+                    pixs.set_color(&xpr.color());
                     self.buffer.extend(&pixs);
                 }
             }
@@ -188,7 +188,7 @@ impl Tool for Pencil {
                 let mut perfect = pixel_perfect(&points);
                 let sorted = sort_path(&mut perfect)?;
                 let mut pixs = Pixels::from_slice(&sorted);
-                pixs.set_color(&Color::red());
+                pixs.set_color(&xpr.color());
                 self.buffer.extend(&pixs);
             }
         }

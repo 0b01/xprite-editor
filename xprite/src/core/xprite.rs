@@ -186,15 +186,15 @@ impl Xprite {
 
 
         // draw current layer pixels
-        for &Pixel{point, color: _ } in self.pixels().iter() {
+        for &Pixel{point, color} in self.pixels().iter() {
             let Point2D {x, y} = point;
-            self.canvas.draw_pixel(rdr, x, y, BLACK, true);
+            self.canvas.draw_pixel(rdr, x, y, self.color().into(), true);
         }
 
         // draw cursor
         for p in self.cursor_pos.iter() {
             let Point2D {x, y} = p.point;
-            self.canvas.draw_pixel(rdr, x, y, RED, false);
+            self.canvas.draw_pixel(rdr, x, y, RED, false); // draw a rectangle
         }
 
         for seg in &self.bz_buf {

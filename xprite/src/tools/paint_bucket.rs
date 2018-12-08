@@ -17,7 +17,9 @@ impl PaintBucket {
         let w = xpr.canvas.art_w;
         let h = xpr.canvas.art_h;
         // info!("{:#?}, {:#?},{:#?},{:#?},{:#?},", w, h, pixs, self.cursor?, xpr.color());
+        info!("Filling: {:?}", xpr.color());
         let buffer = algorithms::floodfill::floodfill(w, h, pixs, p, xpr.color());
+        info!{"{:#?}", buffer};
         Some(buffer)
     }
 
