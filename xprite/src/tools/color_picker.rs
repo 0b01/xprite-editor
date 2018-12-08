@@ -15,7 +15,7 @@ impl Tool for ColorPicker {
         ToolType::ColorPicker
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D) -> Option<()> {
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
         let color = xpr.color();
         xpr.set_cursor(&(Pixel {point, color}).into());
@@ -23,11 +23,11 @@ impl Tool for ColorPicker {
         Some(())
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D) -> Option<()> {
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
         Some(())
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D, _button: InputItem) -> Option<()> {
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, _button: InputItem) -> Option<()> {
         Some(())
     }
 

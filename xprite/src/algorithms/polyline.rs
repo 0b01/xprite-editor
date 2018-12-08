@@ -3,7 +3,7 @@ use crate::algorithms::line::bresenham;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Polyline {
-    pub pos: Vec<Point2D>,
+    pub pos: Vec<Vec2D>,
 }
 
 /// a bunch of pixel positions
@@ -14,7 +14,7 @@ impl Polyline {
         }
     }
 
-    pub fn push(&mut self, p: Point2D) {
+    pub fn push(&mut self, p: Vec2D) {
         self.pos.push(p)
     }
 
@@ -34,7 +34,7 @@ impl Polyline {
         let mut third = 2;
 
         // first point
-        ret.push(Point2D::new(self.pos[first].x, self.pos[first].y));
+        ret.push(Vec2D::new(self.pos[first].x, self.pos[first].y));
 
         for _ in 0..(self.pos.len()-2) {
             let dist = point_line_distance(
@@ -46,7 +46,7 @@ impl Polyline {
             if dist <= tol {
                 third = third+1;
             } else {
-                ret.push(Point2D::new(self.pos[third].x, self.pos[third].y));
+                ret.push(Vec2D::new(self.pos[third].x, self.pos[third].y));
                 first = second;
                 second = third;
                 third = third+1;
@@ -54,7 +54,7 @@ impl Polyline {
         }
 
         // last point
-        ret.push(Point2D::new(self.pos[self.pos.len()-1].x, self.pos[self.pos.len()-1].y));
+        ret.push(Vec2D::new(self.pos[self.pos.len()-1].x, self.pos[self.pos.len()-1].y));
 
         Some(ret)
     }
@@ -80,7 +80,7 @@ impl Polyline {
 }
 
 /// distance from p0 to p1--p2
-pub fn point_line_distance( p0: Point2D, p1: Point2D, p2: Point2D) -> f32 {
+pub fn point_line_distance( p0: Vec2D, p1: Vec2D, p2: Vec2D) -> f32 {
     ((p2.x-p1.x)*(p1.y-p0.y)-(p1.x-p0.x)*(p2.y-p1.y)).abs()
     /
     ((p2.x-p1.x)*(p2.x-p1.x)+(p2.y-p1.y)*(p2.y as f32-p1.y as f32)).sqrt()

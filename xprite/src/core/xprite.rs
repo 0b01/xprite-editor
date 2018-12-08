@@ -168,7 +168,7 @@ impl Xprite {
                 continue;
             }
             for &Pixel{point, color } in layer.borrow().content.iter() {
-                let Point2D {x, y} = point;
+                let Vec2D {x, y} = point;
                 self.canvas.draw_pixel(rdr, x, y, color.into(), true);
             }
 
@@ -185,13 +185,13 @@ impl Xprite {
 
         // draw current layer pixels
         for &Pixel{point, color} in self.pixels().iter() {
-            let Point2D {x, y} = point;
+            let Vec2D {x, y} = point;
             self.canvas.draw_pixel(rdr, x, y, color.into(), true);
         }
 
         // draw cursor
         for p in self.cursor_pos.iter() {
-            let Point2D {x, y} = p.point;
+            let Vec2D {x, y} = p.point;
             self.canvas.draw_pixel(rdr, x, y, RED, false); // draw a rectangle
         }
 
@@ -212,7 +212,7 @@ impl Xprite {
 
         // // draw circles
         // for p in self.cc_buf.iter() {
-        //     let Point2D {x, y} = p.point;
+        //     let Vec2D {x, y} = p.point;
         //     let c = if let ColorOption::Set(c) = p.color {c.into()}
         //             else {self.color().into()};
         //     self.canvas.draw_circle(rdr, x, y, 0.5, c, true);
@@ -251,7 +251,7 @@ impl Xprite {
 
     pub fn mouse_move(&mut self, evt: &InputEvent) -> Option<()> {
         if let &InputEvent::MouseMove{x, y} = evt {
-            let p = Point2D::new(x, y);
+            let p = Vec2D::new(x, y);
             let tool = self.toolbox.tool();
             tool.borrow_mut().mouse_move(self, p);
         }
@@ -261,7 +261,7 @@ impl Xprite {
     pub fn mouse_up(&mut self, evt: &InputEvent) -> Option<()> {
         if let &InputEvent::MouseUp{x, y} = evt {
             let tool = self.toolbox.tool();
-            let p = Point2D::new(x, y);
+            let p = Vec2D::new(x, y);
             tool.borrow_mut().mouse_up(self, p);
         }
         Some(())
@@ -270,7 +270,7 @@ impl Xprite {
     pub fn mouse_down(&mut self, evt: &InputEvent) -> Option<()> {
         if let &InputEvent::MouseDown{x, y, button} = evt {
             let tool = self.toolbox.tool();
-            let p = Point2D::new(x, y);
+            let p = Vec2D::new(x, y);
             tool.borrow_mut().mouse_down(self, p, button);
         }
         Some(())

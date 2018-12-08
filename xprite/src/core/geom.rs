@@ -3,36 +3,36 @@ use std::cmp::Ordering;
 
 /// represents a point in a 2D cartesian plane
 #[derive(PartialEq, Debug, Copy, Clone, PartialOrd)]
-pub struct Point2D {
+pub struct Vec2D {
     pub x: f32,
     pub y: f32,
 }
 
-impl Ord for Point2D {
-    fn cmp(&self, other: &Point2D) -> Ordering {
+impl Ord for Vec2D {
+    fn cmp(&self, other: &Vec2D) -> Ordering {
         self.partial_cmp(other).unwrap()
     }
 }
 
-impl Eq for Point2D {}
+impl Eq for Vec2D {}
 
 
-impl Hash for Point2D {
+impl Hash for Vec2D {
     fn hash<H: Hasher>(&self, state: &mut H) {
         (self.x as i32).hash(state);
         (self.y as i32).hash(state);
     }
 }
 
-impl Point2D {
+impl Vec2D {
     /// create a new point
     pub fn new(x: f32, y: f32) -> Self {
         Self { x, y }
     }
 }
 
-impl From<Point2D> for [f32;2] {
-    fn from(p: Point2D) -> Self {
+impl From<Vec2D> for [f32;2] {
+    fn from(p: Vec2D) -> Self {
         [p.x, p.y]
     }
 }
@@ -40,14 +40,14 @@ impl From<Point2D> for [f32;2] {
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct CubicBezierSegment {
-    pub from: Point2D,
-    pub ctrl1: Point2D,
-    pub ctrl2: Point2D,
-    pub to: Point2D,
+    pub from: Vec2D,
+    pub ctrl1: Vec2D,
+    pub ctrl2: Vec2D,
+    pub to: Vec2D,
 }
 
 impl CubicBezierSegment {
-    pub fn sample(&self, t: f32) -> Point2D {
+    pub fn sample(&self, t: f32) -> Vec2D {
         let t2 = t * t;
         let t3 = t2 * t;
         let one_t = 1. - t;
@@ -64,6 +64,6 @@ impl CubicBezierSegment {
             self.ctrl2.y * 3. * one_t * t2 +
             self.to.y * t3;
 
-        Point2D::new(x, y)
+        Vec2D::new(x, y)
     }
 }

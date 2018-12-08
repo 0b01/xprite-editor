@@ -104,7 +104,7 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Vec<Pixel> {
     ret
 }
 
-pub fn bresenham(start: &Point2D, stop: &Point2D) -> Vec<Pixel> {
+pub fn bresenham(start: &Vec2D, stop: &Vec2D) -> Vec<Pixel> {
     let mut ret = Vec::new();
     let mut x0 = start.x;
     let mut y0 = start.y;

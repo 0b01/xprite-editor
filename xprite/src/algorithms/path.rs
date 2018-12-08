@@ -3,24 +3,24 @@ use std::cmp::{min, max};
 use crate::prelude::*;
 use super::pixel_perfect::pixel_perfect;
 
-fn convert(p1: Point2D, p2: Point2D, p3: Point2D, p4: Point2D) -> CubicBezierSegment {
+fn convert(p1: Vec2D, p2: Vec2D, p3: Vec2D, p4: Vec2D) -> CubicBezierSegment {
     let t = 0.5;
     CubicBezierSegment {
-        from: Point2D::new(p2.x, p2.y),
-        ctrl1: Point2D::new(
+        from: Vec2D::new(p2.x, p2.y),
+        ctrl1: Vec2D::new(
             p2.x + (p3.x-p1.x)/(6.*t),
             p2.y + (p3.y-p1.y)/(6.*t)
         ),
-        ctrl2: Point2D::new(
+        ctrl2: Vec2D::new(
             p3.x - (p4.x-p2.x)/(6.*t),
             p3.y - (p4.y-p2.y)/(6.*t)
         ),
-        to: Point2D::new(p3.x, p3.y),
+        to: Vec2D::new(p3.x, p3.y),
     }
 }
 
 
-fn line_slope(p0: Point2D, p1: Point2D) -> f32 {
+fn line_slope(p0: Vec2D, p1: Vec2D) -> f32 {
     if p1.x == p0.x {
         0.
     } else {
@@ -28,7 +28,7 @@ fn line_slope(p0: Point2D, p1: Point2D) -> f32 {
     }
 }
 
-fn line_finite_diff(points: &[Point2D]) -> Vec<f32> {
+fn line_finite_diff(points: &[Vec2D]) -> Vec<f32> {
     let mut m = Vec::new();
     let mut p0 = points[0];
     let mut p1 = points[1];
@@ -84,9 +84,9 @@ impl Path {
             pi += 1;
 
             let from = p0;
-            let ctrl1 = Point2D::new(p0.x + t0.x, p0.y + t0.y);
-            let ctrl2 = Point2D::new(p.x - t.x, p.y - t.y);
-            let to =  Point2D::new(p.x, p.y);
+            let ctrl1 = Vec2D::new(p0.x + t0.x, p0.y + t0.y);
+            let ctrl2 = Vec2D::new(p.x - t.x, p.y - t.y);
+            let to =  Vec2D::new(p.x, p.y);
             let curve = CubicBezierSegment {from, ctrl1, ctrl2, to};
             segments.push(curve);
 
@@ -95,8 +95,8 @@ impl Path {
                 let p = points[pi];
                 let t = tangents[i];
                 let from = points[pi - 1];
-                let ctrl1 = Point2D::new(from.x + tangents[i-1].x, from.y + tangents[i-1].y);
-                let ctrl2 = Point2D::new(p.x - t.x, p.y - t.y);
+                let ctrl1 = Vec2D::new(from.x + tangents[i-1].x, from.y + tangents[i-1].y);
+                let ctrl2 = Vec2D::new(p.x - t.x, p.y - t.y);
                 let to = p;
                 let curve = CubicBezierSegment {from, ctrl1, ctrl2, to};
                 segments.push(curve);
@@ -110,7 +110,7 @@ impl Path {
 
     /// from d3:
     ///     https://github.com/d3/d3/blob/a40a611d6b9fc4ff3815ca830d86b6c00d130995/src/svg/line.js#L377
-    pub fn d3_svg_line_monotone(points: &[Point2D]) -> Vec<Point2D> {
+    pub fn d3_svg_line_monotone(points: &[Vec2D]) -> Vec<Vec2D> {
         let mut tangents = Vec::new();
 
         let mut m = line_finite_diff(&points);
@@ -136,13 +136,13 @@ impl Path {
             let p0 = points[min(points.len()-1, i + 1)];
             let p1 = points[max(0, i as isize - 1) as usize];
             let s = (p0.x - p1.x) / (6. * (1. + m[i] * m[i]));
-            tangents.push(Point2D::new(s, m[i] * s));
+            tangents.push(Vec2D::new(s, m[i] * s));
         }
         tangents
     }
 
     // Generates tangents for a cardinal spline.
-    pub fn d3_svg_line_cardinal_tangents(points: &[Point2D], tension: f32) -> Vec<Point2D> {
+    pub fn d3_svg_line_cardinal_tangents(points: &[Vec2D], tension: f32) -> Vec<Vec2D> {
         let mut tangents = Vec::new();
 
         let a = (1. - tension) / 2.;
@@ -156,7 +156,7 @@ impl Path {
             p0 = p1;
             p1 = p2;
             p2 = points[i];
-            tangents.push(Point2D::new(
+            tangents.push(Vec2D::new(
                 a * (p2.x - p0.x),
                 a * (p2.y - p0.y)
             ));
@@ -173,7 +173,7 @@ impl Path {
         for seg in &self.segments {
             let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
             for p in vec![ctrl1, ctrl2] {
-                // let Point2D{x, y} = xpr.canvas.snap(p);
+                // let Vec2D{x, y} = xpr.canvas.snap(p);
                 circ_buf.push(pixel!(p.x, p.y, Color::red()));
             }
         }
@@ -204,11 +204,11 @@ impl Path {
             dy /= m;
 
 
-            let mut p0 = Point2D::new(
+            let mut p0 = Vec2D::new(
                 p1.x + (p3.x - p2.x) - distance * dx,
                 p1.y + (p3.y - p2.y) - distance * dy
             );
-            let p4 = Point2D::new(
+            let p4 = Vec2D::new(
                 p1.x + (p3.x - p2.x) + distance * dx,
                 p1.y + (p3.y - p2.y) + distance * dy
             );
@@ -252,7 +252,7 @@ impl Path {
             let t = i as f32 / 100.;
             let point = seg.sample(t);
 
-            let Point2D {x, y} = xpr.canvas.snap(&point);
+            let Vec2D {x, y} = xpr.canvas.snap(&point);
             let pixel = pixel!(x, y, Color::red());
 
             // don't allow duplicate pixels
@@ -276,17 +276,17 @@ mod test {
     #[test]
     fn test_line_finite_diff() {
         let points = vec![
-            Point2D::new(10., 10.),
-            Point2D::new(50., 10.),
+            Vec2D::new(10., 10.),
+            Vec2D::new(50., 10.),
         ];
         assert_eq!(vec![0., 0.], line_finite_diff(&points));
     }
 
     #[test]
     fn test_line_slope() {
-        let p0 = Point2D::new(10., 10.);
-        let p1 = Point2D::new(10., 10.);
-        let p2 = Point2D::new(0., 0.);
+        let p0 = Vec2D::new(10., 10.);
+        let p1 = Vec2D::new(10., 10.);
+        let p2 = Vec2D::new(0., 0.);
 
         assert_eq!(0., line_slope(p0, p1));
         assert_eq!(1., line_slope(p0, p2));
@@ -295,13 +295,13 @@ mod test {
     #[test]
     fn test_monotonic_tangent() {
         let points = vec![
-            Point2D::new(10., 10.),
-            Point2D::new(50., 10.),
+            Vec2D::new(10., 10.),
+            Vec2D::new(50., 10.),
         ];
         assert_eq!(
             vec![
-                Point2D::new(6.666666666666667, 0.0),
-                Point2D::new(6.666666666666667, 0.0)
+                Vec2D::new(6.666666666666667, 0.0),
+                Vec2D::new(6.666666666666667, 0.0)
             ],
             Path::d3_svg_line_monotone(&points),
         )

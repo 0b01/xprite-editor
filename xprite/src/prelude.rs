@@ -5,7 +5,7 @@ pub use crate::core::pixels::{Pixel, Pixels};
 pub use crate::core::color::Color;
 pub use crate::core::input::{InputEvent, InputItem, InputState};
 pub use crate::core::brush::{Brush, BrushType};
-pub use crate::core::geom::{Point2D, CubicBezierSegment};
+pub use crate::core::geom::{Vec2D, CubicBezierSegment};
 pub use crate::core::xprite::Xprite;
 pub use crate::algorithms::polyline::Polyline;
 pub use crate::tools::{Tool, ToolType};

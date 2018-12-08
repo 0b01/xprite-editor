@@ -6,7 +6,7 @@ use std::fmt::{Debug, Formatter, Error};
 
 #[derive(Copy, Clone, Eq, PartialOrd)]
 pub struct Pixel {
-    pub point: Point2D,
+    pub point: Vec2D,
     pub color: Color,
 }
 
@@ -39,7 +39,7 @@ impl Debug for Pixel {
 macro_rules! pixel {
     ($i:expr, $j: expr, $k: expr) => {
         Pixel {
-            point: Point2D::new(($i) as f32, ($j) as f32),
+            point: Vec2D::new(($i) as f32, ($j) as f32),
             color: $k,
         }
     };
@@ -154,7 +154,7 @@ impl Pixels {
         }
         for p in self.0.iter() {
             let Pixel{point, ..} = p;
-            let Point2D {x, y} = point;
+            let Vec2D {x, y} = point;
             arr[*x as usize][*y as usize] = true;
         }
         arr
@@ -171,7 +171,7 @@ impl Pixels {
         }
         for p in self.0.iter() {
             let Pixel{point, ..} = p;
-            let Point2D {x, y} = point;
+            let Vec2D {x, y} = point;
             arr[*x as usize][*y as usize] = Some(p.clone());
         }
         arr
