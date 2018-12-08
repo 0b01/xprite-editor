@@ -14,7 +14,7 @@ pub fn find_perimeter(w: usize, h: usize, pixs: &Pixels) -> Pixels {
                     continue
                 }
                 else {
-                    ret.push(canvas[row][col])
+                    ret.push(canvas[row][col].unwrap())
                 }
             }
         }

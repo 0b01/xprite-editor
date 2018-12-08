@@ -77,16 +77,10 @@ impl Pixels {
         Pixels(vec, set)
     }
     pub fn extend(&mut self, other: &Pixels) {
-        self.extend_vec(&other.0);
-    }
-    pub fn extend_vec(&mut self, pxs: &[Pixel]) {
-        for p in pxs.iter() {
-            if self.1.contains(&p) {
-                continue;
-            }
-            self.0.push(*p);
-            self.1.insert(*p);
+        for i in &other.1 {
+            self.1.replace(*i);
         }
+        self.0 = self.1.iter().cloned().collect();
     }
     pub fn push(&mut self, px: Pixel) {
         if !self.1.contains(&px) {
@@ -158,19 +152,19 @@ impl Pixels {
         arr
     }
 
-    pub fn as_arr(&self, w: usize, h: usize) -> Vec<Vec<Pixel>> {
+    pub fn as_arr(&self, w: usize, h: usize) -> Vec<Vec<Option<Pixel>>> {
         let mut arr = vec![];
         for i in 0..h {
             let mut row = vec![];
             for j in 0..w {
-                row.push(pixel!(i, j, Color::red()));
+                row.push(None);
             }
             arr.push(row);
         }
         for p in self.0.iter() {
             let Pixel{point, ..} = p;
             let Point2D {x, y} = point;
-            arr[*x as usize][*y as usize] = p.clone();
+            arr[*x as usize][*y as usize] = Some(p.clone());
         }
         arr
     }
@@ -185,9 +179,34 @@ mod tests {
     #[test]
     fn test_extend() {
         use crate::prelude::*;
-        let mut v1 = Pixels::from_slice(&vec![pixel!(0.,0., Color::red()), pixel!(0.,1., Color::red())]);
-        let v2 = Pixels::from_slice(&vec![pixel!(0.,1., Color::red())]);
+        let mut v1 = Pixels::from_slice(&vec![
+            pixel!(0.,0., Color::red()),
+            pixel!(0.,1., Color::red())]
+        );
+        let v2 = Pixels::from_slice(&vec![
+            pixel!(0.,1., Color::red())
+        ]);
         v1.extend(&v2);
-        assert_eq!(Pixels::from_slice(&vec![pixel!(0.,0., Color::red()), pixel!(0.,1., Color::red())]), v1);
+        assert_eq!(vec![
+            pixel!(0.,1., Color::red()),
+            pixel!(0.,0., Color::red()),
+        ], v1.0);
+    }
+
+    #[test]
+    fn test_extend_dup() {
+        use crate::prelude::*;
+        let mut v1 = Pixels::from_slice(&vec![
+            pixel!(0.,0., Color::red()),
+            pixel!(0.,1., Color::red())]
+        );
+        let v2 = Pixels::from_slice(&vec![
+            pixel!(0.,1., Color::blue())
+        ]);
+        v1.extend(&v2);
+        assert_eq!(vec![
+            pixel!(0.,1., Color::blue()),
+            pixel!(0.,0., Color::red()),
+        ], v1.0);
     }
 }

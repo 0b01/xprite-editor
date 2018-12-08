@@ -11,15 +11,14 @@ impl PaintBucket {
         PaintBucket { }
     }
 
-    pub fn floodfill(&self, xpr: &Xprite, p: Pixel) -> Option<Pixels> {
+    pub fn floodfill(&self, xpr: &Xprite, p: Point2D<f32>, bg_color: Option<Color>) -> Option<Pixels> {
         let current_layer = xpr.current_layer();
         let pixs = &current_layer.borrow().content;
         let w = xpr.canvas.art_w;
         let h = xpr.canvas.art_h;
         // info!("{:#?}, {:#?},{:#?},{:#?},{:#?},", w, h, pixs, self.cursor?, xpr.color());
-        info!("Filling: {:?}", xpr.color());
-        let buffer = algorithms::floodfill::floodfill(w, h, pixs, p, xpr.color());
-        info!{"{:#?}", buffer};
+        let buffer = algorithms::floodfill::floodfill(w, h, pixs, p, bg_color, xpr.color());
+        // info!{"{:#?}", buffer};
         Some(buffer)
     }
 
@@ -41,9 +40,8 @@ impl Tool for PaintBucket {
 
     fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
-        let color = xpr.color();
-        let p = Pixel {point, color};
-        let buffer = self.floodfill(xpr, p)?;
+        let bg_color = xpr.current_layer().borrow().get_color(point);
+        let buffer = self.floodfill(xpr, point, bg_color)?;
 
         xpr.history.enter()?;
         xpr.history.top()
@@ -56,9 +54,8 @@ impl Tool for PaintBucket {
 
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, _button: InputItem) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
-        let color = xpr.color();
-        let p = Pixel {point, color};
-        let buffer = self.floodfill(xpr, p)?;
+        let bg_color = xpr.current_layer().borrow().get_color(point);
+        let buffer = self.floodfill(xpr, point, bg_color)?;
         if buffer.len() > MAX_CURSOR_NUM {
             let w = xpr.canvas.art_w;
             let h = xpr.canvas.art_h;

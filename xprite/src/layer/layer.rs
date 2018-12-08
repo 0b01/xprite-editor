@@ -36,4 +36,10 @@ impl Layer {
         self.visible = !self.visible;
         info!("toggled {} to: {}", self.name, self.visible);
     }
+
+    pub fn get_color(&self, p: Point2D<f32>) -> Option<Color> {
+        self.content.iter()
+            .find(|i| i.point == p)
+            .map(|i| i.color)
+    }
 }
