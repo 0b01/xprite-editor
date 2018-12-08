@@ -29,7 +29,6 @@ impl PencilMode {
         }
     }
 
-
     pub const VARIANTS: [PencilMode; 3] = [
         PencilMode::Raw,
         PencilMode::PixelPerfect,
@@ -47,6 +46,7 @@ pub struct Pencil {
     pub brush_type: BrushType,
     buffer: Pixels,
 }
+
 impl Pencil {
     pub fn new() -> Self {
         let is_mouse_down = None;
@@ -97,7 +97,7 @@ impl Pencil {
             let ret: Vec<Pixel> = self.brush.shape.iter().map(
                 |Pixel {point,..}| Pixel {
                     point: Point2D::new(point.x+x + offset_x, point.y+y + offset_y),
-                    color: ColorOption::Set(color),
+                    color: color,
                 }
             ).collect();
             Some(Pixels::from_slice(&ret))
@@ -116,7 +116,7 @@ impl Tool for Pencil {
         let pixels = self.brush2pixs(xpr, p, xpr.color());
         self.cursor = pixels.clone();
         let point = xpr.canvas.shrink_size(&p);
-        let color = ColorOption::Set(xpr.color());
+        let color = xpr.color();
         self.cursor_pos = Some(Pixel{point, color});
 
         // if mouse is done
@@ -130,12 +130,13 @@ impl Tool for Pencil {
         if button == InputItem::Left {
                 self.buffer.clear();
                 let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
-                let pixs = if self.mode != PencilMode::Raw {
+                let mut pixs = if self.mode != PencilMode::Raw {
                     let perfect = pixel_perfect(&line_pixs);
                     Pixels::from_slice(&perfect)
                 } else {
                     Pixels::from_slice(&line_pixs)
                 };
+                pixs.with_color(&xpr.color());
                 self.buffer.extend(&pixs);
         } else if button == InputItem::Right {
             // xpr.remove_pixels(&pixels.unwrap());

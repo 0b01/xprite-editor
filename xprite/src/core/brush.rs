@@ -28,7 +28,7 @@ pub struct Brush {
 impl Brush {
     pub fn pixel() -> Self {
         let mut pxs = Pixels::new();
-        pxs.push(pixel!(0., 0.));
+        pxs.push(pixel!(0., 0.,Color::red()));
 
         Self {
             shape: pxs,
@@ -39,11 +39,11 @@ impl Brush {
 
     pub fn cross() -> Self {
         let mut pxs = Pixels::new();
-        pxs.push(pixel!(0., 1.));
-        pxs.push(pixel!(1., 0.));
-        pxs.push(pixel!(1., 1.));
-        pxs.push(pixel!(1., 2.));
-        pxs.push(pixel!(2., 1.));
+        pxs.push(pixel!(0., 1., Color::red()));
+        pxs.push(pixel!(1., 0., Color::red()));
+        pxs.push(pixel!(1., 1., Color::red()));
+        pxs.push(pixel!(1., 2., Color::red()));
+        pxs.push(pixel!(2., 1., Color::red()));
 
         Self {
             shape: pxs,

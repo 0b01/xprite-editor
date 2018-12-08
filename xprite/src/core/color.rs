@@ -1,9 +1,3 @@
-#[derive(Debug, Hash, Clone, Eq, Copy, PartialEq)]
-pub enum ColorOption {
-    Unset,
-    Set(Color),
-}
-
 #[derive(Debug, Hash, Copy, Clone, Eq, PartialEq)]
 pub struct Color {
     pub r: u8,
@@ -26,9 +20,9 @@ impl ToString for Color {
 /// [f32;4] = [0.,0.,0.,0.9];
 impl From<Color> for [f32; 4] {
     fn from(c: Color) -> Self {
-        [c.r as f32,
-         c.g as f32,
-         c.b as f32,
+        [c.r as f32 / 255.,
+         c.g as f32 / 255.,
+         c.b as f32 / 255.,
          c.a as f32/ 255.,
         ]
     }
@@ -38,10 +32,10 @@ impl From<Color> for [f32; 4] {
 impl From<[f32;4]> for Color {
     fn from(c: [f32;4]) -> Self {
         Color {
-            r: c[0].floor() as u8,
-            g: c[1].floor() as u8,
-            b: c[2].floor() as u8,
-            a: (c[3] * 255.).floor() as u8,
+            r: (c[0]*255.).floor() as u8,
+            g: (c[1]*255.).floor() as u8,
+            b: (c[2]*255.).floor() as u8,
+            a: (c[3]*255.).floor() as u8,
         }
     }
 }

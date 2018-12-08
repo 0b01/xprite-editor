@@ -28,25 +28,25 @@ mod tests {
     #[test]
     fn test_perimeter() {
         let mut pixs = Pixels::new();
-        pixs.push(pixel!(0,0));
-        pixs.push(pixel!(0,1));
-        pixs.push(pixel!(0,2));
-        pixs.push(pixel!(1,0));
-        pixs.push(pixel!(1,1));
-        pixs.push(pixel!(1,2));
-        pixs.push(pixel!(2,0));
-        pixs.push(pixel!(2,1));
-        pixs.push(pixel!(2,2));
+        pixs.push(pixel!(0,0,Color::red()));
+        pixs.push(pixel!(0,1,Color::red()));
+        pixs.push(pixel!(0,2,Color::red()));
+        pixs.push(pixel!(1,0,Color::red()));
+        pixs.push(pixel!(1,1,Color::red()));
+        pixs.push(pixel!(1,2,Color::red()));
+        pixs.push(pixel!(2,0,Color::red()));
+        pixs.push(pixel!(2,1,Color::red()));
+        pixs.push(pixel!(2,2,Color::red()));
 
         let mut result = Pixels::new();
-        result.push(pixel!(0,0));
-        result.push(pixel!(0,1));
-        result.push(pixel!(0,2));
-        result.push(pixel!(1,0));
-        result.push(pixel!(1,2));
-        result.push(pixel!(2,0));
-        result.push(pixel!(2,1));
-        result.push(pixel!(2,2));
+        result.push(pixel!(0,0,Color::red()));
+        result.push(pixel!(0,1,Color::red()));
+        result.push(pixel!(0,2,Color::red()));
+        result.push(pixel!(1,0,Color::red()));
+        result.push(pixel!(1,2,Color::red()));
+        result.push(pixel!(2,0,Color::red()));
+        result.push(pixel!(2,1,Color::red()));
+        result.push(pixel!(2,2,Color::red()));
 
         let peri = find_perimeter(3, 3, &pixs);
         assert_eq!(result, peri);

@@ -2,7 +2,7 @@
 pub use crate::core::toolbox::Toolbox;
 pub use crate::core::history::History;
 pub use crate::core::pixels::{Pixel, Pixels};
-pub use crate::core::color::{Color, ColorOption};
+pub use crate::core::color::Color;
 pub use crate::core::input::{InputEvent, InputItem, InputState};
 pub use crate::core::brush::{Brush, BrushType};
 pub use crate::core::geom::{Point2D, CubicBezierSegment};

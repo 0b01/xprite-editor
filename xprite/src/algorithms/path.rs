@@ -253,7 +253,7 @@ impl Path {
             let point = seg.sample(t);
 
             let Point2D {x, y} = xpr.canvas.snap(&point);
-            let pixel = pixel!(x, y);
+            let pixel = pixel!(x, y, Color::red());
 
             // don't allow duplicate pixels
             if !set.contains(&pixel) {

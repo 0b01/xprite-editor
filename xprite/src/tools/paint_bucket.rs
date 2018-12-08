@@ -33,7 +33,7 @@ impl Tool for PaintBucket {
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
-        let color = ColorOption::Unset;
+        let color = xpr.color();
         xpr.set_cursor(&(Pixel {point, color}).into());
         self.draw(xpr);
         Some(())
@@ -41,7 +41,7 @@ impl Tool for PaintBucket {
 
     fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
-        let color = ColorOption::Unset;
+        let color = xpr.color();
         let p = Pixel {point, color};
         let buffer = self.floodfill(xpr, p)?;
 
@@ -56,7 +56,7 @@ impl Tool for PaintBucket {
 
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, _button: InputItem) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
-        let color = ColorOption::Unset;
+        let color = xpr.color();
         let p = Pixel {point, color};
         let buffer = self.floodfill(xpr, p)?;
         if buffer.len() > MAX_CURSOR_NUM {

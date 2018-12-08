@@ -41,7 +41,7 @@ impl Vector {
             let ret: Vec<Pixel> = self.brush.shape.iter().map(
                 |Pixel {point,..}| Pixel {
                     point: Point2D::new(point.x+x + offset_x, point.y+y + offset_y),
-                    color: ColorOption::Set(color),
+                    color: color,
                 }
             ).collect();
             Some(Pixels::from_slice(&ret))
@@ -60,7 +60,7 @@ impl Tool for Vector {
         // update cursor pos
         let pixels = self.brush2pixs(xpr, p, xpr.color());
         let point = xpr.canvas.shrink_size(&p);
-        let color = ColorOption::Set(xpr.color());
+        let color = xpr.color();
         self.cursor_pos = Some(Pixel{point, color});
 
         if self.is_mouse_down.is_none() || pixels.is_none() {

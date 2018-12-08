@@ -32,9 +32,9 @@ mod tests {
   #[test]
   fn test_pp() {
     let path = vec![
-      pixel!(0.,0.),
-      pixel!(0.,1.),
-      pixel!(1.,1.),
+      pixel!(0.,0.,Color::red()),
+      pixel!(0.,1.,Color::red()),
+      pixel!(1.,1.,Color::red()),
     ];
 
     let ret = pixel_perfect(&path);

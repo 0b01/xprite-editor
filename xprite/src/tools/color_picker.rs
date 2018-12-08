@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::algorithms;
 
 #[derive(Clone)]
 pub struct ColorPicker { }
@@ -18,7 +17,7 @@ impl Tool for ColorPicker {
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
-        let color = ColorOption::Unset;
+        let color = xpr.color();
         xpr.set_cursor(&(Pixel {point, color}).into());
         self.draw(xpr);
         Some(())

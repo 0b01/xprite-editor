@@ -7,13 +7,13 @@ use std::fmt::{Debug, Formatter, Error};
 #[derive(Copy, Clone, Eq)]
 pub struct Pixel {
     pub point: Point2D<f32>,
-    pub color: ColorOption,
+    pub color: Color,
 }
 
 impl Pixel {
     pub fn with_color(&self, col: Color) -> Self {
         let mut self_ = self.clone();
-        self_.color = ColorOption::Set(col);
+        self_.color = col;
         self_
     }
 }
@@ -39,16 +39,10 @@ impl Hash for Pixel {
 }
 
 macro_rules! pixel {
-    ($i:expr, $j: expr) => {
-        Pixel {
-            point: Point2D::new($i as f32, $j as f32),
-            color: ColorOption::Unset,
-        }
-    };
     ($i:expr, $j: expr, $k: expr) => {
         Pixel {
-            point: Point2D::new($i as f32, $j as f32),
-            color: ColorOption::Set($k),
+            point: Point2D::new(($i) as f32, ($j) as f32),
+            color: $k,
         }
     };
 }
@@ -111,14 +105,14 @@ impl Pixels {
         self.0.iter()
     }
     pub fn set_color(&mut self, color: &Color) {
-        let color = ColorOption::Set(*color);
+        let color = *color;
         self.0 = self.0
             .iter()
             .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
             .collect::<Vec<_>>();
     }
     pub fn with_color(&mut self, color: &Color) -> &Self {
-        let color = ColorOption::Set(*color);
+        let color = *color;
         self.0 = self.0
             .iter()
             .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
@@ -169,7 +163,7 @@ impl Pixels {
         for i in 0..h {
             let mut row = vec![];
             for j in 0..w {
-                row.push(pixel!(i as f32, j as f32));
+                row.push(pixel!(i, j, Color::red()));
             }
             arr.push(row);
         }
@@ -191,9 +185,9 @@ mod tests {
     #[test]
     fn test_extend() {
         use crate::prelude::*;
-        let mut v1 = Pixels::from_slice(&vec![pixel!(0.,0.), pixel!(0.,1.)]);
-        let v2 = Pixels::from_slice(&vec![pixel!(0.,1.)]);
+        let mut v1 = Pixels::from_slice(&vec![pixel!(0.,0., Color::red()), pixel!(0.,1., Color::red())]);
+        let v2 = Pixels::from_slice(&vec![pixel!(0.,1., Color::red())]);
         v1.extend(&v2);
-        assert_eq!(Pixels::from_slice(&vec![pixel!(0.,0.), pixel!(0.,1.)]), v1);
+        assert_eq!(Pixels::from_slice(&vec![pixel!(0.,0., Color::red()), pixel!(0.,1., Color::red())]), v1);
     }
 }

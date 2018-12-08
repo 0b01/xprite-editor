@@ -169,9 +169,7 @@ impl Xprite {
             }
             for &Pixel{point, color } in layer.borrow().content.iter() {
                 let Point2D {x, y} = point;
-                let c = if let ColorOption::Set(color) = color { color.into() }
-                        else { self.color().into() };
-                self.canvas.draw_pixel(rdr, x, y, c, true);
+                self.canvas.draw_pixel(rdr, x, y, color.into(), true);
             }
 
         }
@@ -188,7 +186,7 @@ impl Xprite {
         // draw current layer pixels
         for &Pixel{point, color} in self.pixels().iter() {
             let Point2D {x, y} = point;
-            self.canvas.draw_pixel(rdr, x, y, self.color().into(), true);
+            self.canvas.draw_pixel(rdr, x, y, color.into(), true);
         }
 
         // draw cursor
