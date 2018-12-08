@@ -11,6 +11,7 @@ use xprite::prelude::*;
 use crate::render::imgui_renderer::ImguiRenderer;
 
 mod hotkey;
+mod consts;
 mod render;
 mod prelude;
 mod ui;

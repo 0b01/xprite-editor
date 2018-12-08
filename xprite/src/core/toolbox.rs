@@ -20,6 +20,8 @@ pub struct Toolbox {
     pub color_picker:   Rc<RefCell<ColorPicker>>,
 
     pub selected:       ToolType,
+
+    pub tool_stack:     Vec<ToolType>,
 }
 
 impl Toolbox {
@@ -31,6 +33,8 @@ impl Toolbox {
         let color_picker = Rc::new(RefCell::new(ColorPicker::new()));
 
         let selected = ToolType::Pencil;
+
+        let tool_stack = Vec::new();
         Toolbox {
             pencil,
             line,
@@ -38,6 +42,7 @@ impl Toolbox {
             selected,
             vector,
             color_picker,
+            tool_stack,
         }
     }
 
@@ -57,6 +62,12 @@ impl Toolbox {
     }
 
     pub fn change_tool(&mut self, tool: &ToolType) {
+        self.tool_stack.push(self.selected);
+        self.selected = tool.clone();
+    }
+
+    pub fn pop_tool(&mut self) {
+        let tool = self.tool_stack.pop().unwrap();
         self.selected = tool.clone();
     }
 }

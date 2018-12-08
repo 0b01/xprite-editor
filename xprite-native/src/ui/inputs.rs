@@ -132,11 +132,22 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
                                 state.inputs.ctrl,
                                 state.inputs.shift,
                                 state.inputs.alt,
+                                true,
                             ),
                         )
                         .execute(&mut state.xpr);
                 } else {
                     state.xpr.event(&KeyUp{ key: $key_upper });
+                    state.hotkeys
+                        .lookup(
+                            Action::$key_upper(
+                                state.inputs.ctrl,
+                                state.inputs.shift,
+                                state.inputs.alt,
+                                false,
+                            ),
+                        )
+                        .execute(&mut state.xpr);
                 }
             }
         };
