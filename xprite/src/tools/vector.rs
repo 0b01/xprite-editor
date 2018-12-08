@@ -29,7 +29,7 @@ impl Vector {
 
 
     /// convert brush shape to actual pixel on canvas
-    pub fn brush2pixs(&self, xpr: &Xprite, cursor: Point2D<f32>, color: Color) -> Option<Pixels> {
+    pub fn brush2pixs(&self, xpr: &Xprite, cursor: Point2D, color: Color) -> Option<Pixels> {
         let Point2D {x, y} = xpr.canvas.shrink_size(&cursor);
 
         let (brush_w, brush_h) = self.brush.size;
@@ -56,7 +56,7 @@ impl Tool for Vector {
         ToolType::Vector
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D) -> Option<()> {
         // update cursor pos
         let pixels = self.brush2pixs(xpr, p, xpr.color());
         let point = xpr.canvas.shrink_size(&p);
@@ -85,7 +85,7 @@ impl Tool for Vector {
         self.draw(xpr)
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: InputItem) -> Option<()>{
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D, button: InputItem) -> Option<()>{
         self.is_mouse_down = Some(button);
 
         let p = xpr.canvas.shrink_size_no_floor(&p);
@@ -102,7 +102,7 @@ impl Tool for Vector {
         self.draw(xpr)
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Point2D<f32>) -> Option<()> {
+    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Point2D) -> Option<()> {
         if self.is_mouse_down.is_none() {return Some(()); }
         let button = self.is_mouse_down.clone().unwrap();
         if button == InputItem::Right { return Some(()); }

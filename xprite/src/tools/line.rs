@@ -64,7 +64,7 @@ impl Tool for Line {
         ToolType::Line
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D) -> Option<()> {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(&p);
         let color = xpr.color();
@@ -73,7 +73,7 @@ impl Tool for Line {
         Some(())
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel {point, color});
@@ -84,7 +84,7 @@ impl Tool for Line {
         Some(())
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, button: InputItem) -> Option<()> {
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D, button: InputItem) -> Option<()> {
         if InputItem::Left != button { return Some(()); }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(&p);

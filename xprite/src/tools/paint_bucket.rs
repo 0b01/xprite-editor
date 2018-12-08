@@ -11,7 +11,7 @@ impl PaintBucket {
         PaintBucket { }
     }
 
-    pub fn floodfill(&self, xpr: &Xprite, p: Point2D<f32>, bg_color: Option<Color>) -> Option<Pixels> {
+    pub fn floodfill(&self, xpr: &Xprite, p: Point2D, bg_color: Option<Color>) -> Option<Pixels> {
         let current_layer = xpr.current_layer();
         let pixs = &current_layer.borrow().content;
         let w = xpr.canvas.art_w;
@@ -30,7 +30,7 @@ impl Tool for PaintBucket {
         ToolType::PaintBucket
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Point2D) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
         let color = xpr.color();
         xpr.set_cursor(&(Pixel {point, color}).into());
@@ -38,7 +38,7 @@ impl Tool for PaintBucket {
         Some(())
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D<f32>) -> Option<()> {
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Point2D) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
         let bg_color = xpr.current_layer().borrow().get_color(point);
         let buffer = self.floodfill(xpr, point, bg_color)?;
@@ -52,7 +52,7 @@ impl Tool for PaintBucket {
         Some(())
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D<f32>, _button: InputItem) -> Option<()> {
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Point2D, _button: InputItem) -> Option<()> {
         let point = xpr.canvas.shrink_size(&p);
         let bg_color = xpr.current_layer().borrow().get_color(point);
         let buffer = self.floodfill(xpr, point, bg_color)?;

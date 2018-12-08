@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Point2D<f32>, bg_col: Option<Color>, color: Color) -> Pixels {
+pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Point2D, bg_col: Option<Color>, color: Color) -> Pixels {
     let mut ret = Pixels::new();
     let canvas = pix.as_arr(w as usize, h as usize);
     let mut stack = vec![origin];

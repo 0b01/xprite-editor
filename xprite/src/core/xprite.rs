@@ -5,7 +5,7 @@ pub struct Xprite {
     pub history: History,
 
     pub im_buf: Pixels,
-    pub bz_buf: Vec<CubicBezierSegment<f32>>,
+    pub bz_buf: Vec<CubicBezierSegment>,
 
     pub canvas: Canvas,
     pub selected_color: Color,

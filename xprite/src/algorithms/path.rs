@@ -3,7 +3,7 @@ use std::cmp::{min, max};
 use crate::prelude::*;
 use super::pixel_perfect::pixel_perfect;
 
-fn convert(p1: Point2D<f32>, p2: Point2D<f32>, p3: Point2D<f32>, p4: Point2D<f32>) -> CubicBezierSegment<f32> {
+fn convert(p1: Point2D, p2: Point2D, p3: Point2D, p4: Point2D) -> CubicBezierSegment {
     let t = 0.5;
     CubicBezierSegment {
         from: Point2D::new(p2.x, p2.y),
@@ -20,7 +20,7 @@ fn convert(p1: Point2D<f32>, p2: Point2D<f32>, p3: Point2D<f32>, p4: Point2D<f32
 }
 
 
-fn line_slope(p0: Point2D<f32>, p1: Point2D<f32>) -> f32 {
+fn line_slope(p0: Point2D, p1: Point2D) -> f32 {
     if p1.x == p0.x {
         0.
     } else {
@@ -28,7 +28,7 @@ fn line_slope(p0: Point2D<f32>, p1: Point2D<f32>) -> f32 {
     }
 }
 
-fn line_finite_diff(points: &[Point2D<f32>]) -> Vec<f32> {
+fn line_finite_diff(points: &[Point2D]) -> Vec<f32> {
     let mut m = Vec::new();
     let mut p0 = points[0];
     let mut p1 = points[1];
@@ -49,7 +49,7 @@ fn line_finite_diff(points: &[Point2D<f32>]) -> Vec<f32> {
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Path {
-    pub segments: Vec<CubicBezierSegment<f32>>,
+    pub segments: Vec<CubicBezierSegment>,
 }
 
 impl Path {
@@ -110,7 +110,7 @@ impl Path {
 
     /// from d3:
     ///     https://github.com/d3/d3/blob/a40a611d6b9fc4ff3815ca830d86b6c00d130995/src/svg/line.js#L377
-    pub fn d3_svg_line_monotone(points: &[Point2D<f32>]) -> Vec<Point2D<f32>> {
+    pub fn d3_svg_line_monotone(points: &[Point2D]) -> Vec<Point2D> {
         let mut tangents = Vec::new();
 
         let mut m = line_finite_diff(&points);
@@ -142,7 +142,7 @@ impl Path {
     }
 
     // Generates tangents for a cardinal spline.
-    pub fn d3_svg_line_cardinal_tangents(points: &[Point2D<f32>], tension: f32) -> Vec<Point2D<f32>> {
+    pub fn d3_svg_line_cardinal_tangents(points: &[Point2D], tension: f32) -> Vec<Point2D> {
         let mut tangents = Vec::new();
 
         let a = (1. - tension) / 2.;
@@ -242,7 +242,7 @@ impl Path {
     }
 
     /// rasterize a single bezier curve by sampling
-    fn convert_path_to_pixel(xpr: &Xprite, seg: &CubicBezierSegment<f32>) -> Option<Vec<Pixel>> {
+    fn convert_path_to_pixel(xpr: &Xprite, seg: &CubicBezierSegment) -> Option<Vec<Pixel>> {
         let mut path = Vec::new();
 
         let mut set = Pixels::new();

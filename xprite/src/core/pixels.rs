@@ -1,13 +1,25 @@
 use crate::prelude::*;
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 use std::slice::Iter;
-use std::hash::{Hash, Hasher};
+use std::cmp::Ordering;
 use std::fmt::{Debug, Formatter, Error};
 
-#[derive(Copy, Clone, Eq)]
+#[derive(Copy, Clone, Eq, PartialOrd)]
 pub struct Pixel {
-    pub point: Point2D<f32>,
+    pub point: Point2D,
     pub color: Color,
+}
+
+impl Ord for Pixel {
+    fn cmp(&self, other: &Pixel) -> Ordering {
+        self.point.cmp(&other.point)
+    }
+}
+
+impl PartialEq for Pixel {
+    fn eq(&self, other: &Pixel) -> bool {
+        self.point == other.point
+    }
 }
 
 impl Pixel {
@@ -18,23 +30,9 @@ impl Pixel {
     }
 }
 
-impl PartialEq for Pixel {
-    fn eq(&self, other: &Self) -> bool {
-        (self.point == other.point) &&
-        (self.color == other.color)
-    }
-}
-
 impl Debug for Pixel {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         write!(f, "@({},{},{:#?})", self.point.x, self.point.y, self.color)
-    }
-}
-
-impl Hash for Pixel {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.point.hash(state);
-        self.color.hash(state);
     }
 }
 
@@ -50,7 +48,7 @@ macro_rules! pixel {
 
 #[derive(Clone, Eq)]
 /// dual repr
-pub struct Pixels(pub Vec<Pixel>, pub HashSet<Pixel>);
+pub struct Pixels(pub Vec<Pixel>, pub BTreeSet<Pixel>);
 
 impl PartialEq for Pixels {
     fn eq(&self, other: &Self) -> bool {
@@ -61,12 +59,14 @@ impl PartialEq for Pixels {
 }
 
 impl Pixels {
+
     pub fn new() -> Self {
-        Pixels(Vec::new(), HashSet::new())
+        Pixels(Vec::new(), BTreeSet::new())
     }
+
     pub fn from_slice(slice: &[Pixel]) -> Self {
         let mut vec = Vec::new();
-        let mut set = HashSet::new();
+        let mut set = BTreeSet::new();
         for p in slice.iter() {
             if set.contains(p) {
                 continue;
@@ -76,28 +76,34 @@ impl Pixels {
         }
         Pixels(vec, set)
     }
+
     pub fn extend(&mut self, other: &Pixels) {
         for i in &other.1 {
             self.1.replace(*i);
         }
         self.0 = self.1.iter().cloned().collect();
     }
+
     pub fn push(&mut self, px: Pixel) {
         if !self.1.contains(&px) {
             self.0.push(px);
             self.1.insert(px);
         }
     }
+
     pub fn contains(&mut self, px: &Pixel) -> bool {
         self.1.contains(px)
     }
+
     pub fn clear(&mut self) {
         self.0.clear();
         self.1.clear();
     }
+
     pub fn iter(&self) -> Iter<Pixel> {
         self.0.iter()
     }
+
     pub fn set_color(&mut self, color: &Color) {
         let color = *color;
         self.0 = self.0
@@ -105,6 +111,7 @@ impl Pixels {
             .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
             .collect::<Vec<_>>();
     }
+
     pub fn with_color(&mut self, color: &Color) -> &Self {
         let color = *color;
         self.0 = self.0
@@ -113,6 +120,7 @@ impl Pixels {
             .collect::<Vec<_>>();
         self
     }
+
 }
 
 impl Debug for Pixels {
@@ -176,6 +184,7 @@ impl Pixels {
 
 
 mod tests {
+
     #[test]
     fn test_extend() {
         use crate::prelude::*;
@@ -188,8 +197,8 @@ mod tests {
         ]);
         v1.extend(&v2);
         assert_eq!(vec![
-            pixel!(0.,1., Color::red()),
             pixel!(0.,0., Color::red()),
+            pixel!(0.,1., Color::red()),
         ], v1.0);
     }
 
@@ -205,8 +214,8 @@ mod tests {
         ]);
         v1.extend(&v2);
         assert_eq!(vec![
-            pixel!(0.,1., Color::blue()),
             pixel!(0.,0., Color::red()),
+            pixel!(0.,1., Color::blue()),
         ], v1.0);
     }
 }

@@ -8,9 +8,9 @@ pub fn get_concavity(path: &[Pixel]) -> bool {
     let p2 = path[path.len() / 2];
     let p3 = path[path.len() - 1];
 
-    let Point2D {x: x1, y: y1} = p1.point.as_i32();
-    let Point2D {x: x2, y: y2} = p2.point.as_i32();
-    let Point2D {x: x3, y: y3} = p3.point.as_i32();
+    let Point2D {x: x1, y: y1} = p1.point;
+    let Point2D {x: x2, y: y2} = p2.point;
+    let Point2D {x: x3, y: y3} = p3.point;
 
     // console!(log, x1, x2, x3);
     // assert!(x1 < x2);
@@ -50,13 +50,13 @@ pub fn sort_path(path: &mut [Pixel]) -> Option<Vec<Pixel>> {
     let mut d = (1,1);
 
     for Pixel {point: pi, ..} in path.iter() {
-        let p0_ = p0.as_i32();
-        let pi_ = pi.as_i32();
+        let p0_ = p0;
+        let pi_ = pi;
         // console!(log, format!("{:?}", pi));
         if pi.x == p0.x || pi.y == p0.y {
             d = (
-                d.0 +        pi_.x - p0_.x,
-                d.1 + dir * (pi_.y - p0_.y),
+                d.0 +        (pi_.x - p0_.x) as u32,
+                d.1 + (dir as f32 * (pi_.y - p0_.y)) as u32,
             );
         } else {
             // console!(log, format!("{:?}", d));

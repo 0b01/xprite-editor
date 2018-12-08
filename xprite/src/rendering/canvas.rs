@@ -69,7 +69,7 @@ impl Canvas {
         self.canvas_h = canvas_h;
     }
 
-    pub fn draw_circle(&self, rdr: &Renderer, p0: Point2D<f32>, radius: f32, color: [f32;4], filled: bool) {
+    pub fn draw_circle(&self, rdr: &Renderer, p0: Point2D, radius: f32, color: [f32;4], filled: bool) {
         let p0 = self.to_cli(p0).into();
         let rad = self.scale * radius;
         rdr.circ(p0, rad, color, filled);
@@ -77,10 +77,10 @@ impl Canvas {
 
     pub fn draw_bezier(&self,
                        rdr: &Renderer,
-                       from: Point2D<f32>,
-                       ctrl1:Point2D<f32>,
-                       ctrl2: Point2D<f32>,
-                       to:Point2D<f32>,
+                       from: Point2D,
+                       ctrl1:Point2D,
+                       ctrl2: Point2D,
+                       to: Point2D,
                        c: [f32;4],
                        thickness: f32,
                        ) {
@@ -91,7 +91,7 @@ impl Canvas {
         rdr.bezier(p0, cp0, cp1, p1, c, thickness);
     }
 
-    pub fn to_cli(&self, p: Point2D<f32>) -> Point2D<f32> {
+    pub fn to_cli(&self, p: Point2D) -> Point2D {
         let o = self.origin();
         let p0 = Point2D::new(
             o.0 + self.scale * p.x,
@@ -180,7 +180,7 @@ impl Canvas {
         }
     }
 
-    pub fn draw_line(&self, rdr: &Renderer, p0: Point2D<f32>, p1: Point2D<f32>, c:[f32;4]) {
+    pub fn draw_line(&self, rdr: &Renderer, p0: Point2D, p1: Point2D, c:[f32;4]) {
         let p0 = self.to_cli(p0).into();
         let p1 = self.to_cli(p1).into();
 
@@ -188,7 +188,7 @@ impl Canvas {
     }
 
     /// convert screen pos to pixel location
-    pub fn shrink_size_no_floor(&self, p: &Point2D<f32>) -> Point2D<f32> {
+    pub fn shrink_size_no_floor(&self, p: &Point2D) -> Point2D {
         let Point2D {x: cli_x , y: cli_y} = p;
         let o = self.origin();
         Point2D {
@@ -198,7 +198,7 @@ impl Canvas {
     }
 
     /// convert screen pos to pixel location
-    pub fn shrink_size(&self, p: &Point2D<f32>) -> Point2D<f32> {
+    pub fn shrink_size(&self, p: &Point2D) -> Point2D {
         let Point2D {x: cli_x , y: cli_y} = p;
         let o = self.origin();
         Point2D {
@@ -207,7 +207,7 @@ impl Canvas {
         }
     }
     /// snap point to grid
-    pub fn snap(&self, p: &Point2D<f32>) -> Point2D<f32> {
+    pub fn snap(&self, p: &Point2D) -> Point2D {
         let Point2D {x: cli_x , y: cli_y} = p;
         Point2D {
             x: cli_x.floor(),

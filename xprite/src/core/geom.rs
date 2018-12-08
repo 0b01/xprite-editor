@@ -1,101 +1,53 @@
-use std::ops::Add;
 use std::hash::{Hash, Hasher};
+use std::cmp::Ordering;
 
 /// represents a point in a 2D cartesian plane
-#[derive(PartialEq, Debug, Copy, Clone)]
-pub struct Point2D<S: Copy> {
-    pub x: S,
-    pub y: S,
+#[derive(PartialEq, Debug, Copy, Clone, PartialOrd)]
+pub struct Point2D {
+    pub x: f32,
+    pub y: f32,
 }
 
-impl Eq for Point2D<f32> {
+impl Ord for Point2D {
+    fn cmp(&self, other: &Point2D) -> Ordering {
+        self.partial_cmp(other).unwrap()
+    }
 }
 
+impl Eq for Point2D {}
 
-impl Hash for Point2D<f32> {
+
+impl Hash for Point2D {
     fn hash<H: Hasher>(&self, state: &mut H) {
         (self.x as i32).hash(state);
         (self.y as i32).hash(state);
     }
 }
 
-impl<S: Copy + Add<Output=S>> Point2D<S> {
+impl Point2D {
     /// create a new point
-    pub fn new(x: S, y: S) -> Self {
+    pub fn new(x: f32, y: f32) -> Self {
         Self { x, y }
     }
 }
 
-impl Point2D<u32>  {
-    pub fn as_f32(&self) -> Point2D<f32> {
-        let x = self.x as f32;
-        let y = self.y as f32;
-        Point2D {x, y}
-    }
-}
-
-impl Point2D<i32>  {
-    pub fn as_f32(&self) -> Point2D<f32> {
-        let x = self.x as f32;
-        let y = self.y as f32;
-        Point2D {x, y}
-    }
-}
-
-
-impl Point2D<u32>  {
-    pub fn as_i32(&self) -> Point2D<i32> {
-        let x = self.x as i32;
-        let y = self.y as i32;
-        Point2D {x, y}
-    }
-}
-
-impl Point2D<f32>  {
-    pub fn as_i32(&self) -> Point2D<i32> {
-        let x = self.x as i32;
-        let y = self.y as i32;
-        Point2D {x, y}
-    }
-}
-
-impl<T: Copy + Add<Output=T>> Add for Point2D<T> {
-    type Output = Point2D<T>;
-    /// add a vector
-    fn add(self, size: Point2D<T>) -> Point2D<T> {
-        Point2D {
-            x: self.x + size.x,
-            y: self.y + size.y,
-        }
-    }
-}
-
-impl From<Point2D<f32>> for [f32;2] {
-    fn from(p: Point2D<f32>) -> Self {
+impl From<Point2D> for [f32;2] {
+    fn from(p: Point2D) -> Self {
         [p.x, p.y]
     }
 }
 
 
-impl From<Point2D<u32>> for Point2D<f32> {
-    fn from(p: Point2D<u32>) -> Self {
-        Point2D {
-            x: p.x as f32,
-            y: p.y as f32,
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Clone)]
-pub struct CubicBezierSegment<S: Copy> {
-    pub from: Point2D<S>,
-    pub ctrl1: Point2D<S>,
-    pub ctrl2: Point2D<S>,
-    pub to: Point2D<S>,
+pub struct CubicBezierSegment {
+    pub from: Point2D,
+    pub ctrl1: Point2D,
+    pub ctrl2: Point2D,
+    pub to: Point2D,
 }
 
-impl CubicBezierSegment<f32> {
-    pub fn sample(&self, t: f32) -> Point2D<f32> {
+impl CubicBezierSegment {
+    pub fn sample(&self, t: f32) -> Point2D {
         let t2 = t * t;
         let t3 = t2 * t;
         let one_t = 1. - t;

@@ -3,7 +3,7 @@ use crate::algorithms::line::bresenham;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Polyline {
-    pub pos: Vec<Point2D<f32>>,
+    pub pos: Vec<Point2D>,
 }
 
 /// a bunch of pixel positions
@@ -14,7 +14,7 @@ impl Polyline {
         }
     }
 
-    pub fn push(&mut self, p: Point2D<f32>) {
+    pub fn push(&mut self, p: Point2D) {
         self.pos.push(p)
     }
 
@@ -80,7 +80,7 @@ impl Polyline {
 }
 
 /// distance from p0 to p1--p2
-pub fn point_line_distance( p0: Point2D<f32>, p1: Point2D<f32>, p2: Point2D<f32>) -> f32 {
+pub fn point_line_distance( p0: Point2D, p1: Point2D, p2: Point2D) -> f32 {
     ((p2.x-p1.x)*(p1.y-p0.y)-(p1.x-p0.x)*(p2.y-p1.y)).abs()
     /
     ((p2.x-p1.x)*(p2.x-p1.x)+(p2.y-p1.y)*(p2.y as f32-p1.y as f32)).sqrt()
