@@ -24,7 +24,5 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) -> bool {
     self::tool_panel::draw_tool_panel(rdr, state, ui);
     self::palette::draw_palette(rdr, state, ui);
     self::layers::draw_layers(rdr, state, ui);
-
-    rdr.render();
     true
 }

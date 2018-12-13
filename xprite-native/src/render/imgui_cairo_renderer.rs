@@ -1,8 +1,11 @@
+use crate::prelude::*;
 use imgui::*;
 use xprite::rendering::{Renderer, MouseCursorType};
 use cairo::{ImageSurface, Context, Format};
 
 pub struct ImguiCairoRenderer<'ui> {
+    w: i32,
+    h: i32,
     pub surface: ImageSurface,
     pub cr: Option<Context>,
     pub ui: &'ui Ui<'ui>,
@@ -62,27 +65,24 @@ impl<'ui> Renderer for ImguiCairoRenderer<'ui> {
     }
 
     fn render(&mut self) {
+        let w = self.width() ;
+        let h = self.height();
+        if self.w != w as i32|| self.h != h as i32{ return }
+
         self.cr = None;
         let data = self.surface.get_data().expect("Cannot get data");
         let image = RawImage2d {
             data: Cow::Borrowed(&*data),
-            width: 100,
-            height: 100,
+            width: w,
+            height: h,
             format: ClientFormat::U8U8U8U8,
         };
         let gl_texture = Texture2d::new(self.gl_ctx, image).unwrap();
         let texture_id = self.textures.insert(gl_texture);
-        println!("fuck");
+        // println!("cairo rerender");
         drop(data);
 
-        self.ui.window(im_str!("Hello textures"))
-            .size((400.0, 600.0), ImGuiCond::FirstUseEver)
-            .build(|| {
-                self.ui.text(im_str!("Hello textures!"));
-                self.ui.image(texture_id, [100.,100.]).build();
-            });
-
-
+        self.ui.image(texture_id, [w as f32, h as f32]).build();
     }
 
 }
@@ -96,11 +96,16 @@ use glium::{
 use std::borrow::Cow;
 
 impl<'ui> ImguiCairoRenderer<'ui> {
-    pub fn new<F>(ui: &'ui Ui, gl_ctx: &'ui F, textures: &'ui mut Textures<Texture2d>) -> Self
+    pub fn new<F>(ui: &'ui Ui, gl_ctx: &'ui F, textures: &'ui mut Textures<Texture2d>,
+        state: &State,
+    ) -> Self
     where
         F: Facade
     {
-        let mut surface = ImageSurface::create(Format::ARgb32, 100, 100).expect("Cannot create surface.");
+        let w = state.xpr.canvas.canvas_w as i32;
+        let h = state.xpr.canvas.canvas_h as i32;
+
+        let mut surface = ImageSurface::create(Format::ARgb32, w, h).expect("Cannot create surface.");
         let cr = Context::new(&mut surface);
         cr.set_source_rgb(1.0, 1.0, 1.0);
         cr.paint();
@@ -110,6 +115,7 @@ impl<'ui> ImguiCairoRenderer<'ui> {
 
 
         Self {
+            w, h,
             surface,
             ui,
             cr,

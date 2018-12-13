@@ -29,7 +29,7 @@ fn main() {
     let mut state = state::State::new(xpr);
     render::run("Xprite", BGCOLOR, |ui, gl_ctx, textures| {
         // let rdr = ImguiRenderer::new(&ui);
-        let mut rdr = ImguiCairoRenderer::new(&ui, gl_ctx, textures);
+        let mut rdr = ImguiCairoRenderer::new(&ui, gl_ctx, textures, &state);
         ui::draw(&mut rdr, &mut state, ui)
     });
 }

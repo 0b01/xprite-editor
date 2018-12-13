@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use xprite::rendering::Renderer;
 
-pub fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
+pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
     ui.window(im_str!("canvas"))
         .position((LEFT_SIDE_WIDTH, 20.0), ImGuiCond::Always)
@@ -25,7 +25,9 @@ pub fn draw_canvas(rdr: &Renderer, state: &mut State, ui: &Ui) {
                     .build(|| {
                         update_viewport(state, ui);
                         state.xpr.render(rdr);
-                        // draw_grid(state, ui);
+
+                        rdr.render();
+
                         super::inputs::bind_input(state, ui);
                     });
             });
