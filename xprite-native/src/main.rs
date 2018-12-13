@@ -11,7 +11,8 @@ extern crate cairo;
 
 use xprite::prelude::*;
 
-use crate::render::imgui_cairo_renderer::ImguiCairoRenderer;
+// use crate::render::imgui_cairo_renderer::ImguiCairoRenderer;
+use crate::render::imgui_renderer::ImguiRenderer;
 
 mod hotkey;
 mod consts;
@@ -27,9 +28,10 @@ fn main() {
     trace!("Starting Xprite");
     let xpr = Xprite::new(100., 100.);
     let mut state = state::State::new(xpr);
+
     render::run("Xprite", BGCOLOR, |ui, gl_ctx, textures| {
-        // let rdr = ImguiRenderer::new(&ui);
-        let mut rdr = ImguiCairoRenderer::new(&ui, gl_ctx, textures, &state);
+        let mut rdr = ImguiRenderer::new(&ui);
+        // let mut rdr = ImguiCairoRenderer::new(&ui, gl_ctx, textures, &state);
         ui::draw(&mut rdr, &mut state, ui)
     });
 }

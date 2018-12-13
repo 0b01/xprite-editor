@@ -78,7 +78,7 @@ impl Pixels {
     }
 
     pub fn extend(&mut self, other: &Pixels) {
-        for i in &other.1 {
+        for i in other.1.iter() {
             self.1.replace(*i);
         }
         self.0 = self.1.iter().cloned().collect();
@@ -110,6 +110,10 @@ impl Pixels {
             .iter()
             .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
             .collect::<Vec<_>>();
+        self.1 = self.1
+            .iter()
+            .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
+            .collect();
     }
 
     pub fn with_color(&mut self, color: &Color) -> &Self {
@@ -118,6 +122,10 @@ impl Pixels {
             .iter()
             .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
             .collect::<Vec<_>>();
+        self.1 = self.1
+            .iter()
+            .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
+            .collect();
         self
     }
 
@@ -189,16 +197,16 @@ mod tests {
     fn test_extend() {
         use crate::prelude::*;
         let mut v1 = Pixels::from_slice(&vec![
-            pixel!(0.,0., Color::red()),
-            pixel!(0.,1., Color::red())]
+            pixel!(0.,0., Color::blue()),
+            pixel!(0.,1., Color::blue())]
         );
         let v2 = Pixels::from_slice(&vec![
-            pixel!(0.,1., Color::red())
+            pixel!(0.,1., Color::blue())
         ]);
         v1.extend(&v2);
         assert_eq!(vec![
-            pixel!(0.,0., Color::red()),
-            pixel!(0.,1., Color::red()),
+            pixel!(0.,0., Color::blue()),
+            pixel!(0.,1., Color::blue()),
         ], v1.0);
     }
 

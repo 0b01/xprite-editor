@@ -43,6 +43,12 @@ impl<'ui> Renderer for ImguiCairoRenderer<'ui> {
 
 
     fn rect(&self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
+
+        self.cr.as_ref().unwrap().set_source_rgba(color[0] as f64, color[1] as f64, color[2] as f64, color[3] as f64);
+        self.cr.as_ref().unwrap().rectangle(p0[0] as f64, p0[1] as f64, (p1[0] - p0[0]) as f64, (p1[1] - p0[1]) as f64);
+        self.cr.as_ref().unwrap().fill();
+
+
         // let draw_list = self.ui.get_window_draw_list();
         // draw_list
         //     .add_rect(p0, p1, color)
@@ -107,8 +113,8 @@ impl<'ui> ImguiCairoRenderer<'ui> {
 
         let mut surface = ImageSurface::create(Format::ARgb32, w, h).expect("Cannot create surface.");
         let cr = Context::new(&mut surface);
-        cr.set_source_rgb(1.0, 1.0, 1.0);
-        cr.paint();
+        // cr.set_source_rgb(1.0, 1.0, 1.0);
+        // cr.paint();
 
 
         let cr = Some(cr);

@@ -128,19 +128,20 @@ impl Tool for Pencil {
 
         let button = self.is_mouse_down.clone().unwrap();
         if button == InputItem::Left {
-                self.buffer.clear();
-                let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
-                let mut pixs = if self.mode != PencilMode::Raw {
-                    let perfect = pixel_perfect(&line_pixs);
-                    Pixels::from_slice(&perfect)
-                } else {
-                    Pixels::from_slice(&line_pixs)
-                };
-                pixs.with_color(&xpr.color());
-                self.buffer.extend(&pixs);
+            self.buffer.clear();
+            let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
+            let mut pixs = if self.mode != PencilMode::Raw {
+                let perfect = pixel_perfect(&line_pixs);
+                Pixels::from_slice(&perfect)
+            } else {
+                Pixels::from_slice(&line_pixs)
+            };
+            pixs.with_color(&xpr.color());
+            self.buffer.extend(&pixs);
         } else if button == InputItem::Right {
             // xpr.remove_pixels(&pixels.unwrap());
         }
+
         self.draw(xpr)
     }
 
@@ -171,15 +172,14 @@ impl Tool for Pencil {
                 // no processing
             }
             PixelPerfect => {
-                // if there is only one pixel in the buffer
-                if self.buffer.0.len() == 1 {
+                // if there is only one pixel in the buffer(mousedown w/o move)
+                if self.buffer.1.len() == 1 {
                     // noop
                 } else {
                     self.buffer.clear();
                     let points = self.current_polyline.connect_with_line(xpr)?;
                     let perfect = &pixel_perfect(&points);
-                    let mut pixs = Pixels::from_slice(&perfect);
-                    pixs.set_color(&xpr.color());
+                    let pixs = Pixels::from_slice(&perfect);
                     self.buffer.extend(&pixs);
                 }
             }
@@ -188,18 +188,19 @@ impl Tool for Pencil {
                 let points = self.current_polyline.connect_with_line(xpr)?;
                 let mut perfect = pixel_perfect(&points);
                 let sorted = sort_path(&mut perfect)?;
-                let mut pixs = Pixels::from_slice(&sorted);
-                pixs.set_color(&xpr.color());
+                let pixs = Pixels::from_slice(&sorted);
                 self.buffer.extend(&pixs);
             }
         }
 
+        self.buffer.set_color(&xpr.color());
+
         xpr.history.enter()?;
-        xpr.history.top()
+        xpr.history.top_mut()
             .selected_layer
             .borrow_mut()
             .content
-            .extend(&self.buffer);
+            .extend(&self.buffer); // !!!! BUG: extend
 
         self.current_polyline.clear();
         self.buffer.clear();
@@ -212,6 +213,7 @@ impl Tool for Pencil {
     fn draw(&mut self, xpr: &mut Xprite) -> Option<()> {
         xpr.new_frame();
         self.set_cursor(xpr);
+        self.buffer.set_color(&xpr.color());
         xpr.add_pixels(&self.buffer);
 
         Some(())

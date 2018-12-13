@@ -24,6 +24,7 @@ impl History {
     }
 
     pub fn duplicate(&mut self) -> Option<()> {
+        trace!("duplicate history");
         let latest = self.top().deepcopy()?;
         self.stack.push(latest);
         Some(())
