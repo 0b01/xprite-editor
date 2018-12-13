@@ -27,10 +27,10 @@ fn main() {
     trace!("Starting Xprite");
     let xpr = Xprite::new(100., 100.);
     let mut state = state::State::new(xpr);
-    render::run("Xprite", BGCOLOR, |ui| {
+    render::run("Xprite", BGCOLOR, |ui, gl_ctx, textures| {
         // let rdr = ImguiRenderer::new(&ui);
-        let rdr = ImguiCairoRenderer::new(&ui);
-        ui::draw(&rdr, &mut state, ui)
+        let mut rdr = ImguiCairoRenderer::new(&ui, gl_ctx, textures);
+        ui::draw(&mut rdr, &mut state, ui)
     });
 }
 

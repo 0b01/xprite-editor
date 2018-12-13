@@ -1,4 +1,9 @@
-use imgui::{ImGui, FontGlyphRange, FrameSize, ImFontConfig, ImGuiMouseCursor, Ui, ImGuiCol, ImVec4};
+use imgui::*;
+use glium::{
+    backend::{Context, Facade},
+    Texture2d,
+};
+use std::rc::Rc;
 use std::time::Instant;
 
 use crate::ui::inputs::KeyCode;
@@ -66,7 +71,10 @@ fn set_style(imgui: &mut ImGui) {
     style.colors[find!(ModalWindowDarkening)]  = ImVec4::new(0.200, 0.220, 0.270, 0.73);
 }
 
-pub fn run<F: FnMut(&Ui) -> bool>(title: &str, clear_color: [f32; 4], mut run_ui: F) {
+pub fn run<F>(title: &str, clear_color: [f32; 4], mut run_ui: F)
+where
+    F: FnMut(&Ui, &Rc<Context>, &mut Textures<Texture2d>) -> bool,
+{
     use glium::glutin;
     use glium::{Display, Surface};
     use imgui_glium_renderer::Renderer;
@@ -268,9 +276,10 @@ pub fn run<F: FnMut(&Ui) -> bool>(title: &str, clear_color: [f32; 4], mut run_ui
         ::std::thread::sleep(::std::time::Duration::from_millis(15));
 
         let ui = imgui.frame(frame_size, delta_s);
-        if !run_ui(&ui) {
+        if !run_ui(&ui, display.get_context(), renderer.textures()) {
             break;
         }
+
 
         let mut target = display.draw();
         target.clear_color(
