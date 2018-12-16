@@ -20,7 +20,7 @@ impl Bind {
             Undo => xpr.undo(),
             PushTool(tool) => xpr.change_tool(&tool),
             PopTool => xpr.toolbox.pop_tool(),
-            RunScript => xpr.scripting.execute(),
+            RunScript => xpr.execute_script()?,
             Unmapped => (),
         }
         Some(())

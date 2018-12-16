@@ -13,7 +13,7 @@ pub struct Xprite {
     pub cursor_pos: Pixels,
     pub last_mouse_pos: (f32, f32),
 
-    pub scripting: Scripting,
+    pub scripting: Rc<RefCell<Scripting>>,
 }
 
 impl Xprite {
@@ -26,7 +26,7 @@ impl Xprite {
         let im_buf = Pixels::new();
         let bz_buf = Vec::new();
 
-        let scripting = Scripting::new();
+        let scripting = Rc::new(RefCell::new(Scripting::new()));
 
         Xprite {
             scripting,
@@ -118,7 +118,16 @@ impl Xprite {
     pub fn set_cursor(&mut self, pos: &Pixels) {
         self.cursor_pos = pos.clone();
     }
+
 }
+impl Xprite {
+    pub fn execute_script(&mut self) -> Option<()> {
+        let s = Rc::clone(&self.scripting);
+        let mut scripting = s.borrow_mut();
+        scripting.execute(self)
+    }
+}
+
 
 use std::rc::Rc;
 use std::cell::RefCell;

@@ -1,3 +1,6 @@
 fn main() {
-    say_hello()
+    for i := 0; i < 2; i += 1 {
+        say_hello()
+    }
+    pixel((1,1), #111111)
 }
