@@ -19,7 +19,7 @@ impl Scripting {
         use dyon::{Type, Lt};
 
         let mut module = Module::new();
-        let ty_xpr = Type::AdHoc(Arc::new("XprState".into()), Box::new(Type::Any));
+        let ty_xpr = Type::AdHoc(Arc::new("XprDrawList".into()), Box::new(Type::Any));
         module.add(Arc::new("xpr_new".into()), new_xpr_state, Dfn{
             lts: vec![],
             tys: vec![],
@@ -33,8 +33,16 @@ impl Scripting {
         let mut runtime = Runtime::new();
         match runtime.call_str_ret("render", &Vec::new(), &Arc::new(module)) {
             Ok(msg) => {
-                let i = XprState::pop_var(&runtime, &msg).unwrap();
-                info!("{:#?}", i);
+                let mut buf = Pixels::new();
+                let draw_list = XprDrawList::pop_var(&runtime, &msg).unwrap();
+                for &(pos, color) in &draw_list.to_draw {
+                    let pos : [f32; 4] = pos.into();
+                    let color : [f32; 4] = color.into();
+                    buf.push(pixel!(pos[0], pos[1], color.into()));
+                }
+                xpr.history.enter();
+                xpr.history.top_mut().selected_layer.borrow_mut().content.extend(&buf);
+
             }
             Err(msg) => { error!("{}", msg); return Some(()); }
         };
@@ -43,16 +51,16 @@ impl Scripting {
 }
 
 #[derive(Debug)]
-struct XprState {
+struct XprDrawList {
     to_draw: Vec<(Vec4, Vec4)>,
 }
 
 dyon_obj! {
-    XprState {
+    XprDrawList {
         to_draw
     }
 }
 
-dyon_fn!{fn new_xpr_state() -> XprState {
-    XprState{to_draw: vec![]}
+dyon_fn!{fn new_xpr_state() -> XprDrawList {
+    XprDrawList{to_draw: vec![]}
 }}

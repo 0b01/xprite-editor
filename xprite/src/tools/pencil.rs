@@ -200,7 +200,7 @@ impl Tool for Pencil {
             .selected_layer
             .borrow_mut()
             .content
-            .extend(&self.buffer); // !!!! BUG: extend
+            .extend(&self.buffer);
 
         self.current_polyline.clear();
         self.buffer.clear();

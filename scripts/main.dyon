@@ -1,6 +1,13 @@
 fn render() -> XprState {
     ~xpr := xpr_new()
-    pixel((1,1), #111111)
+
+    x := 0
+    dx := 100
+    col := #f00000
+    for i [x, x+dx) {
+        col += #001005
+        pixel((i,i), col)
+    }
     return clone(xpr)
 }
 
