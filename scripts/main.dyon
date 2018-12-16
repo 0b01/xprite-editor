@@ -1,6 +1,11 @@
-fn main() {
-    for i := 0; i < 2; i += 1 {
-        say_hello()
-    }
+fn render() -> XprState {
+    ~xpr := xpr_new()
     pixel((1,1), #111111)
+    return clone(xpr)
+}
+
+fn pixel(pos: vec4, color: vec4) ~mut xpr {
+    a := xpr.to_draw
+    push(mut a, [pos, color])
+    xpr.to_draw := clone(a)
 }
