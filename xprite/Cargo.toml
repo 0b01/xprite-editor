@@ -8,3 +8,4 @@ edition = "2018"
 fern = "0.5.6"
 log = { version = "0.4", features = ["std"] }
 chrono = "0.4"
+dyon = "0.39.0"

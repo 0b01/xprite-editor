@@ -2,6 +2,7 @@
 pub use crate::core::toolbox::Toolbox;
 pub use crate::core::history::History;
 pub use crate::core::pixels::{Pixel, Pixels};
+pub use crate::scripting::Scripting;
 pub use crate::core::color::Color;
 pub use crate::core::input::{InputEvent, InputItem, InputState};
 pub use crate::core::brush::{Brush, BrushType};

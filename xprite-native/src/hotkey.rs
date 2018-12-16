@@ -6,8 +6,9 @@ use std::collections::HashMap;
 pub enum Bind {
     Redo,
     Undo,
-    Tool(ToolType),
+    PushTool(ToolType),
     PopTool,
+    RunScript,
     Unmapped,
 }
 
@@ -17,8 +18,9 @@ impl Bind {
         match self {
             Redo => xpr.redo(),
             Undo => xpr.undo(),
-            Tool(tool) => xpr.change_tool(&tool),
+            PushTool(tool) => xpr.change_tool(&tool),
             PopTool => xpr.toolbox.pop_tool(),
+            RunScript => xpr.scripting.execute(),
             Unmapped => (),
         }
         Some(())
@@ -86,13 +88,17 @@ impl HotkeyController {
             binds.insert( Action::Y(true, false, false, true), Bind::Redo );
 
             // tools
-            binds.insert( Action::B(false, false, false, true), Bind::Tool(ToolType::Pencil) );
-            binds.insert( Action::G(false, false, false, true), Bind::Tool(ToolType::PaintBucket) );
-            binds.insert( Action::L(false, false, false, true), Bind::Tool(ToolType::Line) );
+            binds.insert( Action::B(false, false, false, true), Bind::PushTool(ToolType::Pencil) );
+            binds.insert( Action::G(false, false, false, true), Bind::PushTool(ToolType::PaintBucket) );
+            binds.insert( Action::L(false, false, false, true), Bind::PushTool(ToolType::Line) );
 
             // alt
-            binds.insert( Action::Alt(false, false, true, true), Bind::Tool(ToolType::ColorPicker) );
+            binds.insert( Action::Alt(false, false, true, true), Bind::PushTool(ToolType::ColorPicker) );
             binds.insert( Action::Alt(false, false, false, false), Bind::PopTool );
+
+            binds.insert( Action::Return(true, false, false, true), Bind::RunScript );
+
+
         }
 
         Self {

@@ -12,6 +12,8 @@ pub struct Xprite {
     pub toolbox: Toolbox,
     pub cursor_pos: Pixels,
     pub last_mouse_pos: (f32, f32),
+
+    pub scripting: Scripting,
 }
 
 impl Xprite {
@@ -24,7 +26,10 @@ impl Xprite {
         let im_buf = Pixels::new();
         let bz_buf = Vec::new();
 
+        let scripting = Scripting::new();
+
         Xprite {
+            scripting,
             last_mouse_pos: (0., 0.),
             history,
             im_buf,
