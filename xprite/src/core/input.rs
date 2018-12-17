@@ -9,6 +9,7 @@ pub enum InputItem {
     Left,
     Right,
     Return,
+    Grave,
 }
 
 impl InputItem {
@@ -56,6 +57,8 @@ impl InputItem {
             InputItem::Key7 => "7",
             InputItem::Key8 => "8",
             InputItem::Key9 => "9",
+
+            InputItem::Grave => "`",
         }
     }
 }
@@ -130,6 +133,8 @@ pub struct InputState {
     pub key7: bool,
     pub key8: bool,
     pub key9: bool,
+
+    pub grave: bool,
 }
 
 impl Default for InputState {
@@ -178,6 +183,8 @@ impl Default for InputState {
             key7: false,
             key8: false,
             key9: false,
+
+            grave: false,
         }
     }
 }
@@ -240,6 +247,8 @@ impl InputState {
             InputItem::Key7 => debounce!(key7),
             InputItem::Key8 => debounce!(key8),
             InputItem::Key9 => debounce!(key9),
+
+            InputItem::Grave => debounce!(grave),
         }
     }
 }

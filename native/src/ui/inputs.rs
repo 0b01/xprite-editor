@@ -52,6 +52,7 @@ pub enum KeyCode {
     Key8 = 48,
     Key9 = 49,
     Space = 50,
+    Grave = 51,
 }
 
 pub fn bind_input(state: &mut State, ui: &Ui) {
@@ -135,7 +136,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
                                 true,
                             ),
                         )
-                        .execute(&mut state.xpr);
+                        .execute(state, ui);
                 } else {
                     state.xpr.event(&KeyUp{ key: $key_upper });
                     state.hotkeys
@@ -147,7 +148,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
                                 false,
                             ),
                         )
-                        .execute(&mut state.xpr);
+                        .execute(state, ui);
                 }
             }
         };
@@ -175,7 +176,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     expand_handle_input!(
         A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V,
         W, X, Y, Z, Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9,
-        Return, Space
+        Return, Space, Grave
     );
 
     // for i in 0..512 {

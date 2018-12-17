@@ -105,7 +105,7 @@ where
     );
 
     imgui.fonts().add_font_with_config(
-        include_bytes!("../Roboto-Regular.ttf"),
+        include_bytes!("../../assets/Roboto-Regular.ttf"),
         ImFontConfig::new()
             .merge_mode(true)
             .oversample_h(1)
@@ -152,6 +152,8 @@ where
                             Some(Key::Back) =>      imgui.set_key(KeyCode::Back as u8, pressed),
                             Some(Key::Return) =>    imgui.set_key(KeyCode::Return as u8, pressed),
                             Some(Key::Escape) =>    imgui.set_key(KeyCode::Escape as u8, pressed),
+
+                            Some(Key::Grave) => imgui.set_key(KeyCode::Grave as u8, pressed),
 
                             Some(Key::A) => imgui.set_key(KeyCode::A as u8, pressed),
                             Some(Key::B) => imgui.set_key(KeyCode::B as u8, pressed),

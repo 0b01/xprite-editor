@@ -7,6 +7,7 @@ pub mod palette;
 pub mod settings;
 pub mod tools;
 pub mod layers;
+pub mod console;
 
 
 use crate::prelude::*;
@@ -24,5 +25,6 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) -> bool {
     self::tool_panel::draw_tool_panel(rdr, state, ui);
     self::palette::draw_palette(rdr, state, ui);
     self::layers::draw_layers(rdr, state, ui);
+    self::console::draw_console(rdr, state, ui);
     true
 }

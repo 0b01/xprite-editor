@@ -2,6 +2,7 @@ use crate::prelude::*;
 
 use dyon::{
     load, Dfn, Module, Runtime, Vec4,
+    Type,
     embed::PopVariable
 };
 use std::sync::{Arc, Mutex};
@@ -14,10 +15,7 @@ impl Scripting {
         Self{}
     }
 
-    pub fn execute(&mut self, xpr: &mut Xprite) -> Option<()> {
-
-        use dyon::{Type, Lt};
-
+    pub fn execute(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         let mut module = Module::new();
         let ty_xpr = Type::AdHoc(Arc::new("XprDrawList".into()), Box::new(Type::Any));
         module.add(Arc::new("xpr_new".into()), new_xpr_state, Dfn{
@@ -26,7 +24,7 @@ impl Scripting {
             ret: ty_xpr.clone()
         });
         match load("scripts/main.dyon", &mut module) {
-            Err(msg) => { error!("{}", msg); return Some(()); }
+            Err(msg) => { return Err(msg) }
             _ => (),
         };
 
@@ -41,12 +39,13 @@ impl Scripting {
                     buf.push(pixel!(pos[0], pos[1], color.into()));
                 }
                 xpr.history.enter();
+                xpr.history.top_mut().selected_layer.borrow_mut().content.clear();
                 xpr.history.top_mut().selected_layer.borrow_mut().content.extend(&buf);
 
-            }
-            Err(msg) => { error!("{}", msg); return Some(()); }
+            },
+            Err(msg) => return Err(msg),
         };
-        Some(())
+        Ok(())
     }
 }
 
@@ -62,5 +61,7 @@ dyon_obj! {
 }
 
 dyon_fn!{fn new_xpr_state() -> XprDrawList {
-    XprDrawList{to_draw: vec![]}
+    XprDrawList{
+        to_draw: vec![]
+    }
 }}

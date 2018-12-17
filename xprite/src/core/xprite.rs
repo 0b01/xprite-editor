@@ -14,6 +14,8 @@ pub struct Xprite {
     pub last_mouse_pos: (f32, f32),
 
     pub scripting: Rc<RefCell<Scripting>>,
+
+    pub log: String,
 }
 
 impl Xprite {
@@ -27,6 +29,7 @@ impl Xprite {
         let bz_buf = Vec::new();
 
         let scripting = Rc::new(RefCell::new(Scripting::new()));
+        let log = String::new();
 
         Xprite {
             scripting,
@@ -38,6 +41,7 @@ impl Xprite {
             selected_color,
             cursor_pos,
             toolbox,
+            log,
         }
     }
 
@@ -121,7 +125,7 @@ impl Xprite {
 
 }
 impl Xprite {
-    pub fn execute_script(&mut self) -> Option<()> {
+    pub fn execute_script(&mut self) -> Result<(), String> {
         let s = Rc::clone(&self.scripting);
         let mut scripting = s.borrow_mut();
         scripting.execute(self)

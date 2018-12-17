@@ -33,7 +33,7 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 .enter_returns_true(true)
                 .build() {
                     let name : &str = im.as_ref();
-                    info!("renameing: {}", name);
+                    info!("renaming: {}", name);
                     state.xpr.rename_layer(&im.as_ref());
                     ui.close_current_popup();
                 }

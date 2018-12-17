@@ -8,19 +8,29 @@ pub enum Bind {
     Undo,
     PushTool(ToolType),
     PopTool,
+    ToggleConsole,
     RunScript,
     Unmapped,
 }
 
 impl Bind {
-    pub fn execute(&self, xpr: &mut Xprite) -> Option<()> {
+    pub fn execute(&self, state: &mut State, _ui: &Ui) -> Option<()> {
         use self::Bind::*;
         match self {
-            Redo => xpr.redo(),
-            Undo => xpr.undo(),
-            PushTool(tool) => xpr.change_tool(&tool),
-            PopTool => xpr.toolbox.pop_tool(),
-            RunScript => xpr.execute_script()?,
+            Redo => state.xpr.redo(),
+            Undo => state.xpr.undo(),
+            PushTool(tool) => state.xpr.change_tool(&tool),
+            PopTool => state.xpr.toolbox.pop_tool(),
+            ToggleConsole => {state.show_console = !state.show_console;}
+            RunScript => {
+                state.xpr.execute_script().unwrap_or_else(
+                    |msg| {
+                        error!("{}", msg);
+                        state.xpr.log.push_str(&msg);
+                        ()
+                    }
+                );
+            }
             Unmapped => (),
         }
         Some(())
@@ -71,6 +81,7 @@ pub enum Action {
     Ctrl    (bool, bool, bool, bool),
     Space   (bool, bool, bool, bool),
     Return  (bool, bool, bool, bool),
+    Grave   (bool, bool, bool, bool),
 }
 
 pub struct HotkeyController {
@@ -86,6 +97,8 @@ impl HotkeyController {
             binds.insert( Action::Z(true, false, false, true), Bind::Undo );
             binds.insert( Action::Z(true, true, false, true),  Bind::Redo );
             binds.insert( Action::Y(true, false, false, true), Bind::Redo );
+
+            binds.insert( Action::Grave(false, false, false, true), Bind::ToggleConsole );
 
             // tools
             binds.insert( Action::B(false, false, false, true), Bind::PushTool(ToolType::Pencil) );
