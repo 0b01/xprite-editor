@@ -1,19 +1,6 @@
-fn render() -> XprState {
-    ~xpr := xpr_new()
-
-    x := 0
-    dx := 100
-    col := #f00000
-    for i [x, x+dx) {
-        col += #001005
-        pixel((i,100-i), col)
-        pixel((i,i), col)
-    }
-    return clone(xpr)
-}
-
-fn pixel(pos: vec4, color: vec4) ~mut xpr {
-    a := xpr.to_draw
-    push(mut a, [pos, color])
-    xpr.to_draw := clone(a)
+fn main() -> XprState {
+    xpr := unwrap(load("/home/g/Desktop/xprite-editor/scripts/xpr.dyon"))
+    render := unwrap(load(source: "/home/g/Desktop/xprite-editor/scripts/render.dyon", imports: [xpr]))
+    i := call_ret(render, "render", [])
+    return clone(i)
 }

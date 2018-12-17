@@ -29,11 +29,11 @@ impl Scripting {
         };
 
         let mut runtime = Runtime::new();
-        match runtime.call_str_ret("render", &Vec::new(), &Arc::new(module)) {
+        match runtime.call_str_ret("main", &Vec::new(), &Arc::new(module)) {
             Ok(msg) => {
                 let mut buf = Pixels::new();
                 let draw_list = XprDrawList::pop_var(&runtime, &msg).unwrap();
-                for &(pos, color) in &draw_list.to_draw {
+                for &(pos, color) in draw_list.to_draw.iter().rev() {
                     let pos : [f32; 4] = pos.into();
                     let color : [f32; 4] = color.into();
                     buf.push(pixel!(pos[0], pos[1], color.into()));
