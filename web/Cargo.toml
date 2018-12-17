@@ -5,7 +5,7 @@ authors = ["Ricky Han <rickylqhan@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-stdweb = "0.4.10"
+stdweb = "0.4.12"
 serde = "1.0.71"
 serde_derive = "1.0.71"
 itertools = "0.7"

@@ -1,7 +1,8 @@
 [workspace]
 members = [
     "xprite",
-    # "xprite-web",
-    "xprite-native",
+    "web",
+    "native",
 ]
 
+default-run = "xprite-native"

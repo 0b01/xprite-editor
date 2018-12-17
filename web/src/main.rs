@@ -3,8 +3,7 @@
 
 // #[macro_use]
 // extern crate itertools;
-#[macro_use]
-extern crate stdweb;
+#[macro_use] extern crate stdweb;
 extern crate xprite;
 mod stdweb_renderer;
 
@@ -27,11 +26,12 @@ use std::rc::Rc;
 fn main() {
     stdweb::initialize();
 
-    let xprite = Rc::new(RefCell::new(Xprite::new(200, 200)));
-    let renderer = Box::new(StdwebRenderer::new("#canvas"));
-    xprite.borrow_mut().init(renderer);
+    let xprite = Rc::new(RefCell::new(Xprite::new(200., 200.)));
+    let rdr = StdwebRenderer::new("#canvas");
+    // xprite.borrow_mut().init(renderer);
 
-    xprite.borrow().draw();
+    xprite.borrow_mut().draw();
+    xprite.borrow_mut().render(&rdr);
 
     let doc = stdweb::web::document();
 
@@ -39,16 +39,16 @@ fn main() {
     doc.add_event_listener({
         move |event: KeyDownEvent| {
             match event.key().as_ref() {
-                "=" => xpr.borrow_mut().zoom_in().unwrap(),
-                "-" => xpr.borrow_mut().zoom_out().unwrap(),
-                "p" => xpr.borrow().print_cursor_location(),
-                "l" => xpr.borrow_mut().change_tool("line"),
-                "f" => xpr.borrow_mut().change_tool("pencil"),
+                // "=" => xpr.borrow_mut().zoom_in().unwrap(),
+                // "-" => xpr.borrow_mut().zoom_out().unwrap(),
+                // "p" => xpr.borrow().print_cursor_location(),
+                // "l" => xpr.borrow_mut().change_tool("line"),
+                // "f" => xpr.borrow_mut().change_tool("pencil"),
                 "z" => if event.ctrl_key() { xpr.borrow_mut().undo() },
                 "Z" => if event.ctrl_key() { xpr.borrow_mut().redo() },
                 "y" => if event.ctrl_key() { xpr.borrow_mut().redo() },
-                "Control" => xpr.borrow_mut().set_option("ctrl", "true"),
-                "Shift" => xpr.borrow_mut().set_option("shift", "true"),
+                "Control" => xpr.borrow_mut().set_option("ctrl", "true").unwrap(),
+                "Shift" => xpr.borrow_mut().set_option("shift", "true").unwrap(),
                 _ => (),
             };
         }
@@ -58,8 +58,8 @@ fn main() {
     doc.add_event_listener({
         move |event: KeyUpEvent| {
             match event.key().as_ref() {
-                "Control" => xpr.borrow_mut().set_option("ctrl", "false"),
-                "Shift" => xpr.borrow_mut().set_option("shift", "false"),
+                "Control" => xpr.borrow_mut().set_option("ctrl", "false").unwrap(),
+                "Shift" => xpr.borrow_mut().set_option("shift", "false").unwrap(),
                 _ => (),
             };
         }
@@ -71,8 +71,8 @@ fn main() {
         let rect = canvas.get_bounding_client_rect();
         xprite_clone.borrow_mut().mouse_up(
             &InputEvent::MouseUp{
-                x: event.client_x() - rect.get_x() as i32,
-                y: event.client_y() - rect.get_y() as i32,
+                x: event.client_x() as f32 - rect.get_x() as f32,
+                y: event.client_y() as f32 - rect.get_y() as f32,
             }
         );
     });
@@ -83,8 +83,8 @@ fn main() {
         let rect = canvas.get_bounding_client_rect();
         xprite_clone.borrow_mut().mouse_move(
             &InputEvent::MouseMove{
-                x: event.client_x() - rect.get_x() as i32,
-                y: event.client_y() - rect.get_y() as i32,
+                x: event.client_x() as f32 - rect.get_x() as f32,
+                y: event.client_y() as f32 - rect.get_y() as f32,
             }
         );
     });
@@ -95,27 +95,26 @@ fn main() {
         let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
         let rect = canvas.get_bounding_client_rect();
         let button = match event.button() {
-            stdweb::web::event::InputItem::Left => InputItem::Left,
-            stdweb::web::event::InputItem::Right => InputItem::Right,
+            stdweb::web::event::MouseButton::Left => InputItem::Left,
+            stdweb::web::event::MouseButton::Right => InputItem::Right,
             _ => unimplemented!(),
         };
         xprite_clone.borrow_mut().mouse_down(
             &InputEvent::MouseDown {
-                x: event.client_x() - rect.get_x() as i32,
-                y: event.client_y() - rect.get_y() as i32,
+                x: event.client_x() as f32 - rect.get_x() as f32,
+                y: event.client_y() as f32 - rect.get_y() as f32,
                 button,
             }
         );
     });
 
-    xprite.borrow().draw();
-
-    init_js_bindings(&xprite);
+    // init_js_bindings(&xprite);
 
     stdweb::event_loop();
 
 }
 
+/*
 fn init_js_bindings(xprite: &Rc<RefCell<Xprite>>) {
     let xpr = xprite.clone();
     let fn_draw = move ||
@@ -158,3 +157,4 @@ fn init_js_bindings(xprite: &Rc<RefCell<Xprite>>) {
         window.xprite.enter = @{fn_enter}
     };
 }
+*/
