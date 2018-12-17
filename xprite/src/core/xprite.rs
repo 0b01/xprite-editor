@@ -125,10 +125,10 @@ impl Xprite {
 
 }
 impl Xprite {
-    pub fn execute_script(&mut self) -> Result<(), String> {
+    pub fn execute_script(&mut self, path: &str) -> Result<(), String> {
         let s = Rc::clone(&self.scripting);
         let mut scripting = s.borrow_mut();
-        scripting.execute(self)
+        scripting.execute(self, path)
     }
 }
 

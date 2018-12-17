@@ -1,6 +1,0 @@
-fn main() -> XprState {
-    xpr := unwrap(load("/home/g/Desktop/xprite-editor/scripts/xpr.dyon"))
-    render := unwrap(load(source: "/home/g/Desktop/xprite-editor/scripts/render.dyon", imports: [xpr]))
-    i := call_ret(render, "render", [])
-    return clone(i)
-}
