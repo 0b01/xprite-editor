@@ -11,7 +11,7 @@ extern crate cairo;
 
 use xprite::prelude::*;
 
-// use crate::render::imgui_cairo_renderer::ImguiCairoRenderer;
+use crate::render::imgui_cairo_renderer::ImguiCairoRenderer;
 use crate::render::imgui_renderer::ImguiRenderer;
 
 mod hotkey;

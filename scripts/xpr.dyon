@@ -18,21 +18,21 @@ fn nofill() ~xpr { xpr.filled := false }
 
 // rectangles
 fn rect(x1, y1, x2, y2, col) ~xpr {
-    if xpr.filled { filled_rect(x1, y1, x2, y2, col) }
+    if xpr.filled { _filled_rect(x1, y1, x2, y2, col) }
     else {
-        for i:=x1; i<x2; i+=1 {
+        for i [x1, x2) {
             pixel((i,y1), col)
             pixel((i,y2-1), col)
         }
-        for j:=y1; j < y2; j+=1 {
+        for j [y1, y2) {
             pixel((x1, j), col)
             pixel((x2-1, j), col)
         }
     }
 }
-fn filled_rect(x1, y1, x2, y2, col) {
-    for i:=x1; i<x2; i+=1 {
-        for j:= y1; j<y2; j+=1 {
+fn _filled_rect(x1, y1, x2, y2, col) {
+    for i [x1, x2) {
+        for j [y1, y2) {
             pixel((i,j), col)
         }
     }

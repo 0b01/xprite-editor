@@ -1,24 +1,20 @@
 fn render() -> XprState {
     ~xpr := xpr_new(100, 100, 10000 * 10)
 
-    fill()
-    rect(0,0,100,100, #ffffff)
+    // fill()
+    // rect(0,0,100,100, #ffffff)
 
     x := 0
     dx := 100
     col := #ffffff
     for i [x, xpr.w) {
         col += #f009f0
-        pixel((i, xpr.h -i -1), col)
+        pixel((i, xpr.h-i-1), col)
         pixel((i,i), col)
     }
 
     nofill()
-    arr := [30, 40]
-    for a {
-        i := arr[a]
-        rect(i, i, 100-i, 100-i, #fff000 + i * #ffffff)
-    }
+    rect(30, 30, 70, 70, #fff000)
 
     return clone(xpr)
 }
