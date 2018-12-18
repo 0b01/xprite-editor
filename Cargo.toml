@@ -3,6 +3,7 @@ members = [
     "xprite",
     "web",
     "native",
+    "libtexsyn",
 ]
 
 default-run = "xprite-native"

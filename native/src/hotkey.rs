@@ -23,7 +23,7 @@ impl Bind {
             PopTool => state.xpr.toolbox.pop_tool(),
             ToggleConsole => {state.show_console = !state.show_console;}
             RunScript => {
-                let path = "/home/g/Desktop/xprite-editor/scripts/render.dyon";
+                let path = "/home/g/Desktop/xprite/scripts/render.dyon";
                 state.xpr.execute_script(path).unwrap_or_else(
                     |msg| {
                         error!("{}", msg);

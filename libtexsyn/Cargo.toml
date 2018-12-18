@@ -1,0 +1,16 @@
+[package]
+name = "libtexsyn"
+version = "0.1.0"
+authors = ["R.Chavignat <r.chavignat@gmail.com>"]
+
+[dependencies]
+approx = "0.1.1"
+conv = "0.3.3"
+error-chain = "0.11.0"
+imageproc = "0.13.0"
+image = "0.18.0"
+noise = "0.4.1"
+num-traits = "0.2.0"
+rand = "0.4.2"
+rayon = "1.0.0"
+term = "0.4.6"
