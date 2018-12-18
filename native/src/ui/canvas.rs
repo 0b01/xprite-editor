@@ -13,16 +13,7 @@ pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         .build(|| {
 
             if ui.button(im_str!("Save"), (100., 30.)) {
-                state.xpr.export(&state.cairo);
-                state.cairo.render();
-                let im = state.cairo.img();
-                im.map(|i|{
-                    let img_path = "1.png";
-                    info!("writing file to {}", img_path);
-                    let mut f = ::std::fs::File::create(img_path).unwrap();
-                    i.save(&mut f, image::ImageFormat::PNG).unwrap()
-                });
-                state.cairo.reset();
+                state.save();
             }
 
             let styles = [

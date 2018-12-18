@@ -2,6 +2,7 @@ use crate::prelude::*;
 use xprite::rendering::{Renderer, MouseCursorType};
 use cairo::{ImageSurface, Context, Format};
 use xprite::image::{ImageBuffer, DynamicImage, Rgba};
+use std::mem;
 
 pub struct CairoRenderer {
     w: u32,
@@ -74,13 +75,33 @@ impl Renderer for CairoRenderer {
         // drop cairo context which contains a reference to surface
         info!("{:#?}", self.cr.as_ref().unwrap().status());
         self.cr = None;
-        let data = self.surface.get_data().expect("Cannot get data");
-        let im = DynamicImage::ImageRgba8(
-            ImageBuffer::<Rgba<u8>, Vec<u8>>::from_raw(self.w, self.h, (*data).to_vec()).unwrap()
-        );
+        let data = self.surface.get_data().expect("Cannot get data"); // ARGB
+        let im = DynamicImage::ImageRgba8({
+            let mut vec32: Vec<_> = unsafe { mem::transmute::<&[u8], &[u32]>(&*data) }
+                .iter().map(|&i|argb2rgba(i)).collect();
+            let vec8 = unsafe {
+                let ratio = mem::size_of::<u32>() / mem::size_of::<u8>();
+                let length = vec32.len() * ratio;
+                let capacity = vec32.capacity() * ratio;
+                let ptr = vec32.as_mut_ptr() as *mut u8;
+                mem::forget(vec32);
+                // Construct new Vec
+                Vec::from_raw_parts(ptr, length, capacity)
+            };
+
+            ImageBuffer::<Rgba<u8>, Vec<u8>>::from_raw(self.w, self.h, vec8).unwrap()
+        });
 
         self.image = Some(im);
     }
+}
+
+#[inline(always)]
+fn argb2rgba(i: u32) -> u32 {
+    ((i & 0xFF000000)      ) |
+    ((i & 0x00FF0000) >> 16) |
+    ((i & 0x0000FF00)      ) |
+    ((i & 0x000000FF) << 16)
 }
 
 impl CairoRenderer {
@@ -90,8 +111,8 @@ impl CairoRenderer {
 
         let mut surface = ImageSurface::create(Format::ARgb32, w as i32, h as i32).expect("Cannot create surface.");
         let cr = Context::new(&mut surface);
-        cr.set_source_rgb(1.0, 0.0, 1.0);
-        cr.paint();
+        // cr.set_source_rgb(1.0, 0.0, 1.0);
+        // cr.paint();
 
         let cr = Some(cr);
 
