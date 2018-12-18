@@ -85,7 +85,6 @@ impl Renderer for CairoRenderer {
                 let capacity = vec32.capacity() * ratio;
                 let ptr = vec32.as_mut_ptr() as *mut u8;
                 mem::forget(vec32);
-                // Construct new Vec
                 Vec::from_raw_parts(ptr, length, capacity)
             };
 

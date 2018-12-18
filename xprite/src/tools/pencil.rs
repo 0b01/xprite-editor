@@ -173,7 +173,7 @@ impl Tool for Pencil {
             }
             PixelPerfect => {
                 // if there is only one pixel in the buffer(mousedown w/o move)
-                if self.buffer.1.len() == 1 {
+                if self.buffer.0.len() == 1 {
                     // noop
                 } else {
                     self.buffer.clear();
