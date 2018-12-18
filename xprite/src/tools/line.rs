@@ -51,7 +51,7 @@ impl Line {
 
     fn draw_line(&self, xpr: &mut Xprite) -> Option<()> {
         if let Some(pixs) = self.get_line() {
-            xpr.add_stroke(&pixs)
+            xpr.add_pixels(&Pixels::from_slice(&pixs))
         }
         Some(())
     }

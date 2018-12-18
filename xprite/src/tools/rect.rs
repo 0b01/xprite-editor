@@ -1,5 +1,6 @@
 use crate::tools::*;
-use crate::algorithms::line::*;
+use crate::algorithms::rect::*;
+use std::u32;
 
 #[derive(Clone)]
 pub struct Rect {
@@ -8,6 +9,7 @@ pub struct Rect {
     start_pos: Option<Pixel>,
     snap: bool,
     is_snap_45: bool,
+    pub filled: bool,
 }
 
 impl Rect {
@@ -18,6 +20,7 @@ impl Rect {
             start_pos: None,
             snap: false,
             is_snap_45: false,
+            filled: false,
         }
     }
 
@@ -31,27 +34,36 @@ impl Rect {
         Some(())
     }
 
-    fn get_line(&self) -> Option<Vec<Pixel>> {
+    fn get_rect(&self) -> Option<Pixels> {
         let start = self.start_pos?;
         let stop = self.cursor_pos?;
-        if self.snap {
-            Some(snapped_line(self.is_snap_45, &start, &stop))
-        } else {
-            Some(bresenham(&start.point.into(), &stop.point.into()))
-        }
+        let x0 = start.point.x as u32;
+        let y0 = start.point.y as u32;
+        let x1 = stop.point.x as u32;
+        let y1 = stop.point.y as u32;
+        let f = if self.filled {filled_rect} else {rect};
+        Some(f(
+            u32::min(x0, x1),
+            u32::min(y0, y1),
+            u32::max(x0, x1),
+            u32::max(y0, y1),
+            Color::red(),
+        ))
     }
 
     fn finalize_line(&mut self, xpr: &mut Xprite) -> Option<()> {
-        if let Some(pixs) = self.get_line() {
+        if let Some(mut pixs) = self.get_rect() {
             xpr.history.enter()?;
-            xpr.history.top().selected_layer.borrow_mut().content.extend(&Pixels::from_slice(&pixs));
+            pixs.set_color(&xpr.color());
+            xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
         }
         Some(())
     }
 
     fn draw_line(&self, xpr: &mut Xprite) -> Option<()> {
-        if let Some(pixs) = self.get_line() {
-            xpr.add_stroke(&pixs)
+        if let Some(mut pixs) = self.get_rect() {
+            pixs.set_color(&xpr.color());
+            xpr.add_pixels(&pixs)
         }
         Some(())
     }

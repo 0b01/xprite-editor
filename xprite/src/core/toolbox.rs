@@ -11,6 +11,7 @@ use crate::tools::{
     vector::Vector,
     color_picker::ColorPicker,
     eraser::Eraser,
+    rect::Rect,
 };
 
 pub struct Toolbox {
@@ -20,6 +21,7 @@ pub struct Toolbox {
     pub vector:         Rc<RefCell<Vector>>,
     pub color_picker:   Rc<RefCell<ColorPicker>>,
     pub eraser:         Rc<RefCell<Eraser>>,
+    pub rect:           Rc<RefCell<Rect>>,
 
     pub selected:       ToolType,
 
@@ -34,6 +36,7 @@ impl Toolbox {
         let vector = Rc::new(RefCell::new(Vector::new()));
         let color_picker = Rc::new(RefCell::new(ColorPicker::new()));
         let eraser = Rc::new(RefCell::new(Eraser::new()));
+        let rect = Rc::new(RefCell::new(Rect::new()));
 
         let selected = ToolType::Pencil;
 
@@ -46,6 +49,7 @@ impl Toolbox {
             vector,
             color_picker,
             eraser,
+            rect,
             tool_stack,
         }
     }
@@ -63,12 +67,19 @@ impl Toolbox {
             Vector => self.vector.clone(),
             ColorPicker => self.color_picker.clone(),
             Eraser => self.eraser.clone(),
+            Rect | FilledRect => self.rect.clone(),
+
         }
     }
 
     pub fn change_tool(&mut self, tool: &ToolType) {
         self.tool_stack.push(self.selected);
         self.selected = tool.clone();
+        match tool {
+            ToolType::Rect => { self.rect.borrow_mut().filled = false; }
+            ToolType::FilledRect => {self.rect.borrow_mut().filled = true; }
+            _ => (),
+        }
     }
 
     pub fn pop_tool(&mut self) {

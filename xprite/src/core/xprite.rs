@@ -58,13 +58,6 @@ impl Xprite {
         self.last_mouse_pos.1 = y;
     }
 
-    /// add stroke to temp im_buf
-    pub fn add_stroke(&mut self, pixels: &[Pixel]) {
-        for &pixel in pixels.iter() {
-            self.add_pixel(pixel);
-        }
-    }
-
     /// add pixels to temp im_buf
     pub fn add_pixels(&mut self, pixels: &Pixels) {
         self.pixels_mut().extend(pixels);

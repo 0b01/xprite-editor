@@ -1,8 +1,8 @@
 use crate::prelude::*;
 
+/// draw the outline of a rectangle
 pub fn rect(x1: u32, y1: u32, x2:u32, y2:u32, col: Color) -> Pixels {
     let mut ret = Pixels::new();
-
     for i in x1..x2 {
         ret.push(pixel!(i,y1, col));
         ret.push(pixel!(i,y2-1, col));
@@ -11,13 +11,12 @@ pub fn rect(x1: u32, y1: u32, x2:u32, y2:u32, col: Color) -> Pixels {
         ret.push(pixel!(x1, j, col));
         ret.push(pixel!(x2-1, j, col));
     }
-
     ret
 }
 
+/// draw a filled rectangle
 pub fn filled_rect(x1: u32, y1: u32, x2: u32, y2: u32, col: Color) -> Pixels {
     let mut ret = Pixels::new();
-
     for i in x1..x2 {
         for j in y1..y2 {
             ret.push(pixel!(i,j, col));
@@ -59,8 +58,5 @@ mod tests {
         exp.push(pixel!(0,1, Color::red()));
         exp.push(pixel!(2,1, Color::red()));
         assert_eq!(exp, rect);
-
     }
-
-
 }

@@ -6,6 +6,7 @@ pub mod paintbucket_panel;
 pub mod vector_panel;
 pub mod colorpicker_panel;
 pub mod eraser_panel;
+pub mod rect_panel;
 
 pub fn draw(selected: &ToolType, state: &mut State, ui: &Ui) {
     match selected {
@@ -15,5 +16,6 @@ pub fn draw(selected: &ToolType, state: &mut State, ui: &Ui) {
         ToolType::Vector => vector_panel::draw(state, ui),
         ToolType::ColorPicker => colorpicker_panel::draw(state, ui),
         ToolType::Eraser => eraser_panel::draw(state, ui),
+        ToolType::Rect | ToolType::FilledRect => rect_panel::draw(state, ui),
     }
 }

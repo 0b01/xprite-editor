@@ -108,6 +108,8 @@ impl HotkeyController {
             binds.insert( Action::G(false, false, false, true), Bind::PushTool(ToolType::PaintBucket) );
             binds.insert( Action::L(false, false, false, true), Bind::PushTool(ToolType::Line) );
             binds.insert( Action::E(false, false, false, true), Bind::PushTool(ToolType::Eraser) );
+            binds.insert( Action::R(false, false, false, true), Bind::PushTool(ToolType::Rect) );
+            binds.insert( Action::F(false, false, false, true), Bind::PushTool(ToolType::FilledRect) );
 
             // alt
             binds.insert( Action::Alt(false, false, true, true), Bind::PushTool(ToolType::ColorPicker) );

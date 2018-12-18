@@ -6,6 +6,7 @@ pub mod vector;
 pub mod line;
 pub mod paint_bucket;
 pub mod color_picker;
+pub mod rect;
 pub mod traits;
 
 pub use self::traits::Tool;
@@ -18,6 +19,8 @@ pub enum ToolType {
     Vector,
     ColorPicker,
     Eraser,
+    Rect,
+    FilledRect,
 }
 
 impl ToolType {
@@ -29,15 +32,18 @@ impl ToolType {
             ToolType::Vector => "Vector",
             ToolType::ColorPicker => "ColorPicker",
             ToolType::Eraser => "Eraser",
+            ToolType::Rect => "Rect",
+            ToolType::FilledRect => "FilledRect",
         }
     }
 
-    pub const VARIANTS: [ToolType; 6] = [
+    pub const VARIANTS: [ToolType; 7] = [
         ToolType::Pencil,
         ToolType::Line,
         ToolType::PaintBucket,
         ToolType::Vector,
         ToolType::ColorPicker,
         ToolType::Eraser,
+        ToolType::Rect,
     ];
 }
