@@ -67,14 +67,17 @@ impl Xprite {
 
     /// add pixels to temp im_buf
     pub fn add_pixels(&mut self, pixels: &Pixels) {
-        for &pixel in pixels.iter() {
-            self.add_pixel(pixel);
-        }
+        self.pixels_mut().extend(pixels);
     }
 
     /// add pixel to temp im_buf
     pub fn add_pixel(&mut self, pixel: Pixel) {
         self.pixels_mut().push(pixel);
+    }
+
+    /// remove pixels from temp im_buf
+    pub fn remove_pixels(&mut self, pixels: &Pixels) {
+        self.pixels_mut().sub(pixels);
     }
 
     pub fn pixels_mut(&mut self) -> &mut Pixels {

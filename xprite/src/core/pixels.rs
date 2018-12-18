@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use std::ops::Sub;
 use std::cmp::Ordering;
 use std::hash::{Hash, Hasher};
 use std::fmt::{Debug, Formatter, Error};
@@ -84,6 +85,10 @@ impl Pixels {
             self.0.replace(*i);
         }
         self.0 = self.0.iter().cloned().collect();
+    }
+
+    pub fn sub(&mut self, other: &Pixels) {
+        self.0 = self.0.sub(&other.0)
     }
 
     pub fn push(&mut self, px: Pixel) {

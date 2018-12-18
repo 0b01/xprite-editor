@@ -1,9 +1,11 @@
 use crate::prelude::*;
 use crate::algorithms::sorter::sort_path;
 use crate::algorithms::pixel_perfect::pixel_perfect;
+use std::rc::Rc;
 
 pub struct Eraser {
     is_mouse_down: Option<InputItem>,
+    current_polyline: Polyline,
     cursor: Option<Pixels>,
     cursor_pos: Option<Pixel>,
     brush: Brush,
@@ -19,9 +21,11 @@ impl Eraser {
         let brush_type = BrushType::Pixel;
         let brush = Brush::pixel();
         let buffer = Pixels::new();
+        let current_polyline = Polyline::new();
 
         Self {
             is_mouse_down,
+            current_polyline,
             cursor,
             cursor_pos,
             brush,
@@ -77,11 +81,20 @@ impl Tool for Eraser {
             return self.draw(xpr);
         }
 
+        self.current_polyline.push(p);
+        let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
+        self.buffer.extend(&Pixels::from_slice(&line_pixs));
+        let pixels = self.brush2pixs(xpr, p, xpr.color());
+        if let Some(pixels) = pixels {
+            self.buffer.extend(&pixels);
+        }
+
         self.draw(xpr)
     }
 
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Option<()>{
         self.is_mouse_down = Some(button);
+        self.current_polyline.push(p);
 
         self.buffer.clear();
         let pixels = self.brush2pixs(xpr, p, xpr.color());
@@ -100,16 +113,14 @@ impl Tool for Eraser {
         let button = self.is_mouse_down.clone().unwrap();
         if button == InputItem::Right { return Some(()); }
 
-        self.buffer.set_color(&xpr.color());
-
         xpr.history.enter()?;
-        xpr.history.top_mut()
-            .selected_layer
-            .borrow_mut()
-            .content
-            .extend(&self.buffer);
+        {
+            let layer = &mut xpr.history.top_mut()
+                .selected_layer
+                .borrow_mut();
+            layer.content.sub(&self.buffer);
+        }
 
-        self.current_polyline.clear();
         self.buffer.clear();
         self.is_mouse_down = None;
 
@@ -121,7 +132,13 @@ impl Tool for Eraser {
         xpr.new_frame();
         self.set_cursor(xpr);
         self.buffer.set_color(&xpr.color());
-        xpr.add_pixels(&self.buffer);
+
+        // set current layer to invisible
+        let layer = Rc::clone(&xpr.history.top_mut().selected_layer);
+        layer.borrow_mut().visible = false;
+
+        xpr.add_pixels(&layer.borrow_mut().content);
+        xpr.remove_pixels(&self.buffer);
 
         Some(())
     }
@@ -129,12 +146,6 @@ impl Tool for Eraser {
     fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) -> Option<()> {
         match option {
             "mode" => {
-                use self::EraserMode::*;
-                match EraserMode::from_str(value) {
-                    Raw             => self.mode = Raw,
-                    SortedMonotonic => self.mode = SortedMonotonic,
-                    PixelPerfect    => self.mode = PixelPerfect,
-                };
             }
             "brush" => {
                 match value {
