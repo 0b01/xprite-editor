@@ -119,8 +119,10 @@ impl Tool for Eraser {
                 .selected_layer
                 .borrow_mut();
             layer.content.sub(&self.buffer);
+            layer.visible = true;
         }
 
+        self.current_polyline.clear();
         self.buffer.clear();
         self.is_mouse_down = None;
 
@@ -131,15 +133,16 @@ impl Tool for Eraser {
     fn draw(&mut self, xpr: &mut Xprite) -> Option<()> {
         xpr.new_frame();
         self.set_cursor(xpr);
-        self.buffer.set_color(&xpr.color());
 
-        // set current layer to invisible
         let layer = Rc::clone(&xpr.history.top_mut().selected_layer);
-        layer.borrow_mut().visible = false;
-
-        xpr.add_pixels(&layer.borrow_mut().content);
-        xpr.remove_pixels(&self.buffer);
-
+        if !self.buffer.0.is_empty() {
+            layer.borrow_mut().visible = false;
+            // set current layer to invisible
+            xpr.add_pixels(&layer.borrow_mut().content);
+            xpr.remove_pixels(&self.buffer);
+        } else {
+            layer.borrow_mut().visible = true;
+        }
         Some(())
     }
 
