@@ -39,7 +39,7 @@ impl Pixel {
 
 impl Debug for Pixel {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "@({},{},{:#?})", self.point.x, self.point.y, self.color)
+        write!(f, "@({},{})", self.point.x, self.point.y)
     }
 }
 

@@ -131,8 +131,20 @@ pub fn bresenham(start: &Vec2D, stop: &Vec2D) -> Vec<Pixel> {
 mod tests {
     use super::*;
     #[test]
-    fn test_adjust() {
+    fn test_snap_line() {
         let adjusted_end = snapped_line(true, &pixel!(0., 0., Color::red()), &pixel!(10., 9., Color::red()));
-        println!("{:?}", adjusted_end);
+
+        let expected = vec![
+            pixel!(0,0,Color::red()),
+            pixel!(1,1,Color::red()),
+            pixel!(2,2,Color::red()),
+            pixel!(3,3,Color::red()),
+            pixel!(4,4,Color::red()),
+            pixel!(5,5,Color::red()),
+            pixel!(6,6,Color::red()),
+            pixel!(7,7,Color::red()),
+            pixel!(8,8,Color::red())
+        ];
+        assert_eq!(expected, adjusted_end);
     }
 }

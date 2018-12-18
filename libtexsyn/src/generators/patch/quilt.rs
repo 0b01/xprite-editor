@@ -187,7 +187,7 @@ impl Quilter {
                 let err_surf = self.patch_error_surface(area, &candidate, corner);
                 self.cut_and_blit_patch(&candidate, corner, &err_surf, area);
 
-                println!("Done patch ({}, {})", patch_x, patch_y);
+                // println!("Done patch ({}, {})", patch_x, patch_y);
             }
         }
 
@@ -269,7 +269,7 @@ impl Quilter {
         let scores = candidates_scores.into_inner().unwrap();
         let best = current_best.lock().unwrap();
         let mut candidates: Vec<Patch> = scores.into_iter().filter_map(|(p, err)| if err > *best * (1. + TOLERANCE) { None } else { Some(p.clone()) }).collect();
-        println!("Found {} candidates", candidates.len());
+        // println!("Found {} candidates", candidates.len());
         rng.shuffle(&mut candidates);
         candidates.first().unwrap().clone()
     }

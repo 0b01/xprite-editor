@@ -11,11 +11,6 @@ pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         .movable(false)
         .collapsible(false)
         .build(|| {
-
-            if ui.button(im_str!("Save"), (100., 30.)) {
-                state.save();
-            }
-
             let styles = [
                 StyleVar::FramePadding(ImVec2::new(0., 0.)),
                 StyleVar::WindowPadding(ImVec2::new(0., 0.)),

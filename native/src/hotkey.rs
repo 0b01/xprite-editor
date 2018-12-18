@@ -10,6 +10,7 @@ pub enum Bind {
     PopTool,
     ToggleConsole,
     RunScript,
+    Save,
     Unmapped,
 }
 
@@ -22,6 +23,7 @@ impl Bind {
             PushTool(tool) => state.xpr.change_tool(&tool),
             PopTool => state.xpr.toolbox.pop_tool(),
             ToggleConsole => {state.show_console = !state.show_console;}
+            Save => state.save(),
             RunScript => {
                 let path = "/home/g/Desktop/xprite/scripts/render.dyon";
                 state.xpr.execute_script(path).unwrap_or_else(
@@ -112,6 +114,8 @@ impl HotkeyController {
             binds.insert( Action::Alt(false, false, false, false), Bind::PopTool );
 
             binds.insert( Action::Return(true, false, false, true), Bind::RunScript );
+            // ctrl-s
+            binds.insert( Action::S(true, false, false, true), Bind::Save );
 
 
         }
