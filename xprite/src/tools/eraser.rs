@@ -11,6 +11,12 @@ pub struct Eraser {
     buffer: Pixels,
 }
 
+impl Default for Eraser {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Eraser {
     pub fn new() -> Self {
         let is_mouse_down = None;
@@ -33,15 +39,14 @@ impl Eraser {
     }
 
     fn set_cursor(&self, xpr: &mut Xprite) -> Option<()> {
-        if self.cursor.is_none() { return None; }
-        let cursor = self.cursor.clone().unwrap();
-        xpr.set_cursor(&cursor);
-        Some(())
+        self.cursor.as_ref().map(|cursor| {
+            xpr.set_cursor(cursor);
+        })
     }
 
     /// convert brush shape to actual pixel on canvas
     pub fn brush2pixs(&self, xpr: &Xprite, cursor: Vec2D, color: Color) -> Option<Pixels> {
-        let Vec2D {x, y} = xpr.canvas.shrink_size(&cursor);
+        let Vec2D {x, y} = xpr.canvas.shrink_size(cursor);
 
         let (brush_w, brush_h) = self.brush.size;
 
@@ -70,7 +75,7 @@ impl Tool for Eraser {
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
         let pixels = self.brush2pixs(xpr, p, xpr.color());
         self.cursor = pixels.clone();
-        let point = xpr.canvas.shrink_size(&p);
+        let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel{point, color});
 
@@ -108,7 +113,7 @@ impl Tool for Eraser {
 
     fn mouse_up(&mut self, xpr: &mut Xprite, _p: Vec2D) -> Option<()> {
         if self.is_mouse_down.is_none() {return Some(()); }
-        let button = self.is_mouse_down.clone().unwrap();
+        let button = self.is_mouse_down.unwrap();
         if button == InputItem::Right { return Some(()); }
 
         xpr.history.enter()?;

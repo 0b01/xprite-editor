@@ -26,13 +26,12 @@ impl State {
     pub fn save(&mut self) {
         self.xpr.export(&self.cairo);
         self.cairo.render();
-        let im = self.cairo.img();
-        im.map(|i|{
+        if let Some(im) = self.cairo.img() {
             let img_path = "1.png";
             info!("writing file to {}", img_path);
             let mut f = ::std::fs::File::create(img_path).unwrap();
-            i.save(&mut f, image::ImageFormat::PNG).unwrap()
-        });
+            im.save(&mut f, image::ImageFormat::PNG).unwrap()
+        };
         self.cairo.reset();
     }
 

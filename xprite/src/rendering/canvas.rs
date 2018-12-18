@@ -93,11 +93,10 @@ impl Canvas {
 
     pub fn to_cli(&self, p: Vec2D) -> Vec2D {
         let o = self.origin();
-        let p0 = Vec2D::new(
+        Vec2D::new(
             o.0 + self.scale * p.x,
             o.1 + self.scale * p.y,
-        );
-        p0
+        )
     }
 
     pub fn within_circle(&self, x: f32, y: f32, radius: f32, mouse: (f32, f32)) -> bool {
@@ -108,14 +107,10 @@ impl Canvas {
         );
         let rad = self.scale * radius;
 
-        if mouse.0 < p0.0 + rad
+        mouse.0 < p0.0 + rad
         && mouse.0 > p0.0 - rad
         && mouse.1 < p0.1 + rad
-        && mouse.1 > p0.1 - rad {
-            true
-        } else {
-            false
-        }
+        && mouse.1 > p0.1 - rad
     }
 
     pub fn draw_pixel(&self, rdr: &Renderer, x: f32, y: f32, color: [f32;4], filled: bool) {
@@ -188,7 +183,7 @@ impl Canvas {
     }
 
     /// convert screen pos to pixel location
-    pub fn shrink_size_no_floor(&self, p: &Vec2D) -> Vec2D {
+    pub fn shrink_size_no_floor(&self, p: Vec2D) -> Vec2D {
         let Vec2D {x: cli_x , y: cli_y} = p;
         let o = self.origin();
         Vec2D {
@@ -198,7 +193,7 @@ impl Canvas {
     }
 
     /// convert screen pos to pixel location
-    pub fn shrink_size(&self, p: &Vec2D) -> Vec2D {
+    pub fn shrink_size(&self, p: Vec2D) -> Vec2D {
         let Vec2D {x: cli_x , y: cli_y} = p;
         let o = self.origin();
         Vec2D {
@@ -207,7 +202,7 @@ impl Canvas {
         }
     }
     /// snap point to grid
-    pub fn snap(&self, p: &Vec2D) -> Vec2D {
+    pub fn snap(&self, p: Vec2D) -> Vec2D {
         let Vec2D {x: cli_x , y: cli_y} = p;
         Vec2D {
             x: cli_x.floor(),

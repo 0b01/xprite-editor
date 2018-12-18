@@ -7,8 +7,8 @@ use dyon::{
 };
 use std::sync::Arc;
 
-pub struct Scripting {
-}
+#[derive(Default)]
+pub struct Scripting { }
 
 impl Scripting {
     pub fn new() -> Self {
@@ -25,19 +25,17 @@ impl Scripting {
         });
 
         // load stdlib
-        match load_str(
+        if let Err(msg) = load_str(
             "xpr.dyon",
             Arc::new(include_str!("./xpr.dyon").to_owned()),
             &mut module
         ) {
-            Err(msg) => { return Err(msg) }
-            _ => (),
-        };
+            return Err(msg);
+        }
 
-        match load(filepath, &mut module) {
-            Err(msg) => { return Err(msg) }
-            _ => (),
-        };
+        if let Err(msg) = load(filepath, &mut module) {
+            return Err(msg);
+        }
 
         let mut runtime = Runtime::new();
         match runtime.call_str_ret("render", &Vec::new(), &Arc::new(module)) {

@@ -12,6 +12,12 @@ pub struct Layers {
     pub selected_layer: Rc<RefCell<Layer>>,
 }
 
+impl Default for Layers {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Layers {
     pub fn deepcopy(&self) -> Option<Layers> {
         let layers: Vec<_> = self.layers.iter().map(|i|

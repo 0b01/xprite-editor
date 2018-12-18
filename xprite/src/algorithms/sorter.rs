@@ -100,10 +100,7 @@ pub fn sort_path(path: &mut [Pixel]) -> Option<Vec<Pixel>> {
     || (!right_to_left && !up){
         p0.point.x -= 1.;
         p0.point.y -= 1.;
-    } else if !right_to_left && up {
-        p0.point.x -= 1.;
-        p0.point.y += 1.;
-    } else if right_to_left && !up {
+    } else if (!right_to_left && up) || (right_to_left && !up) {
         p0.point.x -= 1.;
         p0.point.y += 1.;
     }

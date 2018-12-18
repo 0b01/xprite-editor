@@ -1,3 +1,5 @@
+#![allow(clippy::float_cmp)]
+
 extern crate fern;
 #[macro_use] extern crate log;
 
@@ -12,7 +14,7 @@ extern crate libtexsyn;
 use xprite::prelude::*;
 
 use crate::render::cairo::CairoRenderer;
-#[allow(unused)] use crate::render::imgui_cairo::ImguiCairoRenderer;
+use crate::render::imgui_cairo::ImguiCairoRenderer;
 use crate::render::imgui::ImguiRenderer;
 
 mod hotkey;

@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use crate::algorithms;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct PaintBucket { }
 
 impl PaintBucket {
@@ -29,7 +29,7 @@ impl Tool for PaintBucket {
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
-        let point = xpr.canvas.shrink_size(&p);
+        let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         xpr.set_cursor(&(Pixel {point, color}).into());
         self.draw(xpr);
@@ -37,7 +37,7 @@ impl Tool for PaintBucket {
     }
 
     fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
-        let point = xpr.canvas.shrink_size(&p);
+        let point = xpr.canvas.shrink_size(p);
         let bg_color = xpr.current_layer().borrow().get_color(point);
         let buffer = self.floodfill(xpr, point, bg_color)?;
 

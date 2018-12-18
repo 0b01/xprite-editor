@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct ColorPicker { }
 
 impl ColorPicker {
@@ -16,7 +16,7 @@ impl Tool for ColorPicker {
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
-        let point = xpr.canvas.shrink_size(&p);
+        let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         xpr.set_cursor(&(Pixel {point, color}).into());
         self.draw(xpr);
@@ -28,7 +28,7 @@ impl Tool for ColorPicker {
     }
 
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, _button: InputItem) -> Option<()> {
-        let point = xpr.canvas.shrink_size(&p);
+        let point = xpr.canvas.shrink_size(p);
         let colors : Vec<_> = xpr.history.top_mut().layers.iter().map(|layer| layer.borrow().get_color(point)).collect();
         let picked = colors.iter().find(|i| i.is_some());
         match picked {

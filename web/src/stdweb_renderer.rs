@@ -1,4 +1,5 @@
 use xprite::rendering::Renderer;
+use std::f64;
 
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
@@ -20,8 +21,8 @@ impl Renderer for StdwebRenderer {
     }
     fn rect(&self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
         console!(log, format!("{:#?}, {:#?}", p0, color));
-        let a = p0[0] as f64; let b = p0[1] as f64;
-        let c = p1[0] as f64- a; let d = p1[1] as f64 - a;
+        let a = f64::from(p0[0]); let b = f64::from(p0[1]);
+        let c = f64::from(p1[0]) - a; let d = f64::from(p1[1]) - a;
         if filled {
             self.set_fill_style_color(
                 &format!("rgba({},{},{},{})",

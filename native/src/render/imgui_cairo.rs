@@ -2,6 +2,7 @@ use crate::prelude::*;
 use imgui::*;
 use xprite::rendering::{Renderer, MouseCursorType};
 use cairo::{ImageSurface, Context, Format};
+use std::f64;
 
 #[allow(unused)]
 pub struct ImguiCairoRenderer<'ui> {
@@ -46,8 +47,18 @@ impl<'ui> Renderer for ImguiCairoRenderer<'ui> {
 
     fn rect(&self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
 
-        self.cr.as_ref().unwrap().set_source_rgba(color[0] as f64, color[1] as f64, color[2] as f64, color[3] as f64);
-        self.cr.as_ref().unwrap().rectangle(p0[0] as f64, p0[1] as f64, (p1[0] - p0[0]) as f64, (p1[1] - p0[1]) as f64);
+        self.cr.as_ref().unwrap().set_source_rgba(
+            f64::from(color[0]),
+            f64::from(color[1]),
+            f64::from(color[2]),
+            f64::from(color[3])
+        );
+        self.cr.as_ref().unwrap().rectangle(
+            f64::from(p0[0]),
+            f64::from(p0[1]),
+            f64::from(p1[0] - p0[0]),
+            f64::from(p1[1] - p0[1])
+        );
         self.cr.as_ref().unwrap().fill();
 
 
@@ -115,7 +126,7 @@ impl<'ui> ImguiCairoRenderer<'ui> {
         let h = state.xpr.canvas.canvas_h as i32;
 
         let mut surface = ImageSurface::create(Format::ARgb32, w, h).expect("Cannot create surface.");
-        let cr = Context::new(&mut surface);
+        let cr = Context::new(&surface);
         // cr.set_source_rgb(1.0, 1.0, 1.0);
         // cr.paint();
 

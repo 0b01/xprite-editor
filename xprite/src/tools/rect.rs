@@ -1,7 +1,7 @@
 use crate::tools::*;
 use crate::algorithms::rect::*;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Rect {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,
@@ -60,7 +60,7 @@ impl Tool for Rect {
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
         // set current cursor_pos
-        let point = xpr.canvas.shrink_size(&p);
+        let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel {point, color});
         self.draw(xpr);
@@ -68,7 +68,7 @@ impl Tool for Rect {
     }
 
     fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
-        let point = xpr.canvas.shrink_size(&p);
+        let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel {point, color});
         self.finalize_line(xpr)?;
@@ -81,7 +81,7 @@ impl Tool for Rect {
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Option<()> {
         if InputItem::Left != button { return Some(()); }
         self.is_mouse_down = Some(button);
-        let point = xpr.canvas.shrink_size(&p);
+        let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.start_pos = Some(Pixel{point, color});
         Some(())

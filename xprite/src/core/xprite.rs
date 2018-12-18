@@ -299,7 +299,7 @@ impl Xprite {
     }
 
     pub fn mouse_up(&mut self, evt: &InputEvent) -> Option<()> {
-        if let &InputEvent::MouseUp{x, y} = evt {
+        if let &InputEvent::MouseUp{x, y, ..} = evt {
             let tool = self.toolbox.tool();
             let p = Vec2D::new(x, y);
             tool.borrow_mut().mouse_up(self, p);

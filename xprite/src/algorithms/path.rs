@@ -252,7 +252,7 @@ impl Path {
             let t = i as f32 / 100.;
             let point = seg.sample(t);
 
-            let Vec2D {x, y} = xpr.canvas.snap(&point);
+            let Vec2D {x, y} = xpr.canvas.snap(point);
             let pixel = pixel!(x, y, Color::red());
 
             // don't allow duplicate pixels

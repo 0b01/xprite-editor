@@ -73,6 +73,7 @@ fn main() {
             &InputEvent::MouseUp{
                 x: event.client_x() as f32 - rect.get_x() as f32,
                 y: event.client_y() as f32 - rect.get_y() as f32,
+                button: InputItem::Left, // XXX:
             }
         );
     });

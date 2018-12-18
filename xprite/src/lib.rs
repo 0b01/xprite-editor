@@ -1,4 +1,7 @@
+#![allow(clippy::too_many_arguments)]
+#![allow(clippy::float_cmp)]
 #![feature(vec_remove_item)]
+
 
 extern crate image as img;
 #[macro_use] extern crate log;

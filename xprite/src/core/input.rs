@@ -78,6 +78,7 @@ pub enum InputEvent {
     MouseUp {
         x: f32,
         y: f32,
+        button: InputItem,
     },
     KeyUp {
         key: InputItem,

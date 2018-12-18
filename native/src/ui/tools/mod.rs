@@ -9,7 +9,7 @@ pub mod eraser_panel;
 pub mod rect_panel;
 pub mod texture_panel;
 
-pub fn draw(selected: &ToolType, state: &mut State, ui: &Ui) {
+pub fn draw(selected: ToolType, state: &mut State, ui: &Ui) {
     match selected {
         ToolType::Pencil => pencil_panel::draw(state, ui),
         ToolType::Line => line_panel::draw(state, ui),

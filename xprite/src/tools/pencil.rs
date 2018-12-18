@@ -1,6 +1,7 @@
 use crate::prelude::*;
 use crate::algorithms::sorter::sort_path;
 use crate::algorithms::pixel_perfect::pixel_perfect;
+use std::str::FromStr;
 
 #[derive(Eq, PartialEq, Clone, Copy)]
 pub enum PencilMode {
@@ -20,20 +21,24 @@ impl PencilMode {
             PencilMode::SortedMonotonic => "Sorted Monotonic",
         }
     }
-    pub fn from_str(string: &str) -> Self {
-        match string {
-            "Raw" => PencilMode::Raw,
-            "Pixel Perfect" => PencilMode::PixelPerfect,
-            "Sorted Monotonic" => PencilMode::SortedMonotonic,
-            _ => unimplemented!(),
-        }
-    }
 
     pub const VARIANTS: [PencilMode; 3] = [
         PencilMode::Raw,
         PencilMode::PixelPerfect,
         PencilMode::SortedMonotonic,
     ];
+}
+
+impl FromStr for PencilMode {
+    type Err = ();
+    fn from_str(string: &str) -> Result<Self, ()> {
+        match string {
+            "Raw" => Ok(PencilMode::Raw),
+            "Pixel Perfect" => Ok(PencilMode::PixelPerfect),
+            "Sorted Monotonic" => Ok(PencilMode::SortedMonotonic),
+            _ => Err(()),
+        }
+    }
 }
 
 pub struct Pencil {
@@ -46,6 +51,13 @@ pub struct Pencil {
     pub brush_type: BrushType,
     buffer: Pixels,
 }
+
+impl Default for Pencil {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 
 impl Pencil {
     pub fn new() -> Self {
@@ -78,15 +90,14 @@ impl Pencil {
     }
 
     fn set_cursor(&self, xpr: &mut Xprite) -> Option<()> {
-        if self.cursor.is_none() { return None; }
-        let cursor = self.cursor.clone().unwrap();
-        xpr.set_cursor(&cursor);
-        Some(())
+        self.cursor.as_ref().map(|cursor|{
+            xpr.set_cursor(cursor);
+        })
     }
 
     /// convert brush shape to actual pixel on canvas
     pub fn brush2pixs(&self, xpr: &Xprite, cursor: Vec2D, color: Color) -> Option<Pixels> {
-        let Vec2D {x, y} = xpr.canvas.shrink_size(&cursor);
+        let Vec2D {x, y} = xpr.canvas.shrink_size(cursor);
 
         let (brush_w, brush_h) = self.brush.size;
 
@@ -115,7 +126,7 @@ impl Tool for Pencil {
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
         let pixels = self.brush2pixs(xpr, p, xpr.color());
         self.cursor = pixels.clone();
-        let point = xpr.canvas.shrink_size(&p);
+        let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel{point, color});
 
@@ -126,7 +137,7 @@ impl Tool for Pencil {
 
         self.current_polyline.push(p);
 
-        let button = self.is_mouse_down.clone().unwrap();
+        let button = self.is_mouse_down.unwrap();
         if button == InputItem::Left {
             self.buffer.clear();
             let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
@@ -163,7 +174,7 @@ impl Tool for Pencil {
 
     fn mouse_up(&mut self, xpr: &mut Xprite, _p: Vec2D) -> Option<()> {
         if self.is_mouse_down.is_none() {return Some(()); }
-        let button = self.is_mouse_down.clone().unwrap();
+        let button = self.is_mouse_down.unwrap();
         if button == InputItem::Right { return Some(()); }
 
         use self::PencilMode::*;
@@ -224,9 +235,10 @@ impl Tool for Pencil {
             "mode" => {
                 use self::PencilMode::*;
                 match PencilMode::from_str(value) {
-                    Raw             => self.mode = Raw,
-                    SortedMonotonic => self.mode = SortedMonotonic,
-                    PixelPerfect    => self.mode = PixelPerfect,
+                    Ok(Raw)             => self.mode = Raw,
+                    Ok(SortedMonotonic) => self.mode = SortedMonotonic,
+                    Ok(PixelPerfect)    => self.mode = PixelPerfect,
+                    _ => (),
                 };
             }
             "brush" => {

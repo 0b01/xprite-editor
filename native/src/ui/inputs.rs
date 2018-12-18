@@ -110,7 +110,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
             state.xpr.event(&MouseDown{ x, y, button: Left });
         } else {
             trace!("mouse left up");
-            state.xpr.event(&MouseUp{ x, y });
+            state.xpr.event(&MouseUp{ x, y, button: Right });
         }
     }
 
@@ -119,6 +119,9 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         if right {
             let (x, y) = ui.imgui().mouse_pos();
             state.xpr.event(&MouseDown{ x, y, button: Right });
+        } else {
+            trace!("mouse right up");
+            state.xpr.event(&MouseUp{ x, y, button: Right });
         }
     }
 

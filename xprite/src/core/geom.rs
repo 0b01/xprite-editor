@@ -2,7 +2,7 @@ use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
 
 /// represents a 2D vector
-#[derive(PartialEq, Debug, Copy, Clone, PartialOrd)]
+#[derive(Debug, Copy, Clone, PartialOrd)]
 pub struct Vec2D {
     pub x: f32,
     pub y: f32,
@@ -15,6 +15,13 @@ impl Ord for Vec2D {
 }
 
 impl Eq for Vec2D {}
+
+impl PartialEq for Vec2D {
+    fn eq(&self, other: &Vec2D) -> bool {
+        (self.x as i32 == other.x as i32) &&
+        (self.y as i32 == other.y as i32)
+    }
+}
 
 
 impl Hash for Vec2D {

@@ -13,6 +13,6 @@ pub fn draw_tool_panel(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     .collapsible(false)
     .resizable(false)
     .build(|| {
-        super::tools::draw(&selected, state, ui);
+        super::tools::draw(*selected, state, ui);
     })
 }

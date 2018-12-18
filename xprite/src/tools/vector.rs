@@ -9,6 +9,12 @@ pub struct Vector {
     current_polyline: Option<Polyline>,
 }
 
+impl Default for Vector {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Vector {
     pub fn new() -> Self {
         let is_mouse_down = None;
@@ -30,7 +36,7 @@ impl Vector {
 
     /// convert brush shape to actual pixel on canvas
     pub fn brush2pixs(&self, xpr: &Xprite, cursor: Vec2D, color: Color) -> Option<Pixels> {
-        let Vec2D {x, y} = xpr.canvas.shrink_size(&cursor);
+        let Vec2D {x, y} = xpr.canvas.shrink_size(cursor);
 
         let (brush_w, brush_h) = self.brush.size;
 
@@ -59,7 +65,7 @@ impl Tool for Vector {
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
         // update cursor pos
         let pixels = self.brush2pixs(xpr, p, xpr.color());
-        let point = xpr.canvas.shrink_size(&p);
+        let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel{point, color});
 
@@ -68,7 +74,7 @@ impl Tool for Vector {
         }
 
         // the rest handles when left button is pressed
-        let p = xpr.canvas.shrink_size_no_floor(&p);
+        let p = xpr.canvas.shrink_size_no_floor(p);
         self.current_polyline.as_mut()?.push(p);
 
         // let button = self.is_mouse_down.clone().unwrap();
@@ -88,7 +94,7 @@ impl Tool for Vector {
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Option<()>{
         self.is_mouse_down = Some(button);
 
-        let p = xpr.canvas.shrink_size_no_floor(&p);
+        let p = xpr.canvas.shrink_size_no_floor(p);
         self.current_polyline.as_mut()?.push(p);
         // self.pixs_buf.clear();
         // let pixels = self.brush2pixs(xpr, p, xpr.color());
@@ -104,7 +110,7 @@ impl Tool for Vector {
 
     fn mouse_up(&mut self, xpr: &mut Xprite, _p: Vec2D) -> Option<()> {
         if self.is_mouse_down.is_none() {return Some(()); }
-        let button = self.is_mouse_down.clone().unwrap();
+        let button = self.is_mouse_down.unwrap();
         if button == InputItem::Right { return Some(()); }
 
         // xpr.history.enter()?;

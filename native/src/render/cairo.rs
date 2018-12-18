@@ -42,9 +42,20 @@ impl Renderer for CairoRenderer {
 
 
     fn rect(&self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
-        self.cr.as_ref().unwrap().set_source_rgba(color[0] as f64, color[1] as f64, color[2] as f64, color[3] as f64);
-        self.cr.as_ref().unwrap().rectangle(p0[0] as f64, p0[1] as f64, (p1[0] - p0[0]) as f64, (p1[1] - p0[1]) as f64);
+        self.cr.as_ref().unwrap().set_source_rgba(
+            f64::from(color[0]),
+            f64::from(color[1]),
+            f64::from(color[2]),
+            f64::from(color[3])
+        );
+        self.cr.as_ref().unwrap().rectangle(
+            f64::from(p0[0]),
+            f64::from(p0[1]),
+            f64::from(p1[0] - p0[0]),
+            f64::from(p1[1] - p0[1])
+        );
         self.cr.as_ref().unwrap().fill();
+
 
         // let draw_list = self.ui.get_window_draw_list();
         // draw_list
@@ -96,10 +107,10 @@ impl Renderer for CairoRenderer {
 
 #[inline(always)]
 fn argb2rgba(i: u32) -> u32 {
-    ((i & 0xFF000000)      ) |
-    ((i & 0x00FF0000) >> 16) |
-    ((i & 0x0000FF00)      ) |
-    ((i & 0x000000FF) << 16)
+     (i & 0xFF00_0000)        |
+    ((i & 0x00FF_0000) >> 16) |
+     (i & 0x0000_FF00)        |
+    ((i & 0x0000_00FF) << 16)
 }
 
 impl CairoRenderer {
@@ -107,8 +118,8 @@ impl CairoRenderer {
         let w = art_w as u32;
         let h = art_h as u32;
 
-        let mut surface = ImageSurface::create(Format::ARgb32, w as i32, h as i32).expect("Cannot create surface.");
-        let cr = Context::new(&mut surface);
+        let surface = ImageSurface::create(Format::ARgb32, w as i32, h as i32).expect("Cannot create surface.");
+        let cr = Context::new(&surface);
         // cr.set_source_rgb(1.0, 0.0, 1.0);
         // cr.paint();
 
@@ -123,7 +134,7 @@ impl CairoRenderer {
     }
 
     pub fn reset(&mut self) {
-        let cr = Context::new(&mut self.surface);
+        let cr = Context::new(&self.surface);
         self.cr = Some(cr);
     }
 
