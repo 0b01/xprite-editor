@@ -12,6 +12,7 @@ use crate::tools::{
     color_picker::ColorPicker,
     eraser::Eraser,
     rect::Rect,
+    texture::Texture,
 };
 
 pub struct Toolbox {
@@ -22,6 +23,7 @@ pub struct Toolbox {
     pub color_picker:   Rc<RefCell<ColorPicker>>,
     pub eraser:         Rc<RefCell<Eraser>>,
     pub rect:           Rc<RefCell<Rect>>,
+    pub texture:        Rc<RefCell<Texture>>,
 
     pub selected:       ToolType,
 
@@ -37,11 +39,13 @@ impl Toolbox {
         let color_picker = Rc::new(RefCell::new(ColorPicker::new()));
         let eraser = Rc::new(RefCell::new(Eraser::new()));
         let rect = Rc::new(RefCell::new(Rect::new()));
+        let texture = Rc::new(RefCell::new(Texture::new()));
 
         let selected = ToolType::Pencil;
 
         let tool_stack = Vec::with_capacity(1);
         Toolbox {
+            tool_stack,
             pencil,
             line,
             paint_bucket,
@@ -50,7 +54,7 @@ impl Toolbox {
             color_picker,
             eraser,
             rect,
-            tool_stack,
+            texture,
         }
     }
 
@@ -68,6 +72,7 @@ impl Toolbox {
             ColorPicker => self.color_picker.clone(),
             Eraser => self.eraser.clone(),
             Rect | FilledRect => self.rect.clone(),
+            Texture => self.texture.clone(),
 
         }
     }

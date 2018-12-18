@@ -5,7 +5,7 @@ use dyon::{
     Type,
     embed::PopVariable
 };
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 pub struct Scripting {
 }

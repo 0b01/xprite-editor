@@ -12,7 +12,7 @@ extern crate libtexsyn;
 use xprite::prelude::*;
 
 use crate::render::cairo::CairoRenderer;
-use crate::render::imgui_cairo::ImguiCairoRenderer;
+#[allow(unused)] use crate::render::imgui_cairo::ImguiCairoRenderer;
 use crate::render::imgui::ImguiRenderer;
 
 mod hotkey;
@@ -31,7 +31,7 @@ fn main() {
     let cairo = CairoRenderer::new(100., 100.);
     let mut state = state::State::new(xpr, cairo);
 
-    render::run("Xprite", BGCOLOR, |ui, gl_ctx, textures| {
+    render::run("Xprite", BGCOLOR, |ui, _gl_ctx, _textures| {
         let mut rdr = ImguiRenderer::new(&ui);
         // let mut rdr = ImguiCairoRenderer::new(&ui, gl_ctx, textures, &state);
         ui::draw(&mut rdr, &mut state, ui)

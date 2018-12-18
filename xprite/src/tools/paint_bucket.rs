@@ -1,8 +1,6 @@
 use crate::prelude::*;
 use crate::algorithms;
 
-const MAX_CURSOR_NUM: usize = 256;
-
 #[derive(Clone)]
 pub struct PaintBucket { }
 
@@ -52,6 +50,7 @@ impl Tool for PaintBucket {
         Some(())
     }
 
+    #[allow(unused)]
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, _button: InputItem) -> Option<()> {
         // let point = xpr.canvas.shrink_size(&p);
         // let bg_color = xpr.current_layer().borrow().get_color(point);

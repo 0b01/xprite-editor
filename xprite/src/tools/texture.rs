@@ -2,7 +2,7 @@ use crate::tools::*;
 use crate::algorithms::rect::*;
 
 #[derive(Clone)]
-pub struct Rect {
+pub struct Texture {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,
     start_pos: Option<Pixel>,
@@ -11,9 +11,9 @@ pub struct Rect {
     pub filled: bool,
 }
 
-impl Rect {
+impl Texture {
     pub fn new() -> Self {
-        Rect {
+        Texture {
             is_mouse_down: None,
             cursor_pos: None,
             start_pos: None,
@@ -37,7 +37,7 @@ impl Rect {
         if let Some(mut pixs) = get_rect(self.start_pos, self.cursor_pos, self.filled) {
             xpr.history.enter()?;
             pixs.set_color(&xpr.color());
-            xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
+            // xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
         }
         Some(())
     }
@@ -45,17 +45,17 @@ impl Rect {
     fn draw_line(&self, xpr: &mut Xprite) -> Option<()> {
         if let Some(mut pixs) = get_rect(self.start_pos, self.cursor_pos, self.filled) {
             pixs.set_color(&xpr.color());
-            xpr.add_pixels(&pixs)
+            // xpr.add_pixels(&pixs)
         }
         Some(())
     }
 
 }
 
-impl Tool for Rect {
+impl Tool for Texture {
 
     fn tool_type(&self) -> ToolType {
-        ToolType::Rect
+        ToolType::Texture
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {

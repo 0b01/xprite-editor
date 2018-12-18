@@ -23,7 +23,7 @@ impl Tool for ColorPicker {
         Some(())
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
+    fn mouse_up(&mut self, _xpr: &mut Xprite, _p: Vec2D) -> Option<()> {
         Some(())
     }
 

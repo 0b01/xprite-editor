@@ -167,9 +167,9 @@ impl Pixels {
 
     pub fn as_arr(&self, w: usize, h: usize) -> Vec<Vec<Option<Pixel>>> {
         let mut arr = vec![];
-        for i in 0..h {
+        for _i in 0..h {
             let mut row = vec![];
-            for j in 0..w {
+            for _j in 0..w {
                 row.push(None);
             }
             arr.push(row);

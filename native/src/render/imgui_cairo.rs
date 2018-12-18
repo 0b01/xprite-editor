@@ -3,6 +3,7 @@ use imgui::*;
 use xprite::rendering::{Renderer, MouseCursorType};
 use cairo::{ImageSurface, Context, Format};
 
+#[allow(unused)]
 pub struct ImguiCairoRenderer<'ui> {
     w: i32,
     h: i32,
@@ -14,6 +15,7 @@ pub struct ImguiCairoRenderer<'ui> {
 
 }
 
+#[allow(unused)]
 impl<'ui> Renderer for ImguiCairoRenderer<'ui> {
 
     fn width(&self) -> u32 {
@@ -101,6 +103,7 @@ use glium::{
 
 use std::borrow::Cow;
 
+#[allow(unused)]
 impl<'ui> ImguiCairoRenderer<'ui> {
     pub fn new<F>(ui: &'ui Ui, gl_ctx: &'ui F, textures: &'ui mut Textures<Texture2d>,
         state: &State,

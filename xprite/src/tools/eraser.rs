@@ -1,6 +1,4 @@
 use crate::prelude::*;
-use crate::algorithms::sorter::sort_path;
-use crate::algorithms::pixel_perfect::pixel_perfect;
 use std::rc::Rc;
 
 pub struct Eraser {

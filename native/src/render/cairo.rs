@@ -12,6 +12,7 @@ pub struct CairoRenderer {
     image: Option<image::DynamicImage>,
 }
 
+#[allow(unused)]
 impl Renderer for CairoRenderer {
 
     fn width(&self) -> u32 {

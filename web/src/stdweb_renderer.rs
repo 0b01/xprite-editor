@@ -10,6 +10,7 @@ pub struct StdwebRenderer {
     pub ctx: CanvasRenderingContext2d,
 }
 
+#[allow(unused)]
 impl Renderer for StdwebRenderer {
     fn width(&self) -> u32 {
         self.canvas.width()

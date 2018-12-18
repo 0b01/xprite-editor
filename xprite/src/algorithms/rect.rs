@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use std::u32;
 
 /// draw the outline of a rectangle
 pub fn rect(x1: u32, y1: u32, x2:u32, y2:u32, col: Color) -> Pixels {
@@ -24,6 +25,24 @@ pub fn filled_rect(x1: u32, y1: u32, x2: u32, y2: u32, col: Color) -> Pixels {
     }
     ret
 }
+
+pub fn get_rect(start: Option<Pixel>, stop: Option<Pixel>, filled: bool) -> Option<Pixels> {
+    let start = start?;
+    let stop = stop?;
+    let x0 = start.point.x as u32;
+    let y0 = start.point.y as u32;
+    let x1 = stop.point.x as u32;
+    let y1 = stop.point.y as u32;
+    let f = if filled {filled_rect} else {rect};
+    Some(f(
+        u32::min(x0, x1),
+        u32::min(y0, y1),
+        u32::max(x0, x1),
+        u32::max(y0, y1),
+        Color::red(),
+    ))
+}
+
 
 #[cfg(test)]
 mod tests {
