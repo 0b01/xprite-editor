@@ -1,6 +1,5 @@
 extern crate fern;
-#[macro_use]
-extern crate log;
+#[macro_use] extern crate log;
 
 extern crate xprite;
 extern crate glium;
@@ -8,11 +7,13 @@ extern crate imgui;
 extern crate imgui_glium_renderer;
 
 extern crate cairo;
+extern crate libtexsyn;
 
 use xprite::prelude::*;
 
-use crate::render::imgui_cairo_renderer::ImguiCairoRenderer;
-use crate::render::imgui_renderer::ImguiRenderer;
+use crate::render::cairo::CairoRenderer;
+use crate::render::imgui_cairo::ImguiCairoRenderer;
+use crate::render::imgui::ImguiRenderer;
 
 mod hotkey;
 mod consts;
@@ -27,7 +28,8 @@ fn main() {
     init_logger();
     trace!("Starting Xprite");
     let xpr = Xprite::new(100., 100.);
-    let mut state = state::State::new(xpr);
+    let cairo = CairoRenderer::new(100., 100.);
+    let mut state = state::State::new(xpr, cairo);
 
     render::run("Xprite", BGCOLOR, |ui, gl_ctx, textures| {
         let mut rdr = ImguiRenderer::new(&ui);

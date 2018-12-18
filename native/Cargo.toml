@@ -9,6 +9,7 @@ imgui = "0.0.21"
 glium = { version = "0.22", default-features = true }
 imgui-glium-renderer = "0.0.21"
 xprite = { path = "../xprite" }
+libtexsyn = { path = "../libtexsyn" }
 
 fern = "0.5.6"
 log = { version = "0.4", features = ["std"] }

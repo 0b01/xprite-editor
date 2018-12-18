@@ -1,27 +1,24 @@
 use crate::prelude::*;
-use imgui::*;
 use xprite::rendering::{Renderer, MouseCursorType};
 use cairo::{ImageSurface, Context, Format};
+use xprite::image::{ImageBuffer, DynamicImage, Rgba};
 
-pub struct ImguiCairoRenderer<'ui> {
-    w: i32,
-    h: i32,
+pub struct CairoRenderer {
+    w: u32,
+    h: u32,
     pub surface: ImageSurface,
     pub cr: Option<Context>,
-    pub ui: &'ui Ui<'ui>,
-    pub gl_ctx: &'ui Facade,
-    pub textures: &'ui mut Textures<Texture2d>,
-
+    image: Option<image::DynamicImage>,
 }
 
-impl<'ui> Renderer for ImguiCairoRenderer<'ui> {
+impl Renderer for CairoRenderer {
 
     fn width(&self) -> u32 {
-        self.ui.get_window_size().0 as u32
+        self.w
     }
 
     fn height(&self) -> u32 {
-        self.ui.get_window_size().1 as u32
+        self.h
     }
 
     fn circ(&self, p0:[f32;2], r:f32, color:[f32;4], filled: bool) {
@@ -43,11 +40,10 @@ impl<'ui> Renderer for ImguiCairoRenderer<'ui> {
 
 
     fn rect(&self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
-
+        debug!("rect");
         self.cr.as_ref().unwrap().set_source_rgba(color[0] as f64, color[1] as f64, color[2] as f64, color[3] as f64);
         self.cr.as_ref().unwrap().rectangle(p0[0] as f64, p0[1] as f64, (p1[0] - p0[0]) as f64, (p1[1] - p0[1]) as f64);
         self.cr.as_ref().unwrap().fill();
-
 
         // let draw_list = self.ui.get_window_draw_list();
         // draw_list
@@ -73,60 +69,46 @@ impl<'ui> Renderer for ImguiCairoRenderer<'ui> {
     fn render(&mut self) {
         let w = self.width() ;
         let h = self.height();
-        if self.w != w as i32|| self.h != h as i32{ return }
+        if self.w != w || self.h != h { return }
 
+        // drop cairo context which contains a reference to surface
+        info!("{:#?}", self.cr.as_ref().unwrap().status());
         self.cr = None;
         let data = self.surface.get_data().expect("Cannot get data");
-        let image = RawImage2d {
-            data: Cow::Borrowed(&*data),
-            width: w,
-            height: h,
-            format: ClientFormat::U8U8U8U8,
-        };
-        let gl_texture = Texture2d::new(self.gl_ctx, image).unwrap();
-        let texture_id = self.textures.insert(gl_texture);
-        // println!("cairo rerender");
-        drop(data);
+        let im = DynamicImage::ImageRgba8(
+            ImageBuffer::<Rgba<u8>, Vec<u8>>::from_raw(self.w, self.h, (*data).to_vec()).unwrap()
+        );
 
-        self.ui.image(texture_id, [w as f32, h as f32]).build();
+        self.image = Some(im);
     }
-
 }
 
-use glium::{
-    backend::Facade,
-    texture::{ClientFormat, RawImage2d},
-    Texture2d,
-};
+impl CairoRenderer {
+    pub fn new(art_w: f32, art_h: f32) -> Self {
+        let w = art_w as u32;
+        let h = art_h as u32;
 
-use std::borrow::Cow;
-
-impl<'ui> ImguiCairoRenderer<'ui> {
-    pub fn new<F>(ui: &'ui Ui, gl_ctx: &'ui F, textures: &'ui mut Textures<Texture2d>,
-        state: &State,
-    ) -> Self
-    where
-        F: Facade
-    {
-        let w = state.xpr.canvas.canvas_w as i32;
-        let h = state.xpr.canvas.canvas_h as i32;
-
-        let mut surface = ImageSurface::create(Format::ARgb32, w, h).expect("Cannot create surface.");
+        let mut surface = ImageSurface::create(Format::ARgb32, w as i32, h as i32).expect("Cannot create surface.");
         let cr = Context::new(&mut surface);
-        // cr.set_source_rgb(1.0, 1.0, 1.0);
-        // cr.paint();
-
+        cr.set_source_rgb(1.0, 0.0, 1.0);
+        cr.paint();
 
         let cr = Some(cr);
-
 
         Self {
             w, h,
             surface,
-            ui,
             cr,
-            gl_ctx,
-            textures,
+            image: None,
         }
+    }
+
+    pub fn reset(&mut self) {
+        let cr = Context::new(&mut self.surface);
+        self.cr = Some(cr);
+    }
+
+    pub fn img(&self) -> Option<&DynamicImage> {
+        self.image.as_ref()
     }
 }

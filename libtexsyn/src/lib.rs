@@ -1,5 +1,4 @@
-//#[macro_use]
-//extern crate approx;
+#[macro_use] extern crate approx;
 //extern crate conv;
 #[macro_use]
 extern crate error_chain;

@@ -243,6 +243,32 @@ impl Xprite {
     }
 }
 
+impl Xprite {
+    pub fn export(&mut self, rdr: &Renderer) -> Option<()> {
+        let top = self.history.top();
+        // draw layers
+        for layer in top.layers.iter() {
+            // skip invisible layers
+            if !layer.borrow().visible {
+                continue;
+            }
+            for &Pixel{point, color } in layer.borrow().content.iter() {
+                let Vec2D {x, y} = point;
+                rdr.rect([x,y],[x+1.,y+1.],color.into(), true);
+            }
+
+        }
+
+        // draw current layer pixels
+        for &Pixel{point, color} in self.pixels().iter() {
+            let Vec2D {x, y} = point;
+            rdr.rect([x,y],[x+1.,y+1.],color.into(), true);
+        }
+
+        Some(())
+    }
+}
+
 
 /// handle events
 impl Xprite {

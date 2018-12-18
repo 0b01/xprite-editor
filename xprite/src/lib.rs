@@ -1,5 +1,6 @@
 #![feature(vec_remove_item)]
 
+extern crate image as img;
 #[macro_use] extern crate log;
 #[macro_use] extern crate dyon;
 
@@ -12,3 +13,8 @@ pub mod prelude;
 
 pub mod layer;
 pub mod rendering;
+
+
+pub mod image {
+    pub use img::*;
+}

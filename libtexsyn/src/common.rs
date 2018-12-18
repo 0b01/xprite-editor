@@ -69,16 +69,3 @@ pub fn blit_rect<I>(bottom: &mut I, top: &I, rect: &Rect, buf_coords: (u32, u32)
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::convert::TryInto;
-
-    #[test]
-    fn test_ordered_float_tryfrom() {
-        let f = 72.;
-        let of: OrderedFloat<_> = f.try_into().unwrap();
-        assert!(of.val == f);
-    }
-}
