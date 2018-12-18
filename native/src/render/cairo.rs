@@ -41,7 +41,6 @@ impl Renderer for CairoRenderer {
 
 
     fn rect(&self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
-        debug!("rect");
         self.cr.as_ref().unwrap().set_source_rgba(color[0] as f64, color[1] as f64, color[2] as f64, color[3] as f64);
         self.cr.as_ref().unwrap().rectangle(p0[0] as f64, p0[1] as f64, (p1[0] - p0[0]) as f64, (p1[1] - p0[1]) as f64);
         self.cr.as_ref().unwrap().fill();
@@ -73,7 +72,6 @@ impl Renderer for CairoRenderer {
         if self.w != w || self.h != h { return }
 
         // drop cairo context which contains a reference to surface
-        info!("{:#?}", self.cr.as_ref().unwrap().status());
         self.cr = None;
         let data = self.surface.get_data().expect("Cannot get data"); // ARGB
         let im = DynamicImage::ImageRgba8({

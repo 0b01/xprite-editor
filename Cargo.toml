@@ -5,5 +5,3 @@ members = [
     "native",
     "libtexsyn",
 ]
-
-default-run = "xprite-native"
