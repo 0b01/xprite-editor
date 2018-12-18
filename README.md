@@ -27,7 +27,8 @@ Pixel art editor with algorithmic tools.
 * [ ] Shapes - Rect
 * [ ] Erase
 * [ ] Select
-* [ ] Brush
+* [ ] Pattern Brush
+* [ ] Texture Synthesis
 * [ ] Color Picker
 * [x] Paint Bucket
 

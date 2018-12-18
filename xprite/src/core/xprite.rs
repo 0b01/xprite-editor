@@ -110,8 +110,8 @@ impl Xprite {
         self.selected_color
     }
 
-    pub fn set_color(&mut self, r:u8, g:u8, b:u8) {
-        self.selected_color = Color::new(r, g, b);
+    pub fn set_color(&mut self, color: &Color) {
+        self.selected_color = *color;
     }
 
     pub fn new_frame(&mut self) {
