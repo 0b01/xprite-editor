@@ -1,8 +1,8 @@
 pub mod layers;
 
-pub use self::layers::Layers;
-
 use crate::prelude::*;
+use crate::rendering::Renderer;
+pub use self::layers::Layers;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Layer {
@@ -45,5 +45,12 @@ impl Layer {
         self.content.iter()
             .find(|i| i.point == p)
             .map(|i| i.color)
+    }
+
+    pub fn draw(&self, rdr: &mut Renderer) {
+        for &Pixel{point, color} in self.content.iter() {
+            let Vec2D {x, y} = point;
+            rdr.rect([x,y],[x+1.,y+1.],color.into(), true);
+        }
     }
 }

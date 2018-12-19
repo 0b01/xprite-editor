@@ -1,17 +1,26 @@
 // re-exports
-pub use crate::core::toolbox::Toolbox;
-pub use crate::core::history::History;
-pub use crate::core::pixels::{Pixel, Pixels};
-pub use crate::scripting::Scripting;
-pub use crate::core::color::Color;
-pub use crate::core::input::{InputEvent, InputItem, InputState};
-pub use crate::core::brush::{Brush, BrushType};
-pub use crate::core::geom::{Vec2D, CubicBezierSegment};
-pub use crate::core::xprite::Xprite;
-pub use crate::algorithms::polyline::Polyline;
+pub use crate::core::{
+    toolbox::Toolbox,
+    history::History,
+    pixels::{Pixel, Pixels},
+    color::Color,
+    input::{InputEvent, InputItem, InputState},
+    brush::{Brush, BrushType},
+    geom::{Vec2D, CubicBezierSegment},
+    xprite::Xprite,
+};
+pub use crate::algorithms::{
+    polyline::Polyline,
+    path::Path,
+};
+pub use crate::rendering::{
+    traits::Renderer,
+    canvas::Canvas,
+    image_renderer::ImageRenderer,
+};
+
 pub use crate::tools::{Tool, ToolType};
-pub use crate::algorithms::path::Path;
-pub use crate::rendering::canvas::Canvas;
+pub use crate::scripting::Scripting;
 pub use crate::layer::{Layer, Layers};
 
 // type aliases

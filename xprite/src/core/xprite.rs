@@ -17,6 +17,8 @@ pub struct Xprite {
 
     pub scripting: Rc<RefCell<Scripting>>,
 
+    pub rdr: ImageRenderer,
+
     pub log: String,
 }
 
@@ -33,6 +35,8 @@ impl Xprite {
         let scripting = Rc::new(RefCell::new(Scripting::new()));
         let log = String::new();
 
+        let rdr = ImageRenderer::new(art_w, art_h);
+
         Xprite {
             scripting,
             last_mouse_pos: (0., 0.),
@@ -44,6 +48,7 @@ impl Xprite {
             cursor_pos,
             toolbox,
             log,
+            rdr,
         }
     }
 
@@ -240,6 +245,13 @@ impl Xprite {
 }
 
 impl Xprite {
+    pub fn layer_as_im(&mut self) -> Option<&img::DynamicImage> {
+        let top = self.history.top();
+        // draw layers
+        let layer = Rc::clone(&top.selected_layer);
+        layer.borrow().draw(&mut self.rdr);
+        Some(self.rdr.img())
+    }
     /// export pixels to an image via renderer
     pub fn export(&mut self, rdr: &mut Renderer) -> Option<()> {
         let top = self.history.top();
@@ -249,10 +261,7 @@ impl Xprite {
             if !layer.borrow().visible {
                 continue;
             }
-            for &Pixel{point, color } in layer.borrow().content.iter() {
-                let Vec2D {x, y} = point;
-                rdr.rect([x,y],[x+1.,y+1.],color.into(), true);
-            }
+            layer.borrow().draw(rdr);
         }
 /*
         // draw current layer pixels
