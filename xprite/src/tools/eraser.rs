@@ -64,12 +64,14 @@ impl Tool for Eraser {
         }
 
         self.current_polyline.push(p);
-        let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
-        self.buffer.extend(&Pixels::from_slice(&line_pixs));
-        let pixels = self.brush.to_canvas_pixels(p, xpr.color());
-        if let Some(pixels) = pixels {
-            self.buffer.extend(&pixels);
-        }
+        let line_pixs = Pixels::from_slice(&self.current_polyline.connect_with_line(&xpr)?);
+        let brushstroke = self.brush.follow_stroke(&line_pixs).unwrap();
+        self.buffer.extend(&brushstroke);
+
+        // let pixels = self.brush.to_canvas_pixels(p, xpr.color());
+        // if let Some(pixels) = pixels {
+        //     self.buffer.extend(&pixels);
+        // }
 
         self.draw(xpr)
     }

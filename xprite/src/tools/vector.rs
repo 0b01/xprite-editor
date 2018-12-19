@@ -118,21 +118,23 @@ impl Tool for Vector {
         xpr.new_frame();
 
         self.pixs_buf.clear();
-        let simple = self.current_polyline.as_ref()
+        if let Ok(simple) = self.current_polyline.as_ref()
             .ok_or("cannot borrow as mut".to_owned())?
-            .reumann_witkam(self.tolerence)?;
+            .reumann_witkam(self.tolerence) {
 
-        let (path, pixs_buf) = {
-            let path = simple.interp();
-            let mut rasterized = path.rasterize(xpr).unwrap();
-            rasterized.set_color(&Color::orange());
-            (path, rasterized)
-        };
+            let (path, pixs_buf) = {
+                let path = simple.interp();
+                let mut rasterized = path.rasterize(xpr).unwrap();
+                rasterized.set_color(&Color::orange());
+                (path, rasterized)
+            };
 
-        self.pixs_buf.extend(&pixs_buf);
-        xpr.bz_buf.extend(path.segments);
+            self.pixs_buf.extend(&pixs_buf);
+            xpr.bz_buf.extend(path.segments);
 
-        xpr.add_pixels(&self.pixs_buf);
+            xpr.add_pixels(&self.pixs_buf);
+        }
+
         Ok(())
     }
 

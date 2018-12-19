@@ -18,6 +18,7 @@ Pixel art editor with algorithmic tools.
 * [ ] Save
 * [ ] Load
 * [ ] Palette
+* [ ] Long stroke performance
 
 1. Basic tools
 

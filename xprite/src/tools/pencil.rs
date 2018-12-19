@@ -50,6 +50,7 @@ pub struct Pencil {
     pub mode: PencilMode,
     pub brush_type: BrushType,
     buffer: Pixels,
+    moved: bool,
 }
 
 impl Default for Pencil {
@@ -78,6 +79,7 @@ impl Pencil {
             brush_type,
             mode: PencilMode::PixelPerfect,
             buffer,
+            moved: false,
         }
     }
 
@@ -113,6 +115,7 @@ impl Tool for Pencil {
         if self.is_mouse_down.is_none() || pixels.is_none() {
             return self.draw(xpr);
         }
+        self.moved = true;
 
         self.current_polyline.push(p);
 
@@ -164,8 +167,9 @@ impl Tool for Pencil {
                 // noop
             }
             PixelPerfect => {
-                // if there is only one pixel in the buffer(mousedown w/o move)
-                if self.buffer.0.len() == 1 {
+                // if mousedown w/o move
+                if !self.moved {
+                    info!("mousedown w/o moving");
                     // noop
                 } else {
                     self.buffer.clear();
@@ -199,6 +203,7 @@ impl Tool for Pencil {
         self.current_polyline.clear();
         self.buffer.clear();
         self.is_mouse_down = None;
+        self.moved = false;
 
         self.draw(xpr)?;
         Ok(())
