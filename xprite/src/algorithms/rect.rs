@@ -2,7 +2,8 @@ use crate::prelude::*;
 use std::u32;
 
 /// draw the outline of a rectangle
-pub fn rect(x1: u32, y1: u32, x2:u32, y2:u32, col: Color) -> Pixels {
+pub fn rect(x1: u32, y1: u32, x2:u32, y2:u32, col: Color) -> Option<Pixels> {
+    if y2 == 0 || x2 == 0 { return None }
     let mut ret = Pixels::new();
     for i in x1..x2 {
         ret.push(pixel!(i,y1, col));
@@ -12,18 +13,18 @@ pub fn rect(x1: u32, y1: u32, x2:u32, y2:u32, col: Color) -> Pixels {
         ret.push(pixel!(x1, j, col));
         ret.push(pixel!(x2-1, j, col));
     }
-    ret
+    Some(ret)
 }
 
 /// draw a filled rectangle
-pub fn filled_rect(x1: u32, y1: u32, x2: u32, y2: u32, col: Color) -> Pixels {
+pub fn filled_rect(x1: u32, y1: u32, x2: u32, y2: u32, col: Color) -> Option<Pixels> {
     let mut ret = Pixels::new();
     for i in x1..x2 {
         for j in y1..y2 {
             ret.push(pixel!(i,j, col));
         }
     }
-    ret
+    Some(ret)
 }
 
 pub fn get_rect(start: Option<Pixel>, stop: Option<Pixel>, filled: bool) -> Option<Pixels> {
@@ -34,13 +35,13 @@ pub fn get_rect(start: Option<Pixel>, stop: Option<Pixel>, filled: bool) -> Opti
     let x1 = stop.point.x as u32;
     let y1 = stop.point.y as u32;
     let f = if filled {filled_rect} else {rect};
-    Some(f(
+    f(
         u32::min(x0, x1),
         u32::min(y0, y1),
         u32::max(x0, x1),
         u32::max(y0, y1),
         Color::red(),
-    ))
+    )
 }
 
 
@@ -60,7 +61,7 @@ mod tests {
         exp.push(pixel!(2,0, Color::red()));
         exp.push(pixel!(2,1, Color::red()));
         exp.push(pixel!(2,2, Color::red()));
-        assert_eq!(exp, rect);
+        assert_eq!(Some(exp), rect);
     }
 
     #[test]
@@ -76,6 +77,6 @@ mod tests {
         exp.push(pixel!(2,2, Color::red()));
         exp.push(pixel!(0,1, Color::red()));
         exp.push(pixel!(2,1, Color::red()));
-        assert_eq!(exp, rect);
+        assert_eq!(Some(exp), rect);
     }
 }

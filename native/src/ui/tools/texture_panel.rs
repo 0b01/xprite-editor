@@ -17,4 +17,8 @@ pub fn draw(state: &mut State, ui: &Ui) {
         .min(minimum_blocksize).max(100)
         .build();
 
+    if ui.button(im_str!("Process"), (100., 30.)) {
+        info!("Processing");
+        texture.finalize(&mut state.xpr);
+    }
 }

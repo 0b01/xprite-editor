@@ -35,6 +35,11 @@ impl Texture {
         Some(())
     }
 
+    pub fn finalize(&mut self, xpr: &mut Xprite) -> Option<()> {
+        self.finalize_line(xpr)?;
+        Some(())
+    }
+
     fn finalize_line(&mut self, xpr: &mut Xprite) -> Option<()> {
         if let Some(mut pixs) = get_rect(self.start_pos, self.cursor_pos, true) {
             xpr.history.enter()?;
