@@ -66,15 +66,17 @@ impl Texture {
         let height = xpr.canvas.art_h as u32;
         let params = QuilterParams::new((width, height), self.blocksize as u32, self.overlap as u32, None, None, l1)?;
         let mut quilter = Quilter::new(img.to_rgb(), params);
-        let res = quilter.quilt_image().unwrap();
+        let res = quilter.quilt_image()?;
         // res.save("1.png").unwrap();
         Ok(img::DynamicImage::ImageRgb8(res))
     }
 
     fn draw_line(&self, xpr: &mut Xprite) -> Result<(), String> {
-        let mut pixs = get_rect(self.start_pos, self.cursor_pos, false)?;
-        pixs.set_color(&xpr.color());
-        xpr.add_pixels(&pixs);
+        let pixs = get_rect(self.start_pos, self.cursor_pos, false);
+        if let Ok(mut pixs) = pixs {
+            pixs.set_color(&xpr.color());
+            xpr.add_pixels(&pixs);
+        }
         Ok(())
     }
 
@@ -93,7 +95,7 @@ impl Tool for Texture {
         if self.is_mouse_down.is_some() {
             self.cursor_pos = Some(Pixel {point, color});
         }
-        self.draw(xpr);
+        self.draw(xpr)?;
         Ok(())
     }
 
@@ -106,7 +108,7 @@ impl Tool for Texture {
         self.is_mouse_down = None;
         // self.start_pos = None;
 
-        self.draw(xpr);
+        self.draw(xpr)?;
         Ok(())
     }
 
@@ -121,7 +123,7 @@ impl Tool for Texture {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         xpr.new_frame();
-        self.draw_line(xpr);
+        self.draw_line(xpr)?;
         self.set_cursor(xpr);
         Ok(())
     }
@@ -132,18 +134,18 @@ impl Tool for Texture {
                 match value {
                     _ => error!("unimpl for ctrl: {}", value)
                 }
-                self.draw(xpr);
+                self.draw(xpr)?;
             }
             "shift" => {
                 match value {
                     _ => error!("unimpl for ctrl: {}", value)
                 }
-                self.draw(xpr);
+                self.draw(xpr)?;
             }
             "alt" => {
                 info!("alt pressed (unimplemented)");
             }
-            _ => info!("unimplemented option: {}", option)
+            _ => (),
         }
         Ok(())
     }

@@ -21,7 +21,7 @@ pub fn draw_toolbar(state: &mut State, ui: &Ui) {
                 ImGuiSelectableFlags::empty(),
                 (0.,0.)
             ) {
-                state.xpr.change_tool(name);
+                state.xpr.change_tool(name).unwrap();
             }
         }
     })

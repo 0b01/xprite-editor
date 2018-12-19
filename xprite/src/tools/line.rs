@@ -44,14 +44,18 @@ impl Line {
     fn finalize_line(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         if let Some(pixs) = self.get_line() {
             xpr.history.enter()?;
-            xpr.history.top().selected_layer.borrow_mut().content.extend(&Pixels::from_slice(&pixs));
+            let mut pixs = Pixels::from_slice(&pixs);
+            pixs.set_color(&xpr.color());
+            xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
         }
         Ok(())
     }
 
     fn draw_line(&self, xpr: &mut Xprite) -> Result<(), String> {
         if let Some(pixs) = self.get_line() {
-            xpr.add_pixels(&Pixels::from_slice(&pixs))
+            let mut pixs = Pixels::from_slice(&pixs);
+            pixs.set_color(&xpr.color());
+            xpr.add_pixels(&pixs);
         }
         Ok(())
     }
@@ -69,7 +73,7 @@ impl Tool for Line {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel {point, color});
-        self.draw(xpr);
+        self.draw(xpr)?;
         Ok(())
     }
 
@@ -80,7 +84,7 @@ impl Tool for Line {
         self.finalize_line(xpr)?;
         self.is_mouse_down = None;
         self.start_pos = None;
-        self.draw(xpr);
+        self.draw(xpr)?;
         Ok(())
     }
 
@@ -108,7 +112,7 @@ impl Tool for Line {
                     "false" => { self.snap = false }
                     _ => error!("unimpl for ctrl: {}", value)
                 }
-                self.draw(xpr);
+                self.draw(xpr)?;
             }
             "shift" => {
                 match value {
@@ -116,7 +120,7 @@ impl Tool for Line {
                     "false" => { self.snap = false }
                     _ => error!("unimpl for ctrl: {}", value)
                 }
-                self.draw(xpr);
+                self.draw(xpr)?;
             }
             "alt" => {
                 info!("alt pressed (unimplemented)");

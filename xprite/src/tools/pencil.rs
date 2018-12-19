@@ -5,7 +5,7 @@ use std::str::FromStr;
 
 #[derive(Eq, PartialEq, Clone, Copy)]
 pub enum PencilMode {
-    /// raw - no processing
+    /// raw - noop
     Raw,
     /// pixel perfect - nothing else
     PixelPerfect,
@@ -180,7 +180,7 @@ impl Tool for Pencil {
         use self::PencilMode::*;
         match self.mode {
             Raw => {
-                // no processing
+                // noop
             }
             PixelPerfect => {
                 // if there is only one pixel in the buffer(mousedown w/o move)
@@ -217,7 +217,7 @@ impl Tool for Pencil {
         self.buffer.clear();
         self.is_mouse_down = None;
 
-        self.draw(xpr);
+        self.draw(xpr)?;
         Ok(())
     }
 

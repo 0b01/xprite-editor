@@ -34,17 +34,19 @@ impl Rect {
     }
 
     fn finalize_rect(&mut self, xpr: &mut Xprite) -> Result<(), String> {
-        let mut pixs = get_rect(self.start_pos, self.cursor_pos, self.filled)?;
-        xpr.history.enter()?;
-        pixs.set_color(&xpr.color());
-        xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
+        if let Ok(mut pixs) = get_rect(self.start_pos, self.cursor_pos, self.filled) {
+            xpr.history.enter()?;
+            pixs.set_color(&xpr.color());
+            xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
+        }
         Ok(())
     }
 
     fn draw_rect(&self, xpr: &mut Xprite) -> Result<(), String> {
-        let mut pixs = get_rect(self.start_pos, self.cursor_pos, self.filled)?;
-        pixs.set_color(&xpr.color());
-        xpr.add_pixels(&pixs);
+        if let Ok(mut pixs) = get_rect(self.start_pos, self.cursor_pos, self.filled) {
+            pixs.set_color(&xpr.color());
+            xpr.add_pixels(&pixs);
+        }
         Ok(())
     }
 
@@ -61,7 +63,7 @@ impl Tool for Rect {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel {point, color});
-        self.draw(xpr);
+        self.draw(xpr)?;
         Ok(())
     }
 
@@ -72,7 +74,7 @@ impl Tool for Rect {
         self.finalize_rect(xpr)?;
         self.is_mouse_down = None;
         self.start_pos = None;
-        self.draw(xpr);
+        self.draw(xpr)?;
         Ok(())
     }
 
@@ -100,7 +102,7 @@ impl Tool for Rect {
                     "false" => { self.snap = false }
                     _ => error!("unimpl for ctrl: {}", value)
                 }
-                self.draw(xpr);
+                self.draw(xpr)?;
             }
             "shift" => {
                 match value {
@@ -108,12 +110,12 @@ impl Tool for Rect {
                     "false" => { self.snap = false }
                     _ => error!("unimpl for ctrl: {}", value)
                 }
-                self.draw(xpr);
+                self.draw(xpr)?;
             }
             "alt" => {
                 info!("alt pressed (unimplemented)");
             }
-            _ => info!("unimplemented option: {}", option)
+            _ => (),
         }
         Ok(())
     }

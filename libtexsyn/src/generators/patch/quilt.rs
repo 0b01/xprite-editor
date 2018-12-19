@@ -169,8 +169,13 @@ impl Quilter {
 
         // Blit the first patch
         let mut rng = thread_rng();
-        let patch_x_dist = Range::new(0u32, img_width - self.params.patch_size);  // bug!
-        let patch_y_dist = Range::new(0u32, img_height - self.params.patch_size); // bug!
+        if img_width <= self.params.patch_size  {
+            return Err("selection width is smaller than patch size".to_owned())
+        } else if img_height <= self.params.patch_size {
+            return Err("selection height is smaller than patch size".to_owned())
+        }
+        let patch_x_dist = Range::new(0u32, img_width - self.params.patch_size);
+        let patch_y_dist = Range::new(0u32, img_height - self.params.patch_size);
         blit_rect(self.buffer_opt.as_mut().unwrap(), &self.source,
                    &Rect { coords: if let Some(seed_coordinates) = self.params.seed_coords { seed_coordinates }
                                    else { (patch_x_dist.ind_sample(&mut rng), patch_y_dist.ind_sample(&mut rng)) },

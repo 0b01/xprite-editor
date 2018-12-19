@@ -81,7 +81,7 @@ impl Tool for Eraser {
 
         // if mouse is done
         if self.is_mouse_down.is_none() || pixels.is_none() {
-            return self.draw(xpr);
+            return self.draw(xpr)
         }
 
         self.current_polyline.push(p);
@@ -129,7 +129,7 @@ impl Tool for Eraser {
         self.buffer.clear();
         self.is_mouse_down = None;
 
-        self.draw(xpr);
+        self.draw(xpr)?;
         Ok(())
     }
 

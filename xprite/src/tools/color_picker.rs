@@ -19,7 +19,7 @@ impl Tool for ColorPicker {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         xpr.set_cursor(&(Pixel {point, color}).into());
-        self.draw(xpr);
+        self.draw(xpr)?;
         Ok(())
     }
 

@@ -132,7 +132,7 @@ impl Tool for Vector {
 
         self.is_mouse_down = None;
 
-        self.draw(xpr);
+        self.draw(xpr)?;
         Ok(())
     }
 

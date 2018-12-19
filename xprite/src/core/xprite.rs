@@ -2,6 +2,7 @@ use crate::prelude::*;
 use crate::rendering::Renderer;
 use std::rc::Rc;
 use std::cell::RefCell;
+use std::sync::{Arc, Mutex};
 
 pub struct Xprite {
     pub history: History,
@@ -19,7 +20,7 @@ pub struct Xprite {
 
     pub rdr: ImageRenderer,
 
-    pub log: String,
+    pub log: Arc<Mutex<String>>,
 }
 
 impl Xprite {
@@ -33,7 +34,7 @@ impl Xprite {
         let bz_buf = Vec::new();
 
         let scripting = Rc::new(RefCell::new(Scripting::new()));
-        let log = String::new();
+        let log = Arc::new(Mutex::new(String::new()));
 
         let rdr = ImageRenderer::new(art_w, art_h);
 
@@ -95,18 +96,19 @@ impl Xprite {
         current_tool.set(self, opt, val)
     }
 
-    pub fn set_option_for_tool(&mut self, name: &ToolType, opt: &str, val: &str) {
+    pub fn set_option_for_tool(&mut self, name: &ToolType, opt: &str, val: &str) -> Result<(), String>{
         let tool = self.toolbox.get(name);
-        tool.borrow_mut().set(self, opt, val);
+        tool.borrow_mut().set(self, opt, val).unwrap();
+        Ok(())
     }
 
-    pub fn change_tool(&mut self, name: &ToolType) {
+    pub fn change_tool(&mut self, name: &ToolType) -> Result<(), String> {
         self.toolbox.change_tool(name);
-        self.draw();
+        self.draw()
     }
 
-    pub fn draw(&mut self) {
-        self.toolbox.tool().borrow_mut().draw(self);
+    pub fn draw(&mut self) -> Result<(), String> {
+        self.toolbox.tool().borrow_mut().draw(self)
     }
 
     pub fn color(&self) -> Color {
@@ -302,7 +304,7 @@ impl Xprite {
         if let &InputEvent::MouseMove{x, y} = evt {
             let p = Vec2D::new(x, y);
             let tool = self.toolbox.tool();
-            tool.borrow_mut().mouse_move(self, p);
+            tool.borrow_mut().mouse_move(self, p)?;
         }
         Ok(())
     }
@@ -311,7 +313,7 @@ impl Xprite {
         if let &InputEvent::MouseUp{x, y, ..} = evt {
             let tool = self.toolbox.tool();
             let p = Vec2D::new(x, y);
-            tool.borrow_mut().mouse_up(self, p);
+            tool.borrow_mut().mouse_up(self, p)?;
         }
         Ok(())
     }
@@ -320,7 +322,7 @@ impl Xprite {
         if let &InputEvent::MouseDown{x, y, button} = evt {
             let tool = self.toolbox.tool();
             let p = Vec2D::new(x, y);
-            tool.borrow_mut().mouse_down(self, p, button);
+            tool.borrow_mut().mouse_down(self, p, button)?;
         }
         Ok(())
     }

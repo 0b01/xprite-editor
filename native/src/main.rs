@@ -17,6 +17,8 @@ use crate::render::cairo::CairoRenderer;
 use crate::render::imgui_cairo::ImguiCairoRenderer;
 use crate::render::imgui::ImguiRenderer;
 
+use std::sync::{Arc, Mutex};
+
 mod hotkey;
 mod consts;
 mod render;
@@ -62,11 +64,12 @@ fn run_script(fname: &str) {
 
 
 fn run_ui() {
-    init_logger();
     trace!("Starting Xprite");
     let xpr = Xprite::new(100., 100.);
+    init_logger(Arc::clone(&xpr.log));
     let cairo = CairoRenderer::new(100., 100.);
     let mut state = state::State::new(xpr, cairo);
+
 
     render::run("Xprite", BGCOLOR, |ui, gl_ctx, textures| {
         let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures);
@@ -75,7 +78,7 @@ fn run_ui() {
     });
 }
 
-fn init_logger() {
+fn init_logger(console_logger: Arc<Mutex<String>>) {
     fern::Dispatch::new()
         // Perform allocation-free log formatting
         .format(|out, message, record| {
@@ -93,6 +96,11 @@ fn init_logger() {
         .level_for("hyper", log::LevelFilter::Info)
         // Output to stdout, files, and other Dispatch configurations
         .chain(std::io::stdout())
+        .chain(fern::Output::call(move |record| {
+            console_logger
+                .lock().unwrap()
+                .push_str(&format!("{}\n", record.args()));
+        }))
         // .chain(fern::log_file("output.log")?)
         // Apply globally
         .apply().unwrap();

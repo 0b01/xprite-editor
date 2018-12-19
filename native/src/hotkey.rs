@@ -20,7 +20,7 @@ impl Bind {
         match self {
             Redo => state.xpr.redo(),
             Undo => state.xpr.undo(),
-            PushTool(tool) => state.xpr.change_tool(&tool),
+            PushTool(tool) => state.xpr.change_tool(&tool)?,
             PopTool => state.xpr.toolbox.pop_tool(),
             ToggleConsole => {state.show_console = !state.show_console;}
             Save => state.save(),
@@ -33,7 +33,7 @@ impl Bind {
                 state.xpr.execute_script(&path).unwrap_or_else(
                     |msg| {
                         error!("{}", msg);
-                        state.xpr.log.push_str(&msg);
+                        state.xpr.log.lock().unwrap().push_str(&msg);
                     }
                 );
             }
@@ -136,7 +136,7 @@ impl HotkeyController {
             .get(&action)
             .cloned()
             .unwrap_or_else( || {
-                error!("unmapped action: {:?}", action);
+                trace!("unmapped action: {:?}", action);
                 Bind::Unmapped
             })
     }
