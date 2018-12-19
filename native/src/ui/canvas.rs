@@ -37,8 +37,8 @@ pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
             //   .max(50.)
             //   .speed(0.1)
             //   .build();
-            // checkbox for show grid
 
+            // checkbox for show grid
             ui.checkbox(im_str!("grid"), &mut state.xpr.canvas.show_grid);
             ui.text(
                 im_str!("{}, {}",

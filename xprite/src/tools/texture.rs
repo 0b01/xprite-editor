@@ -10,18 +10,18 @@ pub struct Texture {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,
     start_pos: Option<Pixel>,
-    snap: bool,
-    is_snap_45: bool,
+    pub blocksize: i32,
+    pub overlap: i32,
 }
 
 impl Texture {
     pub fn new() -> Self {
         Texture {
             is_mouse_down: None,
-            cursor_pos: None,
             start_pos: None,
-            snap: false,
-            is_snap_45: false,
+            cursor_pos: None,
+            blocksize: 12,
+            overlap: 6,
         }
     }
 
@@ -54,14 +54,12 @@ impl Texture {
             };
             let img = intersection.as_image(x, y, origin);
 
-            let blocksize = 12;
-            let overlap = 6;
             let width = xpr.canvas.art_w as u32;
             let height = xpr.canvas.art_h as u32;
-            let params = QuilterParams::new((width, height), blocksize, overlap, None, None, l1).unwrap();
+            let params = QuilterParams::new((width, height), self.blocksize as u32, self.overlap as u32, None, None, l1).unwrap();
             let mut quilter = Quilter::new(img.to_rgb(), params);
             let res = quilter.quilt_image().unwrap();
-            res.save("test.png").unwrap();
+            res.save("1.png").unwrap();
             // xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
         }
         Some(())
@@ -87,7 +85,9 @@ impl Tool for Texture {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.cursor_pos = Some(Pixel {point, color});
+        if self.is_mouse_down.is_some() {
+            self.cursor_pos = Some(Pixel {point, color});
+        }
         self.draw(xpr);
         Some(())
     }
@@ -96,9 +96,11 @@ impl Tool for Texture {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel {point, color});
-        self.finalize_line(xpr)?;
+        // self.finalize_line(xpr)?;
+
         self.is_mouse_down = None;
-        self.start_pos = None;
+        // self.start_pos = None;
+
         self.draw(xpr);
         Some(())
     }
@@ -123,16 +125,12 @@ impl Tool for Texture {
         match option {
             "ctrl" => {
                 match value {
-                    "true" => { self.snap = true; self.is_snap_45 = true }
-                    "false" => { self.snap = false }
                     _ => error!("unimpl for ctrl: {}", value)
                 }
                 self.draw(xpr);
             }
             "shift" => {
                 match value {
-                    "true" => { self.snap = true; self.is_snap_45 = false }
-                    "false" => { self.snap = false }
                     _ => error!("unimpl for ctrl: {}", value)
                 }
                 self.draw(xpr);
