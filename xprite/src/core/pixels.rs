@@ -91,6 +91,11 @@ impl Pixels {
         self.0 = self.0.sub(&other.0)
     }
 
+    pub fn intersection(&mut self, other: &Pixels) -> Pixels {
+        let common: Vec<_> = self.0.intersection(&other.0).cloned().collect();
+        Pixels::from_slice(&common)
+    }
+
     pub fn push(&mut self, px: Pixel) {
         if !self.0.contains(&px) {
             self.0.insert(px);
@@ -185,6 +190,15 @@ impl Pixels {
     pub fn len(&self) -> usize {
         self.0.len()
     }
+
+    pub fn as_image(&self, w: f32, h: f32, origin: (f32, f32)) -> img::DynamicImage {
+        let mut rdr = ImageRenderer::new(w, h);
+        for pix in &self.0 {
+            let Pixel{point:Vec2D{x,y}, color} = pix;
+            rdr.rect([*x - origin.0,*y - origin.1], [0.,0.,], (*color).into(), true);
+        }
+        rdr.image
+    }
 }
 
 
@@ -223,5 +237,34 @@ mod tests {
         expected.insert(pixel!(0.,0., Color::red()));
         expected.insert(pixel!(0.,1., Color::blue()));
         assert_eq!(expected, v1.0);
+    }
+
+    #[test]
+    fn test_sub() {
+        use super::*;
+        let mut v1 = Pixels::from_slice(&vec![
+            pixel!(0.,0., Color::red()),
+            pixel!(0.,1., Color::red())
+        ]);
+        v1.sub(&Pixels::from_slice(&vec![
+            pixel!(0.,1., Color::blue())
+        ]));
+        assert_eq!(Pixels::from_slice(&vec![pixel!(0.,0., Color::red())]), v1);
+    }
+
+
+    #[test]
+    fn test_intersection() {
+        use super::*;
+        let mut v1 = Pixels::from_slice(&vec![
+            pixel!(0.,0., Color::red()),
+            pixel!(0.,1., Color::red())
+        ]);
+        let intersection = v1.intersection(&Pixels::from_slice(&vec![
+            pixel!(0.,1., Color::blue())
+        ]));
+        assert_eq!(Pixels::from_slice(&vec![
+            pixel!(0.,1., Color::red())
+        ]), intersection);
     }
 }

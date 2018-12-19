@@ -7,6 +7,7 @@ extern crate image as img;
 #[macro_use] extern crate log;
 #[macro_use] extern crate dyon;
 extern crate indexmap;
+extern crate libtexsyn;
 
 #[macro_use] pub mod core;
 pub mod algorithms;

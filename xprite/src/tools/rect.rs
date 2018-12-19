@@ -33,7 +33,7 @@ impl Rect {
         Some(())
     }
 
-    fn finalize_line(&mut self, xpr: &mut Xprite) -> Option<()> {
+    fn finalize_rect(&mut self, xpr: &mut Xprite) -> Option<()> {
         if let Some(mut pixs) = get_rect(self.start_pos, self.cursor_pos, self.filled) {
             xpr.history.enter()?;
             pixs.set_color(&xpr.color());
@@ -42,7 +42,7 @@ impl Rect {
         Some(())
     }
 
-    fn draw_line(&self, xpr: &mut Xprite) -> Option<()> {
+    fn draw_rect(&self, xpr: &mut Xprite) -> Option<()> {
         if let Some(mut pixs) = get_rect(self.start_pos, self.cursor_pos, self.filled) {
             pixs.set_color(&xpr.color());
             xpr.add_pixels(&pixs)
@@ -71,7 +71,7 @@ impl Tool for Rect {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel {point, color});
-        self.finalize_line(xpr)?;
+        self.finalize_rect(xpr)?;
         self.is_mouse_down = None;
         self.start_pos = None;
         self.draw(xpr);
@@ -89,7 +89,7 @@ impl Tool for Rect {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Option<()> {
         xpr.new_frame();
-        self.draw_line(xpr);
+        self.draw_rect(xpr);
         self.set_cursor(xpr);
         Some(())
     }

@@ -9,7 +9,6 @@ imgui = "0.0.21"
 glium = { version = "0.22", default-features = true }
 imgui-glium-renderer = "0.0.21"
 xprite = { path = "../xprite" }
-libtexsyn = { path = "../libtexsyn" }
 
 # cmdline
 clap = "2.32.0"

@@ -16,7 +16,7 @@ pub use crate::algorithms::{
 pub use crate::rendering::{
     traits::Renderer,
     canvas::Canvas,
-    image_renderer::ImageRenderer,
+    image_renderer::{ImageRenderer, save_img},
 };
 
 pub use crate::tools::{Tool, ToolType};

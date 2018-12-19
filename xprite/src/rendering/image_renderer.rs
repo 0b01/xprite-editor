@@ -6,7 +6,7 @@ use img::GenericImage;
 pub struct ImageRenderer {
     w: u32,
     h: u32,
-    image: image::DynamicImage,
+    pub image: image::DynamicImage,
 }
 
 #[allow(unused)]

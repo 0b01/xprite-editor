@@ -10,7 +10,6 @@ extern crate clap;
 extern crate imgui_glium_renderer;
 
 extern crate cairo;
-extern crate libtexsyn;
 
 use xprite::prelude::*;
 

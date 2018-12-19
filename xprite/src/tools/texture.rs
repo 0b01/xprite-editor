@@ -1,5 +1,9 @@
 use crate::tools::*;
 use crate::algorithms::rect::*;
+use libtexsyn::{
+    distance::l1,
+    generators::patch::{Quilter, QuilterParams},
+};
 
 #[derive(Clone, Default)]
 pub struct Texture {
@@ -8,7 +12,6 @@ pub struct Texture {
     start_pos: Option<Pixel>,
     snap: bool,
     is_snap_45: bool,
-    pub filled: bool,
 }
 
 impl Texture {
@@ -19,7 +22,6 @@ impl Texture {
             start_pos: None,
             snap: false,
             is_snap_45: false,
-            filled: false,
         }
     }
 
@@ -34,18 +36,41 @@ impl Texture {
     }
 
     fn finalize_line(&mut self, xpr: &mut Xprite) -> Option<()> {
-        if let Some(mut pixs) = get_rect(self.start_pos, self.cursor_pos, self.filled) {
+        if let Some(mut pixs) = get_rect(self.start_pos, self.cursor_pos, true) {
             xpr.history.enter()?;
             pixs.set_color(&xpr.color());
+            let content = &mut xpr.history.top().selected_layer.borrow_mut().content;
+            let intersection = content.intersection(&pixs);
+            let (x,y, origin) = {
+                let x0 = self.start_pos.unwrap().point.x;
+                let y0 = self.start_pos.unwrap().point.y;
+                let x1 = self.cursor_pos.unwrap().point.x;
+                let y1 = self.cursor_pos.unwrap().point.y;
+                (
+                    (x1-x0).abs(),
+                    (y1-y0).abs(),
+                    (f32::min(x0, x1), f32::min(y0,y1))
+                )
+            };
+            let img = intersection.as_image(x, y, origin);
+
+            let blocksize = 12;
+            let overlap = 6;
+            let width = xpr.canvas.art_w as u32;
+            let height = xpr.canvas.art_h as u32;
+            let params = QuilterParams::new((width, height), blocksize, overlap, None, None, l1).unwrap();
+            let mut quilter = Quilter::new(img.to_rgb(), params);
+            let res = quilter.quilt_image().unwrap();
+            res.save("test.png").unwrap();
             // xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
         }
         Some(())
     }
 
     fn draw_line(&self, xpr: &mut Xprite) -> Option<()> {
-        if let Some(mut pixs) = get_rect(self.start_pos, self.cursor_pos, self.filled) {
+        if let Some(mut pixs) = get_rect(self.start_pos, self.cursor_pos, false) {
             pixs.set_color(&xpr.color());
-            // xpr.add_pixels(&pixs)
+            xpr.add_pixels(&pixs)
         }
         Some(())
     }
