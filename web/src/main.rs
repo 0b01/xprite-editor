@@ -30,7 +30,7 @@ fn main() {
     let mut rdr = StdwebRenderer::new("#canvas");
     // xprite.borrow_mut().init(renderer);
 
-    xprite.borrow_mut().draw();
+    xprite.borrow_mut().draw().unwrap();
     xprite.borrow_mut().render(&mut rdr);
 
     let doc = stdweb::web::document();
@@ -75,7 +75,7 @@ fn main() {
                 y: event.client_y() as f32 - rect.get_y() as f32,
                 button: InputItem::Left, // XXX:
             }
-        );
+        ).unwrap();
     });
 
     let xprite_clone = xprite.clone();
@@ -87,7 +87,7 @@ fn main() {
                 x: event.client_x() as f32 - rect.get_x() as f32,
                 y: event.client_y() as f32 - rect.get_y() as f32,
             }
-        );
+        ).unwrap();
     });
 
 
@@ -106,7 +106,7 @@ fn main() {
                 y: event.client_y() as f32 - rect.get_y() as f32,
                 button,
             }
-        );
+        ).unwrap();
     });
 
     // init_js_bindings(&xprite);

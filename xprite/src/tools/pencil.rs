@@ -94,27 +94,6 @@ impl Pencil {
             xpr.set_cursor(cursor);
         })
     }
-
-    /// convert brush shape to actual pixel on canvas
-    pub fn brush2pixs(&self, xpr: &Xprite, cursor: Vec2D, color: Color) -> Option<Pixels> {
-        let Vec2D {x, y} = xpr.canvas.shrink_size(cursor);
-
-        let (brush_w, brush_h) = self.brush.size;
-
-        if (x + brush_w) >= xpr.canvas.art_w || (y + brush_h) >= xpr.canvas.art_h {
-            None
-        } else {
-            let (offset_x, offset_y) = self.brush.offset;
-            let ret: Vec<Pixel> = self.brush.shape.iter().map(
-                |Pixel {point,..}| Pixel {
-                    point: Vec2D::new(point.x+x + offset_x, point.y+y + offset_y),
-                    color: color,
-                }
-            ).collect();
-            Some(Pixels::from_slice(&ret))
-        }
-    }
-
 }
 
 impl Tool for Pencil {
@@ -124,7 +103,7 @@ impl Tool for Pencil {
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
-        let pixels = self.brush2pixs(xpr, p, xpr.color());
+        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         self.cursor = pixels.clone();
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
@@ -141,12 +120,13 @@ impl Tool for Pencil {
         if button == InputItem::Left {
             self.buffer.clear();
             let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
-            let mut pixs = if self.mode != PencilMode::Raw {
+            let pixs = if self.mode != PencilMode::Raw {
                 let perfect = pixel_perfect(&line_pixs);
                 Pixels::from_slice(&perfect)
             } else {
                 Pixels::from_slice(&line_pixs)
             };
+            let mut pixs = self.brush.follow_stroke(&pixs).unwrap();
             pixs.with_color(&xpr.color());
             self.buffer.extend(&pixs);
         } else if button == InputItem::Right {
@@ -161,7 +141,8 @@ impl Tool for Pencil {
 
         self.current_polyline.push(p);
         self.buffer.clear();
-        let pixels = self.brush2pixs(xpr, p, xpr.color());
+        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
+        // TODO:
         if let Some(pixels) = pixels {
             if button == InputItem::Left {
                 self.buffer.extend(&pixels);
@@ -191,7 +172,8 @@ impl Tool for Pencil {
                     let points = self.current_polyline.connect_with_line(xpr)?;
                     let perfect = &pixel_perfect(&points);
                     let pixs = Pixels::from_slice(&perfect);
-                    self.buffer.extend(&pixs);
+                    let path = self.brush.follow_stroke(&pixs).unwrap();
+                    self.buffer.extend(&path);
                 }
             }
             SortedMonotonic => {
@@ -200,7 +182,8 @@ impl Tool for Pencil {
                 let mut perfect = pixel_perfect(&points);
                 let sorted = sort_path(&mut perfect)?;
                 let pixs = Pixels::from_slice(&sorted);
-                self.buffer.extend(&pixs);
+                let path = self.brush.follow_stroke(&pixs).unwrap();
+                self.buffer.extend(&path);
             }
         }
 

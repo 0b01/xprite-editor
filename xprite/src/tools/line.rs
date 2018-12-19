@@ -99,7 +99,7 @@ impl Tool for Line {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         xpr.new_frame();
-        self.draw_line(xpr);
+        self.draw_line(xpr).unwrap();
         self.set_cursor(xpr);
         Ok(())
     }

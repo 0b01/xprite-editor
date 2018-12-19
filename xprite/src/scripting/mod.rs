@@ -56,7 +56,7 @@ impl Scripting {
                     let color : [f32; 4] = color.into();
                     buf.push(pixel!(pos[0], pos[1], color.into()));
                 }
-                xpr.history.enter();
+                xpr.history.enter()?;
                 xpr.history.top_mut().selected_layer.borrow_mut().content.clear();
                 xpr.history.top_mut().selected_layer.borrow_mut().content.extend(&buf);
 

@@ -14,7 +14,7 @@ extern crate cairo;
 use xprite::prelude::*;
 
 use crate::render::cairo::CairoRenderer;
-use crate::render::imgui_cairo::ImguiCairoRenderer;
+// use crate::render::imgui_cairo::ImguiCairoRenderer;
 use crate::render::imgui::ImguiRenderer;
 
 use std::sync::{Arc, Mutex};

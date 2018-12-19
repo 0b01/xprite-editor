@@ -21,7 +21,7 @@ impl BrushType {
 
 pub struct Brush {
     pub shape: PixelOffsets,
-    pub size: (f32, f32),
+    pub bb: (f32, f32),
     pub offset: (f32, f32),
 }
 
@@ -32,7 +32,7 @@ impl Brush {
 
         Self {
             shape: pxs,
-            size: (1., 1.),
+            bb: (1., 1.),
             offset: (0., 0.),
         }
     }
@@ -47,8 +47,31 @@ impl Brush {
 
         Self {
             shape: pxs,
-            size: (3., 3.),
+            bb: (3., 3.),
             offset: (-1., -1.),
         }
+    }
+
+    pub fn follow_stroke(&self, stroke: &Pixels) -> Option<Pixels> {
+        let mut ret = Pixels::new();
+        for Pixel{point, ..} in &stroke.0 {
+            if let Some(pixs) = self.to_canvas_pixels(*point, Color::red()) {
+                ret.extend(&pixs);
+            }
+        }
+        return Some(ret)
+    }
+
+    /// convert brush shape to actual pixel on canvas
+    pub fn to_canvas_pixels(&self, cursor: Vec2D, color: Color) -> Option<Pixels> {
+        let Vec2D {x, y} = cursor;
+        let (offset_x, offset_y) = self.offset;
+        let ret: Vec<Pixel> = self.shape.iter().map(
+            |Pixel {point,..}| Pixel {
+                point: Vec2D::new(point.x+x + offset_x, point.y+y + offset_y),
+                color: color,
+            }
+        ).collect();
+        Some(Pixels::from_slice(&ret))
     }
 }

@@ -89,7 +89,7 @@ impl Tool for Rect {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         xpr.new_frame();
-        self.draw_rect(xpr);
+        self.draw_rect(xpr).unwrap();
         self.set_cursor(xpr);
         Ok(())
     }

@@ -32,28 +32,6 @@ impl Vector {
             tolerence: 1.,
         }
     }
-
-
-    /// convert brush shape to actual pixel on canvas
-    pub fn brush2pixs(&self, xpr: &Xprite, cursor: Vec2D, color: Color) -> Option<Pixels> {
-        let Vec2D {x, y} = xpr.canvas.shrink_size(cursor);
-
-        let (brush_w, brush_h) = self.brush.size;
-
-        if (x + brush_w) >= xpr.canvas.art_w || (y + brush_h) >= xpr.canvas.art_h {
-            None
-        } else {
-            let (offset_x, offset_y) = self.brush.offset;
-            let ret: Vec<Pixel> = self.brush.shape.iter().map(
-                |Pixel {point,..}| Pixel {
-                    point: Vec2D::new(point.x+x + offset_x, point.y+y + offset_y),
-                    color: color,
-                }
-            ).collect();
-            Some(Pixels::from_slice(&ret))
-        }
-    }
-
 }
 
 impl Tool for Vector {
@@ -64,7 +42,7 @@ impl Tool for Vector {
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
         // update cursor pos
-        let pixels = self.brush2pixs(xpr, p, xpr.color());
+        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel{point, color});
@@ -97,7 +75,7 @@ impl Tool for Vector {
         let p = xpr.canvas.shrink_size_no_floor(p);
         self.current_polyline.as_mut().ok_or("cannot borrow as mut".to_owned())?.push(p);
         // self.pixs_buf.clear();
-        // let pixels = self.brush2pixs(xpr, p, xpr.color());
+        // let pixels = self.to_canvas_pixels(xpr, xpr.canvas.shrink_size(p), xpr.color());
         // if let Some(pixels) = pixels {
         //     if button == InputItem::Left {
         //         self.pixs_buf.extend(&pixels);
