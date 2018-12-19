@@ -69,14 +69,14 @@ impl Canvas {
         self.canvas_h = canvas_h;
     }
 
-    pub fn draw_circle(&self, rdr: &Renderer, p0: Vec2D, radius: f32, color: [f32;4], filled: bool) {
+    pub fn draw_circle(&self, rdr: &mut Renderer, p0: Vec2D, radius: f32, color: [f32;4], filled: bool) {
         let p0 = self.to_cli(p0).into();
         let rad = self.scale * radius;
         rdr.circ(p0, rad, color, filled);
     }
 
     pub fn draw_bezier(&self,
-                       rdr: &Renderer,
+                       rdr: &mut Renderer,
                        from: Vec2D,
                        ctrl1:Vec2D,
                        ctrl2: Vec2D,
@@ -113,7 +113,7 @@ impl Canvas {
         && mouse.1 > p0.1 - rad
     }
 
-    pub fn draw_pixel(&self, rdr: &Renderer, x: f32, y: f32, color: [f32;4], filled: bool) {
+    pub fn draw_pixel(&self, rdr: &mut Renderer, x: f32, y: f32, color: [f32;4], filled: bool) {
         let o = self.origin();
         if x >= self.art_w { return; }
         if y >= self.art_h { return; }
@@ -136,7 +136,7 @@ impl Canvas {
         )
     }
 
-    pub fn draw_canvas(&self, rdr: &Renderer) {
+    pub fn draw_canvas(&self, rdr: &mut Renderer) {
         let o = self.origin();
         rdr.rect(
             [o.0, o.1],
@@ -149,7 +149,7 @@ impl Canvas {
         );
     }
 
-    pub fn draw_grid(&self, rdr: &Renderer) {
+    pub fn draw_grid(&self, rdr: &mut Renderer) {
         if !self.show_grid { return }
         let o = self.origin();
 
@@ -175,7 +175,7 @@ impl Canvas {
         }
     }
 
-    pub fn draw_line(&self, rdr: &Renderer, p0: Vec2D, p1: Vec2D, c:[f32;4]) {
+    pub fn draw_line(&self, rdr: &mut Renderer, p0: Vec2D, p1: Vec2D, c:[f32;4]) {
         let p0 = self.to_cli(p0).into();
         let p1 = self.to_cli(p1).into();
 

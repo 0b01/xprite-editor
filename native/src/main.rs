@@ -56,8 +56,7 @@ fn run_script(fname: &str) {
     let xpr = Xprite::new(100., 100.);
     let cairo = CairoRenderer::new(100., 100.);
     let mut state = state::State::new(xpr, cairo);
-
-    // state.script_fname = Some(fname.to_owned());
+    state.script_fname = Some(fname.to_owned());
     state.xpr.execute_script(fname).unwrap();
     state.save()
 }

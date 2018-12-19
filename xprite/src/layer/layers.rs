@@ -1,10 +1,7 @@
+use crate::prelude::*;
+use std::cell::{Ref, RefMut};
 use std::rc::Rc;
 use std::cell::RefCell;
-// use std::slice::{Iter, IterMut};
-
-use std::cell::{Ref, RefMut};
-
-use crate::prelude::*;
 
 #[derive(Debug)]
 pub struct Layers {
@@ -15,21 +12,6 @@ pub struct Layers {
 impl Default for Layers {
     fn default() -> Self {
         Self::new()
-    }
-}
-
-impl Layers {
-    pub fn deepcopy(&self) -> Option<Layers> {
-        let layers: Vec<_> = self.layers.iter().map(|i|
-            Rc::new(RefCell::new(i.borrow().clone()))
-        ).collect();
-
-        let selected_layer = Layers::_find(&layers, &self.selected_layer)?;
-
-        Some(Self {
-            layers,
-            selected_layer,
-        })
     }
 }
 
@@ -62,6 +44,16 @@ impl Layers {
         Some(new)
     }
 
+    pub fn deepcopy(&self) -> Option<Layers> {
+        let layers: Vec<_> = self.layers.iter().map(|i|
+            Rc::new(RefCell::new(i.borrow().clone()))
+        ).collect();
+        let selected_layer = Layers::_find(&layers, &self.selected_layer)?;
+        Some(Self {
+            layers,
+            selected_layer,
+        })
+    }
 
     pub fn add(&mut self, name: Option<&str>) {
         let name = name

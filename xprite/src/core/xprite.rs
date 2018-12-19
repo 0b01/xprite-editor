@@ -1,5 +1,7 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
+use std::rc::Rc;
+use std::cell::RefCell;
 
 pub struct Xprite {
     pub history: History,
@@ -118,19 +120,17 @@ impl Xprite {
     pub fn set_cursor(&mut self, pos: &Pixels) {
         self.cursor_pos = pos.clone();
     }
-
 }
+
 impl Xprite {
     pub fn execute_script(&mut self, path: &str) -> Result<(), String> {
         let s = Rc::clone(&self.scripting);
         let mut scripting = s.borrow_mut();
-        scripting.execute(self, path)
+        scripting.fname = Some(path.to_owned());
+        scripting.execute(self)
     }
 }
 
-
-use std::rc::Rc;
-use std::cell::RefCell;
 
 impl Xprite {
 
@@ -169,7 +169,7 @@ impl Xprite {
 
 impl Xprite {
     /// render to canvas
-    pub fn render(&self, rdr: &Renderer) {
+    pub fn render(&self, rdr: &mut Renderer) {
         self.canvas.draw_canvas(rdr);
         self.canvas.draw_grid(rdr);
 
@@ -240,7 +240,8 @@ impl Xprite {
 }
 
 impl Xprite {
-    pub fn export(&mut self, rdr: &Renderer) -> Option<()> {
+    /// export pixels to an image via renderer
+    pub fn export(&mut self, rdr: &mut Renderer) -> Option<()> {
         let top = self.history.top();
         // draw layers
         for layer in top.layers.iter() {
@@ -252,15 +253,14 @@ impl Xprite {
                 let Vec2D {x, y} = point;
                 rdr.rect([x,y],[x+1.,y+1.],color.into(), true);
             }
-
         }
-
+/*
         // draw current layer pixels
         for &Pixel{point, color} in self.pixels().iter() {
             let Vec2D {x, y} = point;
             rdr.rect([x,y],[x+1.,y+1.],color.into(), true);
         }
-
+*/
         Some(())
     }
 }

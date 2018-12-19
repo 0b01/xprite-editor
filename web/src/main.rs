@@ -27,11 +27,11 @@ fn main() {
     stdweb::initialize();
 
     let xprite = Rc::new(RefCell::new(Xprite::new(200., 200.)));
-    let rdr = StdwebRenderer::new("#canvas");
+    let mut rdr = StdwebRenderer::new("#canvas");
     // xprite.borrow_mut().init(renderer);
 
     xprite.borrow_mut().draw();
-    xprite.borrow_mut().render(&rdr);
+    xprite.borrow_mut().render(&mut rdr);
 
     let doc = stdweb::web::document();
 

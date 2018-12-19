@@ -26,7 +26,7 @@ impl State {
     }
 
     pub fn save(&mut self) {
-        self.xpr.export(&self.cairo);
+        self.xpr.export(&mut self.cairo);
         self.cairo.render();
         if let Some(im) = self.cairo.img() {
             let img_path = "1.png";

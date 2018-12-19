@@ -19,7 +19,7 @@ impl Renderer for StdwebRenderer {
     fn height(&self) -> u32 {
         self.canvas.height()
     }
-    fn rect(&self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
+    fn rect(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
         console!(log, format!("{:#?}, {:#?}", p0, color));
         let a = f64::from(p0[0]); let b = f64::from(p0[1]);
         let c = f64::from(p1[0]) - a; let d = f64::from(p1[1]) - a;
@@ -36,9 +36,9 @@ impl Renderer for StdwebRenderer {
             self.ctx.rect(a,b,c,d);
         }
     }
-    fn circ(&self, p0:[f32;2], r:f32, color:[f32;4], filled: bool) {}
-    fn line(&self, p0:[f32;2], p1:[f32;2], color:[f32;4]) {}
-    fn bezier(&self, p0:[f32;2], cp1:[f32;2], cp2: [f32;2], p1:[f32;2],
+    fn circ(&mut self, p0:[f32;2], r:f32, color:[f32;4], filled: bool) {}
+    fn line(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4]) {}
+    fn bezier(&mut self, p0:[f32;2], cp1:[f32;2], cp2: [f32;2], p1:[f32;2],
         color:[f32;4], thickness: f32) {}
 }
 

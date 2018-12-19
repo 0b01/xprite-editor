@@ -8,14 +8,18 @@ use dyon::{
 use std::sync::Arc;
 
 #[derive(Default)]
-pub struct Scripting { }
+pub struct Scripting {
+    pub fname: Option<String>,
+}
 
 impl Scripting {
     pub fn new() -> Self {
-        Self{}
+        Self {
+            fname: None,
+        }
     }
 
-    pub fn execute(&mut self, xpr: &mut Xprite, filepath: &str) -> Result<(), String> {
+    pub fn execute(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         let mut module = Module::new();
         let ty_xpr = Type::AdHoc(Arc::new("XprDrawList".into()), Box::new(Type::Any));
         module.add(Arc::new("xpr_new".into()), new_xpr_state, Dfn{
@@ -33,7 +37,12 @@ impl Scripting {
             return Err(msg);
         }
 
-        if let Err(msg) = load(filepath, &mut module) {
+        if self.fname.is_none() {
+            return Err("Fname is not supplied".to_owned());
+        }
+        let fname = self.fname.as_ref().unwrap();
+
+        if let Err(msg) = load(fname, &mut module) {
             return Err(msg);
         }
 
@@ -83,7 +92,7 @@ mod tests {
     fn test_script_execute() {
         let mut xpr = Xprite::new(100., 100.);
         let mut sc = Scripting::new();
-        let path = "/home/g/Desktop/xprite/scripts/render.dyon";
-        sc.execute(&mut xpr, path).unwrap();
+        sc.fname = Some("/home/g/Desktop/xprite/scripts/render.dyon".to_owned());
+        sc.execute(&mut xpr).unwrap();
     }
 }
