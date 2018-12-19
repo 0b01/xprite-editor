@@ -9,6 +9,7 @@ pub struct State {
     pub hotkeys: HotkeyController,
     pub inputs: InputState,
     pub cairo: CairoRenderer,
+    pub script_fname: Option<String>
 }
 
 impl State {
@@ -20,6 +21,7 @@ impl State {
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
             cairo,
+            script_fname: None,
         }
     }
 

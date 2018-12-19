@@ -25,8 +25,12 @@ impl Bind {
             ToggleConsole => {state.show_console = !state.show_console;}
             Save => state.save(),
             RunScript => {
-                let path = "/home/g/Desktop/xprite/scripts/render.dyon";
-                state.xpr.execute_script(path).unwrap_or_else(
+                let path = state.script_fname
+                    .clone()
+                    .unwrap_or(
+                        "/home/g/Desktop/xprite/scripts/render.dyon".to_owned()
+                    );
+                state.xpr.execute_script(&path).unwrap_or_else(
                     |msg| {
                         error!("{}", msg);
                         state.xpr.log.push_str(&msg);

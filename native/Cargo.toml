@@ -11,8 +11,12 @@ imgui-glium-renderer = "0.0.21"
 xprite = { path = "../xprite" }
 libtexsyn = { path = "../libtexsyn" }
 
+# cmdline
+clap = "2.32.0"
+# logging
 fern = "0.5.6"
 log = { version = "0.4", features = ["std"] }
 chrono = "0.4"
 
+# rendering
 cairo-rs = "0.5.0"

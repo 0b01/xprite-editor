@@ -6,6 +6,7 @@ extern crate fern;
 extern crate xprite;
 extern crate glium;
 extern crate imgui;
+extern crate clap;
 extern crate imgui_glium_renderer;
 
 extern crate cairo;
@@ -24,9 +25,45 @@ mod prelude;
 mod ui;
 mod state;
 
-
-
+use clap::{App, Arg, SubCommand};
 fn main() {
+    let matches = App::new("xprite")
+                    .version("1.0")
+                    .author("Ricky Han <xprite@rickyhan.com>")
+                    .about("pixel art editor with extra tools")
+                    .subcommand(SubCommand::with_name("run")
+                                .about("run script")
+                                .version("1.0")
+                                .arg(Arg::with_name("INPUT")
+                                    .help("INPUT.dyon script")
+                                    .required(true)
+                                    .index(1)
+                                )
+                                .arg(Arg::with_name("debug")
+                                    .short("d")
+                                    .help("print debug information verbosely")))
+                    .get_matches();
+
+    if let Some(matches) = matches.subcommand_matches("run") {
+        let inp_file = matches.value_of("INPUT").unwrap();
+        run_script(inp_file);
+    } else {
+        run_ui();
+    }
+}
+
+fn run_script(fname: &str) {
+    let xpr = Xprite::new(100., 100.);
+    let cairo = CairoRenderer::new(100., 100.);
+    let mut state = state::State::new(xpr, cairo);
+
+    // state.script_fname = Some(fname.to_owned());
+    state.xpr.execute_script(fname).unwrap();
+    state.save()
+}
+
+
+fn run_ui() {
     init_logger();
     trace!("Starting Xprite");
     let xpr = Xprite::new(100., 100.);
