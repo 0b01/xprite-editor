@@ -9,7 +9,7 @@ pub struct State {
     pub hotkeys: HotkeyController,
     pub inputs: InputState,
     pub cairo: CairoRenderer,
-    pub script_fname: Option<String>
+    pub script_fname: Option<String>,
 }
 
 impl State {
@@ -26,7 +26,7 @@ impl State {
     }
 
     pub fn save(&mut self) {
-        self.xpr.export(&mut self.cairo);
+        self.xpr.export(&mut self.cairo).unwrap();
         self.cairo.render();
         if let Some(im) = self.cairo.img() {
             let img_path = "1.png";

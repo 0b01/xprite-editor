@@ -14,7 +14,7 @@ pub fn draw(state: &mut State, ui: &Ui) {
                 ImGuiSelectableFlags::empty(),
                 (0.,0.)
             ) {
-                state.xpr.set_option("mode", mode.as_str());
+                state.xpr.set_option("mode", mode.as_str()).unwrap();
             }
         }
     });
@@ -31,7 +31,7 @@ pub fn draw(state: &mut State, ui: &Ui) {
                 ImGuiSelectableFlags::empty(),
                 (0.,0.)
             ) {
-                state.xpr.set_option("brush", brush.as_str());
+                state.xpr.set_option("brush", brush.as_str()).unwrap();
             }
         }
     });

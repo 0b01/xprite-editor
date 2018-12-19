@@ -3,6 +3,12 @@ use imgui::*;
 use xprite::rendering::{Renderer, MouseCursorType};
 use cairo::{ImageSurface, Context, Format};
 use std::f64;
+use glium::{
+    backend::Facade,
+    texture::{ClientFormat, RawImage2d},
+    Texture2d,
+};
+use std::borrow::Cow;
 
 #[allow(unused)]
 pub struct ImguiCairoRenderer<'ui> {
@@ -106,14 +112,6 @@ impl<'ui> Renderer for ImguiCairoRenderer<'ui> {
 
 }
 
-use glium::{
-    backend::Facade,
-    texture::{ClientFormat, RawImage2d},
-    Texture2d,
-};
-
-use std::borrow::Cow;
-
 #[allow(unused)]
 impl<'ui> ImguiCairoRenderer<'ui> {
     pub fn new<F>(ui: &'ui Ui, gl_ctx: &'ui F, textures: &'ui mut Textures<Texture2d>,
@@ -129,7 +127,6 @@ impl<'ui> ImguiCairoRenderer<'ui> {
         let cr = Context::new(&surface);
         // cr.set_source_rgb(1.0, 1.0, 1.0);
         // cr.paint();
-
 
         let cr = Some(cr);
 

@@ -9,7 +9,6 @@ use std::sync::Mutex;
 
 use common::{OrderedFloat, blit_rect, Rect, Patch};
 use distance::DistanceFunction;
-use errors::*;
 
 type ErrorSurface = ImageBuffer<Luma<f64>, Vec<f64>>;
 type CostMap = HashMap<(u32, u32), OrderedFloat<f64>>;
@@ -97,22 +96,22 @@ impl QuilterParams {
     /// * `distance_func`: Distance function used by the algorithm
     pub fn new(size: (u32, u32), patch_size: u32, overlap: u32,
                seed_coords: Option<(u32, u32)>, selection_chance: Option<f64>,
-               distance_func: DistanceFunction) -> Result<QuilterParams> {
+               distance_func: DistanceFunction) -> Result<QuilterParams, String> {
         // Check that input size and overlap size are non zero
         match size {
-            (0, _) | (_, 0) => bail!(ErrorKind::InvalidArguments("Output size can't be zero".to_owned())),
+            (0, _) | (_, 0) => return Err("Output size can't be zero".to_owned()),
             _ => ()
         }
         if overlap == 0 {
-            bail!(ErrorKind::InvalidArguments("Overlap size can't be zero".to_owned()))
+            return Err("Overlap size can't be zero".to_owned());
         }
         // Check that the patch size is in a valid range
         if patch_size < (2 * overlap) {
-            bail!(ErrorKind::InvalidArguments("Patch size must be at least twice the overlap area size".to_owned()))
+            return Err("Patch size must be at least twice the overlap area size".to_owned());
         }
         if let Some(s) = selection_chance {
             if s <= 0. {
-                bail!(ErrorKind::InvalidArguments("Selection chance must be strictly positive".to_owned()))
+                return Err("Selection chance must be strictly positive".to_owned());
             }
         }
 
@@ -136,24 +135,24 @@ impl Quilter {
         Quilter { source: source, buffer_opt: None, params: params }
     }
 
-    fn validate_params(&self, source_size: (u32, u32)) -> Result<()> {
+    fn validate_params(&self, source_size: (u32, u32)) -> Result<(), String> {
         // Safety checks
         // Check that the image dimensions are at least as large as the patch size
         let (src_width, src_height) = source_size;
         if self.params.patch_size > src_width || self.params.patch_size > src_height {
-            bail!(ErrorKind::InvalidArguments("Patch size must be smaller than the image smallest dimension".to_owned()))
+            return Err("Patch size must be smaller than the image smallest dimension".to_owned());
         }
         // Check that the seed patch is within bounds
         if let Some((x_seed, y_seed)) = self.params.seed_coords {
             if (x_seed + self.params.patch_size) > src_width || (y_seed + self.params.patch_size) > src_height {
-                bail!(ErrorKind::InvalidArguments("Seed patch coordinates are out of bounds".to_owned()))
+                return Err("Seed patch coordinates are out of bounds".to_owned());
             }
         }
         Ok(())
     }
 
     /// Synthesize an image by the image quilting algorithm.
-    pub fn quilt_image(&mut self) -> Result<RgbImage> {
+    pub fn quilt_image(&mut self) -> Result<RgbImage, String> {
         let d = self.source.dimensions();
         try!(self.validate_params(d));
         let (img_width, img_height) = d;
@@ -185,7 +184,7 @@ impl Quilter {
                 let corner = (patch_x * step, patch_y * step);
                 let candidate = self.select_candidate(area, corner);
                 let err_surf = self.patch_error_surface(area, &candidate, corner);
-                self.cut_and_blit_patch(&candidate, corner, &err_surf, area);
+                self.cut_and_blit_patch(&candidate, corner, &err_surf, area)?;
 
                 // println!("Done patch ({}, {})", patch_x, patch_y);
             }
@@ -357,7 +356,7 @@ impl Quilter {
         cost_map
     }
 
-    fn minimum_cost_vertical_path(&self, err_surf: &ErrorSurface) -> Vec<(u32, u32)> {
+    fn minimum_cost_vertical_path(&self, err_surf: &ErrorSurface) -> Result<Vec<(u32, u32)>, String> {
         let mut v = vec!();
         let cost_map = self.vertical_cost_map(err_surf);
 
@@ -369,26 +368,26 @@ impl Quilter {
         while y != 0 {
             let top = cost_map[&(x, y - 1)];
             if x == 0 {
-                let right = cost_map[&(x + 1, y - 1)];
-                if right < top { x += 1; }
+                let right = cost_map.get(&(x + 1, y - 1)).ok_or("cost map item not found".to_owned())?;
+                if right < &top { x += 1; }
             }
             else if x == self.params.overlap - 1 {
-                let left = cost_map[&(x - 1, y - 1)];
-                if left < top { x -= 1; }
+                let left = cost_map.get(&(x - 1, y - 1)).ok_or("cost map item not found".to_owned())?;
+                if left < &top { x -= 1; }
             }
             else {
-                let left = cost_map[&(x - 1, y - 1)];
-                let right = cost_map[&(x + 1, y - 1)];
-                if left < top {
+                let left = cost_map.get(&(x - 1, y - 1)).ok_or("cost map item not found".to_owned())?;
+                let right = cost_map.get(&(x + 1, y - 1)).ok_or("cost map item not found".to_owned())?;
+                if left < &top {
                     if left < right { x -= 1; }
                 }
-                else if right < top { x += 1; }
+                else if right < &top { x += 1; }
             }
             y -= 1;
             v.push((x, y));
         }
 
-        v
+        Ok(v)
     }
 
     fn horizontal_cost_map(&self, err_surf: &ErrorSurface) -> CostMap {
@@ -428,7 +427,7 @@ impl Quilter {
         cost_map
     }
 
-    fn minimum_cost_horizontal_path(&self, err_surf: &ErrorSurface) -> Vec<(u32, u32)> {
+    fn minimum_cost_horizontal_path(&self, err_surf: &ErrorSurface) -> Result<Vec<(u32, u32)>, String> {
         let mut v = vec!();
         let cost_map = self.horizontal_cost_map(err_surf);
 
@@ -438,18 +437,18 @@ impl Quilter {
                               column.into_iter().enumerate().min_by(|&(_, v1), &(_, v2)| v1.cmp(&v2)).unwrap().0 as u32);
         v.push((x, y));
         while x != 0 {
-            let left = cost_map[&(x - 1, y)];
+            let left = cost_map.get(&(x - 1, y)).ok_or("cost map item not found".to_owned())?;
             if y == 0 {
-                let down = cost_map[&(x - 1, y + 1)];
+                let down = cost_map.get(&(x - 1, y + 1)).ok_or("cost map item not found".to_owned())?;
                 if down < left { y += 1; }
             }
             else if y == self.params.overlap - 1 {
-                let up = cost_map[&(x - 1, y - 1)];
+                let up = cost_map.get(&(x - 1, y - 1)).ok_or("cost map item not found".to_owned())?;
                 if up < left { y -= 1; }
             }
             else {
-                let up = cost_map[&(x - 1, y - 1)];
-                let down = cost_map[&(x - 1, y + 1)];
+                let up = cost_map.get(&(x - 1, y - 1)).ok_or("cost map item not found".to_owned())?;
+                let down = cost_map.get(&(x - 1, y + 1)).ok_or("cost map item not found".to_owned())?;
                 if up < left {
                     if up < down { y -= 1; }
                 }
@@ -459,7 +458,7 @@ impl Quilter {
             v.push((x, y));
         }
 
-        v
+        Ok(v)
     }
 
     fn cut_and_blit_vertical(&mut self, patch: &Patch, buf_coords: (u32, u32),
@@ -510,11 +509,11 @@ impl Quilter {
     }
 
     fn cut_and_blit_patch(&mut self, patch: &Patch, buf_coords: (u32, u32),
-                          err_surf: &ErrorSurface, area: OverlapArea) {
+                          err_surf: &ErrorSurface, area: OverlapArea) -> Result<(), String> {
         let overlap = self.params.overlap;
         match area {
             OverlapArea::Left => {
-                let path = self.minimum_cost_vertical_path(err_surf);
+                let path = self.minimum_cost_vertical_path(err_surf)?;
                 self.cut_and_blit_vertical(patch, buf_coords, path);
                 let mut buffer = self.buffer_opt.as_mut().unwrap();
                 blit_rect(buffer, &self.source,
@@ -523,7 +522,7 @@ impl Quilter {
                           (buf_coords.0 + overlap, buf_coords.1));
             },
             OverlapArea::Top => {
-                let path = self.minimum_cost_horizontal_path(err_surf);
+                let path = self.minimum_cost_horizontal_path(err_surf)?;
                 self.cut_and_blit_horizontal(patch, buf_coords, path);
                 let mut buffer = self.buffer_opt.as_mut().unwrap();
                 blit_rect(buffer, &self.source,
@@ -532,10 +531,10 @@ impl Quilter {
                           (buf_coords.0, buf_coords.1 + overlap));
             },
             OverlapArea::TopLeft => {
-                let (vpath, vpath_corner): (Vec<_>, Vec<_>) = self.minimum_cost_vertical_path(err_surf)
+                let (vpath, vpath_corner): (Vec<_>, Vec<_>) = self.minimum_cost_vertical_path(err_surf)?
                                                                   .into_iter()
                                                                   .partition(|&(_, y)| y >= overlap);
-                let (hpath, hpath_corner): (Vec<_>, Vec<_>) = self.minimum_cost_horizontal_path(err_surf)
+                let (hpath, hpath_corner): (Vec<_>, Vec<_>) = self.minimum_cost_horizontal_path(err_surf)?
                                                                   .into_iter()
                                                                   .partition(|&(x, _)| x >= overlap);
                 self.cut_and_blit_vertical(patch, buf_coords, vpath);
@@ -548,6 +547,7 @@ impl Quilter {
                           (buf_coords.0 + overlap, buf_coords.1 + overlap));
             }
         }
+        Ok(())
     }
 }
 

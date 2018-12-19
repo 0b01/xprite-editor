@@ -34,7 +34,7 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 .build() {
                     let name : &str = im.as_ref();
                     info!("renaming: {}", name);
-                    state.xpr.rename_layer(&im.as_ref());
+                    state.xpr.rename_layer(&im.as_ref()).unwrap();
                     ui.close_current_popup();
                 }
             });
@@ -73,13 +73,13 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 if ui.checkbox(im_str!(""), &mut layer_ref.visible) {
                     layer_ref.visible = !layer_ref.visible; // undo imgui checkbox mutation
                     drop(layer_ref); // drop borrow
-                    state.xpr.toggle_layer_visibility(&layer); // enter history frame and toggle
+                    state.xpr.toggle_layer_visibility(&layer).unwrap(); // enter history frame and toggle
                 }
             });
             ui.same_line(140.);
             ui.with_id(i as i32, || {
                 if ui.button(im_str!("X"), (20.,20.)) {
-                    state.xpr.remove_layer(&layer);
+                    state.xpr.remove_layer(&layer).unwrap();
                 }
             });
         }

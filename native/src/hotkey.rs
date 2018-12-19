@@ -15,7 +15,7 @@ pub enum Bind {
 }
 
 impl Bind {
-    pub fn execute(self, state: &mut State, _ui: &Ui) -> Option<()> {
+    pub fn execute(self, state: &mut State, _ui: &Ui) -> Result<(), String> {
         use self::Bind::*;
         match self {
             Redo => state.xpr.redo(),
@@ -39,7 +39,7 @@ impl Bind {
             }
             Unmapped => (),
         }
-        Some(())
+        Ok(())
     }
 }
 

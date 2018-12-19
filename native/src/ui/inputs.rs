@@ -65,7 +65,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     if (state.xpr.last_mouse_pos.0 != x || state.xpr.last_mouse_pos.1 != y)
     && !state.inputs.space
     {
-        state.xpr.mouse_move(&MouseMove{ x, y });
+        state.xpr.mouse_move(&MouseMove{ x, y }).unwrap();
     }
 
     let left = ui.imgui().is_mouse_down(ImMouseButton::Left);
@@ -107,10 +107,10 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     && !state.inputs.space {
         if left {
             trace!("mouse left down");
-            state.xpr.event(&MouseDown{ x, y, button: Left });
+            state.xpr.event(&MouseDown{ x, y, button: Left }).unwrap();
         } else {
             trace!("mouse left up");
-            state.xpr.event(&MouseUp{ x, y, button: Right });
+            state.xpr.event(&MouseUp{ x, y, button: Right }).unwrap();
         }
     }
 
@@ -118,10 +118,10 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     if state.inputs.debounce(InputItem::Right, right) && using_window {
         if right {
             let (x, y) = ui.imgui().mouse_pos();
-            state.xpr.event(&MouseDown{ x, y, button: Right });
+            state.xpr.event(&MouseDown{ x, y, button: Right }).unwrap();
         } else {
             trace!("mouse right up");
-            state.xpr.event(&MouseUp{ x, y, button: Right });
+            state.xpr.event(&MouseUp{ x, y, button: Right }).unwrap();
         }
     }
 
@@ -129,7 +129,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         ($boolval: expr, $key_upper: ident) => {
             if state.inputs.debounce(InputItem::$key_upper, $boolval) {
                 if $boolval {
-                    state.xpr.event(&KeyDown{ key: $key_upper });
+                    state.xpr.event(&KeyDown{ key: $key_upper }).unwrap();
                     state.hotkeys
                         .lookup(
                             Action::$key_upper(
@@ -139,9 +139,9 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
                                 true,
                             ),
                         )
-                        .execute(state, ui);
+                        .execute(state, ui).unwrap();
                 } else {
-                    state.xpr.event(&KeyUp{ key: $key_upper });
+                    state.xpr.event(&KeyUp{ key: $key_upper }).unwrap();
                     state.hotkeys
                         .lookup(
                             Action::$key_upper(
@@ -151,7 +151,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
                                 false,
                             ),
                         )
-                        .execute(state, ui);
+                        .execute(state, ui).unwrap();
                 }
             }
         };

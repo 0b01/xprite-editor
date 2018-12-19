@@ -123,7 +123,7 @@ impl Tool for Pencil {
         ToolType::Pencil
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
         let pixels = self.brush2pixs(xpr, p, xpr.color());
         self.cursor = pixels.clone();
         let point = xpr.canvas.shrink_size(p);
@@ -156,7 +156,7 @@ impl Tool for Pencil {
         self.draw(xpr)
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Option<()>{
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Result<(), String>{
         self.is_mouse_down = Some(button);
 
         self.current_polyline.push(p);
@@ -172,10 +172,10 @@ impl Tool for Pencil {
         self.draw(xpr)
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Vec2D) -> Option<()> {
-        if self.is_mouse_down.is_none() {return Some(()); }
+    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Vec2D) -> Result<(), String> {
+        if self.is_mouse_down.is_none() {return Ok(()); }
         let button = self.is_mouse_down.unwrap();
-        if button == InputItem::Right { return Some(()); }
+        if button == InputItem::Right { return Ok(()); }
 
         use self::PencilMode::*;
         match self.mode {
@@ -218,19 +218,19 @@ impl Tool for Pencil {
         self.is_mouse_down = None;
 
         self.draw(xpr);
-        Some(())
+        Ok(())
     }
 
-    fn draw(&mut self, xpr: &mut Xprite) -> Option<()> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         xpr.new_frame();
         self.set_cursor(xpr);
         self.buffer.set_color(&xpr.color());
         xpr.add_pixels(&self.buffer);
 
-        Some(())
+        Ok(())
     }
 
-    fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) -> Option<()> {
+    fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "mode" => {
                 use self::PencilMode::*;
@@ -250,6 +250,6 @@ impl Tool for Pencil {
             }
             _ => (),
         }
-        Some(())
+        Ok(())
     }
 }

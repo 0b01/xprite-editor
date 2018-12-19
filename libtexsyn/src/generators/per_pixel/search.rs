@@ -9,7 +9,6 @@ use std::cmp::min;
 
 use common::{OrderedFloat, blit_rect, Rect};
 use distance::l2;
-use errors::*;
 
 pub struct PixelSearchParams {
     size: (u32, u32),
@@ -24,9 +23,9 @@ pub struct PixelSearchParams {
 /// * `seed_coords`: coordinates of the top-left corner of the initial seed 3x3 patch. If set to None, will be chosen
 /// randomly.
 impl PixelSearchParams {
-    pub fn new(size: (u32, u32), window_size: u32, seed_coords: Option<(u32, u32)>) -> Result<PixelSearchParams> {
+    pub fn new(size: (u32, u32), window_size: u32, seed_coords: Option<(u32, u32)>) -> Result<PixelSearchParams, String> {
         if window_size % 2 == 0 {
-            bail!(ErrorKind::InvalidArguments("window_size must be odd".to_owned()));
+            return Err("window_size must be odd".to_owned());
         }
         Ok(PixelSearchParams { size: size, window_size: window_size, seed_coords: seed_coords })
     }
@@ -41,10 +40,10 @@ pub struct PixelSearch {
 
 impl PixelSearch {
     /// Create a new `PixelSearch`
-    pub fn new(source: RgbImage, params: PixelSearchParams) -> Result<PixelSearch> {
+    pub fn new(source: RgbImage, params: PixelSearchParams) -> Result<PixelSearch, String> {
         if let Some(coords) = params.seed_coords {
             if coords.0 > source.width() - 3 || coords.1 > source.height() - 1 {
-                bail!(ErrorKind::InvalidArguments("Seed patch is outside source image".to_owned()));
+                return Err("Seed patch is outside source image".to_owned());
             }
         }
         Ok(PixelSearch { source: source, params: params, buffer_opt: None })

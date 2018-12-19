@@ -30,26 +30,27 @@ impl Layers {
     }
 
     /// find a layer that is structurally equal
-    pub fn find(&self, old: &Rc<RefCell<Layer>>) -> Option<Rc<RefCell<Layer>>> {
+    pub fn find(&self, old: &Rc<RefCell<Layer>>) -> Result<Rc<RefCell<Layer>>, String> {
         Layers::_find(&self.layers, old)
     }
 
     /// find a layer that is structurally equal
-    fn _find(layers: &[Rc<RefCell<Layer>>], old: &Rc<RefCell<Layer>>) -> Option<Rc<RefCell<Layer>>> {
+    fn _find(layers: &[Rc<RefCell<Layer>>], old: &Rc<RefCell<Layer>>) -> Result<Rc<RefCell<Layer>>, String> {
         let new = layers.iter()
             .find(|i|
                 *i.borrow() == *old.borrow()
-            )?
+            )
+            .ok_or("Cannot `_find` same layer".to_owned())?
             .clone();
-        Some(new)
+        Ok(new)
     }
 
-    pub fn deepcopy(&self) -> Option<Layers> {
+    pub fn deepcopy(&self) -> Result<Layers, String> {
         let layers: Vec<_> = self.layers.iter().map(|i|
             Rc::new(RefCell::new(i.borrow().clone()))
         ).collect();
         let selected_layer = Layers::_find(&layers, &self.selected_layer)?;
-        Some(Self {
+        Ok(Self {
             layers,
             selected_layer,
         })

@@ -9,7 +9,7 @@ impl PaintBucket {
         PaintBucket { }
     }
 
-    pub fn floodfill(&self, xpr: &Xprite, p: Vec2D, bg_color: Option<Color>) -> Option<Pixels> {
+    pub fn floodfill(&self, xpr: &Xprite, p: Vec2D, bg_color: Option<Color>) -> Result<Pixels, String> {
         let current_layer = xpr.current_layer();
         let pixs = &current_layer.borrow().content;
         let w = xpr.canvas.art_w;
@@ -17,7 +17,7 @@ impl PaintBucket {
         // info!("{:#?}, {:#?},{:#?},{:#?},{:#?},", w, h, pixs, self.cursor?, xpr.color());
         let buffer = algorithms::floodfill::floodfill(w, h, pixs, p, bg_color, xpr.color());
         // info!{"{:#?}", buffer};
-        Some(buffer)
+        Ok(buffer)
     }
 
 }
@@ -28,15 +28,15 @@ impl Tool for PaintBucket {
         ToolType::PaintBucket
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         xpr.set_cursor(&(Pixel {point, color}).into());
         self.draw(xpr);
-        Some(())
+        Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         let bg_color = xpr.current_layer().borrow().get_color(point);
         let buffer = self.floodfill(xpr, point, bg_color)?;
@@ -47,11 +47,11 @@ impl Tool for PaintBucket {
             .borrow_mut()
             .content
             .extend(&buffer);
-        Some(())
+        Ok(())
     }
 
     #[allow(unused)]
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, _button: InputItem) -> Option<()> {
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, _button: InputItem) -> Result<(), String> {
         // let point = xpr.canvas.shrink_size(&p);
         // let bg_color = xpr.current_layer().borrow().get_color(point);
         // let buffer = self.floodfill(xpr, point, bg_color)?;
@@ -63,19 +63,19 @@ impl Tool for PaintBucket {
         //     xpr.set_cursor(&buffer);
         // }
 
-        Some(())
+        Ok(())
     }
 
-    fn draw(&mut self, xpr: &mut Xprite) -> Option<()> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         xpr.new_frame();
         // noop
-        Some(())
+        Ok(())
     }
 
-    fn set(&mut self, _xpr: &mut Xprite, option: &str, _value: &str) -> Option<()> {
+    fn set(&mut self, _xpr: &mut Xprite, option: &str, _value: &str) -> Result<(), String> {
         match option {
             _ => (), // noop
         }
-        Some(())
+        Ok(())
     }
 }

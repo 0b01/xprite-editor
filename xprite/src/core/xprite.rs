@@ -88,7 +88,7 @@ impl Xprite {
         &self.im_buf
     }
 
-    pub fn set_option(&mut self, opt: &str, val: &str) -> Option<()> {
+    pub fn set_option(&mut self, opt: &str, val: &str) -> Result<(), String> {
         let tool = self.toolbox.tool();
         let mut current_tool = tool.borrow_mut();
         trace!("setting option {}={}", opt, val);
@@ -148,26 +148,26 @@ impl Xprite {
     }
 
 
-    pub fn toggle_layer_visibility(&mut self, old: &Rc<RefCell<Layer>>) -> Option<()> {
+    pub fn toggle_layer_visibility(&mut self, old: &Rc<RefCell<Layer>>) -> Result<(), String> {
         self.history.enter()?;
         let layers = self.history.top();
         let new_layer = layers.find(&old).unwrap();
         new_layer.borrow_mut().toggle_visible();
-        Some(())
+        Ok(())
     }
 
-    pub fn remove_layer(&mut self, old: &Rc<RefCell<Layer>>) -> Option<()> {
+    pub fn remove_layer(&mut self, old: &Rc<RefCell<Layer>>) -> Result<(), String> {
         self.history.enter()?;
         let layers = self.history.top_mut();
         layers.remove_layer(&old);
-        Some(())
+        Ok(())
     }
 
-    pub fn rename_layer(&mut self, name: &str) -> Option<()> {
+    pub fn rename_layer(&mut self, name: &str) -> Result<(), String> {
         self.history.enter()?;
         let layers = self.history.top_mut();
         layers.selected_layer.borrow_mut().name = name.to_owned();
-        Some(())
+        Ok(())
     }
 
 }
@@ -253,7 +253,7 @@ impl Xprite {
         Some(self.rdr.img())
     }
     /// export pixels to an image via renderer
-    pub fn export(&mut self, rdr: &mut Renderer) -> Option<()> {
+    pub fn export(&mut self, rdr: &mut Renderer) -> Result<(), String> {
         let top = self.history.top();
         // draw layers
         for layer in top.layers.iter() {
@@ -270,7 +270,7 @@ impl Xprite {
             rdr.rect([x,y],[x+1.,y+1.],color.into(), true);
         }
 */
-        Some(())
+        Ok(())
     }
 }
 
@@ -278,7 +278,7 @@ impl Xprite {
 /// handle events
 impl Xprite {
 
-    pub fn event(&mut self, evt: &InputEvent) -> Option<()> {
+    pub fn event(&mut self, evt: &InputEvent) -> Result<(), String> {
         use self::InputEvent::*;
         trace!("{:#?}", evt);
         match evt {
@@ -290,38 +290,38 @@ impl Xprite {
         }
     }
 
-    pub fn key_up(&mut self, key: &InputItem) -> Option<()> {
+    pub fn key_up(&mut self, key: &InputItem) -> Result<(), String> {
         self.set_option(key.as_str(), "false")
     }
 
-    pub fn key_down(&mut self, key: &InputItem) -> Option<()> {
+    pub fn key_down(&mut self, key: &InputItem) -> Result<(), String> {
         self.set_option(key.as_str(), "true")
     }
 
-    pub fn mouse_move(&mut self, evt: &InputEvent) -> Option<()> {
+    pub fn mouse_move(&mut self, evt: &InputEvent) -> Result<(), String> {
         if let &InputEvent::MouseMove{x, y} = evt {
             let p = Vec2D::new(x, y);
             let tool = self.toolbox.tool();
             tool.borrow_mut().mouse_move(self, p);
         }
-        Some(())
+        Ok(())
     }
 
-    pub fn mouse_up(&mut self, evt: &InputEvent) -> Option<()> {
+    pub fn mouse_up(&mut self, evt: &InputEvent) -> Result<(), String> {
         if let &InputEvent::MouseUp{x, y, ..} = evt {
             let tool = self.toolbox.tool();
             let p = Vec2D::new(x, y);
             tool.borrow_mut().mouse_up(self, p);
         }
-        Some(())
+        Ok(())
     }
 
-    pub fn mouse_down(&mut self, evt: &InputEvent) -> Option<()> {
+    pub fn mouse_down(&mut self, evt: &InputEvent) -> Result<(), String> {
         if let &InputEvent::MouseDown{x, y, button} = evt {
             let tool = self.toolbox.tool();
             let p = Vec2D::new(x, y);
             tool.borrow_mut().mouse_down(self, p, button);
         }
-        Some(())
+        Ok(())
     }
 }

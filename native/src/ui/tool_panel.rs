@@ -2,7 +2,7 @@ use crate::prelude::*;
 use xprite::rendering::Renderer;
 
 
-pub fn draw_tool_panel(_rdr: &Renderer, state: &mut State, ui: &Ui) {
+pub fn draw_tool_panel(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
     let selected = &state.xpr.toolbox.tool().borrow().tool_type();
     ui
@@ -13,6 +13,6 @@ pub fn draw_tool_panel(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     .collapsible(false)
     .resizable(false)
     .build(|| {
-        super::tools::draw(*selected, state, ui);
+        super::tools::draw(*selected, rdr, state, ui);
     })
 }

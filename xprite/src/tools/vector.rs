@@ -62,7 +62,7 @@ impl Tool for Vector {
         ToolType::Vector
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
         // update cursor pos
         let pixels = self.brush2pixs(xpr, p, xpr.color());
         let point = xpr.canvas.shrink_size(p);
@@ -75,7 +75,7 @@ impl Tool for Vector {
 
         // the rest handles when left button is pressed
         let p = xpr.canvas.shrink_size_no_floor(p);
-        self.current_polyline.as_mut()?.push(p);
+        self.current_polyline.as_mut().ok_or("cannot borrow as mut")?.push(p);
 
         // let button = self.is_mouse_down.clone().unwrap();
         // if button == InputItem::Left {
@@ -91,11 +91,11 @@ impl Tool for Vector {
         self.draw(xpr)
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Option<()>{
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Result<(), String>{
         self.is_mouse_down = Some(button);
 
         let p = xpr.canvas.shrink_size_no_floor(p);
-        self.current_polyline.as_mut()?.push(p);
+        self.current_polyline.as_mut().ok_or("cannot borrow as mut".to_owned())?.push(p);
         // self.pixs_buf.clear();
         // let pixels = self.brush2pixs(xpr, p, xpr.color());
         // if let Some(pixels) = pixels {
@@ -108,10 +108,10 @@ impl Tool for Vector {
         self.draw(xpr)
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Vec2D) -> Option<()> {
-        if self.is_mouse_down.is_none() {return Some(()); }
+    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Vec2D) -> Result<(), String> {
+        if self.is_mouse_down.is_none() {return Ok(()); }
         let button = self.is_mouse_down.unwrap();
-        if button == InputItem::Right { return Some(()); }
+        if button == InputItem::Right { return Ok(()); }
 
         // xpr.history.enter()?;
         // // commit pixels
@@ -133,14 +133,16 @@ impl Tool for Vector {
         self.is_mouse_down = None;
 
         self.draw(xpr);
-        Some(())
+        Ok(())
     }
 
-    fn draw(&mut self, xpr: &mut Xprite) -> Option<()> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         xpr.new_frame();
 
         self.pixs_buf.clear();
-        let simple = self.current_polyline.as_ref()?.reumann_witkam(self.tolerence)?;
+        let simple = self.current_polyline.as_ref()
+            .ok_or("cannot borrow as mut".to_owned())?
+            .reumann_witkam(self.tolerence)?;
 
         let (path, pixs_buf) = {
             let path = simple.interp();
@@ -153,10 +155,10 @@ impl Tool for Vector {
         xpr.bz_buf.extend(path.segments);
 
         xpr.add_pixels(&self.pixs_buf);
-        Some(())
+        Ok(())
     }
 
-    fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) -> Option<()> {
+    fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "tolerence" => {
                 if let Ok(val) = value.parse() {
@@ -174,6 +176,6 @@ impl Tool for Vector {
             }
             _ => (),
         }
-        Some(())
+        Ok(())
     }
 }

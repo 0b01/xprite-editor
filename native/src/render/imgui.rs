@@ -1,9 +1,13 @@
 use imgui::*;
-
 use xprite::rendering::{Renderer, MouseCursorType};
+use xprite::image::GenericImage;
+use glium::{ backend::Facade, Texture2d, texture::{RawImage2d, ClientFormat} };
+use std::borrow::Cow;
 
 pub struct ImguiRenderer<'ui> {
     pub ui: &'ui Ui<'ui>,
+    pub gl_ctx: &'ui Facade,
+    pub textures: &'ui mut Textures<Texture2d>,
 }
 
 impl<'ui> Renderer for ImguiRenderer<'ui> {
@@ -56,10 +60,24 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         self.ui.imgui().set_mouse_cursor(c);
     }
 
+    fn add_img(&mut self, img: xprite::image::DynamicImage) -> usize {
+        let (width, height) = img.dimensions();
+        let img = RawImage2d {
+            data: Cow::Owned(img.raw_pixels()),
+            width,
+            height,
+            format: ClientFormat::U8U8U8,
+        };
+
+        let gl_texture = Texture2d::new(self.gl_ctx, img).unwrap();
+        self.textures.insert(gl_texture).id()
+    }
+
 }
 
 impl<'ui> ImguiRenderer<'ui> {
-    pub fn new(ui: &'ui Ui) -> Self {
-        Self { ui }
+    pub fn new(ui: &'ui Ui, gl_ctx: &'ui Facade, textures: &'ui mut Textures<Texture2d>) -> Self {
+        Self { ui, gl_ctx, textures }
     }
+
 }

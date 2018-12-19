@@ -29,13 +29,21 @@ pub fn get_concavity(path: &[Pixel]) -> bool {
     }
 }
 
-pub fn sort_path(path: &mut [Pixel]) -> Option<Vec<Pixel>> {
+pub fn sort_path(path: &mut [Pixel]) -> Result<Vec<Pixel>, String> {
 
-    let up = path.iter().last()?.point.y < path[0].point.y;
+    let up = path
+        .iter()
+        .last()
+        .ok_or("does not contain last".to_owned())?
+        .point.y < path[0].point.y;
     let mut dir = if up { -1 } else { 1 };
 
     // if the path is drawn from right to left
-    let right_to_left = path.iter().last()?.point.x < path[0].point.x;
+    let right_to_left = path
+        .iter()
+        .last()
+        .ok_or("does not contain last".to_owned())?
+        .point.x < path[0].point.x;
     if right_to_left {
         dir *= -1;
         path.reverse();
@@ -130,5 +138,5 @@ pub fn sort_path(path: &mut [Pixel]) -> Option<Vec<Pixel>> {
     }
 
     // console!(log, format!("{:#?}", segs));
-    Some(ret)
+    Ok(ret)
 }

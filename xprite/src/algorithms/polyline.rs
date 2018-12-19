@@ -23,9 +23,9 @@ impl Polyline {
     }
 
     /// line simplification algorithm
-    pub fn reumann_witkam(&self, tol: f32) -> Option<Polyline> {
+    pub fn reumann_witkam(&self, tol: f32) -> Result<Polyline, String> {
         if self.pos.len() < 10 {
-            return None;
+            return Err("polyline has fewer than 10 points".to_owned());
         }
 
         let mut ret = Polyline::new();
@@ -56,14 +56,14 @@ impl Polyline {
         // last point
         ret.push(Vec2D::new(self.pos[self.pos.len()-1].x, self.pos[self.pos.len()-1].y));
 
-        Some(ret)
+        Ok(ret)
     }
 
     pub fn interp(&self) -> Path {
         Path::from_polyline(self)
     }
 
-    pub fn connect_with_line(&self, xpr: &Xprite) -> Option<Vec<Pixel>> {
+    pub fn connect_with_line(&self, xpr: &Xprite) -> Result<Vec<Pixel>, String> {
         let mut ret = Vec::new();
         for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
             let p0 = xpr.canvas.shrink_size(*p0);
@@ -74,7 +74,7 @@ impl Polyline {
 
         // console!(log, ret.0.len() as i32);
         ret.dedup();
-        Some(ret)
+        Ok(ret)
     }
 
 }

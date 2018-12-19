@@ -33,21 +33,19 @@ impl Rect {
         Some(())
     }
 
-    fn finalize_rect(&mut self, xpr: &mut Xprite) -> Option<()> {
-        if let Some(mut pixs) = get_rect(self.start_pos, self.cursor_pos, self.filled) {
-            xpr.history.enter()?;
-            pixs.set_color(&xpr.color());
-            xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
-        }
-        Some(())
+    fn finalize_rect(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+        let mut pixs = get_rect(self.start_pos, self.cursor_pos, self.filled)?;
+        xpr.history.enter()?;
+        pixs.set_color(&xpr.color());
+        xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
+        Ok(())
     }
 
-    fn draw_rect(&self, xpr: &mut Xprite) -> Option<()> {
-        if let Some(mut pixs) = get_rect(self.start_pos, self.cursor_pos, self.filled) {
-            pixs.set_color(&xpr.color());
-            xpr.add_pixels(&pixs)
-        }
-        Some(())
+    fn draw_rect(&self, xpr: &mut Xprite) -> Result<(), String> {
+        let mut pixs = get_rect(self.start_pos, self.cursor_pos, self.filled)?;
+        pixs.set_color(&xpr.color());
+        xpr.add_pixels(&pixs);
+        Ok(())
     }
 
 }
@@ -58,16 +56,16 @@ impl Tool for Rect {
         ToolType::Rect
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
+    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel {point, color});
         self.draw(xpr);
-        Some(())
+        Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2D) -> Option<()> {
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel {point, color});
@@ -75,26 +73,26 @@ impl Tool for Rect {
         self.is_mouse_down = None;
         self.start_pos = None;
         self.draw(xpr);
-        Some(())
+        Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Option<()> {
-        if InputItem::Left != button { return Some(()); }
+    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Result<(), String> {
+        if InputItem::Left != button { return Ok(()); }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.start_pos = Some(Pixel{point, color});
-        Some(())
+        Ok(())
     }
 
-    fn draw(&mut self, xpr: &mut Xprite) -> Option<()> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         xpr.new_frame();
         self.draw_rect(xpr);
         self.set_cursor(xpr);
-        Some(())
+        Ok(())
     }
 
-    fn set(&mut self, xpr: &mut Xprite, option: &str, value: &str) -> Option<()> {
+    fn set(&mut self, xpr: &mut Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "ctrl" => {
                 match value {
@@ -117,7 +115,7 @@ impl Tool for Rect {
             }
             _ => info!("unimplemented option: {}", option)
         }
-        Some(())
+        Ok(())
     }
 
 

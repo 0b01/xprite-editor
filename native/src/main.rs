@@ -68,8 +68,8 @@ fn run_ui() {
     let cairo = CairoRenderer::new(100., 100.);
     let mut state = state::State::new(xpr, cairo);
 
-    render::run("Xprite", BGCOLOR, |ui, _gl_ctx, _textures| {
-        let mut rdr = ImguiRenderer::new(&ui);
+    render::run("Xprite", BGCOLOR, |ui, gl_ctx, textures| {
+        let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures);
         // let mut rdr = ImguiCairoRenderer::new(&ui, gl_ctx, textures, &state);
         ui::draw(&mut rdr, &mut state, ui)
     });
