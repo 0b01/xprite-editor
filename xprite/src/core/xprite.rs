@@ -257,14 +257,8 @@ impl Xprite {
 }
 
 impl Xprite {
-    // pub fn layer_as_im(&mut self) -> Option<&img::DynamicImage> {
-    //     let layer = self.current_layer().unwrap();
-    //     layer.draw(&mut self.rdr);
-    //     self.rdr.img()
-    // }
-    pub fn layer_as_im(&mut self) -> Option<&img::DynamicImage> { // XXX: why doesn't the above borrowck
-        let top = self.history.top_mut();
-        let layer = top.selected_layer().unwrap();
+    pub fn layer_as_im(&mut self) -> Option<&img::DynamicImage> {
+        let layer = self.history.top_mut().selected_layer()?;
         layer.draw(&mut self.rdr);
         self.rdr.img()
     }

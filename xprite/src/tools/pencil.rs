@@ -194,7 +194,7 @@ impl Tool for Pencil {
         self.buffer.set_color(&xpr.color());
 
         xpr.history.enter()?;
-        xpr.current_layer_mut().unwrap()
+        xpr.current_layer_mut().ok_or("Layer doesn't exist.".to_owned())
             .content
             .extend(&self.buffer);
 
