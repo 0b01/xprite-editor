@@ -15,10 +15,10 @@ Pixel art editor with algorithmic tools.
 0. Core functionalities
 
 * [x] Hotkeys
-* [ ] Save
-* [ ] Load
-* [ ] Palette
+* [x] Save
+* [x] Load
 * [x] Long stroke performance(using --release is actually pretty fast)
+* [ ] Palette
 
 1. Basic tools
 

@@ -8,7 +8,9 @@ use std::sync::{Arc, Mutex};
 pub struct Xprite {
     pub history: History,
 
+    #[serde(skip_serializing, skip_deserializing)]
     pub im_buf: Pixels,
+    #[serde(skip_serializing, skip_deserializing)]
     pub bz_buf: Vec<CubicBezierSegment>,
 
     pub canvas: Canvas,

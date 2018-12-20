@@ -5,7 +5,7 @@ use std::hash::{Hash, Hasher};
 use std::fmt::{Debug, Formatter, Error};
 use indexmap::{IndexSet, set::Iter};
 
-#[derive(Copy, Clone, Eq, PartialOrd, Serialize, Deserialize)]
+#[derive(Copy, Clone, Eq, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Pixel {
     pub point: Vec2D,
     pub color: Color,
@@ -53,7 +53,7 @@ macro_rules! pixel {
 }
 
 
-#[derive(Clone, Eq, Serialize, Deserialize)]
+#[derive(Clone, Eq, Serialize, Deserialize, Default)]
 pub struct Pixels(pub IndexSet<Pixel>);
 
 

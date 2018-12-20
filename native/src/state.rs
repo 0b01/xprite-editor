@@ -39,7 +39,7 @@ impl State {
         self.cairo.reset();
     }
 
-    pub fn save(&mut self, file_path: &str) {
+    pub fn save_xpr(&mut self, file_path: &str) {
         let encoded: Vec<u8> = serialize(&self.xpr).unwrap();
         let f = File::create(file_path).unwrap();
         let mut wtr = BufWriter::new(f);
@@ -51,7 +51,7 @@ impl State {
         // let mut wtr = BufReader::new(f);
     }
 
-    pub fn load(&mut self, file_path: &str) {
+    pub fn load_xpr(&mut self, file_path: &str) {
         let f = File::open(file_path).unwrap();
         let mut reader = BufReader::new(f);
 
@@ -59,7 +59,7 @@ impl State {
         reader.read_to_end(&mut encoded).unwrap();
 
         let xpr: Xprite = deserialize(&encoded).unwrap();
-        println!("xpr: {:#?}", xpr);
+        self.xpr = xpr;
     }
 
 }

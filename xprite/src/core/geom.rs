@@ -2,7 +2,7 @@ use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
 
 /// represents a 2D vector
-#[derive(Debug, Copy, Clone, PartialOrd, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Vec2D {
     pub x: f32,
     pub y: f32,

@@ -24,7 +24,7 @@ impl Bind {
             PushTool(tool) => state.xpr.change_tool(&tool)?,
             PopTool => state.xpr.toolbox.pop_tool(),
             ToggleConsole => {state.show_console = !state.show_console;}
-            Save => state.save("1.xpr"),
+            Save => state.save_xpr("1.xpr"),
             Export => state.export_png("1.png"),
             RunScript => {
                 let path = state.script_fname
