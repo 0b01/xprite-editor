@@ -7,7 +7,7 @@ pub struct Rect {
     cursor_pos: Option<Pixel>,
     start_pos: Option<Pixel>,
     snap: bool,
-    is_snap_45: bool,
+    symmetric: bool,
     pub filled: bool,
 }
 
@@ -18,7 +18,7 @@ impl Rect {
             cursor_pos: None,
             start_pos: None,
             snap: false,
-            is_snap_45: false,
+            symmetric: false,
             filled: false,
         }
     }
@@ -33,8 +33,23 @@ impl Rect {
         Some(())
     }
 
+    fn get_rect(&self) -> Result<Pixels, String> {
+        if let (Some(begin), Some(end)) = (self.start_pos, self.cursor_pos) {
+            let begin_pos = if self.symmetric {
+                let x = begin.point.x - (end.point.x-begin.point.x);
+                let y = begin.point.y - (end.point.y-begin.point.y);
+                Some(pixel!{x, y, Color::red()})
+            } else {
+                self.start_pos
+            };
+            get_rect(begin_pos, self.cursor_pos, self.filled)
+        } else {
+            Err("start or end is none".to_owned())
+        }
+    }
+
     fn finalize_rect(&mut self, xpr: &mut Xprite) -> Result<(), String> {
-        if let Ok(mut pixs) = get_rect(self.start_pos, self.cursor_pos, self.filled) {
+        if let Ok(mut pixs) = self.get_rect() {
             xpr.history.enter()?;
             pixs.set_color(&xpr.color());
             xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
@@ -43,7 +58,7 @@ impl Rect {
     }
 
     fn draw_rect(&self, xpr: &mut Xprite) -> Result<(), String> {
-        if let Ok(mut pixs) = get_rect(self.start_pos, self.cursor_pos, self.filled) {
+        if let Ok(mut pixs) = self.get_rect() {
             pixs.set_color(&xpr.color());
             xpr.add_pixels(&pixs);
         }
@@ -98,15 +113,15 @@ impl Tool for Rect {
         match option {
             "ctrl" => {
                 match value {
-                    "true" => { self.snap = true; self.is_snap_45 = true }
-                    "false" => { self.snap = false }
+                    "true" => { self.symmetric = true }
+                    "false" => { self.symmetric = false }
                     _ => error!("unimpl for ctrl: {}", value)
                 }
                 self.draw(xpr)?;
             }
             "shift" => {
                 match value {
-                    "true" => { self.snap = true; self.is_snap_45 = false }
+                    "true" => { self.snap = true; }
                     "false" => { self.snap = false }
                     _ => error!("unimpl for ctrl: {}", value)
                 }

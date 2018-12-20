@@ -18,7 +18,7 @@ Pixel art editor with algorithmic tools.
 * [ ] Save
 * [ ] Load
 * [ ] Palette
-* [ ] Long stroke performance
+* [x] Long stroke performance(using --release is actually pretty fast)
 
 1. Basic tools
 
