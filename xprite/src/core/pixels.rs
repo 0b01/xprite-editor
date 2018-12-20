@@ -5,7 +5,7 @@ use std::hash::{Hash, Hasher};
 use std::fmt::{Debug, Formatter, Error};
 use indexmap::{IndexSet, set::Iter};
 
-#[derive(Copy, Clone, Eq, PartialOrd)]
+#[derive(Copy, Clone, Eq, PartialOrd, Serialize, Deserialize)]
 pub struct Pixel {
     pub point: Vec2D,
     pub color: Color,
@@ -53,9 +53,9 @@ macro_rules! pixel {
 }
 
 
-#[derive(Clone, Eq)]
-/// dual repr
+#[derive(Clone, Eq, Serialize, Deserialize)]
 pub struct Pixels(pub IndexSet<Pixel>);
+
 
 impl PartialEq for Pixels {
     fn eq(&self, other: &Self) -> bool {
@@ -197,7 +197,7 @@ impl Pixels {
             let Pixel{point:Vec2D{x,y}, color} = pix;
             rdr.rect([*x - origin.0,*y - origin.1], [0.,0.,], (*color).into(), true);
         }
-        rdr.image
+        rdr.image.unwrap()
     }
 }
 

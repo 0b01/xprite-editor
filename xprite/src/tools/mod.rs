@@ -26,6 +26,12 @@ pub enum ToolType {
     Texture,
 }
 
+impl Default for ToolType {
+    fn default() -> Self {
+        ToolType::Pencil
+    }
+}
+
 impl ToolType {
     pub fn as_str(&self) -> &str {
         match self {

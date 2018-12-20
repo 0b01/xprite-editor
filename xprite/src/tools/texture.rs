@@ -57,7 +57,7 @@ impl Texture {
         let mut pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
         xpr.history.enter()?;
         pixs.set_color(&xpr.color());
-        let content = &mut xpr.history.top().selected_layer.borrow_mut().content;
+        let content = &mut xpr.current_layer_mut().unwrap().content;
         let intersection = content.intersection(&pixs);
         let (x,y, origin) = self.get_dims().ok_or("cannot get dimension".to_owned())?;
         let img = intersection.as_image(x, y, origin);

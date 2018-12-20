@@ -31,6 +31,12 @@ pub type Circles = Pixels;
 pub const BGCOLOR: [f32; 4] = [0.,0.,0.,0.];
 pub const WHITE: [f32;4] = [1.,1.,1.,1.];
 pub const RED: [f32;4] = [1.,0.,0.,1.];
+
+
+#[cfg(not(debug_assertions))]
 pub const GREY: [f32;4] = [0.2,0.2,0.3,1.];
+#[cfg(debug_assertions)]
+pub const GREY: [f32;4] = [0.2,0.2,0.2,1.];
+
 pub const LIGHT_GREY: [f32;4] = [0.8,0.8,0.8,1.];
 pub const BLACK: [f32;4] = [0.,0.,0.,1.];

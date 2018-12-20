@@ -4,6 +4,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::sync::{Arc, Mutex};
 
+#[derive(Serialize, Deserialize)]
 pub struct Xprite {
     pub history: History,
 
@@ -12,14 +13,19 @@ pub struct Xprite {
 
     pub canvas: Canvas,
     pub selected_color: Color,
+
+    #[serde(skip_serializing, skip_deserializing)]
     pub toolbox: Toolbox,
     pub cursor_pos: Pixels,
     pub last_mouse_pos: (f32, f32),
 
+    #[serde(skip_serializing, skip_deserializing)]
     pub scripting: Rc<RefCell<Scripting>>,
 
+    #[serde(skip_serializing, skip_deserializing)]
     pub rdr: ImageRenderer,
 
+    #[serde(skip_serializing, skip_deserializing)]
     pub log: Arc<Mutex<String>>,
 }
 
@@ -141,37 +147,41 @@ impl Xprite {
 
 impl Xprite {
 
-    pub fn switch_layer(&mut self, layer: Rc<RefCell<Layer>>) {
-        self.history.top_mut().selected_layer = layer;
+    pub fn switch_layer(&mut self, layer: usize) {
+        self.history.top_mut().selected = layer;
     }
 
-    pub fn current_layer(&self) -> Rc<RefCell<Layer>> {
-        self.history.top().selected_layer.clone()
+    pub fn current_layer(&self) -> Option<&Layer> {
+        self.history.top().selected_layer()
     }
 
+    pub fn current_layer_mut(&mut self) -> Option<&mut Layer> {
+        self.history.top_mut().selected_layer_mut()
+    }
 
-    pub fn toggle_layer_visibility(&mut self, old: &Rc<RefCell<Layer>>) -> Result<(), String> {
+    pub fn toggle_layer_visibility(&mut self, old: usize) -> Result<(), String> {
         self.history.enter()?;
-        let layers = self.history.top();
-        let new_layer = layers.find(&old).unwrap();
-        new_layer.borrow_mut().toggle_visible();
+        self.history.top_mut()
+            .layers
+            .get_mut(old)
+            .unwrap()
+            .toggle_visible();
         Ok(())
     }
 
-    pub fn remove_layer(&mut self, old: &Rc<RefCell<Layer>>) -> Result<(), String> {
+    pub fn remove_layer(&mut self, old: usize) -> Result<(), String> {
         self.history.enter()?;
         let layers = self.history.top_mut();
-        layers.remove_layer(&old);
+        layers.remove_layer(old);
         Ok(())
     }
 
     pub fn rename_layer(&mut self, name: &str) -> Result<(), String> {
         self.history.enter()?;
         let layers = self.history.top_mut();
-        layers.selected_layer.borrow_mut().name = name.to_owned();
+        layers.selected_layer_mut().unwrap().name = name.to_owned();
         Ok(())
     }
-
 }
 
 impl Xprite {
@@ -185,10 +195,10 @@ impl Xprite {
         // draw layers
         for layer in top.layers.iter() {
             // skip invisible layers
-            if !layer.borrow().visible {
+            if !layer.visible {
                 continue;
             }
-            for &Pixel{point, color } in layer.borrow().content.iter() {
+            for &Pixel{point, color } in layer.content.iter() {
                 let Vec2D {x, y} = point;
                 self.canvas.draw_pixel(rdr, x, y, color.into(), true);
             }
@@ -247,23 +257,28 @@ impl Xprite {
 }
 
 impl Xprite {
-    pub fn layer_as_im(&mut self) -> Option<&img::DynamicImage> {
-        let top = self.history.top();
-        // draw layers
-        let layer = Rc::clone(&top.selected_layer);
-        layer.borrow().draw(&mut self.rdr);
-        Some(self.rdr.img())
+    // pub fn layer_as_im(&mut self) -> Option<&img::DynamicImage> {
+    //     let layer = self.current_layer().unwrap();
+    //     layer.draw(&mut self.rdr);
+    //     self.rdr.img()
+    // }
+    pub fn layer_as_im(&mut self) -> Option<&img::DynamicImage> { // XXX: why doesn't the above borrowck
+        let top = self.history.top_mut();
+        let layer = top.selected_layer().unwrap();
+        layer.draw(&mut self.rdr);
+        self.rdr.img()
     }
+
     /// export pixels to an image via renderer
     pub fn export(&mut self, rdr: &mut Renderer) -> Result<(), String> {
         let top = self.history.top();
         // draw layers
         for layer in top.layers.iter() {
             // skip invisible layers
-            if !layer.borrow().visible {
+            if !layer.visible {
                 continue;
             }
-            layer.borrow().draw(rdr);
+            layer.draw(rdr);
         }
 /*
         // draw current layer pixels

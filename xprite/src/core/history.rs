@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct History {
     stack: Vec<Layers>,
     redos: Vec<Layers>,
@@ -25,7 +25,7 @@ impl History {
 
     pub fn duplicate(&mut self) -> Result<(), String> {
         trace!("duplicate history");
-        let latest = self.top().deepcopy()?;
+        let latest = self.top().clone();
         self.stack.push(latest);
         Ok(())
     }

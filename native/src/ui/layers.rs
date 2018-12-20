@@ -22,8 +22,7 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
           .movable(false)
           .build(|| {
             let name = {
-                let layers = state.xpr.history.top_mut();
-                layers.selected_layer.borrow_mut().name.to_owned()
+                state.xpr.current_layer().unwrap().name.to_owned()
             };
             let mut im = ImString::new(name);
             ui.with_item_width(100., ||{
@@ -40,18 +39,19 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             });
         });
 
-        let (layers, selected_layer) = {
+        let (mut layers, selected_layer) = {
             let layer_manager = state.xpr.history.top_mut();
-            let selected_layer = layer_manager.selected_layer.clone();
+            if layer_manager.selected_layer_mut().is_none() {return;}
+            let selected_layer = layer_manager.selected_layer_mut().unwrap().clone();
             (
                 layer_manager.layers.clone(),
                 selected_layer
             )
         };
-        for (i, layer) in layers.iter().enumerate() {
+
+        for (i, layer) in layers.iter_mut().enumerate() {
             {
-                let layer_ref = layer.borrow();
-                let name = layer_ref.name.as_str();
+                let name = layer.name.as_str();
                 let is_sel = layer == &selected_layer;
                 if ui.selectable(
                     im_str!("{}", name),
@@ -63,23 +63,22 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                         info!("double clicked");
                         ui.open_popup(im_str!("Rename Layer"));
                     }
-                    state.xpr.history.top_mut().selected_layer = layer.clone();
+                    state.xpr.switch_layer(i);
                 }
             }
 
             ui.same_line(100.);
             ui.with_id(i as i32, || {
-                let mut layer_ref = layer.borrow_mut();
-                if ui.checkbox(im_str!(""), &mut layer_ref.visible) {
-                    layer_ref.visible = !layer_ref.visible; // undo imgui checkbox mutation
-                    drop(layer_ref); // drop borrow
-                    state.xpr.toggle_layer_visibility(&layer).unwrap(); // enter history frame and toggle
+                if ui.checkbox(im_str!(""), &mut layer.visible) {
+                    layer.visible = !layer.visible; // undo imgui checkbox mutation
+                    drop(layer); // drop borrow
+                    state.xpr.toggle_layer_visibility(i).unwrap(); // enter history frame and toggle
                 }
             });
             ui.same_line(140.);
             ui.with_id(i as i32, || {
                 if ui.button(im_str!("X"), (20.,20.)) {
-                    state.xpr.remove_layer(&layer).unwrap();
+                    state.xpr.remove_layer(i).unwrap();
                 }
             });
         }

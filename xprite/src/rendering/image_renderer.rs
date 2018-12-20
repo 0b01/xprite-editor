@@ -3,18 +3,19 @@ use crate::rendering::{Renderer, MouseCursorType};
 use img::{DynamicImage, Rgba};
 use img::GenericImage;
 
+#[derive(Default)]
 pub struct ImageRenderer {
-    w: u32,
-    h: u32,
-    pub image: image::DynamicImage,
+    w: Option<u32>,
+    h: Option<u32>,
+    pub image: Option<image::DynamicImage>,
 }
 
 #[allow(unused)]
 impl Renderer for ImageRenderer {
 
-    fn width(&self) -> u32 { self.w }
+    fn width(&self) -> u32 { self.w.unwrap() }
 
-    fn height(&self) -> u32 { self.h }
+    fn height(&self) -> u32 { self.h.unwrap() }
 
     fn circ(&mut self, p0:[f32;2], r:f32, color:[f32;4], filled: bool) { }
 
@@ -25,11 +26,13 @@ impl Renderer for ImageRenderer {
             let c: Color = color.into();
             Rgba { data: [c.r, c.g, c.b, c.a] }
         };
-        self.image.put_pixel(
-            p0[0] as u32,
-            p0[1] as u32,
-            color
-        )
+        self.image.as_mut().map(|i|{
+            i.put_pixel(
+                p0[0] as u32,
+                p0[1] as u32,
+                color
+            );
+        });
     }
 
     fn line(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4]) { }
@@ -43,16 +46,16 @@ impl ImageRenderer {
     pub fn new(art_w: f32, art_h: f32) -> Self {
         let w = art_w as u32;
         let h = art_h as u32;
-        let image = DynamicImage::new_rgba8(w, h);
+        let image = Some(DynamicImage::new_rgba8(w, h));
         Self {
-            w,
-            h,
+            w: Some(w),
+            h: Some(h),
             image
         }
     }
 
-    pub fn img(&self) -> &DynamicImage {
-        &self.image
+    pub fn img(&self) -> Option<&DynamicImage> {
+        self.image.as_ref()
     }
 }
 
@@ -70,7 +73,7 @@ mod tests {
         let mut rdr = ImageRenderer::new(10., 10.);
         rdr.rect([0.,0.,], [0.,0.,], [1.,0.,0.,1.], true);
         let path = "test.png";
-        save_img(path, rdr.img());
+        save_img(path, rdr.img().unwrap());
         ::std::fs::remove_file(path).unwrap();
     }
 }

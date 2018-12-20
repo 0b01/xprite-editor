@@ -46,7 +46,7 @@ impl Line {
             xpr.history.enter()?;
             let mut pixs = Pixels::from_slice(&pixs);
             pixs.set_color(&xpr.color());
-            xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
+            xpr.current_layer_mut().unwrap().content.extend(&pixs);
         }
         Ok(())
     }

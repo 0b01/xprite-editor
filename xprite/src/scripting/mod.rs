@@ -57,8 +57,9 @@ impl Scripting {
                     buf.push(pixel!(pos[0], pos[1], color.into()));
                 }
                 xpr.history.enter()?;
-                xpr.history.top_mut().selected_layer.borrow_mut().content.clear();
-                xpr.history.top_mut().selected_layer.borrow_mut().content.extend(&buf);
+                let layer = xpr.current_layer_mut().unwrap();
+                layer.content.clear();
+                layer.content.extend(&buf);
 
             },
             Err(msg) => return Err(msg),

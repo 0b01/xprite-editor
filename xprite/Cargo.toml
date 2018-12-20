@@ -10,7 +10,14 @@ log = { version = "0.4", features = ["std"] }
 libtexsyn = { path = "../libtexsyn" }
 chrono = "0.4"
 image = "*"
-indexmap = "1.0.2"
+# saving/loading
+bincode = "1.0.1"
+serde_derive = "1.0.82"
+serde = "1.0.82"
+
+[dependencies.indexmap]
+version = "1.0.2"
+features = ["serde-1"]
 
 [dependencies.dyon]
 version = "0.39.0"

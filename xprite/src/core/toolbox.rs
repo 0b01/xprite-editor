@@ -15,6 +15,7 @@ use crate::tools::{
     texture::Texture,
 };
 
+#[derive(Default)]
 pub struct Toolbox {
     pub pencil:         Rc<RefCell<Pencil>>,
     pub paint_bucket:   Rc<RefCell<PaintBucket>>,

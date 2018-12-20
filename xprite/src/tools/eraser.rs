@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use std::rc::Rc;
 
 pub struct Eraser {
     is_mouse_down: Option<InputItem>,
@@ -99,9 +98,7 @@ impl Tool for Eraser {
 
         xpr.history.enter()?;
         {
-            let layer = &mut xpr.history.top_mut()
-                .selected_layer
-                .borrow_mut();
+            let layer = &mut xpr.current_layer_mut().unwrap();
             layer.content.sub(&self.buffer);
             layer.visible = true;
         }
@@ -118,14 +115,15 @@ impl Tool for Eraser {
         xpr.new_frame();
         self.set_cursor(xpr);
 
-        let layer = Rc::clone(&xpr.history.top_mut().selected_layer);
+        let layer = xpr.current_layer_mut().unwrap();
         if !self.buffer.0.is_empty() {
-            layer.borrow_mut().visible = false;
+            layer.visible = false;
             // set current layer to invisible
-            xpr.add_pixels(&layer.borrow_mut().content);
+            let content = layer.content.clone(); // HACK: doesn't borrowck
+            xpr.add_pixels(&content);
             xpr.remove_pixels(&self.buffer);
         } else {
-            layer.borrow_mut().visible = true;
+            layer.visible = true;
         }
         Ok(())
     }

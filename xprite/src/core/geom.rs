@@ -2,7 +2,7 @@ use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
 
 /// represents a 2D vector
-#[derive(Debug, Copy, Clone, PartialOrd)]
+#[derive(Debug, Copy, Clone, PartialOrd, Serialize, Deserialize)]
 pub struct Vec2D {
     pub x: f32,
     pub y: f32,
@@ -45,7 +45,7 @@ impl From<Vec2D> for [f32;2] {
 }
 
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct CubicBezierSegment {
     pub from: Vec2D,
     pub ctrl1: Vec2D,

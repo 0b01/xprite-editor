@@ -9,13 +9,13 @@ impl PaintBucket {
         PaintBucket { }
     }
 
-    pub fn floodfill(&self, xpr: &Xprite, p: Vec2D, bg_color: Option<Color>) -> Result<Pixels, String> {
-        let current_layer = xpr.current_layer();
-        let pixs = &current_layer.borrow().content;
+    pub fn floodfill(&self, xpr: &mut Xprite, p: Vec2D, bg_color: Option<Color>) -> Result<Pixels, String> {
+        let color = xpr.color();
         let w = xpr.canvas.art_w;
         let h = xpr.canvas.art_h;
-        // info!("{:#?}, {:#?},{:#?},{:#?},{:#?},", w, h, pixs, self.cursor?, xpr.color());
-        let buffer = algorithms::floodfill::floodfill(w, h, pixs, p, bg_color, xpr.color());
+        let current_layer = xpr.current_layer_mut().unwrap();
+        let pixs = &current_layer.content;
+        let buffer = algorithms::floodfill::floodfill(w, h, pixs, p, bg_color, color);
         // info!{"{:#?}", buffer};
         Ok(buffer)
     }
@@ -38,13 +38,12 @@ impl Tool for PaintBucket {
 
     fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
-        let bg_color = xpr.current_layer().borrow().get_color(point);
+        let bg_color = xpr.current_layer().unwrap().get_color(point);
         let buffer = self.floodfill(xpr, point, bg_color)?;
 
         xpr.history.enter()?;
-        xpr.history.top()
-            .selected_layer
-            .borrow_mut()
+        xpr.history.top_mut()
+            .selected_layer_mut().unwrap()
             .content
             .extend(&buffer);
         Ok(())

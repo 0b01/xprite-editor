@@ -69,7 +69,7 @@ impl Rect {
         if let Ok(mut pixs) = self.get_rect() {
             xpr.history.enter()?;
             pixs.set_color(&xpr.color());
-            xpr.history.top().selected_layer.borrow_mut().content.extend(&pixs);
+            xpr.current_layer_mut().unwrap().content.extend(&pixs);
         }
         Ok(())
     }

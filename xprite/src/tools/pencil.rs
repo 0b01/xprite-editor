@@ -194,9 +194,7 @@ impl Tool for Pencil {
         self.buffer.set_color(&xpr.color());
 
         xpr.history.enter()?;
-        xpr.history.top_mut()
-            .selected_layer
-            .borrow_mut()
+        xpr.current_layer_mut().unwrap()
             .content
             .extend(&self.buffer);
 
