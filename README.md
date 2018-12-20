@@ -27,12 +27,12 @@ Pixel art editor with algorithmic tools.
 * [x] Color Picker
 * [x] Paint Bucket
 * [x] Eraser
-* [ ] Texture Synthesis
+* [x] Shapes - Rect
 * [ ] Vector tools
 * [ ] Shapes - Circle
-* [ ] Shapes - Rect
 * [ ] Select
 * [ ] Pattern Brush
+* [ ] Texture Synthesis
 
 2. Layers
 
