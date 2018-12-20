@@ -1,7 +1,7 @@
 use crate::tools::*;
 use crate::algorithms::rect::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct Rect {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,

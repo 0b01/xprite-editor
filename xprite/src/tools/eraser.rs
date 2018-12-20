@@ -1,5 +1,6 @@
 use crate::prelude::*;
 
+#[derive(Debug)]
 pub struct Eraser {
     is_mouse_down: Option<InputItem>,
     current_polyline: Polyline,

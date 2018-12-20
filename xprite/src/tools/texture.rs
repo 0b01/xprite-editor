@@ -5,7 +5,7 @@ use libtexsyn::{
     generators::patch::{Quilter, QuilterParams},
 };
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct Texture {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,

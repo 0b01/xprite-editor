@@ -6,7 +6,7 @@ pub fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         ui.menu(im_str!("File")).build(|| {
             ui.menu_item(im_str!("Load")).shortcut(im_str!("Ctrl+O")).build();
             if ui.menu_item(im_str!("Save")).shortcut(im_str!("Ctrl+S")).build() {
-                state.save();
+                state.save("test.xpr");
             }
             if ui.menu_item(im_str!("Settings")).build() {
                 state.show_settings = true;

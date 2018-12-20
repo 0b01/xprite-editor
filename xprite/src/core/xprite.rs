@@ -4,7 +4,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::sync::{Arc, Mutex};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Xprite {
     pub history: History,
 
@@ -23,9 +23,6 @@ pub struct Xprite {
     pub scripting: Rc<RefCell<Scripting>>,
 
     #[serde(skip_serializing, skip_deserializing)]
-    pub rdr: ImageRenderer,
-
-    #[serde(skip_serializing, skip_deserializing)]
     pub log: Arc<Mutex<String>>,
 }
 
@@ -42,8 +39,6 @@ impl Xprite {
         let scripting = Rc::new(RefCell::new(Scripting::new()));
         let log = Arc::new(Mutex::new(String::new()));
 
-        let rdr = ImageRenderer::new(art_w, art_h);
-
         Xprite {
             scripting,
             last_mouse_pos: (0., 0.),
@@ -55,7 +50,6 @@ impl Xprite {
             cursor_pos,
             toolbox,
             log,
-            rdr,
         }
     }
 
@@ -257,10 +251,11 @@ impl Xprite {
 }
 
 impl Xprite {
-    pub fn layer_as_im(&mut self) -> Option<&img::DynamicImage> {
+    pub fn layer_as_im(&mut self) -> Option<img::DynamicImage> {
         let layer = self.history.top_mut().selected_layer()?;
-        layer.draw(&mut self.rdr);
-        self.rdr.img()
+        let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
+        layer.draw(&mut rdr);
+        rdr.img().cloned()
     }
 
     /// export pixels to an image via renderer

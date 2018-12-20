@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone, Debug)]
 pub enum BrushType {
     Pixel,
     Cross,
@@ -19,6 +19,7 @@ impl BrushType {
     ];
 }
 
+#[derive(Debug)]
 pub struct Brush {
     pub shape: PixelOffsets,
     pub bb: (f32, f32),

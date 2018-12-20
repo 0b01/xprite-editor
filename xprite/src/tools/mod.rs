@@ -13,7 +13,7 @@ pub mod traits;
 
 pub use self::traits::Tool;
 
-#[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Copy)]
+#[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Copy, Debug)]
 pub enum ToolType {
     Pencil,
     Line,

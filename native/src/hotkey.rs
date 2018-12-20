@@ -11,6 +11,7 @@ pub enum Bind {
     ToggleConsole,
     RunScript,
     Save,
+    Export,
     Unmapped,
 }
 
@@ -23,7 +24,8 @@ impl Bind {
             PushTool(tool) => state.xpr.change_tool(&tool)?,
             PopTool => state.xpr.toolbox.pop_tool(),
             ToggleConsole => {state.show_console = !state.show_console;}
-            Save => state.save(),
+            Save => state.save("1.xpr"),
+            Export => state.export_png("1.png"),
             RunScript => {
                 let path = state.script_fname
                     .clone()
@@ -123,6 +125,7 @@ impl HotkeyController {
             binds.insert( Action::Return(true, false, false, true), Bind::RunScript );
             // ctrl-s
             binds.insert( Action::S(true, false, false, true), Bind::Save );
+            binds.insert( Action::S(true, true, false, true), Bind::Export );
 
 
         }

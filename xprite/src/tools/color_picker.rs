@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct ColorPicker { }
 
 impl ColorPicker {

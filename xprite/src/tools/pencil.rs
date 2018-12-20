@@ -3,7 +3,7 @@ use crate::algorithms::sorter::sort_path;
 use crate::algorithms::pixel_perfect::pixel_perfect;
 use std::str::FromStr;
 
-#[derive(Eq, PartialEq, Clone, Copy)]
+#[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum PencilMode {
     /// raw - noop
     Raw,
@@ -41,6 +41,7 @@ impl FromStr for PencilMode {
     }
 }
 
+#[derive(Debug)]
 pub struct Pencil {
     is_mouse_down: Option<InputItem>,
     current_polyline: Polyline,
@@ -194,7 +195,7 @@ impl Tool for Pencil {
         self.buffer.set_color(&xpr.color());
 
         xpr.history.enter()?;
-        xpr.current_layer_mut().ok_or("Layer doesn't exist.".to_owned())
+        xpr.current_layer_mut().ok_or("Layer doesn't exist.".to_owned())?
             .content
             .extend(&self.buffer);
 

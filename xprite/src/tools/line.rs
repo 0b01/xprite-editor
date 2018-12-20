@@ -1,7 +1,7 @@
 use crate::tools::*;
 use crate::algorithms::line::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct Line {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,

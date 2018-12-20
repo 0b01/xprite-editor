@@ -1,5 +1,6 @@
 use crate::prelude::*;
 
+#[derive(Debug)]
 pub struct Vector {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,

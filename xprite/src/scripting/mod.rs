@@ -7,7 +7,7 @@ use dyon::{
 };
 use std::sync::Arc;
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Scripting {
     pub fname: Option<String>,
 }

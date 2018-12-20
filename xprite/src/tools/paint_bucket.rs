@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use crate::algorithms;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct PaintBucket { }
 
 impl PaintBucket {
