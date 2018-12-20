@@ -5,10 +5,10 @@ use std::f32;
 pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Vec<Pixel> {
     let mut ret = Vec::new();
 
-    let x0 = start.point.x as f32;
-    let y0 = start.point.y as f32;
-    let x1 = stop.point.x as f32;
-    let y1 = stop.point.y as f32;
+    let x0 = start.point.x;
+    let y0 = start.point.y;
+    let x1 = stop.point.x;
+    let y1 = stop.point.y;
 
     let dx = x1 - x0;
     let dy = y1 - y0;

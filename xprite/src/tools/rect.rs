@@ -35,6 +35,21 @@ impl Rect {
 
     fn get_rect(&self) -> Result<Pixels, String> {
         if let (Some(begin), Some(end)) = (self.start_pos, self.cursor_pos) {
+            let (begin, end) = if self.snap {
+                let x0 = begin.point.x;
+                let y0 = begin.point.y;
+                let x1 = end.point.x;
+                let y1 = end.point.y;
+                let dx = x1 - x0;
+                let dy = y1 - y0;
+                let d = f32::min(dx, dy);
+                let mut end = begin.clone();
+                end.point.x = begin.point.x + d;
+                end.point.y = begin.point.y + d;
+                (begin, end)
+            } else {
+                (begin, end)
+            };
             let begin_pos = if self.symmetric {
                 let x = begin.point.x - (end.point.x-begin.point.x);
                 let y = begin.point.y - (end.point.y-begin.point.y);
@@ -122,7 +137,7 @@ impl Tool for Rect {
             "shift" => {
                 match value {
                     "true" => { self.snap = true; }
-                    "false" => { self.snap = false }
+                    "false" => { self.snap = false; }
                     _ => error!("unimpl for ctrl: {}", value)
                 }
                 self.draw(xpr)?;
