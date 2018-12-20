@@ -7,6 +7,7 @@ pub struct Vector {
     pub tolerence: f32,
     pixs_buf: Pixels,
     current_polyline: Option<Polyline>,
+    pub draw_bezier: bool,
 }
 
 impl Default for Vector {
@@ -30,6 +31,7 @@ impl Vector {
             brush,
             pixs_buf,
             tolerence: 1.,
+            draw_bezier: false,
         }
     }
 }
@@ -130,7 +132,9 @@ impl Tool for Vector {
             };
 
             self.pixs_buf.extend(&pixs_buf);
-            xpr.bz_buf.extend(path.segments);
+            if self.draw_bezier {
+                xpr.bz_buf.extend(path.segments);
+            }
 
             xpr.add_pixels(&self.pixs_buf);
         }

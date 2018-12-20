@@ -111,6 +111,7 @@ impl HotkeyController {
             binds.insert( Action::G(false, false, false, true), Bind::PushTool(ToolType::PaintBucket) );
             binds.insert( Action::L(false, false, false, true), Bind::PushTool(ToolType::Line) );
             binds.insert( Action::E(false, false, false, true), Bind::PushTool(ToolType::Eraser) );
+            binds.insert( Action::V(false, false, false, true), Bind::PushTool(ToolType::Vector) );
             binds.insert( Action::R(false, false, false, true), Bind::PushTool(ToolType::Rect) );
             binds.insert( Action::F(false, false, false, true), Bind::PushTool(ToolType::FilledRect) );
             binds.insert( Action::T(false, false, false, true), Bind::PushTool(ToolType::Texture) );
