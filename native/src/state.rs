@@ -1,6 +1,6 @@
 use xprite::prelude::*;
 use crate::prelude::*;
-use crate::render::cairo::CairoRenderer;
+use xprite::rendering::image_renderer::ImageRenderer;
 use xprite::image::GenericImage;
 use xprite::bincode::{serialize, deserialize};
 use std::io::{BufWriter, Write, BufReader, Read};
@@ -12,32 +12,29 @@ pub struct State {
     pub show_console: bool,
     pub hotkeys: HotkeyController,
     pub inputs: InputState,
-    pub cairo: CairoRenderer,
     pub script_fname: Option<String>,
 }
 
 impl State {
-    pub fn new(xpr: Xprite, cairo: CairoRenderer) -> State {
+    pub fn new(xpr: Xprite) -> State {
         State {
             xpr,
             show_settings: false,
             show_console: false,
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
-            cairo,
             script_fname: None,
         }
     }
 
     pub fn save_png(&mut self, img_path: &str) {
-        self.xpr.export(&mut self.cairo).unwrap();
-        self.cairo.render();
-        if let Some(im) = self.cairo.img() {
-            info!("writing file to {}", img_path);
-            let mut f = File::create(img_path).unwrap();
-            im.save(&mut f, image::ImageFormat::PNG).unwrap()
-        };
-        self.cairo.reset();
+        let mut rdr = ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
+        self.xpr.export(&mut rdr).unwrap();
+        rdr.render();
+        let im = rdr.img();
+        info!("writing file to {}", img_path);
+        let mut f = File::create(img_path).unwrap();
+        im.save(&mut f, image::ImageFormat::PNG).unwrap();
     }
 
     pub fn save_xpr(&mut self, file_path: &str) {

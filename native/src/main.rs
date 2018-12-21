@@ -8,16 +8,7 @@ extern crate glium;
 extern crate imgui;
 extern crate clap;
 extern crate imgui_glium_renderer;
-
 extern crate cairo;
-
-use xprite::prelude::*;
-
-use crate::render::cairo::CairoRenderer;
-// use crate::render::imgui_cairo::ImguiCairoRenderer;
-use crate::render::imgui::ImguiRenderer;
-
-use std::sync::{Arc, Mutex};
 
 mod hotkey;
 mod consts;
@@ -26,7 +17,12 @@ mod prelude;
 mod ui;
 mod state;
 
+use xprite::prelude::*;
+use self::prelude::*;
+use crate::render::imgui::ImguiRenderer;
+use std::sync::{Arc, Mutex};
 use clap::{App, Arg, SubCommand};
+
 fn main() {
     let matches = App::new("xprite")
                     .version("1.0")
@@ -68,18 +64,16 @@ fn main() {
 }
 
 fn run_python_script(fname: &str) {
-    let xpr = Xprite::new(100., 100.);
-    let cairo = CairoRenderer::new(100., 100.);
-    let mut state = state::State::new(xpr, cairo);
-    state.xpr.execute_python_script(fname).unwrap();
+    let xpr = xprite::scripting::python::python(fname).unwrap();
+    let mut state = State::new(xpr);
+
     println!("Running Python script {}", fname);
     state.save_png("1.png");
 }
 
 fn run_dyon_script(fname: &str) {
-    let xpr = Xprite::new(100., 100.);
-    let cairo = CairoRenderer::new(100., 100.);
-    let mut state = state::State::new(xpr, cairo);
+    let xpr = Xprite::new(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    let mut state = State::new(xpr);
     state.xpr.execute_dyon_script(fname).unwrap();
     state.save_png("1.png");
 }
@@ -87,10 +81,9 @@ fn run_dyon_script(fname: &str) {
 
 fn run_ui() {
     trace!("Starting Xprite");
-    let xpr = Xprite::new(100., 100.);
+    let xpr = Xprite::new(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     init_logger(Arc::clone(&xpr.log));
-    let cairo = CairoRenderer::new(100., 100.);
-    let mut state = state::State::new(xpr, cairo);
+    let mut state = State::new(xpr);
 
 
     render::run("Xprite", BGCOLOR, |ui, gl_ctx, textures| {

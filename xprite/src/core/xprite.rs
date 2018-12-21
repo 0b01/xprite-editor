@@ -139,12 +139,6 @@ impl Xprite {
         scripting.fname = Some(path.to_owned());
         scripting.execute(self)
     }
-
-    pub fn execute_python_script(&mut self, path: &str) -> Result<(), String> {
-        crate::scripting::python::python(path, self)
-            .map_err(|e| format!("{:?}",e))
-    }
-
 }
 
 

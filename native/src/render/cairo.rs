@@ -4,6 +4,7 @@ use cairo::{ImageSurface, Context, Format};
 use xprite::image::{ImageBuffer, DynamicImage, Rgba};
 use std::mem;
 
+#[allow(unused)]
 pub struct CairoRenderer {
     w: u32,
     h: u32,
@@ -113,6 +114,7 @@ fn argb2rgba(i: u32) -> u32 {
     ((i & 0x0000_00FF) << 16)
 }
 
+#[allow(unused)]
 impl CairoRenderer {
     pub fn new(art_w: f32, art_h: f32) -> Self {
         let w = art_w as u32;
