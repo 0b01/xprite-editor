@@ -22,7 +22,7 @@ pub struct Xprite {
     pub last_mouse_pos: (f32, f32),
 
     #[serde(skip_serializing, skip_deserializing)]
-    pub scripting: Rc<RefCell<Scripting>>,
+    pub scripting: Rc<RefCell<DyonRuntime>>,
 
     #[serde(skip_serializing, skip_deserializing)]
     pub log: Arc<Mutex<String>>,
@@ -38,7 +38,7 @@ impl Xprite {
         let im_buf = Pixels::new();
         let bz_buf = Vec::new();
 
-        let scripting = Rc::new(RefCell::new(Scripting::new()));
+        let scripting = Rc::new(RefCell::new(DyonRuntime::new()));
         let log = Arc::new(Mutex::new(String::new()));
 
         Xprite {
@@ -132,12 +132,19 @@ impl Xprite {
 }
 
 impl Xprite {
-    pub fn execute_script(&mut self, path: &str) -> Result<(), String> {
+
+    pub fn execute_dyon_script(&mut self, path: &str) -> Result<(), String> {
         let s = Rc::clone(&self.scripting);
         let mut scripting = s.borrow_mut();
         scripting.fname = Some(path.to_owned());
         scripting.execute(self)
     }
+
+    pub fn execute_python_script(&mut self, path: &str) -> Result<(), String> {
+        crate::scripting::python::python(path, self)
+            .map_err(|e| format!("{:?}",e))
+    }
+
 }
 
 

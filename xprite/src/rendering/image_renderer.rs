@@ -70,7 +70,7 @@ mod tests {
         let mut rdr = ImageRenderer::new(10., 10.);
         rdr.rect([0.,0.,], [0.,0.,], [1.,0.,0.,1.], true);
         let path = "test.png";
-        save_img(path, rdr.img().unwrap());
+        save_img(path, rdr.img());
         ::std::fs::remove_file(path).unwrap();
     }
 }

@@ -32,8 +32,8 @@ fn main() {
                     .version("1.0")
                     .author("Ricky Han <xprite@rickyhan.com>")
                     .about("pixel art editor with extra tools")
-                    .subcommand(SubCommand::with_name("run")
-                                .about("run script")
+                    .subcommand(SubCommand::with_name("dyon")
+                                .about("run dyon script")
                                 .version("1.0")
                                 .arg(Arg::with_name("INPUT")
                                     .help("INPUT.dyon script")
@@ -43,22 +43,44 @@ fn main() {
                                 .arg(Arg::with_name("debug")
                                     .short("d")
                                     .help("print debug information verbosely")))
+                    .subcommand(SubCommand::with_name("python")
+                                .about("run python script")
+                                .version("1.0")
+                                .arg(Arg::with_name("INPUT")
+                                    .help("INPUT.py script")
+                                    .required(true)
+                                    .index(1)
+                                )
+                                .arg(Arg::with_name("debug")
+                                    .short("d")
+                                    .help("print debug information verbosely")))
                     .get_matches();
 
-    if let Some(matches) = matches.subcommand_matches("run") {
+    if let Some(matches) = matches.subcommand_matches("dyon") {
         let inp_file = matches.value_of("INPUT").unwrap();
-        run_script(inp_file);
+        run_dyon_script(inp_file);
+    } else if let Some(matches) = matches.subcommand_matches("python") {
+        let inp_file = matches.value_of("INPUT").unwrap();
+        run_python_script(inp_file);
     } else {
         run_ui();
     }
 }
 
-fn run_script(fname: &str) {
+fn run_python_script(fname: &str) {
     let xpr = Xprite::new(100., 100.);
     let cairo = CairoRenderer::new(100., 100.);
     let mut state = state::State::new(xpr, cairo);
-    state.script_fname = Some(fname.to_owned());
-    state.xpr.execute_script(fname).unwrap();
+    state.xpr.execute_python_script(fname).unwrap();
+    println!("Running Python script {}", fname);
+    state.save_png("1.png");
+}
+
+fn run_dyon_script(fname: &str) {
+    let xpr = Xprite::new(100., 100.);
+    let cairo = CairoRenderer::new(100., 100.);
+    let mut state = state::State::new(xpr, cairo);
+    state.xpr.execute_dyon_script(fname).unwrap();
     state.save_png("1.png");
 }
 

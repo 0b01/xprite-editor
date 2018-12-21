@@ -1,6 +1,7 @@
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::float_cmp)]
 #![feature(vec_remove_item)]
+#![feature(specialization)]
 
 
 extern crate image as img;
@@ -10,6 +11,7 @@ extern crate serde;
 #[macro_use] extern crate dyon;
 extern crate indexmap;
 extern crate libtexsyn;
+extern crate pyo3;
 extern crate bincode as bc;
 
 pub mod bincode {

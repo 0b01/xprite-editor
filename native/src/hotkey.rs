@@ -36,7 +36,7 @@ impl Bind {
                     .unwrap_or(
                         "/home/g/Desktop/xprite/scripts/render.dyon".to_owned()
                     );
-                state.xpr.execute_script(&path).unwrap_or_else(
+                state.xpr.execute_dyon_script(&path).unwrap_or_else(
                     |msg| {
                         error!("{}", msg);
                         state.xpr.log.lock().unwrap().push_str(&msg);
