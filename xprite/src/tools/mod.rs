@@ -7,6 +7,7 @@ pub mod line;
 pub mod paint_bucket;
 pub mod color_picker;
 pub mod rect;
+pub mod ellipse;
 pub mod texture;
 
 pub mod traits;
@@ -24,6 +25,8 @@ pub enum ToolType {
     Rect,
     FilledRect,
     Texture,
+    Ellipse,
+    FilledEllipse,
 }
 
 impl Default for ToolType {
@@ -43,11 +46,13 @@ impl ToolType {
             ToolType::Eraser => "Eraser",
             ToolType::Rect => "Rect",
             ToolType::FilledRect => "FilledRect",
+            ToolType::Ellipse => "Ellipse",
+            ToolType::FilledEllipse => "FilledEllipse",
             ToolType::Texture => "Texture",
         }
     }
 
-    pub const VARIANTS: [ToolType; 8] = [
+    pub const VARIANTS: [ToolType; 9] = [
         ToolType::Pencil,
         ToolType::Line,
         ToolType::PaintBucket,
@@ -56,5 +61,6 @@ impl ToolType {
         ToolType::Eraser,
         ToolType::Rect,
         ToolType::Texture,
+        ToolType::Ellipse,
     ];
 }

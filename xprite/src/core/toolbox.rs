@@ -13,6 +13,7 @@ use crate::tools::{
     eraser::Eraser,
     rect::Rect,
     texture::Texture,
+    ellipse::Ellipse,
 };
 
 #[derive(Default, Debug)]
@@ -25,6 +26,7 @@ pub struct Toolbox {
     pub eraser:         Rc<RefCell<Eraser>>,
     pub rect:           Rc<RefCell<Rect>>,
     pub texture:        Rc<RefCell<Texture>>,
+    pub ellipse:           Rc<RefCell<Ellipse>>,
 
     pub selected:       ToolType,
 
@@ -41,6 +43,7 @@ impl Toolbox {
         let eraser = Rc::new(RefCell::new(Eraser::new()));
         let rect = Rc::new(RefCell::new(Rect::new()));
         let texture = Rc::new(RefCell::new(Texture::new()));
+        let ellipse = Rc::new(RefCell::new(Ellipse::new()));
 
         let selected = ToolType::Pencil;
 
@@ -56,6 +59,7 @@ impl Toolbox {
             eraser,
             rect,
             texture,
+            ellipse,
         }
     }
 
@@ -73,6 +77,7 @@ impl Toolbox {
             ColorPicker => self.color_picker.clone(),
             Eraser => self.eraser.clone(),
             Rect | FilledRect => self.rect.clone(),
+            Ellipse | FilledEllipse => self.ellipse.clone(),
             Texture => self.texture.clone(),
 
         }
@@ -84,6 +89,9 @@ impl Toolbox {
         match tool {
             ToolType::Rect => { self.rect.borrow_mut().filled = false; }
             ToolType::FilledRect => {self.rect.borrow_mut().filled = true; }
+
+            ToolType::Ellipse => { self.ellipse.borrow_mut().filled = false; }
+            ToolType::FilledEllipse => {self.ellipse.borrow_mut().filled = true; }
             _ => (),
         }
     }

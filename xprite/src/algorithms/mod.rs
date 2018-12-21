@@ -6,3 +6,4 @@ pub mod pixel_perfect;
 pub mod floodfill;
 pub mod perimeter;
 pub mod rect;
+pub mod ellipse;

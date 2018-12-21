@@ -11,6 +11,7 @@ Pixel art editor with algorithmic tools.
 * [ ] Cache long stroke
 * [ ] Simply drawlist
 * [ ] Ignore canvas OOB
+* [ ] Change ImDrawIdx to u32
 
 0. Finding the right abstractions
 
@@ -33,7 +34,7 @@ Pixel art editor with algorithmic tools.
 * [x] Paint Bucket
 * [x] Eraser
 * [x] Shapes - Rect
-* [ ] Shapes - Circle
+* [x] Shapes - Circle
 * [ ] Vector tools
 * [ ] Select
 * [ ] Pattern Brush
