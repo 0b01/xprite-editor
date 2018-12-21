@@ -59,7 +59,7 @@ fn run_script(fname: &str) {
     let mut state = state::State::new(xpr, cairo);
     state.script_fname = Some(fname.to_owned());
     state.xpr.execute_script(fname).unwrap();
-    state.export_png("1.png");
+    state.save_png("1.png");
 }
 
 

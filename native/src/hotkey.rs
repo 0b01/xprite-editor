@@ -10,8 +10,8 @@ pub enum Bind {
     PopTool,
     ToggleConsole,
     RunScript,
-    Save,
-    Export,
+    SaveXPR, SavePNG,
+    LoadXPR, LoadPNG,
     Unmapped,
 }
 
@@ -24,8 +24,12 @@ impl Bind {
             PushTool(tool) => state.xpr.change_tool(&tool)?,
             PopTool => state.xpr.toolbox.pop_tool(),
             ToggleConsole => {state.show_console = !state.show_console;}
-            Save => state.save_xpr("1.xpr"),
-            Export => state.export_png("1.png"),
+
+            LoadXPR => state.load_xpr("1.xpr"),
+            SaveXPR => state.save_xpr("1.xpr"),
+            LoadPNG => state.load_png("1.png"),
+            SavePNG => state.save_png("1.png"),
+
             RunScript => {
                 let path = state.script_fname
                     .clone()
@@ -124,8 +128,10 @@ impl HotkeyController {
 
             binds.insert( Action::Return(true, false, false, true), Bind::RunScript );
             // ctrl-s
-            binds.insert( Action::S(true, false, false, true), Bind::Save );
-            binds.insert( Action::S(true, true, false, true), Bind::Export );
+            binds.insert( Action::S(true, false, false, true), Bind::SavePNG );
+            binds.insert( Action::S(true, true, false, true), Bind::SaveXPR );
+            binds.insert( Action::O(true, false, false, true), Bind::LoadPNG );
+            binds.insert( Action::O(true, true, false, true), Bind::LoadXPR );
 
 
         }

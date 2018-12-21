@@ -4,6 +4,7 @@ use std::cmp::Ordering;
 use std::hash::{Hash, Hasher};
 use std::fmt::{Debug, Formatter, Error};
 use indexmap::{IndexSet, set::Iter};
+use img::GenericImage;
 
 #[derive(Copy, Clone, Eq, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Pixel {
@@ -152,6 +153,17 @@ impl From<Pixel> for Pixels {
     }
 }
 
+impl From<img::DynamicImage> for Pixels {
+    fn from(im: img::DynamicImage) -> Pixels {
+        let mut pixs = Pixels::new();
+        for p in im.pixels() {
+            pixs.push(pixel!(p.0, p.1, p.2.into()))
+        }
+        pixs
+    }
+}
+
+
 impl Pixels {
     pub fn as_bool_arr(&self, w: usize, h: usize) -> Vec<Vec<bool>> {
         let mut arr = vec![];
@@ -197,7 +209,7 @@ impl Pixels {
             let Pixel{point:Vec2D{x,y}, color} = pix;
             rdr.rect([*x - origin.0,*y - origin.1], [0.,0.,], (*color).into(), true);
         }
-        rdr.image.unwrap()
+        rdr.image
     }
 }
 

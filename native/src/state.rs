@@ -1,6 +1,7 @@
 use xprite::prelude::*;
 use crate::prelude::*;
 use crate::render::cairo::CairoRenderer;
+use xprite::image::GenericImage;
 use xprite::bincode::{serialize, deserialize};
 use std::io::{BufWriter, Write, BufReader, Read};
 use std::fs::File;
@@ -28,7 +29,7 @@ impl State {
         }
     }
 
-    pub fn export_png(&mut self, img_path: &str) {
+    pub fn save_png(&mut self, img_path: &str) {
         self.xpr.export(&mut self.cairo).unwrap();
         self.cairo.render();
         if let Some(im) = self.cairo.img() {
@@ -40,18 +41,24 @@ impl State {
     }
 
     pub fn save_xpr(&mut self, file_path: &str) {
+        info!("saving xpr file to {}", file_path);
         let encoded: Vec<u8> = serialize(&self.xpr).unwrap();
         let f = File::create(file_path).unwrap();
         let mut wtr = BufWriter::new(f);
         wtr.write_all(&encoded).unwrap();
     }
 
-    pub fn open(&mut self, png_path: &str) {
-        // let mut f = File::open(png_path).unwrap();
-        // let mut wtr = BufReader::new(f);
+    pub fn load_png(&mut self, png_path: &str) {
+        info!("loading png file {}", png_path);
+        let img = xprite::image::open(png_path).unwrap();
+        let (w, h) = img.dimensions();
+        let mut xpr = Xprite::new(w as f32, h as f32);
+        xpr.current_layer_mut().unwrap().content = img.into();
+        self.xpr = xpr;
     }
 
     pub fn load_xpr(&mut self, file_path: &str) {
+        info!("loading xpr file {}", file_path);
         let f = File::open(file_path).unwrap();
         let mut reader = BufReader::new(f);
 

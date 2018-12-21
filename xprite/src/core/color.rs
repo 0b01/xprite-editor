@@ -40,6 +40,16 @@ impl From<[f32;4]> for Color {
     }
 }
 
+impl From<img::Rgba<u8>> for Color {
+    fn from(c: img::Rgba<u8>) -> Self {
+        Color {
+            r: c[0],
+            g: c[1],
+            b: c[2],
+            a: c[3],
+        }
+    }
+}
 
 impl Color {
     pub fn new(r:u8, g:u8, b:u8) -> Color {

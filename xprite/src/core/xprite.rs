@@ -253,11 +253,11 @@ impl Xprite {
 }
 
 impl Xprite {
-    pub fn layer_as_im(&mut self) -> Option<img::DynamicImage> {
-        let layer = self.history.top_mut().selected_layer()?;
+    pub fn layer_as_im(&mut self) -> img::DynamicImage {
+        let layer = self.history.top_mut().selected_layer().unwrap();
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         layer.draw(&mut rdr);
-        rdr.img().cloned()
+        rdr.image
     }
 
     /// export pixels to an image via renderer

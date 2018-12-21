@@ -170,7 +170,6 @@ impl Tool for Pencil {
             PixelPerfect => {
                 // if mousedown w/o move
                 if !self.moved {
-                    info!("mousedown w/o moving");
                     // noop
                 } else {
                     self.buffer.clear();

@@ -6,6 +6,12 @@ Pixel art editor with algorithmic tools.
 
 # Milestones:
 
+0. Bug fixes
+
+* [ ] Cache long stroke
+* [ ] Simply drawlist
+* [ ] Ignore canvas OOB
+
 0. Finding the right abstractions
 
 * [x] Canvas
@@ -17,7 +23,6 @@ Pixel art editor with algorithmic tools.
 * [x] Hotkeys
 * [x] Save
 * [x] Load
-* [x] Long stroke performance(using --release is actually pretty fast)
 * [ ] Palette
 
 1. Basic tools
