@@ -1,16 +1,21 @@
-use crate::prelude::*;
 use imgui::*;
 use xprite::rendering::{Renderer, MouseCursorType};
 use xprite::image::GenericImage;
 use glium::{ backend::Facade, Texture2d, texture::{RawImage2d, ClientFormat} };
 use std::borrow::Cow;
 use xprite::indexmap::IndexMap;
+use std::f32;
+
+type DrawListPoint1 = [u32;2];
+type DrawListPoint2 = [u32;2];
+type DrawListColor = [f32;4];
+type DrawListFill = bool;
 
 pub struct ImguiRenderer<'ui> {
     pub ui: &'ui Ui<'ui>,
     pub gl_ctx: &'ui Facade,
     pub textures: &'ui mut Textures<Texture2d>,
-    draw_list: IndexMap<([u32;2], [u32;2]), ([f32;4], bool)>,
+    draw_list: IndexMap<(DrawListPoint1, DrawListPoint2), (DrawListColor, DrawListFill)>,
 }
 
 impl<'ui> Renderer for ImguiRenderer<'ui> {
@@ -118,10 +123,8 @@ fn canonicalize(p: [f32;2]) -> [u32;2] {
 
 #[inline(always)]
 fn uncanonicalize(p: [u32;2]) -> [f32;2] {
-    unsafe {
-        [
-            ::std::mem::transmute::<u32, f32>(p[0]),
-            ::std::mem::transmute::<u32, f32>(p[1]),
-        ]
-    }
+    [
+        f32::from_bits(p[0]),
+        f32::from_bits(p[1]),
+    ]
 }

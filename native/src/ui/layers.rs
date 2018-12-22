@@ -71,7 +71,6 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             ui.with_id(i as i32, || {
                 if ui.checkbox(im_str!(""), &mut layer.visible) {
                     layer.visible = !layer.visible; // undo imgui checkbox mutation
-                    drop(layer); // drop borrow
                     state.xpr.toggle_layer_visibility(i).unwrap(); // enter history frame and toggle
                 }
             });

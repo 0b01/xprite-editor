@@ -33,8 +33,9 @@ impl Bind {
             RunScript => {
                 let path = state.script_fname
                     .clone()
-                    .unwrap_or(
-                        "/home/g/Desktop/xprite/scripts/render.dyon".to_owned()
+                    .unwrap_or_else( ||
+                        "/home/g/Desktop/xprite/scripts/render.dyon"
+                        .to_owned()
                     );
                 state.xpr.execute_dyon_script(&path).unwrap_or_else(
                     |msg| {
