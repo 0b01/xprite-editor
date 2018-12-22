@@ -1,5 +1,5 @@
-WIDTH = 500
-HEIGHT = 500
+WIDTH = 512
+HEIGHT = 512
 
 def run():
     from random import random, randint, choice, choices, sample, gauss
@@ -62,7 +62,7 @@ def run():
         nonlocal ret
         ret += rectangle(v0, v1)
 
-    draw_block((0, 0), (500, 500))
+    draw_block((0, 0), (512, 512))
     return ret
 
 

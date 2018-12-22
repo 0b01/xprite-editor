@@ -1,12 +1,12 @@
-WIDTH = 256
-HEIGHT = 256
+WIDTH = 512
+HEIGHT = 512
 
-def munching_sq():
+def munching_squares():
     ret = []
-    for x in range(256):
-        for y in range(256):
+    for x in range(512):
+        for y in range(512):
             c = x^y
-            ret.append(((x, y), (c,c,0, 255)))
+            ret.append(((x, y), (c,0,0,255)))
     return ret
 
-pixels = munching_sq()
+PIXELS = munching_squares()
