@@ -13,14 +13,14 @@ pub struct StdwebRenderer {
 
 #[allow(unused)]
 impl Renderer for StdwebRenderer {
-    fn width(&self) -> u32 {
-        self.canvas.width()
+    fn width(&self) -> f32 {
+        self.canvas.width() as f32
     }
-    fn height(&self) -> u32 {
-        self.canvas.height()
+    fn height(&self) -> f32 {
+        self.canvas.height() as f32
     }
     fn rect(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
-        console!(log, format!("{:#?}, {:#?}", p0, color));
+        console!(log, format!("{:#?}, {:#?}, {:#?}", p0, p1, color));
         let a = f64::from(p0[0]); let b = f64::from(p0[1]);
         let c = f64::from(p1[0]) - a; let d = f64::from(p1[1]) - a;
         if filled {

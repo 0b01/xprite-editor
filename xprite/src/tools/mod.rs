@@ -13,8 +13,9 @@ pub mod texture;
 pub mod traits;
 
 pub use self::traits::Tool;
+use std::str::FromStr;
 
-#[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Copy, Debug)]
+#[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Copy, Debug, Serialize, Deserialize)]
 pub enum ToolType {
     Pencil,
     Line,
@@ -36,6 +37,18 @@ impl Default for ToolType {
 }
 
 impl ToolType {
+    pub const VARIANTS: [ToolType; 9] = [
+        ToolType::Pencil,
+        ToolType::Line,
+        ToolType::PaintBucket,
+        ToolType::Vector,
+        ToolType::ColorPicker,
+        ToolType::Eraser,
+        ToolType::Rect,
+        ToolType::Texture,
+        ToolType::Ellipse,
+    ];
+
     pub fn as_str(&self) -> &str {
         match self {
             ToolType::Pencil => "Pencil",
@@ -51,16 +64,24 @@ impl ToolType {
             ToolType::Texture => "Texture",
         }
     }
+}
 
-    pub const VARIANTS: [ToolType; 9] = [
-        ToolType::Pencil,
-        ToolType::Line,
-        ToolType::PaintBucket,
-        ToolType::Vector,
-        ToolType::ColorPicker,
-        ToolType::Eraser,
-        ToolType::Rect,
-        ToolType::Texture,
-        ToolType::Ellipse,
-    ];
+impl FromStr for ToolType {
+    type Err = ();
+    fn from_str(string: &str) -> Result<Self, ()> {
+        match string {
+            "Pencil" => Ok(ToolType::Pencil),
+            "Line" => Ok(ToolType::Line),
+            "PaintBucket" => Ok(ToolType::PaintBucket),
+            "Vector" => Ok(ToolType::Vector),
+            "ColorPicker" => Ok(ToolType::ColorPicker),
+            "Eraser" => Ok(ToolType::Eraser),
+            "Rect" => Ok(ToolType::Rect),
+            "FilledRect" => Ok(ToolType::FilledRect),
+            "Ellipse" => Ok(ToolType::Ellipse),
+            "FilledEllipse" => Ok(ToolType::FilledEllipse),
+            "Texture" => Ok(ToolType::Texture),
+            _ => Err(()),
+        }
+    }
 }

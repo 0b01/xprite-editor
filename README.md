@@ -4,25 +4,25 @@ Pixel art editor with algorithmic tools.
 
 [![Build Status](https://travis-ci.org/rickyhan/xprite-editor.svg?branch=master)](https://travis-ci.org/rickyhan/xprite-editor)
 
-# Bugs and Improvements
+## Bugs and Improvements
 
-* [ ] Cache long stroke
-* [ ] Brush size
+* [ ] Stroke caching
+* [ ] Fix web target
+* [ ] Dynamic brush size
 * [x] Floodfill crashing when index is negative
 * [x] Simplify drawlist
 * [x] Ignore canvas OOB
 * [ ] Change ImDrawIdx to u32
 
+## Milestones
 
-# Milestones:
-
-0. Finding the right abstractions
+1. Finding the right abstractions
 
 * [x] Canvas
 * [x] Renderer
 * [x] Layer
 
-0. Core functionalities
+1. Core functionalities
 
 * [x] Hotkeys
 * [x] Save
@@ -44,13 +44,11 @@ Pixel art editor with algorithmic tools.
 * [ ] Pattern Brush
 * [ ] Texture Synthesis
 
-2. Layers
+1. Layers
 
-3. Animation support
+1. Animation support
 
 * [ ] Celluloid
 * [ ] Preview window
 
-4. Collaborative edit
-
-* [ ] OT
+1. Collaborative edit

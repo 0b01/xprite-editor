@@ -318,6 +318,7 @@ impl Xprite {
     }
 
     pub fn mouse_move(&mut self, evt: &InputEvent) -> Result<(), String> {
+        info!("mouse move");
         if let &InputEvent::MouseMove{x, y} = evt {
             let p = Vec2D::new(x, y);
             let tool = self.toolbox.tool();

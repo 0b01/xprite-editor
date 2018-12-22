@@ -26,7 +26,7 @@ pub struct Toolbox {
     pub eraser:         Rc<RefCell<Eraser>>,
     pub rect:           Rc<RefCell<Rect>>,
     pub texture:        Rc<RefCell<Texture>>,
-    pub ellipse:           Rc<RefCell<Ellipse>>,
+    pub ellipse:        Rc<RefCell<Ellipse>>,
 
     pub selected:       ToolType,
 
