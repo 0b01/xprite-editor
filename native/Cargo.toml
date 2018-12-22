@@ -8,7 +8,6 @@ edition = "2018"
 imgui = "0.0.21"
 glium = { version = "0.22", default-features = true }
 imgui-glium-renderer = "0.0.21"
-xprite = { path = "../xprite" }
 
 # cmdline
 clap = "2.32.0"
@@ -18,9 +17,15 @@ log = { version = "0.4", features = ["std"] }
 chrono = "0.4"
 
 # rendering
-cairo-rs = "0.5.0"
+cairo-rs = { version = "0.5.0", optional = true }
+
+[dependencies.xprite]
+path = "../xprite"
+default-features = false
+features = ["python-scripting"]
 
 [features]
 default = ["python-scripting"]
+cairo-renderer = ["cairo-rs"]
 dyon-scripting = []
 python-scripting = []

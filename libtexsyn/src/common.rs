@@ -9,6 +9,7 @@ pub struct OrderedFloat<F> where F: Float {
 }
 
 impl<F> OrderedFloat<F> where F: Float {
+    #[allow(unused)]
     pub fn as_float(&self) -> F { self.val }
 
     /// Try converting a Float into an OrderedFloat.

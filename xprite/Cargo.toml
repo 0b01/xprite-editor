@@ -28,11 +28,9 @@ optional = true
 
 [dependencies.pyo3]
 version = "0.5.2"
-default-features = false
-features = []
 optional = true
 
 [features]
-default = ["python-scripting"]
+default = []
 python-scripting = ["pyo3"]
 dyon-scripting = ["dyon"]

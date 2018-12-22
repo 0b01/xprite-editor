@@ -8,5 +8,8 @@ edition = "2018"
 stdweb = "0.4.12"
 serde = "1.0.71"
 serde_derive = "1.0.71"
-itertools = "0.7"
-xprite = { path = "../xprite" }
+
+[dependencies.xprite]
+path = "../xprite"
+default-features = false
+features = []

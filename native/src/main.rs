@@ -8,6 +8,7 @@ extern crate glium;
 extern crate imgui;
 extern crate clap;
 extern crate imgui_glium_renderer;
+#[cfg(feature = "cairo-renderer")]
 extern crate cairo;
 
 mod hotkey;
@@ -23,6 +24,7 @@ use crate::render::imgui::ImguiRenderer;
 use std::sync::{Arc, Mutex};
 use clap::{App, Arg, SubCommand};
 
+#[allow(unused)]
 fn main() -> Result<(), String> {
     let matches = App::new("xprite")
                     .version("1.0")
