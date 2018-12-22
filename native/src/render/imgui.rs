@@ -1,13 +1,16 @@
+use crate::prelude::*;
 use imgui::*;
 use xprite::rendering::{Renderer, MouseCursorType};
 use xprite::image::GenericImage;
 use glium::{ backend::Facade, Texture2d, texture::{RawImage2d, ClientFormat} };
 use std::borrow::Cow;
+use xprite::indexmap::IndexMap;
 
 pub struct ImguiRenderer<'ui> {
     pub ui: &'ui Ui<'ui>,
     pub gl_ctx: &'ui Facade,
     pub textures: &'ui mut Textures<Texture2d>,
+    draw_list: IndexMap<([u32;2], [u32;2]), ([f32;4], bool)>,
 }
 
 impl<'ui> Renderer for ImguiRenderer<'ui> {
@@ -37,13 +40,11 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
             .build();
     }
 
-
     fn rect(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
-        let draw_list = self.ui.get_window_draw_list();
-        draw_list
-            .add_rect(p0, p1, color)
-            .filled(filled)
-            .build();
+        self.draw_list.insert(
+            (canonicalize(p0), canonicalize(p1)),
+            (color, filled)
+        );
     }
 
     fn line(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4]) {
@@ -73,11 +74,54 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         self.textures.insert(gl_texture).id()
     }
 
+    fn render(&mut self) {
+        let imgui_draw_list = self.ui.get_window_draw_list();
+        for ((p0,p1),(color,filled)) in self.draw_list.clone().into_iter() {
+            imgui_draw_list
+                .add_rect(
+                    uncanonicalize(p0),
+                    uncanonicalize(p1),
+                    color
+                )
+                .filled(filled)
+                .build();
+        }
+    }
+
+    fn reset(&mut self) {
+        self.draw_list.clear();
+    }
 }
 
 impl<'ui> ImguiRenderer<'ui> {
     pub fn new(ui: &'ui Ui, gl_ctx: &'ui Facade, textures: &'ui mut Textures<Texture2d>) -> Self {
-        Self { ui, gl_ctx, textures }
+        let draw_list = IndexMap::new();
+        Self {
+            ui,
+            gl_ctx,
+            textures,
+            draw_list,
+        }
     }
 
+}
+
+#[inline(always)]
+fn canonicalize(p: [f32;2]) -> [u32;2] {
+    unsafe {
+        [
+            ::std::mem::transmute::<f32, u32>(p[0]),
+            ::std::mem::transmute::<f32, u32>(p[1]),
+        ]
+    }
+}
+
+#[inline(always)]
+fn uncanonicalize(p: [u32;2]) -> [f32;2] {
+    unsafe {
+        [
+            ::std::mem::transmute::<u32, f32>(p[0]),
+            ::std::mem::transmute::<u32, f32>(p[1]),
+        ]
+    }
 }

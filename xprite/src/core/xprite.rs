@@ -184,6 +184,9 @@ impl Xprite {
 impl Xprite {
     /// render to canvas
     pub fn render(&self, rdr: &mut Renderer) {
+
+        rdr.reset();
+
         self.canvas.draw_canvas(rdr);
         self.canvas.draw_grid(rdr);
 

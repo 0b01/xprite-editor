@@ -9,7 +9,7 @@ extern crate serde;
 #[macro_use] extern crate serde_derive;
 #[macro_use] extern crate log;
 #[macro_use] extern crate dyon;
-extern crate indexmap;
+extern crate indexmap as imap;
 extern crate libtexsyn;
 extern crate pyo3;
 extern crate bincode as bc;
@@ -32,5 +32,9 @@ pub mod rendering;
 
 pub mod image {
     pub use img::*;
+}
+
+pub mod indexmap {
+    pub use imap::*;
 }
 

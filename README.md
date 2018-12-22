@@ -9,7 +9,7 @@ Pixel art editor with algorithmic tools.
 0. Bug fixes
 
 * [ ] Cache long stroke
-* [ ] Simply drawlist
+* [x] Simply drawlist
 * [ ] Ignore canvas OOB
 * [ ] Change ImDrawIdx to u32
 

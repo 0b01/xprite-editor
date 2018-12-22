@@ -23,7 +23,7 @@ use crate::render::imgui::ImguiRenderer;
 use std::sync::{Arc, Mutex};
 use clap::{App, Arg, SubCommand};
 
-fn main() {
+fn main() -> Result<(), String> {
     let matches = App::new("xprite")
                     .version("1.0")
                     .author("Ricky Han <xprite@rickyhan.com>")
@@ -54,28 +54,32 @@ fn main() {
 
     if let Some(matches) = matches.subcommand_matches("dyon") {
         let inp_file = matches.value_of("INPUT").unwrap();
-        run_dyon_script(inp_file);
+        run_dyon_script(inp_file)?;
     } else if let Some(matches) = matches.subcommand_matches("python") {
         let inp_file = matches.value_of("INPUT").unwrap();
-        run_python_script(inp_file);
+        run_python_script(inp_file)?;
     } else {
         run_ui();
     }
+
+    Ok(())
 }
 
-fn run_python_script(fname: &str) {
+fn run_python_script(fname: &str) -> Result<(), String> {
     println!("Running Python script {}", fname);
-    let xpr = xprite::scripting::python::python(fname).unwrap();
+    let xpr= xprite::scripting::python::python(fname)?;
     println!("Finished {}", fname);
     let mut state = State::new(xpr);
     state.save_png("1.png");
+    Ok(())
 }
 
-fn run_dyon_script(fname: &str) {
+fn run_dyon_script(fname: &str) -> Result<(), String> {
     let xpr = Xprite::new(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     let mut state = State::new(xpr);
-    state.xpr.execute_dyon_script(fname).unwrap();
+    state.xpr.execute_dyon_script(fname)?;
     state.save_png("1.png");
+    Ok(())
 }
 
 

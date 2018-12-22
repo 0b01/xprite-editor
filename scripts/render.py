@@ -1,28 +1,4 @@
-WIDTH = 256
-HEIGHT = 256
-RED = (255, 0, 0, 255)
+WIDTH = 1000
+HEIGHT = 1000
 
-def cubicbezier(x0, y0, x1, y1, x2, y2, x3, y3, n=20):
-    pts = []
-    for i in range(n+1):
-        t = i / n
-        a = (1. - t)**3
-        b = 3. * t * (1. - t)**2
-        c = 3.0 * t**2 * (1.0 - t)
-        d = t**3
-
-        x = int(a * x0 + b * x1 + c * x2 + d * x3)
-        y = int(a * y0 + b * y1 + c * y2 + d * y3)
-        pts.append(((x, y), RED))
-    # for i in range(n):
-    #     pts += line(pts[i][0], pts[i][1], pts[i+1][0], pts[i+1][1])
-    return pts
-
-def munching_sq():
-    ret = []
-    for x in range(256):
-        for y in range(256):
-            ret.append(((x, y), (0, 0, x^y, 255)))
-    return ret
-
-pixels = munching_sq()
+PIXELS = []

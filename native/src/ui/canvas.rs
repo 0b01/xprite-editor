@@ -26,7 +26,7 @@ pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
                         update_viewport(state, ui);
                         state.xpr.render(rdr);
 
-                        rdr.render();
+                        // rdr.render();
 
                         super::inputs::bind_input(state, ui);
                     });
@@ -45,8 +45,6 @@ pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
                 state.xpr.last_mouse_pos.0,
                 state.xpr.last_mouse_pos.1)
             );
-
-
         });
 }
 

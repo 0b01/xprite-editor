@@ -8,32 +8,37 @@ use std::io::Read;
 type PyPixel = ((i32, i32),(i32,i32,i32,i32));
 
 pub fn python(fname: &str) -> Result<Xprite, String> {
-    let mut f = File::open(fname).unwrap();
+    let mut f = File::open(fname).map_err(|_| "Cannot open file")?;
     let mut txt = String::new();
-    f.read_to_string(&mut txt).unwrap();
+    f.read_to_string(&mut txt).expect("Unable to read to string");
 
 
     let gil = Python::acquire_gil();
     let py = gil.python();
 
     let locals = PyDict::new(py);
-    locals.set_item("pixels", PyDict::new(py)).unwrap();
+    locals.set_item("PIXELS", PyDict::new(py))
+        .map_err(|_| "Failed to set PIXELS".to_owned())?;
     py.run(&txt, None, Some(&locals))
         .map_err(|e|
             {e.print(py); "script execution failed".to_owned()}
         )?;
 
-    let width: f32 = locals.get_item("WIDTH").unwrap().extract().unwrap();
-    let height: f32 = locals.get_item("HEIGHT").unwrap().extract().unwrap();
-    let res = locals.get_item("pixels").unwrap();
-    let v: Vec<PyPixel> = res.extract()
-        .map_err(|e|
-            {e.print(py); "script execution failed".to_owned()}
-        )?;
-;
+    let width: f32 = locals.get_item("WIDTH")
+        .ok_or("WIDTH is undefined".to_owned())?
+        .extract()
+        .map_err(|e| {e.print(py); "Cannot extract WIDTH".to_owned()})?;
+    let height: f32 = locals.get_item("HEIGHT")
+        .ok_or("HEIGHT is undefined".to_owned())?
+        .extract()
+        .map_err(|e| {e.print(py); "Cannot extract HEIGHT".to_owned()})?;
+    let pixels: Vec<PyPixel> = locals.get_item("PIXELS")
+        .ok_or("PIXELS is undefined".to_owned())?
+        .extract()
+        .map_err(|e| {e.print(py); "Cannot extract PIXELS".to_owned()})?;
 
     let mut buf = Pixels::new();
-    for &((x,y), (r,g,b,a)) in v.iter().rev() {
+    for &((x,y), (r,g,b,a)) in pixels.iter().rev() {
         buf.push(pixel!(x, y, Color{
             r:r as u8,
             g:g as u8,
