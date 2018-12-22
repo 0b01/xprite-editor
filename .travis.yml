@@ -1,12 +1,15 @@
 language: rust
 
+rust:
+  - nightly
+
+python:
+  - "3.6"
+
 os:
   - windows
   - linux
   - osx
-
-rust:
-  - nightly
 
 matrix:
   fast_finish: true
