@@ -31,18 +31,20 @@ impl Bind {
             SavePNG => state.save_png("1.png"),
 
             RunScript => {
-                let path = state.script_fname
-                    .clone()
-                    .unwrap_or_else( ||
-                        "/home/g/Desktop/xprite/scripts/render.dyon"
-                        .to_owned()
+                #[cfg(feature = "dyon-scripting")] {
+                    let path = state.script_fname
+                        .clone()
+                        .unwrap_or_else( ||
+                            "/home/g/Desktop/xprite/scripts/render.dyon"
+                            .to_owned()
+                        );
+                    state.xpr.execute_dyon_script(&path).unwrap_or_else(
+                        |msg| {
+                            error!("{}", msg);
+                            state.xpr.log.lock().unwrap().push_str(&msg);
+                        }
                     );
-                state.xpr.execute_dyon_script(&path).unwrap_or_else(
-                    |msg| {
-                        error!("{}", msg);
-                        state.xpr.log.lock().unwrap().push_str(&msg);
-                    }
-                );
+                }
             }
             Unmapped => (),
         }

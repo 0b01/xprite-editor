@@ -19,3 +19,8 @@ chrono = "0.4"
 
 # rendering
 cairo-rs = "0.5.0"
+
+[features]
+default = ["python-scripting"]
+dyon-scripting = []
+python-scripting = []

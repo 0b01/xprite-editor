@@ -53,11 +53,18 @@ fn main() -> Result<(), String> {
                     .get_matches();
 
     if let Some(matches) = matches.subcommand_matches("dyon") {
-        let inp_file = matches.value_of("INPUT").unwrap();
-        run_dyon_script(inp_file)?;
+        #[cfg(feature = "dyon-scripting")]
+        {
+            let inp_file = matches.value_of("INPUT").unwrap();
+            run_dyon_script(inp_file)?;
+
+        }
     } else if let Some(matches) = matches.subcommand_matches("python") {
-        let inp_file = matches.value_of("INPUT").unwrap();
-        run_python_script(inp_file)?;
+        #[cfg(feature = "python-scripting")]
+        {
+            let inp_file = matches.value_of("INPUT").unwrap();
+            run_python_script(inp_file)?;
+        }
     } else {
         run_ui();
     }
@@ -65,6 +72,7 @@ fn main() -> Result<(), String> {
     Ok(())
 }
 
+#[cfg(feature="python-scripting")]
 fn run_python_script(fname: &str) -> Result<(), String> {
     println!("Running Python script {}", fname);
     let xpr= xprite::scripting::python::python(fname)?;
@@ -74,6 +82,7 @@ fn run_python_script(fname: &str) -> Result<(), String> {
     Ok(())
 }
 
+#[cfg(feature="dyon-scripting")]
 fn run_dyon_script(fname: &str) -> Result<(), String> {
     let xpr = Xprite::new(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     let mut state = State::new(xpr);

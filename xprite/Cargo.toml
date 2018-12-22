@@ -15,7 +15,6 @@ bincode = "1.0.1"
 serde_derive = "1.0.82"
 serde = "1.0.82"
 
-pyo3 = "0.5.2"
 
 [dependencies.indexmap]
 version = "1.0.2"
@@ -23,4 +22,17 @@ features = ["serde-1"]
 
 [dependencies.dyon]
 version = "0.39.0"
+default-features = false
 features = []
+optional = true
+
+[dependencies.pyo3]
+version = "0.5.2"
+default-features = false
+features = []
+optional = true
+
+[features]
+default = ["python-scripting"]
+python-scripting = ["pyo3"]
+dyon-scripting = ["dyon"]

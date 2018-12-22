@@ -4,6 +4,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::sync::{Arc, Mutex};
 
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Xprite {
     pub history: History,
@@ -21,6 +22,7 @@ pub struct Xprite {
     pub cursor_pos: Pixels,
     pub last_mouse_pos: (f32, f32),
 
+    #[cfg(feature= "dyon-scripting")]
     #[serde(skip_serializing, skip_deserializing)]
     pub scripting: Rc<RefCell<DyonRuntime>>,
 
@@ -37,22 +39,25 @@ impl Xprite {
         let canvas = Canvas::new(art_w, art_h);
         let im_buf = Pixels::new();
         let bz_buf = Vec::new();
-
-        let scripting = Rc::new(RefCell::new(DyonRuntime::new()));
         let log = Arc::new(Mutex::new(String::new()));
 
-        Xprite {
-            scripting,
-            last_mouse_pos: (0., 0.),
-            history,
-            im_buf,
-            bz_buf,
-            canvas,
-            selected_color,
-            cursor_pos,
-            toolbox,
-            log,
+        #[cfg(feature = "dyon-scripting")]
+        {
+            use crate::scripting::dyon::DyonRuntime;
+            let scripting = Rc::new(RefCell::new(DyonRuntime::new()));
+            Xprite {
+                scripting, last_mouse_pos: (0., 0.), history, im_buf, bz_buf, canvas,
+                selected_color, cursor_pos, toolbox, log,
+            }
         }
+        #[cfg(not(feature = "dyon-scripting"))]
+        {
+            Xprite {
+                last_mouse_pos: (0., 0.), history, im_buf, bz_buf, canvas,
+                selected_color, cursor_pos, toolbox, log,
+            }
+        }
+
     }
 
     pub fn undo(&mut self) {
@@ -133,6 +138,7 @@ impl Xprite {
 
 impl Xprite {
 
+    #[cfg(feature = "dyon-scripting")]
     pub fn execute_dyon_script(&mut self, path: &str) -> Result<(), String> {
         let s = Rc::clone(&self.scripting);
         let mut scripting = s.borrow_mut();
