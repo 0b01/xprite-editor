@@ -4,14 +4,15 @@ Pixel art editor with algorithmic tools.
 
 [![Build Status](https://travis-ci.org/rickyhan/xprite-editor.svg?branch=master)](https://travis-ci.org/rickyhan/xprite-editor)
 
-# Milestones:
-
-0. Bug fixes
+# Bugs and Improvements
 
 * [ ] Cache long stroke
-* [x] Simply drawlist
-* [ ] Ignore canvas OOB
+* [x] Simplify drawlist
+* [x] Ignore canvas OOB
 * [ ] Change ImDrawIdx to u32
+
+
+# Milestones:
 
 0. Finding the right abstractions
 
@@ -24,9 +25,10 @@ Pixel art editor with algorithmic tools.
 * [x] Hotkeys
 * [x] Save
 * [x] Load
+* [x] Python Scripting
 * [ ] Palette
 
-1. Basic tools
+1. Basic tools (Release target)
 
 * [x] Pencil
 * [x] Line

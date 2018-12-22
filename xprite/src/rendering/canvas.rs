@@ -116,8 +116,8 @@ impl Canvas {
 
     pub fn draw_pixel(&self, rdr: &mut Renderer, x: f32, y: f32, color: [f32;4], filled: bool) {
         let o = self.origin();
-        if x >= self.art_w { return; }
-        if y >= self.art_h { return; }
+        if x < 0. || x >= self.art_w { return; }
+        if y < 0. || y >= self.art_h { return; }
         let p0 = [
             o.0 + self.scale * x,
             o.1 + self.scale * y,
@@ -187,9 +187,10 @@ impl Canvas {
     pub fn shrink_size_no_floor(&self, p: Vec2D) -> Vec2D {
         let Vec2D {x: cli_x , y: cli_y} = p;
         let o = self.origin();
+        let x = (cli_x - o.0) / self.scale;
+        let y = (cli_y - o.1) / self.scale;
         Vec2D {
-            x: ((cli_x - o.0) / self.scale),
-            y: ((cli_y - o.1) / self.scale),
+            x, y,
         }
     }
 
@@ -197,9 +198,10 @@ impl Canvas {
     pub fn shrink_size(&self, p: Vec2D) -> Vec2D {
         let Vec2D {x: cli_x , y: cli_y} = p;
         let o = self.origin();
+        let x = ((cli_x - o.0) / self.scale).floor();
+        let y = ((cli_y - o.1) / self.scale).floor();
         Vec2D {
-            x: ((cli_x - o.0) / self.scale).floor(),
-            y: ((cli_y - o.1) / self.scale).floor(),
+            x, y,
         }
     }
     /// snap point to grid
