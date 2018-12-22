@@ -39,3 +39,10 @@ pub const BACKGROUND: [f32;4] = [0.2,0.2,0.2,1.];
 
 pub const LIGHT_GREY: [f32;4] = [0.8,0.8,0.8,1.];
 pub const BLACK: [f32;4] = [0.,0.,0.,1.];
+
+/// out of bounds checking
+pub fn oob(x: f32, y: f32, w: f32, h: f32) -> bool {
+    if x < 0. || x >= w { return true; }
+    if y < 0. || y >= h { return true; }
+    false
+}

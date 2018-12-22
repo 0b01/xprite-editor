@@ -196,6 +196,12 @@ impl Xprite {
 
         let top = self.history.top();
 
+        // draw cursor
+        for p in self.cursor_pos.iter() {
+            let Vec2D {x, y} = p.point;
+            self.canvas.draw_pixel(rdr, x, y, RED, false); // draw a rectangle
+        }
+
         // draw layers
         for layer in top.layers.iter() {
             // skip invisible layers
@@ -222,12 +228,6 @@ impl Xprite {
         for &Pixel{point, color} in self.pixels().iter() {
             let Vec2D {x, y} = point;
             self.canvas.draw_pixel(rdr, x, y, color.into(), true);
-        }
-
-        // draw cursor
-        for p in self.cursor_pos.iter() {
-            let Vec2D {x, y} = p.point;
-            self.canvas.draw_pixel(rdr, x, y, RED, false); // draw a rectangle
         }
 
         for seg in &self.bz_buf {

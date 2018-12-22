@@ -116,8 +116,7 @@ impl Canvas {
 
     pub fn draw_pixel(&self, rdr: &mut Renderer, x: f32, y: f32, color: [f32;4], filled: bool) {
         let o = self.origin();
-        if x < 0. || x >= self.art_w { return; }
-        if y < 0. || y >= self.art_h { return; }
+        if oob(x, y, self.art_w, self.art_h) { return; }
         let p0 = [
             o.0 + self.scale * x,
             o.1 + self.scale * y,

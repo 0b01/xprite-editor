@@ -186,7 +186,7 @@ impl Pixels {
         let mut arr = vec![];
         for _i in 0..h {
             let mut row = vec![];
-            for _j in 0..w {
+            for _ in 0..w {
                 row.push(None);
             }
             arr.push(row);
@@ -194,6 +194,7 @@ impl Pixels {
         for p in self.0.iter() {
             let Pixel{point, ..} = p;
             let Vec2D {x, y} = point;
+            if oob(*x, *y, w as f32, h as f32) { continue; }
             arr[*x as usize][*y as usize] = Some(p.clone());
         }
         arr
@@ -207,6 +208,7 @@ impl Pixels {
         let mut rdr = ImageRenderer::new(w, h);
         for pix in &self.0 {
             let Pixel{point:Vec2D{x,y}, color} = pix;
+            if oob(*x, *y, w as f32, h as f32) { continue; }
             rdr.rect([*x - origin.0,*y - origin.1], [0.,0.,], (*color).into(), true);
         }
         rdr.image

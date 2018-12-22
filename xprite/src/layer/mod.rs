@@ -50,6 +50,7 @@ impl Layer {
     pub fn draw(&self, rdr: &mut Renderer) {
         for &Pixel{point, color} in self.content.iter() {
             let Vec2D {x, y} = point;
+            if oob(x, y, rdr.width(), rdr.height()) {continue;}
             rdr.rect([x,y],[x+1.,y+1.],color.into(), true);
         }
     }

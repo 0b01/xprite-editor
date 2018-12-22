@@ -20,12 +20,12 @@ pub struct ImguiRenderer<'ui> {
 
 impl<'ui> Renderer for ImguiRenderer<'ui> {
 
-    fn width(&self) -> u32 {
-        self.ui.get_window_size().0 as u32
+    fn width(&self) -> f32 {
+        self.ui.get_window_size().0
     }
 
-    fn height(&self) -> u32 {
-        self.ui.get_window_size().1 as u32
+    fn height(&self) -> f32 {
+        self.ui.get_window_size().1
     }
 
     fn circ(&mut self, p0:[f32;2], r:f32, color:[f32;4], filled: bool) {

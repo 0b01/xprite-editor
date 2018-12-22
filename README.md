@@ -7,6 +7,8 @@ Pixel art editor with algorithmic tools.
 # Bugs and Improvements
 
 * [ ] Cache long stroke
+* [ ] Brush size
+* [x] Floodfill crashing when index is negative
 * [x] Simplify drawlist
 * [x] Ignore canvas OOB
 * [ ] Change ImDrawIdx to u32

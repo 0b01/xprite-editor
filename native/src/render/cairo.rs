@@ -6,8 +6,8 @@ use std::mem;
 
 #[allow(unused)]
 pub struct CairoRenderer {
-    w: u32,
-    h: u32,
+    w: f32,
+    h: f32,
     pub surface: ImageSurface,
     pub cr: Option<Context>,
     image: Option<image::DynamicImage>,
@@ -16,11 +16,11 @@ pub struct CairoRenderer {
 #[allow(unused)]
 impl Renderer for CairoRenderer {
 
-    fn width(&self) -> u32 {
+    fn width(&self) -> f32 {
         self.w
     }
 
-    fn height(&self) -> u32 {
+    fn height(&self) -> f32 {
         self.h
     }
 
@@ -117,8 +117,8 @@ fn argb2rgba(i: u32) -> u32 {
 #[allow(unused)]
 impl CairoRenderer {
     pub fn new(art_w: f32, art_h: f32) -> Self {
-        let w = art_w as u32;
-        let h = art_h as u32;
+        let w = art_w;
+        let h = art_h;
 
         let surface = ImageSurface::create(Format::ARgb32, w as i32, h as i32).expect("Cannot create surface.");
         let cr = Context::new(&surface);

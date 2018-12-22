@@ -4,8 +4,8 @@ use img::{DynamicImage, Rgba};
 use img::GenericImage;
 
 pub struct ImageRenderer {
-    w: u32,
-    h: u32,
+    w: f32,
+    h: f32,
     pub image: image::DynamicImage,
     draw_list: Pixels,
 }
@@ -13,9 +13,9 @@ pub struct ImageRenderer {
 #[allow(unused)]
 impl Renderer for ImageRenderer {
 
-    fn width(&self) -> u32 { self.w }
+    fn width(&self) -> f32 { self.w }
 
-    fn height(&self) -> u32 { self.h }
+    fn height(&self) -> f32 { self.h }
 
     fn circ(&mut self, p0:[f32;2], r:f32, color:[f32;4], filled: bool) { }
 
@@ -46,9 +46,9 @@ impl Renderer for ImageRenderer {
 
 impl ImageRenderer {
     pub fn new(art_w: f32, art_h: f32) -> Self {
-        let w = art_w as u32;
-        let h = art_h as u32;
-        let image = DynamicImage::new_rgba8(w, h);
+        let w = art_w;
+        let h = art_h;
+        let image = DynamicImage::new_rgba8(w as u32, h as u32);
         let draw_list = Pixels::new();
         Self {
             w,

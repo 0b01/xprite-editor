@@ -3,8 +3,8 @@ pub enum MouseCursorType {
 }
 
 pub trait Renderer {
-    fn width(&self) -> u32;
-    fn height(&self) -> u32;
+    fn width(&self) -> f32;
+    fn height(&self) -> f32;
     fn rect(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool);
     fn circ(&mut self, p0:[f32;2], r:f32, color:[f32;4], filled: bool);
     fn line(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4]);
