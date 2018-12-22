@@ -5,7 +5,7 @@ use pyo3::types::PyDict;
 use std::fs::File;
 use std::io::Read;
 
-type PyPixel = ((i32, i32),(u8,u8,u8,u8));
+type PyPixel = ((i32, i32),(i32,i32,i32,i32));
 
 pub fn python(fname: &str) -> Result<Xprite, String> {
     let mut f = File::open(fname).unwrap();
@@ -26,11 +26,20 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
     let width: f32 = locals.get_item("WIDTH").unwrap().extract().unwrap();
     let height: f32 = locals.get_item("HEIGHT").unwrap().extract().unwrap();
     let res = locals.get_item("pixels").unwrap();
-    let v: Vec<PyPixel> = res.extract().unwrap();
+    let v: Vec<PyPixel> = res.extract()
+        .map_err(|e|
+            {e.print(py); "script execution failed".to_owned()}
+        )?;
+;
 
     let mut buf = Pixels::new();
     for &((x,y), (r,g,b,a)) in v.iter().rev() {
-        buf.push(pixel!(x, y, Color{r,g,b,a}));
+        buf.push(pixel!(x, y, Color{
+            r:r as u8,
+            g:g as u8,
+            b:b as u8,
+            a:a as u8
+        }));
     }
 
     let mut xpr = Xprite::new(width, height);

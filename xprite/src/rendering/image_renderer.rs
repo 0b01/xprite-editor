@@ -7,6 +7,7 @@ pub struct ImageRenderer {
     w: u32,
     h: u32,
     pub image: image::DynamicImage,
+    draw_list: Pixels,
 }
 
 #[allow(unused)]
@@ -21,22 +22,26 @@ impl Renderer for ImageRenderer {
     fn bezier(&mut self, p0:[f32;2], cp1:[f32;2], cp2: [f32;2], p1:[f32;2], color:[f32;4], thickness: f32) { }
 
     fn rect(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
-        let color = {
-            let c: Color = color.into();
-            Rgba { data: [c.r, c.g, c.b, c.a] }
-        };
-        self.image.put_pixel(
-            p0[0] as u32,
-            p0[1] as u32,
-            color
-        );
+        self.draw_list.push(pixel!(p0[0], p0[1], color.into()));
     }
 
     fn line(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4]) { }
 
     fn set_mouse_cursor(&mut self, cursor_type: MouseCursorType) { }
 
-    fn render(&mut self) { }
+    fn render(&mut self) {
+        for Pixel{point, color} in self.draw_list.iter() {
+            let color = {
+                Rgba { data: [color.r, color.g, color.b, color.a] }
+            };
+            self.image.put_pixel(
+                point.x as u32,
+                point.y as u32,
+                color
+            );
+        }
+
+    }
 }
 
 impl ImageRenderer {
@@ -44,10 +49,12 @@ impl ImageRenderer {
         let w = art_w as u32;
         let h = art_h as u32;
         let image = DynamicImage::new_rgba8(w, h);
+        let draw_list = Pixels::new();
         Self {
             w,
             h,
             image,
+            draw_list,
         }
     }
 

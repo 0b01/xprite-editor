@@ -64,10 +64,10 @@ fn main() {
 }
 
 fn run_python_script(fname: &str) {
-    let xpr = xprite::scripting::python::python(fname).unwrap();
-    let mut state = State::new(xpr);
-
     println!("Running Python script {}", fname);
+    let xpr = xprite::scripting::python::python(fname).unwrap();
+    println!("Finished {}", fname);
+    let mut state = State::new(xpr);
     state.save_png("1.png");
 }
 

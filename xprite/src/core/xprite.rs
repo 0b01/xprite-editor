@@ -250,6 +250,7 @@ impl Xprite {
         //     }
         // }
 
+        rdr.render();
     }
 }
 
@@ -258,6 +259,7 @@ impl Xprite {
         let layer = self.history.top_mut().selected_layer().unwrap();
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         layer.draw(&mut rdr);
+        rdr.render();
         rdr.image
     }
 
@@ -279,6 +281,7 @@ impl Xprite {
             rdr.rect([x,y],[x+1.,y+1.],color.into(), true);
         }
 */
+        rdr.render();
         Ok(())
     }
 }
