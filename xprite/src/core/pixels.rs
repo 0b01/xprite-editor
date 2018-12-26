@@ -4,7 +4,7 @@ use std::cmp::Ordering;
 use std::hash::{Hash, Hasher};
 use std::fmt::{Debug, Formatter, Error};
 use indexmap::{IndexSet, set::Iter};
-use img::GenericImage;
+use img::GenericImageView;
 
 #[derive(Copy, Clone, Eq, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Pixel {

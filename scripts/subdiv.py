@@ -1,5 +1,5 @@
-WIDTH = 512
-HEIGHT = 512
+WIDTH = 1024
+HEIGHT = 1024
 
 def run():
     from random import random, randint, choice, choices, sample, gauss
@@ -22,7 +22,7 @@ def run():
         return ret
 
     cutoff = 2
-    padding = 1
+    padding = 2
     ret = []
 
     def draw_block(v0, v1):
@@ -62,7 +62,15 @@ def run():
         nonlocal ret
         ret += rectangle(v0, v1)
 
-    draw_block((0, 0), (512, 512))
+    pad = 3
+    side = 64
+    n = 1024 // side
+    for i in range(n):
+        for j in range(n):
+            p0 = (i * side+pad, j*side+pad)
+            p1 = ((i+1) * side-pad, (j+1)*side-pad)
+            print (p0,p1)
+            draw_block(p0, p1)
     return ret
 
 

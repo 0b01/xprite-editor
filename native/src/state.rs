@@ -1,7 +1,7 @@
 use xprite::prelude::*;
 use crate::prelude::*;
 use xprite::rendering::image_renderer::ImageRenderer;
-use xprite::image::GenericImage;
+use xprite::image::GenericImageView;
 use xprite::bincode::{serialize, deserialize};
 use std::io::{BufWriter, Write, BufReader, Read};
 use std::fs::File;
@@ -33,8 +33,7 @@ impl State {
         rdr.render();
         let im = rdr.img();
         info!("writing file to {}", img_path);
-        let mut f = File::create(img_path).unwrap();
-        im.save(&mut f, image::ImageFormat::PNG).unwrap();
+        im.save(img_path).unwrap();
     }
 
     pub fn save_xpr(&mut self, file_path: &str) {

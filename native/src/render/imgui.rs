@@ -1,6 +1,6 @@
 use imgui::*;
 use xprite::rendering::{Renderer, MouseCursorType};
-use xprite::image::GenericImage;
+use xprite::image::GenericImageView;
 use glium::{ backend::Facade, Texture2d, texture::{RawImage2d, ClientFormat} };
 use std::borrow::Cow;
 use xprite::indexmap::IndexMap;

@@ -65,8 +65,8 @@ impl ImageRenderer {
 
 pub fn save_img(path: &str, im: &DynamicImage) {
     info!("writing file to {}", path);
-    let mut f = ::std::fs::File::create(path).unwrap();
-    im.save(&mut f, image::ImageFormat::PNG).unwrap();
+    // let mut f = ::std::fs::File::create(path).unwrap();
+    im.save(path).unwrap();
 }
 
 #[cfg(test)]
