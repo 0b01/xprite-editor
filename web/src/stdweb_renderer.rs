@@ -13,6 +13,11 @@ pub struct StdwebRenderer {
 
 #[allow(unused)]
 impl Renderer for StdwebRenderer {
+
+    fn reset(&mut self) {
+        self.ctx.clear_rect(0., 0., self.width() as f64, self.height() as f64);
+    }
+
     fn width(&self) -> f32 {
         self.canvas.width() as f32
     }
@@ -20,9 +25,8 @@ impl Renderer for StdwebRenderer {
         self.canvas.height() as f32
     }
     fn rect(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
-        console!(log, format!("{:#?}, {:#?}, {:#?}", p0, p1, color));
         let a = f64::from(p0[0]); let b = f64::from(p0[1]);
-        let c = f64::from(p1[0]) - a; let d = f64::from(p1[1]) - a;
+        let c = f64::from(p1[0]) - a; let d = f64::from(p1[1]) - b;
         if filled {
             self.set_fill_style_color(
                 &format!("rgba({},{},{},{})",
@@ -34,6 +38,7 @@ impl Renderer for StdwebRenderer {
             self.ctx.fill_rect(a,b,c,d)
         } else {
             self.ctx.rect(a,b,c,d);
+            self.ctx.stroke();
         }
     }
     fn circ(&mut self, p0:[f32;2], r:f32, color:[f32;4], filled: bool) {}

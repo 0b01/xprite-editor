@@ -7,7 +7,7 @@ Pixel art editor with algorithmic tools.
 ## Bugs and Improvements
 
 * [ ] Stroke caching
-* [ ] Fix web target
+* [x] Fix web target
 * [ ] Dynamic brush size
 * [x] Floodfill crashing when index is negative
 * [x] Simplify drawlist

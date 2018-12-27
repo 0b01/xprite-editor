@@ -32,8 +32,21 @@ fn main() {
     let mut rdr = StdwebRenderer::new("#canvas");
     // xprite.borrow_mut().init(renderer);
 
-    xprite.borrow_mut().draw().unwrap();
-    xprite.borrow_mut().render(&mut rdr);
+    let xprite_clone = xprite.clone();
+
+    let callback = move |t: f64| {
+        xprite_clone.borrow_mut().draw().unwrap();
+        xprite_clone.borrow_mut().render(&mut rdr);
+    };
+
+    js!(
+        let callback = @{callback};
+        function mainloop(t) {
+            callback(t);
+            requestAnimationFrame(mainloop);
+        }
+        requestAnimationFrame(mainloop);
+    );
 
     let doc = stdweb::web::document();
 
@@ -114,7 +127,6 @@ fn main() {
     init_js_bindings(&xprite);
 
     stdweb::event_loop();
-
 }
 
 fn init_js_bindings(xprite: &Rc<RefCell<Xprite>>) {
@@ -182,7 +194,7 @@ fn init_logger() {
         .level(log::LevelFilter::Debug)
         // .chain(std::io::stdout())
         .chain(fern::Output::call(move |record| {
-            console!(log, "{:#?}", format!("{}", record.args()));
+            console!(log, format!("{}", record.args()));
         }))
         // .chain(fern::log_file("output.log")?)
         // Apply globally
