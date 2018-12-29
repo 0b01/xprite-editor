@@ -14,7 +14,7 @@ pub fn draw_preview(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         match state.preview_texture {
             None => { update_preview(rdr, state, ui, new_hash); }
             Some((old_hash, _)) => { if old_hash != new_hash {
-                info!("updating preview");
+                // trace!("updating preview");
                 update_preview(rdr, state, ui, new_hash);
             }}
         };
@@ -22,14 +22,12 @@ pub fn draw_preview(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
             ImTexture::from(state.preview_texture.unwrap().1),
             [100., 100.] // TODO
         ).build();
-
-        ui.text(im_str!("TEST"));
     })
 }
 
 fn update_preview(rdr: &mut Renderer, state: &mut State, ui: &Ui, new_hash: u64) {
     let mut img_rdr = ImageRenderer::new(state.xpr.canvas.art_w, state.xpr.canvas.art_h);
-    state.xpr.export(&mut img_rdr).unwrap();
+    state.xpr.preview(&mut img_rdr).unwrap();
     img_rdr.render();
     let img = img_rdr.img();
     state.preview_texture = Some((

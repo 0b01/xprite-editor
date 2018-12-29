@@ -63,8 +63,8 @@ pub fn sort_path(path: &mut [Pixel]) -> Result<Vec<Pixel>, String> {
         // console!(log, format!("{:?}", pi));
         if pi.x == p0.x || pi.y == p0.y {
             d = (
-                d.0 +        (pi_.x - p0_.x) as u32,
-                d.1 + (dir as f32 * (pi_.y - p0_.y)) as u32,
+                d.0 +               (pi_.x - p0_.x) as u32,
+                d.1 + (dir as f32 * (pi_.y - p0_.y)) as u32, // BUG:
             );
         } else {
             // console!(log, format!("{:?}", d));

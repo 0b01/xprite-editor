@@ -8,24 +8,25 @@ Pixel art editor with algorithmic tools.
 
 * [ ] Stroke caching
 * [ ] Dynamic brush size
-* [ ] Fix layer grouping
 * [ ] Tabs
-* [x] Fix web target
+* [ ] ImageImguiRenderer (based on cairo_imgui)
+* [ ] Fix web target
+* [ ] Change ImDrawIdx to u32
+
+
+## Done
 * [x] Floodfill crashing when index is negative
 * [x] Simplify drawlist
 * [x] Ignore canvas OOB
-* [ ] Change ImDrawIdx to u32
 
 ## Milestones
 
 1. Finding the right abstractions
-
 * [x] Canvas
 * [x] Renderer
 * [x] Layer
 
 1. Core functionalities
-
 * [x] Hotkeys
 * [x] Save
 * [x] Load
@@ -33,7 +34,6 @@ Pixel art editor with algorithmic tools.
 * [ ] Palette
 
 1. Basic tools (Release target)
-
 * [x] Pencil
 * [x] Line
 * [x] Color Picker
@@ -47,9 +47,9 @@ Pixel art editor with algorithmic tools.
 * [ ] Texture Synthesis
 
 1. Layers
+* [ ] Layer grouping
 
 1. Animation support
-
 * [ ] Celluloid
 * [ ] Preview window
 

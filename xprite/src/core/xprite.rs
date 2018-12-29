@@ -1,6 +1,8 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
 use std::sync::{Arc, Mutex};
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
 
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -267,14 +269,32 @@ impl Xprite {
     }
 
     pub fn img_hash(&mut self) -> u64 {
-        use std::collections::hash_map::DefaultHasher;
-        use std::hash::{Hash, Hasher};
-
-        let top = self.history.top();
-
         let mut s = DefaultHasher::new();
+        let top = self.history.top();
         top.hash(&mut s);
+        self.im_buf.hash(&mut s);
         s.finish()
+    }
+
+    pub fn preview(&mut self, rdr: &mut Renderer) -> Result<(), String> {
+        let top = self.history.top();
+        // draw layers
+        for layer in top.iter_layers() {
+            // skip invisible layers
+            if !layer.visible {
+                continue;
+            }
+            layer.draw(rdr);
+        }
+
+        // draw current layer pixels
+        for &Pixel{point, color} in self.pixels().iter() {
+            let Vec2D {x, y} = point;
+            rdr.rect([x, y], [x+1., y+1.], color.into(), true);
+        }
+
+        rdr.render();
+        Ok(())
     }
 
     /// export pixels to an image via renderer
