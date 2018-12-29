@@ -11,8 +11,11 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     .collapsible(false)
     .resizable(false)
     .build(|| {
-        if ui.button(im_str!("+"), (20.,20.)) {
-            state.xpr.history.top_mut().add(None);
+        if ui.button(im_str!("+Layer"), (20.,20.)) {
+            state.xpr.history.top_mut().add_layer(None);
+        }
+        if ui.button(im_str!("+Group"), (20.,20.)) {
+            state.xpr.history.top_mut().add_group(None);
         }
 
         ui.popup_modal(im_str!("Rename Layer"))
@@ -39,47 +42,63 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             });
         });
 
-        let (mut layers, selected_layer) = {
-            let layer_manager = state.xpr.history.top_mut();
-            if layer_manager.selected_layer_mut().is_none() {return;}
-            let selected_layer = layer_manager.selected_layer_mut().unwrap().clone();
+        let (mut groups, selected_layer) = {
+            let top = state.xpr.history.top_mut();
+            if top.selected_layer_mut().is_none() {return;}
+            let selected_layer = top.selected_layer_mut().unwrap().clone();
             (
-                layer_manager.layers.clone(),
+                top.groups.clone(),
                 selected_layer
             )
         };
 
-        for (i, layer) in layers.iter_mut().enumerate() {
-            {
-                let name = layer.name.as_str();
-                let is_sel = layer == &selected_layer;
-                if ui.selectable(
-                    im_str!("{}", name),
-                    is_sel,
-                    ImGuiSelectableFlags::AllowDoubleClick,
-                    (50.,0.)
-                ) {
-                    if ui.imgui().is_mouse_double_clicked(imgui::ImMouseButton::Left) {
-                        info!("double clicked");
-                        ui.open_popup(im_str!("Rename Layer"));
-                    }
-                    state.xpr.switch_layer(i);
-                }
-            }
+        for (group_id, group) in groups.iter_mut().enumerate() {
+            draw_group_line(state, ui, group_id, group);
+            for (i, layer) in group.1.iter_mut().enumerate() {
 
-            ui.same_line(100.);
-            ui.with_id(i as i32, || {
-                if ui.checkbox(im_str!(""), &mut layer.visible) {
-                    layer.visible = !layer.visible; // undo imgui checkbox mutation
-                    state.xpr.toggle_layer_visibility(i).unwrap(); // enter history frame and toggle
-                }
-            });
-            ui.same_line(140.);
-            ui.with_id(i as i32, || {
-                if ui.button(im_str!("X"), (20.,20.)) {
-                    state.xpr.remove_layer(i).unwrap();
-                }
-            });
+                let is_sel = layer == &selected_layer;
+                draw_layer_line(state, ui, group_id, i, layer, is_sel);
+            }
         }
     })
+}
+
+fn draw_group_line(state: &mut State, ui: &Ui, group_id: usize, group: &mut (String, Vec<Layer>)) {
+    ui.text(im_str!("{}", group.0));
+}
+
+fn draw_layer_line(state: &mut State, ui: &Ui, group_id: usize, i: usize, layer: &mut Layer, is_sel: bool) {
+    ui.with_id(group_id as i32, || {
+
+        {
+            // one layer
+            let name = layer.name.as_str();
+            if ui.selectable(
+                im_str!("{}", name),
+                is_sel,
+                ImGuiSelectableFlags::AllowDoubleClick,
+                (50.,0.)
+            ) {
+                if ui.imgui().is_mouse_double_clicked(imgui::ImMouseButton::Left) {
+                    info!("double clicked");
+                    ui.open_popup(im_str!("Rename Layer"));
+                }
+                state.xpr.switch_layer(group_id, i);
+            }
+        }
+
+        ui.same_line(100.);
+        ui.with_id(i as i32, || {
+            if ui.checkbox(im_str!(""), &mut layer.visible) {
+                layer.visible = !layer.visible; // undo imgui checkbox mutation
+                state.xpr.toggle_layer_visibility(group_id, i).unwrap(); // enter history frame and toggle
+            }
+        });
+        ui.same_line(140.);
+        ui.with_id(i as i32, || {
+            if ui.button(im_str!("X"), (20.,20.)) {
+                state.xpr.remove_layer(group_id, i).unwrap();
+            }
+        });
+    });
 }

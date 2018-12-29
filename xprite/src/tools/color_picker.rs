@@ -29,7 +29,12 @@ impl Tool for ColorPicker {
 
     fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, _button: InputItem) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
-        let colors : Vec<_> = xpr.history.top_mut().layers.iter().map(|layer| layer.get_color(point)).collect();
+        let colors : Vec<_> =
+            xpr.history.top_mut()
+                .groups.iter()
+                .map(|group|
+                    group.1.iter().map(|layer| layer.get_color(point))
+                ).flatten().collect();
         let picked = colors.iter().find(|i| i.is_some());
         match picked {
             Some(Some(col)) => { xpr.set_color(col); }

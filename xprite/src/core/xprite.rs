@@ -148,7 +148,9 @@ impl Xprite {
 
 impl Xprite {
 
-    pub fn switch_layer(&mut self, layer: usize) {
+    pub fn switch_layer(&mut self, group_id: usize, layer: usize) {
+
+        self.history.top_mut().sel_group = group_id;
         self.history.top_mut().selected = layer;
     }
 
@@ -160,20 +162,16 @@ impl Xprite {
         self.history.top_mut().selected_layer_mut()
     }
 
-    pub fn toggle_layer_visibility(&mut self, old: usize) -> Result<(), String> {
+    pub fn toggle_layer_visibility(&mut self, group: usize, layer: usize) -> Result<(), String> {
         self.history.enter()?;
-        self.history.top_mut()
-            .layers
-            .get_mut(old)
-            .unwrap()
-            .toggle_visible();
+        self.history.top_mut().toggle_layer_visibility(group, layer);
         Ok(())
     }
 
-    pub fn remove_layer(&mut self, old: usize) -> Result<(), String> {
+    pub fn remove_layer(&mut self, group: usize, old: usize) -> Result<(), String> {
         self.history.enter()?;
         let layers = self.history.top_mut();
-        layers.remove_layer(old);
+        layers.remove_layer(group, old);
         Ok(())
     }
 
@@ -202,7 +200,7 @@ impl Xprite {
         }
 
         // draw layers
-        for layer in top.layers.iter() {
+        for layer in top.iter_layers() {
             // skip invisible layers
             if !layer.visible {
                 continue;
@@ -211,7 +209,6 @@ impl Xprite {
                 let Vec2D {x, y} = point;
                 self.canvas.draw_pixel(rdr, x, y, color.into(), true);
             }
-
         }
 
         // info!("------------");
@@ -273,7 +270,7 @@ impl Xprite {
     pub fn export(&mut self, rdr: &mut Renderer) -> Result<(), String> {
         let top = self.history.top();
         // draw layers
-        for layer in top.layers.iter() {
+        for layer in top.iter_layers() {
             // skip invisible layers
             if !layer.visible {
                 continue;
