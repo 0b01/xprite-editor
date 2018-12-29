@@ -1,6 +1,6 @@
 use imgui::*;
 use xprite::rendering::{Renderer, MouseCursorType};
-use xprite::image::GenericImageView;
+use crate::image::{self, GenericImageView};
 use glium::{ backend::Facade, Texture2d, texture::{RawImage2d, ClientFormat} };
 use std::borrow::Cow;
 use xprite::indexmap::IndexMap;
@@ -66,13 +66,18 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         self.ui.imgui().set_mouse_cursor(c);
     }
 
-    fn add_img(&mut self, img: xprite::image::DynamicImage) -> usize {
+    fn add_img(&mut self, img: image::DynamicImage, format: image::ColorType) -> usize {
+        let format = match format {
+            image::ColorType::RGBA(_) => ClientFormat::U8U8U8U8,
+            image::ColorType::RGB(_) => ClientFormat::U8U8U8,
+            _ => unimplemented!("Color type"),
+        };
         let (width, height) = img.dimensions();
         let img = RawImage2d {
             data: Cow::Owned(img.raw_pixels()),
             width,
             height,
-            format: ClientFormat::U8U8U8,
+            format: ClientFormat::U8U8U8U8,
         };
 
         let gl_texture = Texture2d::new(self.gl_ctx, img).unwrap();

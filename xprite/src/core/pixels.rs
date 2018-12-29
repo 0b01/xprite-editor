@@ -57,6 +57,14 @@ macro_rules! pixel {
 #[derive(Clone, Eq, Serialize, Deserialize, Default)]
 pub struct Pixels(pub IndexSet<Pixel>);
 
+impl Hash for Pixels {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        for i in self.0.iter() {
+            i.point.hash(state);
+            i.color.hash(state);
+        }
+    }
+}
 
 impl PartialEq for Pixels {
     fn eq(&self, other: &Self) -> bool {

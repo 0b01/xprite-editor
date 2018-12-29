@@ -4,7 +4,7 @@ use crate::prelude::*;
 use crate::rendering::Renderer;
 pub use self::layers::Layers;
 
-#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Layer {
     pub name: String,
     pub content: Pixels,

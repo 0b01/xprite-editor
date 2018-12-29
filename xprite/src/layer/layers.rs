@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Hash)]
 pub struct Layers {
     pub groups: Vec<(String, Vec<Layer>)>,
     pub selected: usize,

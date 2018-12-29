@@ -266,6 +266,17 @@ impl Xprite {
         rdr.image
     }
 
+    pub fn img_hash(&mut self) -> u64 {
+        use std::collections::hash_map::DefaultHasher;
+        use std::hash::{Hash, Hasher};
+
+        let top = self.history.top();
+
+        let mut s = DefaultHasher::new();
+        top.hash(&mut s);
+        s.finish()
+    }
+
     /// export pixels to an image via renderer
     pub fn export(&mut self, rdr: &mut Renderer) -> Result<(), String> {
         let top = self.history.top();

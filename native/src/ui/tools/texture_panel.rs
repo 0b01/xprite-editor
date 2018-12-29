@@ -28,14 +28,14 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     if ui.button(im_str!("Quilt!"), (100., 20.)) {
         info!("Quilting...(this may take a few seconds)");
         match texture.finalize(&mut state.xpr) {
-            Ok(img) => {texture.current_id = Some(rdr.add_img(img));}
+            Ok(img) => {texture.current_id = Some(rdr.add_img(img, image::RGB(0)));}
             Err(s) => { error!("{}", s); }
         }
     }
     if let Some(texture_id) = texture.current_id {
         ui.image(
             ImTexture::from(texture_id),
-            [100., 100.]
+            [100., 100.] // TODO
         ).build();
     }
 

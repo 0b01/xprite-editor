@@ -13,6 +13,8 @@ pub struct State {
     pub hotkeys: HotkeyController,
     pub inputs: InputState,
     pub script_fname: Option<String>,
+
+    pub preview_texture: Option<(u64 /* hash */, usize /* texture_id */)>,
 }
 
 impl State {
@@ -24,6 +26,7 @@ impl State {
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
             script_fname: None,
+            preview_texture: None,
         }
     }
 
