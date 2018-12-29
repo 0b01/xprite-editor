@@ -27,6 +27,11 @@ impl State {
         }
     }
 
+    pub fn toggle_hotkeys(&mut self) {
+        debug!("Toggle hotkeys");
+        self.hotkeys.toggle();
+    }
+
     pub fn save_png(&mut self, img_path: &str) {
         let mut rdr = ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
         self.xpr.export(&mut rdr).unwrap();

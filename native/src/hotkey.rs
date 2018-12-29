@@ -100,7 +100,8 @@ pub enum Action {
 }
 
 pub struct HotkeyController {
-    binds: HashMap<Action, Bind>
+    binds: HashMap<Action, Bind>,
+    pub enabled: bool,
 }
 
 impl HotkeyController {
@@ -141,10 +142,12 @@ impl HotkeyController {
 
         Self {
             binds,
+            enabled: true,
         }
     }
 
     pub fn lookup(&self, action: Action) -> Bind {
+        if !self.enabled {return Bind::Unmapped;}
         self.binds
             .get(&action)
             .cloned()
@@ -152,5 +155,9 @@ impl HotkeyController {
                 trace!("unmapped action: {:?}", action);
                 Bind::Unmapped
             })
+    }
+
+    pub fn toggle(&mut self) {
+        self.enabled = !self.enabled;
     }
 }

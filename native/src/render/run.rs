@@ -259,7 +259,7 @@ where
                 ImGuiMouseCursor::ResizeEW => glutin::MouseCursor::EwResize,
                 ImGuiMouseCursor::ResizeNESW => glutin::MouseCursor::NeswResize,
                 ImGuiMouseCursor::ResizeNWSE => glutin::MouseCursor::NwseResize,
-                ImGuiMouseCursor::Move => glutin::MouseCursor::Move,
+                ImGuiMouseCursor::Move => glutin::MouseCursor::Grabbing,
             });
         }
 

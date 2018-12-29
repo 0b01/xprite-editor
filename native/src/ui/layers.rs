@@ -5,11 +5,11 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
     ui
     .window(im_str!("Layers"))
-    .position((sz.0 as f32 - RIGHT_SIDE_WIDTH, (sz.1 / 2.) as f32 + 20.), ImGuiCond::Always)
-    .size((RIGHT_SIDE_WIDTH, (sz.1 / 2.) as f32), ImGuiCond::Always)
+    .position((sz.0 as f32 - RIGHT_SIDE_WIDTH, (sz.1 / 2.) as f32 + 20.), ImGuiCond::Once)
+    .size((RIGHT_SIDE_WIDTH, (sz.1 / 2.) as f32), ImGuiCond::Once)
     .movable(true)
-    .collapsible(false)
-    .resizable(false)
+    .collapsible(true)
+    .resizable(true)
     .build(|| {
         if ui.button(im_str!("+Layer"), (20.,20.)) {
             state.xpr.history.top_mut().add_layer(None);
@@ -37,6 +37,7 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                     let name : &str = im.as_ref();
                     info!("renaming: {}", name);
                     state.xpr.rename_layer(&im.as_ref()).unwrap();
+                    state.toggle_hotkeys();
                     ui.close_current_popup();
                 }
             });
@@ -68,8 +69,6 @@ fn draw_group_line(state: &mut State, ui: &Ui, group_id: usize, group: &mut (Str
 }
 
 fn draw_layer_line(state: &mut State, ui: &Ui, group_id: usize, i: usize, layer: &mut Layer, is_sel: bool) {
-    ui.with_id(group_id as i32, || {
-
         {
             // one layer
             let name = layer.name.as_str();
@@ -81,12 +80,16 @@ fn draw_layer_line(state: &mut State, ui: &Ui, group_id: usize, i: usize, layer:
             ) {
                 if ui.imgui().is_mouse_double_clicked(imgui::ImMouseButton::Left) {
                     info!("double clicked");
+
+                    // diable hotkeys
+                    state.toggle_hotkeys();
                     ui.open_popup(im_str!("Rename Layer"));
                 }
                 state.xpr.switch_layer(group_id, i);
             }
         }
 
+    ui.with_id(group_id as i32, || {
         ui.same_line(100.);
         ui.with_id(i as i32, || {
             if ui.checkbox(im_str!(""), &mut layer.visible) {

@@ -1,15 +1,19 @@
 use crate::prelude::*;
 use xprite::rendering::Renderer;
+use imgui::ImGuiWindowFlags;
 
 pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
     ui.window(im_str!("canvas"))
         .position((LEFT_SIDE_WIDTH, 20.0), ImGuiCond::Always)
         .size((sz.0 as f32 - RIGHT_SIDE_WIDTH - LEFT_SIDE_WIDTH, sz.1 as f32 - 20.), ImGuiCond::Always)
-        .resizable(false)
-        .title_bar(false)
-        .movable(false)
-        .collapsible(false)
+        .flags(
+            ImGuiWindowFlags::NoBringToFrontOnFocus |
+            ImGuiWindowFlags::NoTitleBar |
+            ImGuiWindowFlags::NoResize |
+            ImGuiWindowFlags::NoMove |
+            ImGuiWindowFlags::NoCollapse
+        )
         .build(|| {
             let styles = [
                 StyleVar::FramePadding(ImVec2::new(0., 0.)),

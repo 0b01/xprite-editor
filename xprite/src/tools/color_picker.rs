@@ -39,7 +39,7 @@ impl Tool for ColorPicker {
         match picked {
             Some(Some(col)) => { xpr.set_color(col); }
             Some(None) => panic!("impossible"),
-            None => (),
+            None => {xpr.set_color( &Color::transparent() )},
         }
         Ok(())
     }
