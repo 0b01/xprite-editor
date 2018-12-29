@@ -59,15 +59,14 @@ impl Texture {
         pixs.set_color(&xpr.color());
         let content = &mut xpr.current_layer_mut().unwrap().content;
         let intersection = content.intersection(&pixs);
-        let (x,y, origin) = self.get_dims().ok_or("cannot get dimension".to_owned())?;
-        let img = intersection.as_image(x, y, origin);
+        let (w, h, origin) = self.get_dims().ok_or("cannot get dimension".to_owned())?;
+        let img = intersection.as_image(w, h, origin);
 
         let width = xpr.canvas.art_w as u32;
         let height = xpr.canvas.art_h as u32;
         let params = QuilterParams::new((width, height), self.blocksize as u32, self.overlap as u32, None, None, l1)?;
         let mut quilter = Quilter::new(img.to_rgb(), params);
         let res = quilter.quilt_image()?;
-        // res.save("1.png").unwrap();
         Ok(img::DynamicImage::ImageRgb8(res))
     }
 

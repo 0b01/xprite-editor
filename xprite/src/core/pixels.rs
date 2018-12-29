@@ -208,9 +208,10 @@ impl Pixels {
         let mut rdr = ImageRenderer::new(w, h);
         for pix in &self.0 {
             let Pixel{point:Vec2D{x,y}, color} = pix;
-            if oob(*x, *y, w as f32, h as f32) { continue; }
+            if oob(*x - origin.0, *y - origin.1, w as f32, h as f32) { continue; }
             rdr.rect([*x - origin.0,*y - origin.1], [0.,0.,], (*color).into(), true);
         }
+        rdr.render();
         rdr.image
     }
 }
