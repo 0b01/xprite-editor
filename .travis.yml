@@ -1,10 +1,14 @@
 language: rust
 
+before_install: |
+  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+    brew unlink python
+    brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/f2a764ef944b1080be64bd88dca9a1d80130c558/Formula/python.rb
+    brew switch python 3.6.5_1
+  fi
+
 rust:
   - nightly
-
-python:
-  - "3.6"
 
 os:
   - windows
@@ -17,3 +21,10 @@ matrix:
 script:
   - cargo build --verbose --all
   - cargo test --verbose --all
+
+addons:
+  apt:
+    sources:
+      - deadsnakes # source required so it finds the package definition below
+    packages:
+      - python3.5
