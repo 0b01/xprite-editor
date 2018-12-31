@@ -9,10 +9,10 @@ Pixel art editor with algorithmic tools.
 * [ ] Stroke caching
 * [ ] Dynamic brush size
 * [ ] Tabs
+* [ ] Preview bounding box
 * [ ] ImageImguiRenderer (based on cairo_imgui)
 * [ ] Fix web target
 * [ ] Change ImDrawIdx to u32
-
 
 ## Done
 * [x] Floodfill crashing when index is negative

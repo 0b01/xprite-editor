@@ -12,7 +12,7 @@ extern crate serde;
 #[cfg(feature = "dyon-scripting")]
 #[macro_use] extern crate dyon;
 #[cfg(feature = "python-scripting")]
-extern crate pyo3;
+#[macro_use] extern crate pyo3;
 
 extern crate indexmap as imap;
 extern crate libtexsyn;

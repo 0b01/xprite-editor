@@ -17,6 +17,7 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
     let py = gil.python();
 
     let locals = PyDict::new(py);
+    locals.set_item("add", wrap_function!(add)(py));
     locals.set_item("PIXELS", PyDict::new(py))
         .map_err(|_| "Failed to set PIXELS".to_owned())?;
     py.run(&txt, None, Some(&locals))
@@ -57,6 +58,10 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
     Ok(xpr)
 }
 
+#[pyfunction]
+fn add(a: u64, b: u64) -> u64 {
+    a + b
+}
 
 #[cfg(test)]
 mod tests {
