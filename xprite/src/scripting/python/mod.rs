@@ -17,9 +17,10 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
     let py = gil.python();
 
     let locals = PyDict::new(py);
+    let globals = PyDict::new(py);
 
     let xpr = xpr_module::init_mod(py).unwrap();
-    locals.set_item("xpr", xpr)
+    globals.set_item("xpr", xpr)
         .map_err(|_| "Failed to set xpr".to_owned())?;
 
     locals.set_item("PIXELS", PyList::empty(py))
@@ -29,7 +30,7 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
     locals.set_item("HEIGHT", 100)
         .map_err(|_| "Failed to set HEIGHT".to_owned())?;
 
-    py.run(&txt, None, Some(&locals))
+    py.run(&txt, Some(&globals), Some(&locals))
         .map_err(|e|
             {e.print(py); "script execution failed".to_owned()}
         )?;

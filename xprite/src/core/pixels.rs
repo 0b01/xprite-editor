@@ -173,7 +173,7 @@ impl From<img::DynamicImage> for Pixels {
 
 
 impl Pixels {
-    pub fn as_bool_arr(&self, w: usize, h: usize) -> Vec<Vec<bool>> {
+    pub fn as_bool_mat(&self, w: usize, h: usize) -> Vec<Vec<bool>> {
         let mut arr = vec![];
         for _i in 0..h {
             let mut row = vec![];
@@ -190,7 +190,7 @@ impl Pixels {
         arr
     }
 
-    pub fn as_arr(&self, w: usize, h: usize) -> Vec<Vec<Option<Pixel>>> {
+    pub fn as_mat(&self, w: usize, h: usize) -> Vec<Vec<Option<Pixel>>> {
         let mut arr = vec![];
         for _i in 0..h {
             let mut row = vec![];

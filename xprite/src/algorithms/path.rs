@@ -244,26 +244,20 @@ impl Path {
     /// rasterize a single bezier curve by sampling
     fn convert_path_to_pixel(xpr: &Xprite, seg: &CubicBezierSegment) -> Option<Vec<Pixel>> {
         let mut path = Vec::new();
-
         let mut set = Pixels::new();
-
         // sample n points
         for i in 0..100 {
             let t = i as f32 / 100.;
             let point = seg.sample(t);
-
-            let Vec2D {x, y} = xpr.canvas.snap(point);
+            let Vec2D {x, y} = Canvas::snap(point);
             let pixel = pixel!(x, y, Color::red());
-
             // don't allow duplicate pixels
             if !set.contains(&pixel) {
                 set.push(pixel);
                 path.push(pixel);
             }
         }
-
         let points = pixel_perfect(&path);
-
         Some(points)
     }
 

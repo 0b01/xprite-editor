@@ -204,13 +204,12 @@ impl Canvas {
         }
     }
     /// snap point to grid
-    pub fn snap(&self, p: Vec2D) -> Vec2D {
+    pub fn snap(p: Vec2D) -> Vec2D {
         let Vec2D {x: cli_x , y: cli_y} = p;
         Vec2D {
             x: cli_x.floor(),
             y: cli_y.floor(),
         }
     }
-
 
 }

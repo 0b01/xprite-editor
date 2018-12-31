@@ -2,8 +2,8 @@ use crate::prelude::*;
 
 pub fn find_perimeter(w: usize, h: usize, pixs: &Pixels) -> Pixels {
     let mut ret = Pixels::new();
-    let grid = pixs.as_bool_arr(w, h);
-    let canvas = pixs.as_arr(w, h);
+    let grid = pixs.as_bool_mat(w, h);
+    let canvas = pixs.as_mat(w, h);
     for row in 0..w {
         for col in 0..h {
             if grid[row][col] {

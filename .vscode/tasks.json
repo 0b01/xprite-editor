@@ -7,7 +7,7 @@
             "command": "cargo",
             "args": [
                 "run",
-                "--release",
+                // "--release",
                 "--bin",
                 "xprite-native",
                 "--",

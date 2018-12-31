@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Vec2D, bg_col: Option<Color>, color: Color) -> Pixels {
     let mut ret = Pixels::new();
-    let canvas = pix.as_arr(w as usize, h as usize);
+    let canvas = pix.as_mat(w as usize, h as usize);
     let mut stack = vec![origin];
 
     let mut visited = vec![vec![false; w as usize]; h as usize];
@@ -39,10 +39,10 @@ mod test {
     use super::*;
 
     // #[test]
-    // fn test_as_arr() {
+    // fn test_as_mat() {
     //     let mut pixs = Pixels::new();
     //     pixs.push(pixel!(0., 0., Color::blue()));
-    //     let arr = pixs.as_arr(2, 2);
+    //     let arr = pixs.as_mat(2, 2);
     //     assert_eq!(
     //         vec![
     //             vec![pixel!(0,0,Color::blue()), pixel!(0,1,Color::red())],
