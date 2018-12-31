@@ -11,4 +11,4 @@ other = xpr.Pixels(c,d)
 pixs.extend(other)
 print(pixs)
 
-PIXELS = [a, b]
+PIXELS = pixs

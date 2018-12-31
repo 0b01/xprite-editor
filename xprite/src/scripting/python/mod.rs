@@ -42,15 +42,12 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
         .ok_or("HEIGHT is undefined".to_owned())?
         .extract()
         .map_err(|e| {e.print(py); "Cannot extract HEIGHT".to_owned()})?;
-    let my_pixels: Vec<&MyPixel> = locals.get_item("PIXELS")
+    let my_pixels: &MyPixels = locals.get_item("PIXELS")
         .ok_or("PIXELS is undefined".to_owned())?
         .extract()
         .map_err(|e| {e.print(py); "Cannot extract PIXELS".to_owned()})?;
 
-    let mut buf = Pixels::new();
-    for &my_p in my_pixels.iter().rev() {
-        buf.push(my_p.as_pixel());
-    }
+    let buf = my_pixels.p.clone();
 
     let mut xpr = Xprite::new(width, height);
 

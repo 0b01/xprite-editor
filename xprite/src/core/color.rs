@@ -17,6 +17,27 @@ impl ToString for Color {
     }
 }
 
+impl From<Color> for (i32,i32,i32,i32) {
+    fn from(c: Color) -> Self {
+        (c.r as i32,
+         c.g as i32,
+         c.b as i32,
+         c.a as i32,
+        )
+    }
+}
+
+impl From<(i32,i32,i32,i32)> for Color {
+    fn from(c: (i32,i32,i32,i32)) -> Self {
+        Color {
+            r: c.0 as u8,
+            g: c.1 as u8,
+            b: c.2 as u8,
+            a: c.3 as u8,
+        }
+    }
+}
+
 /// [f32;4] = [0.,0.,0.,0.9];
 impl From<Color> for [f32; 4] {
     fn from(c: Color) -> Self {
@@ -98,15 +119,6 @@ impl Color {
         Color {
             r: 0, g: 0, b: 0, a: 0,
         }
-    }
-
-    pub fn as_tuple(&self) -> (i32, i32, i32, i32) {
-        (
-            self.r as i32,
-            self.g as i32,
-            self.b as i32,
-            self.a as i32,
-        )
     }
 
 }

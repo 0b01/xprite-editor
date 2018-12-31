@@ -8,19 +8,21 @@ type PyColor = (i32, i32, i32, i32);
 
 pub fn init_mod(py: Python) -> PyResult<&PyModule> {
     let pymod = PyModule::new(py, "xpr")?;
-    pymod.add("RED", Color::red().as_tuple())?;
-    pymod.add("GREEN", Color::green().as_tuple())?;
-    pymod.add("BLUE", Color::blue().as_tuple())?;
+    pymod.add::<PyColor>("RED", Color::red().into())?;
+    pymod.add::<PyColor>("GREEN", Color::green().into())?;
+    pymod.add::<PyColor>("BLUE", Color::blue().into())?;
     pymod.add_class::<MyPixel>()?;
     pymod.add_class::<MyPixels>()?;
     pymod.add_function(wrap_function!(add))?;
 
     Ok(pymod)
 }
+
 #[pyclass(name=Pixels)]
 pub struct MyPixels {
-    p: Pixels,
+    pub p: Pixels,
 }
+
 #[pymethods]
 impl MyPixels {
     #[new]
@@ -41,6 +43,36 @@ impl MyPixels {
         self.p.extend(&other.p);
         Ok(())
     }
+    pub fn sub(&mut self, other: &MyPixels) -> PyResult<()> {
+        self.p.sub(&other.p);
+        Ok(())
+    }
+    pub fn intersection(&mut self, other: &MyPixels) -> PyResult<MyPixels> {
+        Ok(Self{p:self.p.intersection(&other.p)})
+    }
+    pub fn push(&mut self, px: &MyPixel) -> PyResult<()> {
+        self.p.push(px.as_pixel());
+        Ok(())
+    }
+    pub fn contains(&mut self, px: &MyPixel) -> PyResult<bool> {
+        Ok(self.p.contains(&px.as_pixel()))
+    }
+    pub fn clear(&mut self) -> PyResult<()> {
+        self.p.clear();
+        Ok(())
+    }
+
+    pub fn set_color(&mut self, pycolor: &PyTuple) -> PyResult<()> {
+        let color = (
+            pycolor.get_item(0).extract()?,
+            pycolor.get_item(1).extract()?,
+            pycolor.get_item(2).extract()?,
+            pycolor.get_item(3).extract()?,
+        ).into();
+        self.p.set_color(&color);
+        Ok(())
+    }
+
 }
 
 #[pyproto]
