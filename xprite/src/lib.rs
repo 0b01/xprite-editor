@@ -3,7 +3,6 @@
 #![feature(vec_remove_item)]
 #![feature(specialization)]
 
-
 extern crate image as img;
 extern crate serde;
 #[macro_use] extern crate serde_derive;

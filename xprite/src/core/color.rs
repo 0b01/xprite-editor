@@ -64,16 +64,21 @@ impl Color {
         }
     }
 
-    pub fn black() -> Color {
+    pub fn green() -> Color {
         Color {
-            r: 0, g: 0, b: 0, a: 255,
+            r: 0, g: 255, b: 0, a: 255,
         }
     }
-
 
     pub fn blue() -> Color {
         Color {
             r: 0, g: 0, b: 255, a: 255,
+        }
+    }
+
+    pub fn black() -> Color {
+        Color {
+            r: 0, g: 0, b: 0, a: 255,
         }
     }
 
@@ -93,6 +98,15 @@ impl Color {
         Color {
             r: 0, g: 0, b: 0, a: 0,
         }
+    }
+
+    pub fn as_tuple(&self) -> (i32, i32, i32, i32) {
+        (
+            self.r as i32,
+            self.g as i32,
+            self.b as i32,
+            self.a as i32,
+        )
     }
 
 }
