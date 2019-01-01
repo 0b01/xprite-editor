@@ -1,0 +1,5 @@
+[book]
+authors = ["ricky han"]
+multilingual = false
+src = "src"
+title = "Xprite Python Scripting Guide"
