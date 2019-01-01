@@ -17,7 +17,7 @@ def run():
     for i in tqdm(range(1, n-1)):
         for j in range(1, n-1):
             p0 = (side * i, side * j)
-            rect = xpr.rect((0,0), (side, side), True).with_color(PALETTE[2])
+            rect = xpr.rect((0,0), (side, side), True).with_color(get_color())
 
             corners = sample([0, 1, 2, 3], k=4)
             for corner in corners:
@@ -30,7 +30,8 @@ def run():
                     corner
                 )
             ret @= rect.shift(p0)
+    perimeter = ret.perimeter(512, 512).pixel_perfect().with_color(PALETTE[3])
     underlined = underline(ret, 512, 512, side//4 - 1, PALETTE[1])
-    return background @ underlined @ ret
+    return background @ underlined @ ret @ perimeter
 
 PIXELS = run()

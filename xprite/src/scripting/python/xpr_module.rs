@@ -94,6 +94,11 @@ impl MyPixels {
         Ok(self)
     }
 
+    pub fn perimeter(&self, w: usize, h: usize) -> PyResult<MyPixels> {
+        let p = algorithms::perimeter::find_perimeter(w, h, &self.p);
+        Ok(MyPixels{p})
+    }
+
     pub fn as_bool_mat(&self, w: usize, h: usize) -> PyResult<Vec<Vec<bool>>> {
         Ok(self.p.as_bool_mat(w, h))
     }

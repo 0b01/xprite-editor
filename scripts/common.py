@@ -1,13 +1,17 @@
 from random import random, randint, choice, choices, sample, gauss
 
 PALETTE = [
-    (210, 173, 140, 255),
-    (206, 155, 122, 255),
-    (220, 194, 122, 255),
+    (210, 173, 140, 255), # background
+    (206, 155, 122, 255), # shadow
+    (220, 194, 122, 255), # dust
+    (198, 144, 122, 255),  # outline
+
+    (238, 196, 154, 255), # dust 2
+    (240, 221, 179, 255), # dust 3
 ]
 
 def get_color():
-    return choices(PALETTE, [10, 10, 10], k=1)[0]
+    return choices(PALETTE, [0, 0, 3, 0, 13, 3], k=1)[0]
 
 def corrode(rect, corrosion_param, p0, p1, corner):
     """ corrode a corner of a rectangle """
