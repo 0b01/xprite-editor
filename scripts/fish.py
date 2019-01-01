@@ -1,6 +1,6 @@
 # pylint: disable=E0602
-WIDTH = 100
-HEIGHT = 100
+WIDTH = 1024
+HEIGHT = 1024
 
 def draw_curve(Y, X_o, X_e, dx_o, dx_e, dy_o, dy_e):
     controlPoints = (
@@ -17,11 +17,13 @@ def draw_curve(Y, X_o, X_e, dx_o, dx_e, dy_o, dy_e):
     )
     return ret.with_color(xpr.BLUE)
 
-Y = 50
-X_o = 10
-X_e = 90
-dx = 25
-dy = 25
+MARGIN_X = WIDTH // 8
+
+X_o = MARGIN_X
+X_e = WIDTH - MARGIN_X
+Y = HEIGHT // 2
+dx = HEIGHT // 4
+dy = HEIGHT // 4
 PIXELS = xpr.rect((0,0),(WIDTH,HEIGHT),True).with_color(xpr.GREEN) \
        @ draw_curve(Y, X_o, X_e, dx, dx, dy, dy) \
        @ draw_curve(Y, X_o, X_e, dx, dx, -dy, -dy)

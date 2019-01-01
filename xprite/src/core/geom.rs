@@ -73,4 +73,9 @@ impl CubicBezierSegment {
 
         Vec2D::new(x, y)
     }
+
+    pub fn to_monotone(&self) -> Vec<CubicBezierSegment> {
+        // https://github.com/Pomax/bezierjs/blob/gh-pages/lib/bezier.js#L470
+        unimplemented!()
+    }
 }
