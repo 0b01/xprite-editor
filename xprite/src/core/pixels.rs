@@ -93,7 +93,6 @@ impl Pixels {
         for i in other.0.iter() {
             self.0.replace(*i);
         }
-        self.0 = self.0.iter().cloned().collect();
     }
 
     pub fn sub(&mut self, other: &Pixels) {
