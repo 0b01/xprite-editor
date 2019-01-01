@@ -51,14 +51,12 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
         .extract()
         .map_err(|e| {e.print(py); "Cannot extract PIXELS".to_owned()})?;
 
-    let buf = my_pixels.p.clone();
-
     let mut xpr = Xprite::new(width, height);
 
     xpr.history.enter().unwrap();
     let layer = xpr.current_layer_mut().unwrap();
     layer.content.clear();
-    layer.content.extend(&buf);
+    layer.content.extend(&my_pixels.p);
 
     Ok(xpr)
 }

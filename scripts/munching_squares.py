@@ -1,12 +1,12 @@
-WIDTH = 512
-HEIGHT = 512
+WIDTH = 256
+HEIGHT = 256
 
 def munching_squares():
-    ret = []
-    for x in range(512):
-        for y in range(512):
+    ret = xpr.Pixels()
+    for x in range(256):
+        for y in range(256):
             c = x^y
-            ret.append(((x, y), (c,0,0,255)))
+            ret.push(xpr.Pixel((x, y), (c,0,0,255)))
     return ret
 
 PIXELS = munching_squares()

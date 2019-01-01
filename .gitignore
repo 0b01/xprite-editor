@@ -4,3 +4,4 @@ target/
 xprite.iml
 1.png
 1.xpr
+__pycache__

@@ -1,6 +1,4 @@
 # pylint: disable=E0602
-print(1)
-
 assert(xpr.add(1,10) == 11)
 assert(xpr.add(-1,10) == 9)
 

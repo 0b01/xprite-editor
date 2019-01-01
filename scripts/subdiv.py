@@ -6,6 +6,7 @@ HEIGHT = 1024
 def run():
     from random import random, randint, choice, choices, sample, gauss
     from tqdm import tqdm
+
     PALETTE = [
         (210, 173, 140, 255),
         (206, 155, 122, 255),
@@ -53,19 +54,16 @@ def run():
         return int(gauss((p1 + p2) / 2, (p2 - p1) / 8))
 
     def draw_rect(v0, v1):
-        nonlocal ret
         ret.extend(xpr.rect(v0, v1, True).with_color(get_color()))
 
     pad = 3
     side = 64
     n = 1024 // side
-    for i in range(n):
+    for i in tqdm(range(n)):
         for j in range(n):
             p0 = (i * side+pad, j*side+pad)
             p1 = ((i+1) * side-pad, (j+1)*side-pad)
-            print (p0,p1)
             draw_block(p0, p1)
     return ret
-
 
 PIXELS = run()

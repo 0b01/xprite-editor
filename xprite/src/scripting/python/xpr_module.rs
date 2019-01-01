@@ -26,6 +26,7 @@ pub fn init_mod(py: Python) -> PyResult<&PyModule> {
 }
 
 #[pyclass(name=Pixels)]
+#[derive(Clone)]
 pub struct MyPixels {
     pub p: Pixels,
 }
@@ -50,9 +51,14 @@ impl MyPixels {
         self.p.extend(&other.p);
         Ok(())
     }
-    pub fn sub(&mut self, other: &MyPixels) -> PyResult<()> {
+    pub fn sub_(&mut self, other: &MyPixels) -> PyResult<&MyPixels> {
         self.p.sub(&other.p);
-        Ok(())
+        Ok(self)
+    }
+    pub fn sub(&self, other: &MyPixels) -> PyResult<MyPixels> {
+        let mut new_self = self.clone();
+        new_self.sub_(other)?;
+        Ok(new_self)
     }
     pub fn intersection(&mut self, other: &MyPixels) -> PyResult<MyPixels> {
         Ok(Self{p:self.p.intersection(&other.p)})
@@ -81,10 +87,38 @@ impl MyPixels {
     }
 
     pub fn pixel_perfect(&mut self) -> PyResult<&MyPixels> {
-        let slice: Vec<_> = self.p.0.iter().cloned().collect();
+        let slice: Vec<_> = self.p.0.iter().cloned().collect(); // XXX: perf
         self.p = Pixels::from_slice(
             &algorithms::pixel_perfect::pixel_perfect(slice.as_slice())
         );
+        Ok(self)
+    }
+
+    pub fn as_bool_mat(&self, w: usize, h: usize) -> PyResult<Vec<Vec<bool>>> {
+        Ok(self.p.as_bool_mat(w, h))
+    }
+
+    pub fn shift(&self, dist: &PyTuple) -> PyResult<MyPixels> {
+        let d: Vec2D = dist.into();
+        let mut p = Pixels::new();
+        for pixel in self.p.iter() {
+            let mut pixel = pixel.clone();
+            pixel.point.x += d.x;
+            pixel.point.y += d.y;
+            p.push(pixel)
+        }
+        Ok(MyPixels{p})
+    }
+    pub fn shift_(&mut self, dist: &PyTuple) -> PyResult<&MyPixels> {
+        let d: Vec2D = dist.into();
+        let mut p = Pixels::new();
+        for pixel in self.p.iter() {
+            let mut pixel = pixel.clone();
+            pixel.point.x += d.x;
+            pixel.point.y += d.y;
+            p.push(pixel)
+        }
+        self.p = p;
         Ok(self)
     }
 
