@@ -28,8 +28,6 @@ pub type Circles = Pixels;
 
 // constants
 pub const BGCOLOR: [f32; 4] = [0.,0.,0.,0.];
-pub const WHITE: [f32;4] = [1.,1.,1.,1.];
-pub const RED: [f32;4] = [1.,0.,0.,1.];
 
 
 #[cfg(not(debug_assertions))]
@@ -38,7 +36,6 @@ pub const BACKGROUND: [f32;4] = [0.2,0.2,0.3,1.];
 pub const BACKGROUND: [f32;4] = [0.2,0.2,0.2,1.];
 
 pub const LIGHT_GREY: [f32;4] = [0.8,0.8,0.8,1.];
-pub const BLACK: [f32;4] = [0.,0.,0.,1.];
 
 /// out of bounds checking
 pub fn oob(x: f32, y: f32, w: f32, h: f32) -> bool {

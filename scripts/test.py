@@ -1,4 +1,5 @@
 # pylint: disable=E0602
+print(1)
 
 assert(xpr.add(1,10) == 11)
 assert(xpr.add(-1,10) == 9)
@@ -8,8 +9,8 @@ b = xpr.Pixel((3,3), xpr.GREEN)
 c = xpr.Pixel((3,3), xpr.BLUE)
 d = xpr.Pixel((4,4), xpr.BLUE)
 
-e = xpr.Pixel((40,40), xpr.BLUE)
-f = xpr.Pixel((90,90), xpr.BLUE)
+e = (40,40)
+f = (90,90)
 
 pixs = xpr.Pixels(a,b)
 other = xpr.Pixels(c,d)

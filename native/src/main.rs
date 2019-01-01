@@ -30,22 +30,16 @@ fn main() -> Result<(), String> {
                     .version("1.0")
                     .author("Ricky Han <xprite@rickyhan.com>")
                     .about("pixel art editor with extra tools")
+                    .arg(Arg::with_name("INPUT")
+                        .short("-p")
+                        .long("python")
+                        .value_name("PY_FILE")
+                        .help("Run python script"))
                     .subcommand(SubCommand::with_name("dyon")
                                 .about("run dyon script")
                                 .version("1.0")
                                 .arg(Arg::with_name("INPUT")
                                     .help("INPUT.dyon script")
-                                    .required(true)
-                                    .index(1)
-                                )
-                                .arg(Arg::with_name("debug")
-                                    .short("d")
-                                    .help("print debug information verbosely")))
-                    .subcommand(SubCommand::with_name("python")
-                                .about("run python script")
-                                .version("1.0")
-                                .arg(Arg::with_name("INPUT")
-                                    .help("INPUT.py script")
                                     .required(true)
                                     .index(1)
                                 )
@@ -61,10 +55,9 @@ fn main() -> Result<(), String> {
             run_dyon_script(inp_file)?;
 
         }
-    } else if let Some(matches) = matches.subcommand_matches("python") {
+    } else if let Some(inp_file) = matches.value_of("INPUT") {
         #[cfg(feature = "python-scripting")]
         {
-            let inp_file = matches.value_of("INPUT").unwrap();
             run_python_script(inp_file)?;
         }
     } else {

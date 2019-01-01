@@ -1,3 +1,5 @@
+# pylint: disable=E0602
+
 WIDTH = 1024
 HEIGHT = 1024
 
@@ -13,17 +15,9 @@ def run():
     def get_color():
         return choices(PALETTE, [10, 10, 10], k=1)[0]
 
-    def rectangle(p0, p1):
-        ret = []
-        color = get_color()
-        for i in range(p0[0], p1[0]):
-            for j in range(p0[1], p1[1]):
-                ret.append(((i, j), color))
-        return ret
-
     cutoff = 2
     padding = 2
-    ret = []
+    ret = xpr.Pixels()
 
     def draw_block(v0, v1):
         ((x0, y0), (x1, y1)) = (v0, v1)
@@ -60,7 +54,7 @@ def run():
 
     def draw_rect(v0, v1):
         nonlocal ret
-        ret += rectangle(v0, v1)
+        ret.extend(xpr.rect(v0, v1, True).with_color(get_color()))
 
     pad = 3
     side = 64

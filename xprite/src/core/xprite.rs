@@ -198,7 +198,7 @@ impl Xprite {
         // draw cursor
         for p in self.cursor_pos.iter() {
             let Vec2D {x, y} = p.point;
-            self.canvas.draw_pixel(rdr, x, y, RED, false); // draw a rectangle
+            self.canvas.draw_pixel(rdr, x, y, Color::red().into(), false); // draw a rectangle
         }
 
         // draw layers

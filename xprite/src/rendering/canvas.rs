@@ -153,7 +153,7 @@ impl Canvas {
         if !self.show_grid { return }
         let o = self.origin();
 
-        let color = BLACK;
+        let color = Color::black().into();
         let mut x = 0.;
         while x < self.scale * self.art_w {
             rdr.line(
