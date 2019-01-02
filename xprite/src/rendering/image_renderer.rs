@@ -34,11 +34,11 @@ impl Renderer for ImageRenderer {
             let color = {
                 Rgba { data: [color.r, color.g, color.b, color.a] }
             };
-            self.image.put_pixel(
-                point.x as u32,
-                point.y as u32,
-                color
-            );
+            if !oob(point.x, point.y, self.w, self.h) {
+                let x = point.x as u32;
+                let y = point.y as u32;
+                self.image.put_pixel(x, y, color);
+            }
         }
 
     }

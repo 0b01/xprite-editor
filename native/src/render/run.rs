@@ -275,7 +275,7 @@ where
             hidpi_factor,
         };
 
-        ::std::thread::sleep(::std::time::Duration::from_millis(5));
+        // ::std::thread::sleep(::std::time::Duration::from_millis(5));
 
         let ui = imgui.frame(frame_size, delta_s);
         if !run_ui(&ui, display.get_context(), renderer.textures()) {
