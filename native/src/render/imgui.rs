@@ -77,7 +77,7 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
             data: Cow::Owned(img.raw_pixels()),
             width,
             height,
-            format: ClientFormat::U8U8U8U8,
+            format,
         };
 
         let gl_texture = Texture2d::new(self.gl_ctx, img).unwrap();

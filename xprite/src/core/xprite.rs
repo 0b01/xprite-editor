@@ -192,19 +192,14 @@ impl Xprite {
     /// render to canvas
     pub fn render(&self, rdr: &mut Renderer) {
         rdr.reset();
-
         self.canvas.draw_canvas(rdr);
-        self.canvas.draw_grid(rdr);
-
-        let top = self.history.top();
-
         // draw cursor
         for p in self.cursor_pos.iter() {
             let Vec2D {x, y} = p.point;
             self.canvas.draw_pixel(rdr, x, y, Color::red().into(), false); // draw a rectangle
         }
-
         // draw layers
+        let top = self.history.top();
         for layer in top.iter_layers() {
             // skip invisible layers
             if !layer.visible {
@@ -215,50 +210,33 @@ impl Xprite {
                 self.canvas.draw_pixel(rdr, x, y, color.into(), true);
             }
         }
-
-        // info!("------------");
-        // for (polyline, path) in cc_buf.iter() {
-        //     // let mut circ_buf = Pixels::new();
-        //     // circ_buf.extend(&polyline.anchors(self));
-        //     // circ_buf.extend(&path.control_points(self));
-
-        // }
-
-
         // draw current layer pixels
         for &Pixel{point, color} in self.pixels().iter() {
             let Vec2D {x, y} = point;
             self.canvas.draw_pixel(rdr, x, y, color.into(), true);
         }
 
+        rdr.render();
+        self.canvas.draw_grid(rdr);
         for seg in &self.bz_buf {
             let &CubicBezierSegment { ctrl1, ctrl2, from, to } = seg;
             self.canvas.draw_bezier(rdr, from, ctrl1, ctrl2, to, Color::grey().into(), 4.);
-
             let red = Color::red().into();
             let blue = Color::blue().into();
+            self.canvas.draw_circle(rdr, from, 0.3, blue, true);
             self.canvas.draw_circle(rdr, ctrl1, 0.3, red, true);
             self.canvas.draw_circle(rdr, ctrl2, 0.3, red, true);
-            self.canvas.draw_circle(rdr, from, 0.3, blue, true);
             self.canvas.draw_circle(rdr, to, 0.3, blue, true);
-
             self.canvas.draw_line(rdr, from, ctrl1, blue);
             self.canvas.draw_line(rdr, to, ctrl2, blue);
+
+            if self.canvas.within_circle(from, 0.5, self.last_mouse_pos)
+            || self.canvas.within_circle(ctrl1, 0.5, self.last_mouse_pos)
+            || self.canvas.within_circle(ctrl2, 0.5, self.last_mouse_pos)
+            || self.canvas.within_circle(to, 0.5, self.last_mouse_pos) {
+                rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Move);
+            }
         }
-
-        // // draw circles
-        // for p in self.cc_buf.iter() {
-        //     let Vec2D {x, y} = p.point;
-        //     let c = if let ColorOption::Set(c) = p.color {c.into()}
-        //             else {self.color().into()};
-        //     self.canvas.draw_circle(rdr, x, y, 0.5, c, true);
-        //     // if mouse position is near a circle
-        //     if self.canvas.within_circle(x, y, 0.5, self.last_mouse_pos) {
-        //         rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Move);
-        //     }
-        // }
-
-        rdr.render();
     }
 }
 

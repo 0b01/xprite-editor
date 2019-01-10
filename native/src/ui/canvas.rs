@@ -29,9 +29,6 @@ pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
                     .build(|| {
                         update_viewport(state, ui);
                         state.xpr.render(rdr);
-
-                        // rdr.render();
-
                         super::inputs::bind_input(state, ui);
                     });
             });

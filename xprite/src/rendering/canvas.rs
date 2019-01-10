@@ -100,7 +100,8 @@ impl Canvas {
         )
     }
 
-    pub fn within_circle(&self, x: f32, y: f32, radius: f32, mouse: (f32, f32)) -> bool {
+    pub fn within_circle(&self, point: Vec2D, radius: f32, mouse: (f32, f32)) -> bool {
+        let Vec2D {x,y} = point;
         let o = self.origin();
         let p0 = (
             o.0 + self.scale * x,

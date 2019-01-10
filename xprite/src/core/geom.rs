@@ -179,6 +179,10 @@ mod tests {
         };
 
         let ex = seg.extrema();
-        println!("{:#?}", ex);
+        assert_eq!(vec![
+            0.29352384841237594,
+            0.39285714285714285,
+            0.76,
+        ], ex);
     }
 }
