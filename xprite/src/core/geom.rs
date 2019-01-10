@@ -86,7 +86,7 @@ impl CubicBezierSegment {
         for (start, stop) in extrema.iter().zip(extrema[1..].iter()) {
             let mut monotone_seg = Pixels::new();
             let mut t = *start;
-            let n_steps = 100;
+            let n_steps = 1000;
             let step = (stop - start) / n_steps as f32;
             for _ in 0..n_steps {
                 let point = self.sample(t);
@@ -98,6 +98,7 @@ impl CubicBezierSegment {
                 }
                 t += step;
             }
+            monotone_seg.pixel_perfect();
             monotone_seg.monotonic_sort();
             pixs.extend(&monotone_seg);
         }
