@@ -6,7 +6,7 @@ use std::hash::{Hash, Hasher};
 
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Xprite<'a> {
+pub struct Xprite {
     pub history: History,
 
     #[serde(skip_serializing, skip_deserializing)]
@@ -17,7 +17,7 @@ pub struct Xprite<'a> {
     pub canvas: Canvas,
     pub selected_color: Color,
     #[serde(skip_serializing, skip_deserializing)]
-    pub palette_man: PaletteManager<'a>,
+    pub palette_man: PaletteManager,
 
     #[serde(skip_serializing, skip_deserializing)]
     pub toolbox: Toolbox,
@@ -32,8 +32,8 @@ pub struct Xprite<'a> {
     pub log: Arc<Mutex<String>>,
 }
 
-impl<'a> Xprite<'a> {
-    pub fn new(art_w: f32, art_h: f32) -> Xprite<'a> {
+impl Xprite {
+    pub fn new(art_w: f32, art_h: f32) -> Xprite {
         let selected_color = Color {r: 100, g: 100, b: 100, a: 255};
         let history = History::new();
         let cursor_pos = Pixels::new();
@@ -139,7 +139,7 @@ impl<'a> Xprite<'a> {
     }
 }
 
-impl<'a> Xprite<'a> {
+impl Xprite {
 
     #[cfg(feature = "dyon-scripting")]
     pub fn execute_dyon_script(&mut self, path: &str) -> Result<(), String> {
@@ -151,7 +151,7 @@ impl<'a> Xprite<'a> {
 }
 
 
-impl<'a> Xprite<'a> {
+impl Xprite {
 
     pub fn switch_layer(&mut self, group_id: usize, layer: usize) {
 
@@ -188,7 +188,7 @@ impl<'a> Xprite<'a> {
     }
 }
 
-impl<'a> Xprite<'a> {
+impl Xprite {
     /// render to canvas
     pub fn render(&self, rdr: &mut Renderer) {
         rdr.reset();
@@ -262,7 +262,7 @@ impl<'a> Xprite<'a> {
     }
 }
 
-impl<'a> Xprite<'a> {
+impl Xprite {
     pub fn layer_as_im(&mut self) -> img::DynamicImage {
         let layer = self.history.top_mut().selected_layer().unwrap();
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
@@ -325,7 +325,7 @@ impl<'a> Xprite<'a> {
 
 
 /// handle events
-impl<'a> Xprite<'a> {
+impl Xprite {
 
     pub fn event(&mut self, evt: &InputEvent) -> Result<(), String> {
         use self::InputEvent::*;

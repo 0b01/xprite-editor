@@ -5,14 +5,14 @@ use std::borrow::Cow;
 type PaletteGroup = IndexMap<&'static str, Color>;
 
 #[derive(Default, Debug)]
-pub struct PaletteManager<'a> {
-    pub palettes: IndexMap<Cow<'a, str>, PaletteGroup>,
+pub struct PaletteManager {
+    pub palettes: IndexMap<String, PaletteGroup>,
 }
 
-impl<'a> PaletteManager<'a> {
+impl PaletteManager {
     pub fn new() -> Self {
         let mut palettes = IndexMap::new();
-        palettes.insert(Cow::Borrowed("pico8"), pico8());
+        palettes.insert("pico8".to_owned(), pico8());
         Self {
             palettes,
         }

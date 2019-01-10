@@ -8,7 +8,7 @@ use std::borrow::Cow;
 use std::fs::File;
 
 pub struct State<'a> {
-    pub xpr: Xprite<'a>,
+    pub xpr: Xprite,
     pub show_settings: bool,
     pub show_console: bool,
     pub hotkeys: HotkeyController,
@@ -20,7 +20,7 @@ pub struct State<'a> {
 }
 
 impl<'a> State<'a> {
-    pub fn new(xpr: Xprite<'a>) -> State<'a> {
+    pub fn new(xpr: Xprite) -> State<'a> {
         State {
             xpr,
             show_settings: false,

@@ -1,5 +1,6 @@
 use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
+use std::collections::HashMap;
 
 /// represents a 2D vector
 #[derive(Debug, Copy, Clone, PartialOrd, Serialize, Deserialize, Default)]
@@ -74,8 +75,110 @@ impl CubicBezierSegment {
         Vec2D::new(x, y)
     }
 
-    pub fn to_monotone(&self) -> Vec<CubicBezierSegment> {
+    pub fn extrema(&self) -> Vec<f32> {
         // https://github.com/Pomax/bezierjs/blob/gh-pages/lib/bezier.js#L470
-        unimplemented!()
+
+        let dims = vec![0, 1];
+        let mut result = vec![
+            vec![],
+            vec![],
+        ];
+
+        let mut roots = Vec::new();
+
+        let points = vec![
+            self.from,
+            self.ctrl1,
+            self.ctrl2,
+            self.to,
+        ];
+
+        let dpoints = derive(points);
+
+        for &dim in &dims {
+            let mfn = |point: &Vec2D| {
+                if dim == 0 { point.x } else { point.y }
+            };
+            let p: Vec<f32> = dpoints[0].iter().map(mfn).collect();
+            result[dim] = droots(&p);
+            let p: Vec<f32> = dpoints[1].iter().map(mfn).collect();
+            result[dim].extend(droots(&p));
+            result[dim] = result[dim].iter().filter(|&t| *t >= 0. && *t <= 1.).cloned().collect();
+            result[dim].sort_by(|a: &f32, b: &f32| a.partial_cmp(b).unwrap());
+            roots.extend(&result[dim]);
+        };
+        roots.sort_by(|a:&f32, b| a.partial_cmp(b).unwrap());
+        return roots;
+    }
+}
+
+/// https://github.com/Pomax/bezierjs/blob/gh-pages/lib/utils.js#L173
+fn derive(points: Vec<Vec2D>) -> Vec<Vec<Vec2D>> {
+    let mut dpoints = vec![];
+    let mut p = points;
+    let mut d = p.len();
+    let mut c = d - 1;
+    while d > 1 {
+        let mut list = vec![];
+        for j in 0..c {
+          let dpt = Vec2D::new(
+            c as f32 * (p[j + 1].x - p[j].x),
+            c as f32 * (p[j + 1].y - p[j].y)
+          );
+          list.push(dpt);
+        }
+        dpoints.push(list.clone());
+        p = list;
+        d -= 1;
+        c -= 1;
+    }
+    dpoints
+}
+
+fn droots(p: &[f32]) -> Vec<f32> {
+    if p.len() == 3 {
+        let a = p[0];
+        let b = p[1];
+        let c = p[2];
+        let d = a - 2. * b + c;
+        if d != 0. {
+            let m1 = -(b * b - a * c).sqrt();
+            let m2 = -a + b;
+            let v1 = -(m1 + m2) / d;
+            let v2 = -(-m1 + m2) / d;
+            return vec![v1, v2];
+        } else if b != c && d == 0. {
+            return vec![(2. * b - c) / (2. * (b - c))];
+        }
+        return vec![];
+    } else if p.len() == 2 {
+        let a = p[0];
+        let b = p[1];
+        if a != b {
+            return vec![a / (a - b)];
+        }
+        return vec![];
+    } else {
+        unreachable!()
+    }
+    unreachable!()
+}
+
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_extrema() {
+        use super::*;
+
+        let seg = CubicBezierSegment {
+            from: Vec2D::new(100., 25.),
+            ctrl1: Vec2D::new(10., 90.),
+            ctrl2: Vec2D::new(110., 100.),
+            to: Vec2D::new(150., 195.),
+        };
+
+        let ex = seg.extrema();
+        println!("{:#?}", ex);
     }
 }
