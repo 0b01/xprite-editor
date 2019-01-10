@@ -14,6 +14,7 @@ use crate::tools::{
     rect::Rect,
     texture::Texture,
     ellipse::Ellipse,
+    marquee::Marquee,
 };
 
 #[derive(Default, Debug)]
@@ -27,6 +28,7 @@ pub struct Toolbox {
     pub rect:           Rc<RefCell<Rect>>,
     pub texture:        Rc<RefCell<Texture>>,
     pub ellipse:        Rc<RefCell<Ellipse>>,
+    pub marquee:        Rc<RefCell<Marquee>>,
 
     pub selected:       ToolType,
 
@@ -44,6 +46,7 @@ impl Toolbox {
         let rect = Rc::new(RefCell::new(Rect::new()));
         let texture = Rc::new(RefCell::new(Texture::new()));
         let ellipse = Rc::new(RefCell::new(Ellipse::new()));
+        let marquee = Rc::new(RefCell::new(Marquee::new()));
 
         let selected = ToolType::Pencil;
 
@@ -60,6 +63,7 @@ impl Toolbox {
             rect,
             texture,
             ellipse,
+            marquee,
         }
     }
 
@@ -79,6 +83,7 @@ impl Toolbox {
             Rect | FilledRect => self.rect.clone(),
             Ellipse | FilledEllipse => self.ellipse.clone(),
             Texture => self.texture.clone(),
+            Marquee => self.marquee.clone(),
 
         }
     }

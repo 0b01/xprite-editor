@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::algorithms::floodfill::floodfill;
 use std::i32;
 
 pub fn ellipse(x1: i32, y1: i32, x2:i32, y2:i32, col: Color) -> Result<Pixels, String> {
@@ -51,16 +52,6 @@ pub fn ellipse(x1: i32, y1: i32, x2:i32, y2:i32, col: Color) -> Result<Pixels, S
     Ok(ret)
 }
 
-pub fn filled_ellipse(x1: i32, y1: i32, x2: i32, y2: i32, col: Color) -> Result<Pixels, String> {
-    let mut ret = Pixels::new();
-    for i in x1..x2 {
-        for j in y1..y2 {
-            ret.push(pixel!(i,j, col));
-        }
-    }
-    Ok(ret)
-}
-
 pub fn get_ellipse(start: Option<Pixel>, stop: Option<Pixel>, filled: bool) -> Result<Pixels, String> {
     let start = start.ok_or("start is none".to_owned())?;
     let stop = stop.ok_or("stop is none".to_owned())?;
@@ -71,13 +62,21 @@ pub fn get_ellipse(start: Option<Pixel>, stop: Option<Pixel>, filled: bool) -> R
 
     if (x1-x0 < 1) || (y1-y0<1) { return Err("".to_owned()); }
 
-
-    let f = if filled {filled_ellipse} else {ellipse};
-    f(
+    let ret = ellipse(
         i32::min(x0, x1),
         i32::min(y0, y1),
         i32::max(x0, x1),
         i32::max(y0, y1),
         Color::red(),
-    )
+    )?;
+
+    if filled {
+        // let x_m = (x0+x1)/2;
+        // let y_m = (y0+y1)/2;
+        // let origin = Vec2D::new(x_m as f32, y_m as f32);
+        // let ok = floodfill((x0-x1).abs() as f32, (y0-y1).abs() as f32, &ret, origin, None, Color::blue());
+        // return Ok(ok)
+        unimplemented!()
+    }
+    Ok(ret)
 }

@@ -9,6 +9,7 @@ pub mod color_picker;
 pub mod rect;
 pub mod ellipse;
 pub mod texture;
+pub mod marquee;
 
 pub mod traits;
 
@@ -28,6 +29,7 @@ pub enum ToolType {
     Texture,
     Ellipse,
     FilledEllipse,
+    Marquee,
 }
 
 impl Default for ToolType {
@@ -37,7 +39,7 @@ impl Default for ToolType {
 }
 
 impl ToolType {
-    pub const VARIANTS: [ToolType; 9] = [
+    pub const VARIANTS: [ToolType; 10] = [
         ToolType::Pencil,
         ToolType::Line,
         ToolType::PaintBucket,
@@ -47,6 +49,7 @@ impl ToolType {
         ToolType::Rect,
         ToolType::Texture,
         ToolType::Ellipse,
+        ToolType::Marquee,
     ];
 
     pub fn as_str(&self) -> &str {
@@ -62,6 +65,7 @@ impl ToolType {
             ToolType::Ellipse => "Ellipse",
             ToolType::FilledEllipse => "FilledEllipse",
             ToolType::Texture => "Texture",
+            ToolType::Marquee => "Marquee",
         }
     }
 }
@@ -81,6 +85,7 @@ impl FromStr for ToolType {
             "Ellipse" => Ok(ToolType::Ellipse),
             "FilledEllipse" => Ok(ToolType::FilledEllipse),
             "Texture" => Ok(ToolType::Texture),
+            "Marquee" => Ok(ToolType::Marquee),
             _ => Err(()),
         }
     }

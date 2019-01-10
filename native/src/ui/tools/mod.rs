@@ -9,6 +9,7 @@ pub mod eraser_panel;
 pub mod rect_panel;
 pub mod ellipse_panel;
 pub mod texture_panel;
+pub mod marquee_panel;
 
 pub fn draw(selected: ToolType, rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     match selected {
@@ -21,5 +22,6 @@ pub fn draw(selected: ToolType, rdr: &mut Renderer, state: &mut State, ui: &Ui) 
         ToolType::Rect | ToolType::FilledRect => rect_panel::draw(state, ui),
         ToolType::Ellipse | ToolType::FilledEllipse => ellipse_panel::draw(state, ui),
         ToolType::Texture => texture_panel::draw(rdr, state, ui),
+        ToolType::Marquee => marquee_panel::draw(rdr, state, ui),
     }
 }

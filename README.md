@@ -6,7 +6,9 @@ Pixel art editor with algorithmic tools.
 
 ## Bugs and Improvements
 
+* [ ] Marquee
 * [ ] Stroke caching
+* [ ] Filled ellipse
 * [ ] Dynamic brush size
 * [ ] Tabs
 * [ ] Preview bounding box
@@ -42,7 +44,7 @@ Pixel art editor with algorithmic tools.
 * [x] Shapes - Rect
 * [x] Shapes - Circle
 * [ ] Vector tools
-* [ ] Select
+* [ ] Select/Marquee
 * [ ] Pattern Brush
 * [ ] Texture Synthesis
 
