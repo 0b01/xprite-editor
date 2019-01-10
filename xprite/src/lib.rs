@@ -14,30 +14,23 @@ extern crate serde;
 #[macro_use] extern crate pyo3;
 
 extern crate indexmap as imap;
+#[macro_use] extern crate lazy_static;
 extern crate libtexsyn;
-
 extern crate bincode as bc;
 
 pub mod bincode {
     pub use bc::*;
 }
-
 #[macro_use] pub mod core;
 pub mod algorithms;
 pub mod scripting;
-
-
 pub mod tools;
 pub mod prelude;
-
 pub mod layer;
 pub mod rendering;
-
-
 pub mod image {
     pub use img::*;
 }
-
 pub mod indexmap {
     pub use imap::*;
 }

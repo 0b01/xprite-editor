@@ -4,21 +4,23 @@ use xprite::rendering::image_renderer::ImageRenderer;
 use xprite::image::GenericImageView;
 use xprite::bincode::{serialize, deserialize};
 use std::io::{BufWriter, Write, BufReader, Read};
+use std::borrow::Cow;
 use std::fs::File;
 
-pub struct State {
-    pub xpr: Xprite,
+pub struct State<'a> {
+    pub xpr: Xprite<'a>,
     pub show_settings: bool,
     pub show_console: bool,
     pub hotkeys: HotkeyController,
     pub inputs: InputState,
     pub script_fname: Option<String>,
+    pub palette_color_name: Option<Cow<'a, str>>,
 
     pub preview_texture: Option<(u64 /* hash */, usize /* texture_id */)>,
 }
 
-impl State {
-    pub fn new(xpr: Xprite) -> State {
+impl<'a> State<'a> {
+    pub fn new(xpr: Xprite<'a>) -> State<'a> {
         State {
             xpr,
             show_settings: false,
@@ -27,6 +29,7 @@ impl State {
             inputs: InputState::default(),
             script_fname: None,
             preview_texture: None,
+            palette_color_name: None,
         }
     }
 

@@ -8,6 +8,7 @@ pub use crate::core::{
     brush::{Brush, BrushType},
     geom::{Vec2D, CubicBezierSegment},
     xprite::Xprite,
+    palette::PaletteManager,
 };
 pub use crate::algorithms::{
     polyline::Polyline,
