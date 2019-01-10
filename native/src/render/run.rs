@@ -22,10 +22,10 @@ fn set_style(imgui: &mut ImGui) {
     style.grab_rounding   = 0.0;
     style.scrollbar_rounding = 5.0;
     style.frame_border_size = 1.0;
-    style.item_spacing.y = 6.5;
-    style.frame_border_size = 2.;
-    style.child_border_size = 2.;
-    style.window_border_size = 2.;
+    style.item_spacing.y = 4.5;
+    style.frame_border_size = 1.;
+    style.child_border_size = 1.;
+    style.window_border_size = 1.;
 
     let vals = ImGuiCol::values();
     macro_rules! find {
@@ -104,16 +104,16 @@ where
             .size_pixels(font_size),
     );
 
-    imgui.fonts().add_font_with_config(
-        include_bytes!("../../assets/Roboto-Regular.ttf"),
-        ImFontConfig::new()
-            .merge_mode(true)
-            .oversample_h(1)
-            .pixel_snap_h(true)
-            .size_pixels(font_size)
-            .rasterizer_multiply(1.75),
-        &FontGlyphRange::japanese(),
-    );
+    // imgui.fonts().add_font_with_config(
+    //     include_bytes!("../../assets/Roboto-Regular.ttf"),
+    //     ImFontConfig::new()
+    //         .merge_mode(true)
+    //         .oversample_h(1)
+    //         .pixel_snap_h(true)
+    //         .size_pixels(font_size)
+    //         .rasterizer_multiply(1.75),
+    //     &FontGlyphRange::japanese(),
+    // );
 
     imgui.set_font_global_scale((1.0 / hidpi_factor) as f32);
 

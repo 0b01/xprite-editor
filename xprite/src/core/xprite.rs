@@ -42,7 +42,7 @@ impl Xprite {
         let im_buf = Pixels::new();
         let bz_buf = Vec::new();
         let log = Arc::new(Mutex::new(String::new()));
-        let palette_man = PaletteManager::new();
+        let palette_man = PaletteManager::new().expect("Cannot initialize palettes");
 
         #[cfg(feature = "dyon-scripting")]
         {

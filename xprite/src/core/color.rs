@@ -1,3 +1,5 @@
+use hex;
+
 #[derive(Debug, Hash, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Color {
     pub r: u8,
@@ -73,10 +75,17 @@ impl From<img::Rgba<u8>> for Color {
 }
 
 impl Color {
-    pub fn new(r:u8, g:u8, b:u8) -> Color {
+    pub fn new(r:u8, g:u8, b:u8) -> Self {
         Color {
             r, g, b, a:255,
         }
+    }
+
+    pub fn from_hex(col: &str) -> Result<Self, hex::FromHexError> {
+        let r = hex::decode(&col[..2])?[0];
+        let g = hex::decode(&col[2..4])?[0];
+        let b = hex::decode(&col[4..])?[0];
+        Ok(Self::new(r, g, b))
     }
 
     pub fn red() -> Color {

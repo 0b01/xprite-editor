@@ -90,7 +90,7 @@ fn run_dyon_script(fname: &str) -> Result<(), String> {
 fn run_ui() {
     trace!("Starting Xprite");
     let xpr = Xprite::new(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    init_logger(Arc::clone(&xpr.log));
+    init_full_logger(Arc::clone(&xpr.log));
     let mut state = State::new(xpr);
 
 
@@ -101,7 +101,7 @@ fn run_ui() {
     });
 }
 
-fn init_logger(console_logger: Arc<Mutex<String>>) {
+fn init_full_logger(console_logger: Arc<Mutex<String>>) {
     fern::Dispatch::new()
         // Perform allocation-free log formatting
         .format(|out, message, record| {
@@ -126,5 +126,5 @@ fn init_logger(console_logger: Arc<Mutex<String>>) {
         }))
         // .chain(fern::log_file("output.log")?)
         // Apply globally
-        .apply().unwrap();
+        .apply() .unwrap();
 }

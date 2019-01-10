@@ -15,6 +15,7 @@ pub struct State<'a> {
     pub inputs: InputState,
     pub script_fname: Option<String>,
     pub palette_color_name: Option<Cow<'a, str>>,
+    pub palette_idx: i32,
 
     pub preview_texture: Option<(u64 /* hash */, usize /* texture_id */)>,
 }
@@ -30,6 +31,7 @@ impl<'a> State<'a> {
             script_fname: None,
             preview_texture: None,
             palette_color_name: None,
+            palette_idx: 0,
         }
     }
 

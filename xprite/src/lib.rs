@@ -3,6 +3,7 @@
 #![feature(vec_remove_item)]
 #![feature(specialization)]
 
+extern crate hex;
 extern crate image as img;
 extern crate serde;
 #[macro_use] extern crate serde_derive;
@@ -14,7 +15,6 @@ extern crate serde;
 #[macro_use] extern crate pyo3;
 
 extern crate indexmap as imap;
-#[macro_use] extern crate lazy_static;
 extern crate libtexsyn;
 extern crate bincode as bc;
 
