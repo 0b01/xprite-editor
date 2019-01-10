@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::algorithms::sorter::sort_path;
 use crate::algorithms::pixel_perfect::pixel_perfect;
 use std::str::FromStr;
 
@@ -123,12 +122,12 @@ impl Tool for Pencil {
         let button = self.is_mouse_down.unwrap();
         if button == InputItem::Left {
             self.buffer.clear();
-            let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
+            let mut line_pixs = self.current_polyline.connect_with_line(&xpr)?;
             let pixs = if self.mode != PencilMode::Raw {
-                let perfect = pixel_perfect(&line_pixs);
-                Pixels::from_slice(&perfect)
+                line_pixs.pixel_perfect();
+                line_pixs
             } else {
-                Pixels::from_slice(&line_pixs)
+                line_pixs
             };
             let mut pixs = self.brush.follow_stroke(&pixs).unwrap();
             pixs.with_color(&xpr.color());
@@ -173,20 +172,18 @@ impl Tool for Pencil {
                     // noop
                 } else {
                     self.buffer.clear();
-                    let points = self.current_polyline.connect_with_line(xpr)?;
-                    let perfect = &pixel_perfect(&points);
-                    let pixs = Pixels::from_slice(&perfect);
-                    let path = self.brush.follow_stroke(&pixs).unwrap();
+                    let mut points = self.current_polyline.connect_with_line(xpr)?;
+                    points.pixel_perfect();
+                    let path = self.brush.follow_stroke(&points).unwrap();
                     self.buffer.extend(&path);
                 }
             }
             SortedMonotonic => {
                 self.buffer.clear();
-                let points = self.current_polyline.connect_with_line(xpr)?;
-                let mut perfect = pixel_perfect(&points);
-                let sorted = sort_path(&mut perfect)?;
-                let pixs = Pixels::from_slice(&sorted);
-                let path = self.brush.follow_stroke(&pixs).unwrap();
+                let mut points = self.current_polyline.connect_with_line(xpr)?;
+                points.pixel_perfect();
+                points.monotonic_sort();
+                let path = self.brush.follow_stroke(&points).unwrap();
                 self.buffer.extend(&path);
             }
         }
@@ -194,7 +191,7 @@ impl Tool for Pencil {
         self.buffer.set_color(&xpr.color());
 
         xpr.history.enter()?;
-        xpr.current_layer_mut().ok_or("Layer doesn't exist.".to_owned())?
+        xpr.current_layer_mut().ok_or_else(||"Layer doesn't exist.".to_owned())?
             .content
             .extend(&self.buffer);
 

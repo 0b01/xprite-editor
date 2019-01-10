@@ -29,12 +29,14 @@ pub fn get_concavity(path: &[Pixel]) -> bool {
     }
 }
 
-pub fn sort_path(path: &mut [Pixel]) -> Result<Vec<Pixel>, String> {
+pub fn sort_path(input: &Pixels) -> Result<Pixels, String> {
+    let mut path: Vec<Pixel> = input.0.iter().cloned().collect();
 
+    // if the path is drawn from bottom to top
     let up = path
         .iter()
         .last()
-        .ok_or("does not contain last".to_owned())?
+        .ok_or_else(||"does not contain last".to_owned())?
         .point.y < path[0].point.y;
     let mut dir = if up { -1 } else { 1 };
 
@@ -42,14 +44,14 @@ pub fn sort_path(path: &mut [Pixel]) -> Result<Vec<Pixel>, String> {
     let right_to_left = path
         .iter()
         .last()
-        .ok_or("does not contain last".to_owned())?
+        .ok_or_else(||"does not contain last".to_owned())?
         .point.x < path[0].point.x;
     if right_to_left {
         dir *= -1;
         path.reverse();
     };
 
-    let is_concave_up = get_concavity(path);
+    let is_concave_up = get_concavity(&path);
     // console!(log, format!("concavity: {}\nup: {}", is_concave_up, up));
 
     let mut segs = Vec::new();
@@ -100,7 +102,7 @@ pub fn sort_path(path: &mut [Pixel]) -> Result<Vec<Pixel>, String> {
         segs.reverse();
     }
 
-    let mut ret = Vec::new();
+    let mut ret = Pixels::new();
     let mut p0 = path[0];
 
     // offset

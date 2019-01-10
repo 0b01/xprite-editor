@@ -1,3 +1,4 @@
+use crate::prelude::*;
 use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -73,6 +74,36 @@ impl CubicBezierSegment {
             self.to.y * t3;
 
         Vec2D::new(x, y)
+    }
+
+    /// rasterize a single bezier curve by sampling
+    pub fn rasterize(&self) -> Option<Pixels> {
+        let mut pixs = Pixels::new();
+
+        let mut extrema = vec![0.];
+        extrema.extend(self.extrema());
+        extrema.push(1.);
+        for (start, stop) in extrema.iter().zip(extrema[1..].iter()) {
+            let mut monotone_seg = Pixels::new();
+            let mut t = *start;
+            let n_steps = 100;
+            let step = (stop - start) / n_steps as f32;
+            for _ in 0..n_steps {
+                let point = self.sample(t);
+                let Vec2D {x, y} = Canvas::snap(point);
+                let pixel = pixel!(x, y, Color::red());
+                // don't allow duplicate pixels
+                if !monotone_seg.contains(&pixel) {
+                    monotone_seg.push(pixel);
+                }
+                t += step;
+            }
+            monotone_seg.monotonic_sort();
+            pixs.extend(&monotone_seg);
+        }
+
+        pixs.pixel_perfect();
+        Some(pixs)
     }
 
     pub fn extrema(&self) -> Vec<f32> {

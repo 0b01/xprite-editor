@@ -64,7 +64,7 @@ impl Tool for Eraser {
         }
 
         self.current_polyline.push(p);
-        let line_pixs = Pixels::from_slice(&self.current_polyline.connect_with_line(&xpr)?);
+        let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
         let brushstroke = self.brush.follow_stroke(&line_pixs).unwrap();
         self.buffer.extend(&brushstroke);
 

@@ -43,7 +43,7 @@ impl Ellipse {
                 let dx = x1 - x0;
                 let dy = y1 - y0;
                 let d = f32::min(dx, dy);
-                let mut end = start.clone();
+                let mut end = start;
                 end.point.x = start.point.x + d;
                 end.point.y = start.point.y + d;
                 end

@@ -56,7 +56,7 @@ impl Tool for Vector {
 
         // the rest handles when left button is pressed
         let p = xpr.canvas.shrink_size_no_floor(p);
-        self.current_polyline.as_mut().ok_or("cannot borrow as mut")?.push(p);
+        self.current_polyline.as_mut().ok_or_else(||"cannot borrow as mut")?.push(p);
 
         // let button = self.is_mouse_down.clone().unwrap();
         // if button == InputItem::Left {
@@ -76,7 +76,7 @@ impl Tool for Vector {
         self.is_mouse_down = Some(button);
 
         let p = xpr.canvas.shrink_size_no_floor(p);
-        self.current_polyline.as_mut().ok_or("cannot borrow as mut".to_owned())?.push(p);
+        self.current_polyline.as_mut().ok_or_else(||"cannot borrow as mut".to_owned())?.push(p);
         // self.pixs_buf.clear();
         // let pixels = self.to_canvas_pixels(xpr, xpr.canvas.shrink_size(p), xpr.color());
         // if let Some(pixels) = pixels {
@@ -122,7 +122,7 @@ impl Tool for Vector {
 
         self.pixs_buf.clear();
         if let Ok(simple) = self.current_polyline.as_ref()
-            .ok_or("cannot borrow as mut".to_owned())?
+            .ok_or_else(||"cannot borrow as mut".to_owned())?
             .reumann_witkam(self.tolerence) {
 
             let (path, pixs_buf) = {

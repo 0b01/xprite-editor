@@ -39,15 +39,15 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
         )?;
 
     let width: f32 = locals.get_item("WIDTH")
-        .ok_or("WIDTH is undefined".to_owned())?
+        .ok_or_else(||"WIDTH is undefined".to_owned())?
         .extract()
         .map_err(|e| {e.print(py); "Cannot extract WIDTH".to_owned()})?;
     let height: f32 = locals.get_item("HEIGHT")
-        .ok_or("HEIGHT is undefined".to_owned())?
+        .ok_or_else(||"HEIGHT is undefined".to_owned())?
         .extract()
         .map_err(|e| {e.print(py); "Cannot extract HEIGHT".to_owned()})?;
     let my_pixels: &MyPixels = locals.get_item("PIXELS")
-        .ok_or("PIXELS is undefined".to_owned())?
+        .ok_or_else(||"PIXELS is undefined".to_owned())?
         .extract()
         .map_err(|e| {e.print(py); "Cannot extract PIXELS".to_owned()})?;
 

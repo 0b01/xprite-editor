@@ -63,17 +63,14 @@ impl Polyline {
         Path::from_polyline(self)
     }
 
-    pub fn connect_with_line(&self, xpr: &Xprite) -> Result<Vec<Pixel>, String> {
-        let mut ret = Vec::new();
+    pub fn connect_with_line(&self, xpr: &Xprite) -> Result<Pixels, String> {
+        let mut ret = Pixels::new();
         for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
             let p0 = xpr.canvas.shrink_size(*p0);
             let p1 = xpr.canvas.shrink_size(*p1);
             let seg = bresenham(&p0, &p1);
-            ret.extend(&seg);
+            ret.extend(&Pixels::from_slice(&seg));
         }
-
-        // console!(log, ret.0.len() as i32);
-        ret.dedup();
         Ok(ret)
     }
 

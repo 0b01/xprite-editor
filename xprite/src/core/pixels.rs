@@ -1,5 +1,9 @@
 use crate::prelude::*;
-use std::ops::Sub;
+use crate::algorithms::{
+    pixel_perfect::pixel_perfect,
+    sorter::sort_path,
+};
+use std::ops::{Index, Sub};
 use std::cmp::Ordering;
 use std::hash::{Hash, Hasher};
 use std::fmt::{Debug, Formatter, Error};
@@ -52,6 +56,20 @@ macro_rules! pixel {
         }
     };
 }
+
+
+macro_rules! pixels {
+    ($($i: expr),*) => {
+        {
+            let mut pixs = Pixels::new();
+            $(
+                pixs.push($i);
+            )*
+            pixs
+        }
+    };
+}
+
 
 
 #[derive(Clone, Eq, Serialize, Deserialize, Default)]
@@ -139,7 +157,23 @@ impl Pixels {
         self
     }
 
+    pub fn pixel_perfect(&mut self) {
+        *self = pixel_perfect(self);
+    }
+
+    pub fn monotonic_sort(&mut self) {
+        *self = sort_path(self).unwrap();
+    }
+
 }
+
+impl Index<usize> for Pixels {
+    type Output = Pixel;
+    fn index(&self, idx: usize) -> &Pixel {
+        self.0.get_index(idx).unwrap()
+    }
+}
+
 
 impl Debug for Pixels {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {

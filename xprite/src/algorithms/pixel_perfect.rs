@@ -1,10 +1,10 @@
 use crate::prelude::*;
 
-pub fn pixel_perfect(path: &[Pixel]) -> Vec<Pixel> {
+pub fn pixel_perfect(path: &Pixels) -> Pixels {
     if path.len() == 1 || path.len() == 0 {
-        return path.iter().cloned().collect();
+        return path.clone()
     }
-    let mut ret = Vec::new();
+    let mut ret = Pixels::new();
     let mut c = 0;
 
     while c < path.len() {
@@ -31,11 +31,11 @@ mod tests {
 
   #[test]
   fn test_pp() {
-    let path = vec![
+    let path = pixels!(
       pixel!(0.,0.,Color::red()),
       pixel!(0.,1.,Color::red()),
-      pixel!(1.,1.,Color::red()),
-    ];
+      pixel!(1.,1.,Color::red())
+    );
 
     let ret = pixel_perfect(&path);
     println!("{:#?}", ret);

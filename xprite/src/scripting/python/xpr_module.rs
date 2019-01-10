@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use crate::algorithms::{self, pixel_perfect::pixel_perfect};
+use crate::algorithms;
 use pyo3::prelude::*;
 use pyo3::class::{
     basic::PyObjectProtocol,
@@ -87,10 +87,7 @@ impl MyPixels {
     }
 
     pub fn pixel_perfect(&mut self) -> PyResult<&MyPixels> {
-        let slice: Vec<_> = self.p.0.iter().cloned().collect(); // XXX: perf
-        self.p = Pixels::from_slice(
-            &algorithms::pixel_perfect::pixel_perfect(slice.as_slice())
-        );
+        self.p.pixel_perfect();
         Ok(self)
     }
 
@@ -254,24 +251,8 @@ fn bezier(
         ctrl2: ctrl2.into(),
         to: to.into()
     };
+    let p = seg.rasterize().unwrap();
 
-    let mut path = Vec::new();
-    let mut set = Pixels::new();
-    // sample n points
-    let n = 1000;
-    for i in 0..n {
-        let t = i as f32 / (n as f32);
-        let point = seg.sample(t);
-        let Vec2D {x, y} = Canvas::snap(point);
-        let pixel = pixel!(x, y, Color::red());
-        // don't allow duplicate pixels
-        if !set.contains(&pixel) {
-            set.push(pixel);
-            path.push(pixel);
-        }
-    }
-    let points = pixel_perfect(&path);
-    let p = Pixels::from_slice(&points);
     Ok(MyPixels{ p })
 }
 

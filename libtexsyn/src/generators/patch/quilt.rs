@@ -373,16 +373,16 @@ impl Quilter {
         while y != 0 {
             let top = cost_map[&(x, y - 1)];
             if x == 0 {
-                let right = cost_map.get(&(x + 1, y - 1)).ok_or("cost map item not found".to_owned())?;
+                let right = cost_map.get(&(x + 1, y - 1)).ok_or_else(||"cost map item not found".to_owned())?;
                 if right < &top { x += 1; }
             }
             else if x == self.params.overlap - 1 {
-                let left = cost_map.get(&(x - 1, y - 1)).ok_or("cost map item not found".to_owned())?;
+                let left = cost_map.get(&(x - 1, y - 1)).ok_or_else(||"cost map item not found".to_owned())?;
                 if left < &top { x -= 1; }
             }
             else {
-                let left = cost_map.get(&(x - 1, y - 1)).ok_or("cost map item not found".to_owned())?;
-                let right = cost_map.get(&(x + 1, y - 1)).ok_or("cost map item not found".to_owned())?;
+                let left = cost_map.get(&(x - 1, y - 1)).ok_or_else(||"cost map item not found".to_owned())?;
+                let right = cost_map.get(&(x + 1, y - 1)).ok_or_else(||"cost map item not found".to_owned())?;
                 if left < &top {
                     if left < right { x -= 1; }
                 }
@@ -442,18 +442,18 @@ impl Quilter {
                               column.into_iter().enumerate().min_by(|&(_, v1), &(_, v2)| v1.cmp(&v2)).unwrap().0 as u32);
         v.push((x, y));
         while x != 0 {
-            let left = cost_map.get(&(x - 1, y)).ok_or("cost map item not found".to_owned())?;
+            let left = cost_map.get(&(x - 1, y)).ok_or_else(||"cost map item not found".to_owned())?;
             if y == 0 {
-                let down = cost_map.get(&(x - 1, y + 1)).ok_or("cost map item not found".to_owned())?;
+                let down = cost_map.get(&(x - 1, y + 1)).ok_or_else(||"cost map item not found".to_owned())?;
                 if down < left { y += 1; }
             }
             else if y == self.params.overlap - 1 {
-                let up = cost_map.get(&(x - 1, y - 1)).ok_or("cost map item not found".to_owned())?;
+                let up = cost_map.get(&(x - 1, y - 1)).ok_or_else(||"cost map item not found".to_owned())?;
                 if up < left { y -= 1; }
             }
             else {
-                let up = cost_map.get(&(x - 1, y - 1)).ok_or("cost map item not found".to_owned())?;
-                let down = cost_map.get(&(x - 1, y + 1)).ok_or("cost map item not found".to_owned())?;
+                let up = cost_map.get(&(x - 1, y - 1)).ok_or_else(||"cost map item not found".to_owned())?;
+                let down = cost_map.get(&(x - 1, y + 1)).ok_or_else(||"cost map item not found".to_owned())?;
                 if up < left {
                     if up < down { y -= 1; }
                 }

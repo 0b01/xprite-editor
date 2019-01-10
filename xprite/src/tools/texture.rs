@@ -59,7 +59,7 @@ impl Texture {
         pixs.set_color(&xpr.color());
         let content = &mut xpr.current_layer_mut().unwrap().content;
         let intersection = content.intersection(&pixs);
-        let (w, h, origin) = self.get_dims().ok_or("cannot get dimension".to_owned())?;
+        let (w, h, origin) = self.get_dims().ok_or_else(||"cannot get dimension".to_owned())?;
         let img = intersection.as_image(w, h, origin);
 
         let width = xpr.canvas.art_w as u32;

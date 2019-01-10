@@ -6,6 +6,7 @@ Pixel art editor with algorithmic tools.
 
 ## Bugs and Improvements
 
+* [ ] Output svg
 * [ ] Marquee
 * [ ] Stroke caching
 * [ ] Filled ellipse
