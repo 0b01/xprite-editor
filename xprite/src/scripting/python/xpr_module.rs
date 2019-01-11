@@ -21,6 +21,7 @@ pub fn init_mod(py: Python) -> PyResult<&PyModule> {
     pymod.add_function(wrap_function!(add))?;
     pymod.add_function(wrap_function!(bezier))?;
     pymod.add_function(wrap_function!(rect))?;
+    pymod.add_function(wrap_function!(line))?;
 
     Ok(pymod)
 }
@@ -251,7 +252,6 @@ fn bezier(
         to: to.into()
     };
     let p = seg.rasterize().unwrap();
-
     Ok(MyPixels{ p })
 }
 
@@ -262,5 +262,14 @@ fn rect(start: &PyTuple, stop: &PyTuple, filled: bool) -> PyResult<MyPixels> {
         Some(stop.into()),
         filled
     ).unwrap();
+    Ok(MyPixels {p})
+}
+
+#[pyfunction(name=line)]
+fn line(start: &PyTuple, stop: &PyTuple) -> PyResult<MyPixels> {
+    let p0: Pixel = start.into();
+    let p1: Pixel = stop.into();
+    let p = algorithms::line::bresenham(&p0.point, &p1.point);
+    let p = Pixels::from_slice(&p);
     Ok(MyPixels {p})
 }
