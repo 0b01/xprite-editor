@@ -13,7 +13,7 @@ Pixel art editor with algorithmic tools.
 * [ ] Dynamic brush size
 * [ ] Tabs
 * [ ] Preview bounding box
-* [ ] Connected component algorithm
+* [x] Connected component algorithm
 * [ ] Fix web target
 * [ ] Fix zoom
 

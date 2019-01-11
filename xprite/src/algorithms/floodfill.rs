@@ -1,5 +1,8 @@
 use crate::prelude::*;
 
+/// flood fill algorithm
+/// converts pixels into a grid of size (w, h)
+/// The operation starts at origin
 pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Vec2D, bg_col: Option<Color>, color: Color) -> Pixels {
     let mut ret = Pixels::new();
     let canvas = pix.as_mat(w as usize, h as usize);

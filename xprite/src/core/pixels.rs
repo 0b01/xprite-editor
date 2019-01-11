@@ -2,6 +2,8 @@ use crate::prelude::*;
 use crate::algorithms::{
     pixel_perfect::pixel_perfect,
     sorter::sort_path,
+    connected_components::connected_components,
+    perimeter::find_perimeter,
 };
 use std::ops::{Index, Sub};
 use std::cmp::Ordering;
@@ -165,6 +167,15 @@ impl Pixels {
         *self = sort_path(self).unwrap();
     }
 
+    pub fn connected_components(&self, w:usize, h: usize) -> Vec<Pixels> {
+        connected_components(self, w, h)
+    }
+
+    pub fn perimeter(&self, w:usize, h: usize) -> Pixels {
+        find_perimeter(w, h, self)
+    }
+
+
 }
 
 impl Index<usize> for Pixels {
@@ -207,14 +218,7 @@ impl From<img::DynamicImage> for Pixels {
 
 impl Pixels {
     pub fn as_bool_mat(&self, w: usize, h: usize) -> Vec<Vec<bool>> {
-        let mut arr = vec![];
-        for _i in 0..h {
-            let mut row = vec![];
-            for _j in 0..w {
-                row.push(false);
-            }
-            arr.push(row);
-        }
+        let mut arr = vec![vec![false;w];h];
         for p in self.0.iter() {
             let Pixel{point, ..} = p;
             let Vec2D {x, y} = point;
@@ -224,14 +228,7 @@ impl Pixels {
     }
 
     pub fn as_mat(&self, w: usize, h: usize) -> Vec<Vec<Option<Pixel>>> {
-        let mut arr = vec![];
-        for _i in 0..w {
-            let mut row = vec![];
-            for _ in 0..h {
-                row.push(None);
-            }
-            arr.push(row);
-        }
+        let mut arr = vec![vec![None;w];h];
         for p in self.0.iter() {
             let Pixel{point, ..} = p;
             let Vec2D {x, y} = point;
@@ -243,6 +240,10 @@ impl Pixels {
 
     pub fn len(&self) -> usize {
         self.0.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
     }
 
     pub fn as_image(&self, w: f32, h: f32, origin: (f32, f32)) -> img::DynamicImage {

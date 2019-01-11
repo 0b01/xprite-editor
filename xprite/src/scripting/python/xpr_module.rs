@@ -91,8 +91,14 @@ impl MyPixels {
         Ok(self)
     }
 
+    pub fn connected_components(&mut self, w: usize, h: usize) -> PyResult<Vec<MyPixels>> {
+        let ccs =self.p.connected_components(w, h);
+        let ret = ccs.into_iter().map(|p|MyPixels{p}).collect();
+        Ok(ret)
+    }
+
     pub fn perimeter(&self, w: usize, h: usize) -> PyResult<MyPixels> {
-        let p = algorithms::perimeter::find_perimeter(w, h, &self.p);
+        let p = self.p.perimeter(w, h);
         Ok(MyPixels{p})
     }
 
@@ -111,16 +117,9 @@ impl MyPixels {
         }
         Ok(MyPixels{p})
     }
+
     pub fn shift_(&mut self, dist: &PyTuple) -> PyResult<&MyPixels> {
-        let d: Vec2D = dist.into();
-        let mut p = Pixels::new();
-        for pixel in self.p.iter() {
-            let mut pixel = pixel.clone();
-            pixel.point.x += d.x;
-            pixel.point.y += d.y;
-            p.push(pixel)
-        }
-        self.p = p;
+        self.p = self.shift(dist)?.p;
         Ok(self)
     }
 

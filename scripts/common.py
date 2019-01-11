@@ -1,17 +1,17 @@
 from random import random, randint, choice, choices, sample, gauss
 
-PALETTE = [
-    (210, 173, 140, 255), # background
-    (206, 155, 122, 255), # shadow
-    (220, 194, 122, 255), # dust
-    (198, 144, 122, 255),  # outline
+PALETTE = {
+    "bg" : (206, 200, 255, 255),
+    "shadow" : (206, 155, 122, 255),
+    "outline" : (198, 144, 122, 255),
 
-    (238, 196, 154, 255), # dust 2
-    (240, 221, 179, 255), # dust 3
-]
+    "dust1" : (220, 194, 122, 255),
+    "dust2" : (238, 196, 154, 255),
+    "dust3" : (240, 221, 179, 255),
+}
 
 def get_color():
-    return choices(PALETTE, [0, 0, 3, 0, 13, 3], k=1)[0]
+    return choices(list(PALETTE.values())[3:], [1, 1, 1], k=1)[0]
 
 def corrode(rect, corrosion_param, p0, p1, corner):
     """ corrode a corner of a rectangle """
@@ -20,20 +20,20 @@ def corrode(rect, corrosion_param, p0, p1, corner):
     to_remove = xpr.Pixels()
     if corner == 0:
         for (i, d) in enumerate(corrosion_param):
-            for dy in range(d):
+            for dy in range(d+1):
                 to_remove.push(xpr.Pixel((p0[0]+i, p0[1]+dy), xpr.RED))
     elif corner == 1:
         for (i, d) in enumerate(corrosion_param):
-            for dy in range(d):
-                to_remove.push(xpr.Pixel((p1[0]-i-1, p0[1]+dy), xpr.RED))
+            for dy in range(d+1):
+                to_remove.push(xpr.Pixel((p1[0]-i-1, p0[1]+dy-1), xpr.RED))
     elif corner == 2:
         for (i, d) in enumerate(corrosion_param):
-            for dy in range(d):
+            for dy in range(d+1):
                 to_remove.push(xpr.Pixel((p1[0]-i-1, p1[1]-dy-1), xpr.RED))
     elif corner == 3:
         for (i, d) in enumerate(corrosion_param):
-            for dy in range(d):
-                to_remove.push(xpr.Pixel((p0[0]+i, p1[1]-dy-1), xpr.RED))
+            for dy in range(d+1):
+                to_remove.push(xpr.Pixel((p0[0]+i-1, p1[1]-dy-1), xpr.RED))
     rect.sub_(to_remove)
     return rect
 
