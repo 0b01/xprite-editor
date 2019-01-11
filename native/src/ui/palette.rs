@@ -2,9 +2,6 @@ use crate::prelude::*;
 use xprite::rendering::Renderer;
 use std::borrow::Cow;
 
-const COLORS_PER_ROW: usize = 8;
-const COLOR_PICKER_H: f32 = 200.;
-
 pub fn draw_palette(rdr: &Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
 

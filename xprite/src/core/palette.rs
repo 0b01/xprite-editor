@@ -1,8 +1,8 @@
 use crate::prelude::*;
 use natord;
 use indexmap::IndexMap;
-use std::borrow::Cow;
 use std::{fs, io, path};
+use image::{self, GenericImageView};
 
 type PaletteGroup = IndexMap<String, Color>;
 
@@ -26,11 +26,13 @@ impl PaletteManager {
         );
         for entry in &entries {
             let path = entry.path();
-            if path.extension().unwrap() == "hex" {
-                let pal = get_palette(&path)?;
-                let palname = path.file_stem().unwrap().to_str().unwrap().to_owned();
-                palettes.insert(palname, pal);
-            }
+            let palname = path.file_stem().unwrap().to_str().unwrap().to_owned();
+            let pal = match path.extension().unwrap().to_str().unwrap() {
+                "hex" => get_palette_hex(&path)?,
+                "png" => get_palette_png(&path)?,
+                _ => continue,
+            };
+            palettes.insert(palname, pal);
         }
 
         Ok(Self {
@@ -66,13 +68,24 @@ fn pico8() -> PaletteGroup {
     colors
 }
 
-fn get_palette(p: &path::PathBuf) -> io::Result<PaletteGroup> {
+fn get_palette_hex(p: &path::PathBuf) -> io::Result<PaletteGroup> {
     let mut colors = IndexMap::new();
     let cols = fs::read_to_string(p)?;
     for col in cols.lines() {
         let color = Color::from_hex(&col[1..])
             .expect(&format!("Cannot decode hex in file {:?}", p));
         colors.insert(col.to_owned(), color);
+    }
+    Ok(colors)
+}
+
+fn get_palette_png(p: &path::PathBuf) -> io::Result<PaletteGroup> {
+    let mut colors = IndexMap::new();
+    let img = image::open(p).unwrap();
+    for pix in img.pixels() {
+        let color = pix.2;
+        let mycolor = Color::new(color[0], color[1], color[2]);
+        colors.insert(format!("color##{},{}", pix.0, pix.1), mycolor);
     }
     Ok(colors)
 }

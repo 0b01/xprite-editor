@@ -13,9 +13,10 @@ Pixel art editor with algorithmic tools.
 * [ ] Dynamic brush size
 * [ ] Tabs
 * [ ] Preview bounding box
+* [ ] Connected component algorithm
 * [ ] ImageImguiRenderer (based on cairo_imgui)
 * [ ] Fix web target
-* [ ] Change ImDrawIdx to u32
+* [x] Change ImDrawIdx to u32
 
 ## Done
 * [x] Floodfill crashing when index is negative
@@ -34,7 +35,7 @@ Pixel art editor with algorithmic tools.
 * [x] Save
 * [x] Load
 * [x] Python Scripting
-* [ ] Palette
+* [x] Palette
 
 1. Basic tools (Release target)
 * [x] Pencil
