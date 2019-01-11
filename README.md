@@ -9,16 +9,17 @@ Pixel art editor with algorithmic tools.
 * [ ] Output svg
 * [ ] Marquee
 * [ ] Stroke caching
-* [ ] Filled ellipse
+* [ ] Fix ellipse( i.center stroke; ii. filled )
 * [ ] Dynamic brush size
 * [ ] Tabs
 * [ ] Preview bounding box
 * [ ] Connected component algorithm
-* [ ] ImageImguiRenderer (based on cairo_imgui)
 * [ ] Fix web target
-* [x] Change ImDrawIdx to u32
+* [ ] Fix zoom
 
 ## Done
+* [ ] ImageImguiRenderer (based on cairo_imgui)
+* [x] Change ImDrawIdx to u32
 * [x] Floodfill crashing when index is negative
 * [x] Simplify drawlist
 * [x] Ignore canvas OOB

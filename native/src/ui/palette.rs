@@ -15,7 +15,17 @@ pub fn draw_palette(rdr: &Renderer, state: &mut State, ui: &Ui) {
         .collapsible(false)
         .resizable(false)
         .build(|| {
-            draw_cells(rdr, state, ui);
+            // ui.slider_int(im_str!("Colors per row"), &mut state.cols_per_row, 2, 16).build();
+            let styles = vec![
+                StyleVar::ChildBorderSize(0.),
+                StyleVar::FrameBorderSize(0.),
+                StyleVar::WindowBorderSize(0.),
+                StyleVar::PopupBorderSize(0.),
+                StyleVar::FrameRounding(0.),
+            ];
+            ui.with_style_vars(&styles, ||{
+                draw_cells(rdr, state, ui);
+            })
         });
     })
 }
@@ -45,7 +55,7 @@ pub fn draw_color_picker(rdr: &Renderer, state: &mut State, ui: &Ui) {
         };
 
         let mut sel: [f32; 4] = state.xpr.selected_color.into();
-        let mut b = ui
+        let b = ui
             .color_picker(im_str!("MyColor##4"), &mut sel)
             .flags(misc_flags)
             .alpha(true)
@@ -74,7 +84,7 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     PALETTE_BEGIN_Y += 1.5;
     let PALETTE_W = LEFT_SIDE_WIDTH - 2. * MARGIN;
     let PALETTE_H = 400.;
-    let BLOCK_SZ = PALETTE_W / COLORS_PER_ROW as f32;
+    let BLOCK_SZ = PALETTE_W / state.cols_per_row as f32;
 
     let draw_list = ui.get_window_draw_list();
     // draw_list.add_rect(
@@ -89,8 +99,8 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         .1;
     let colors = pal.iter_mut().enumerate();
     for (i, (col_name, col)) in colors {
-        let x = MARGIN + BLOCK_SZ * ((i % COLORS_PER_ROW) as f32);
-        let y = PALETTE_BEGIN_Y + BLOCK_SZ * ((i / COLORS_PER_ROW) as f32);
+        let x = MARGIN + BLOCK_SZ * ((i % state.cols_per_row as usize) as f32);
+        let y = PALETTE_BEGIN_Y + BLOCK_SZ * ((i / state.cols_per_row as usize) as f32);
 
 
         ui.set_cursor_screen_pos((x, y));

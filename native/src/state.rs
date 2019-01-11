@@ -17,6 +17,8 @@ pub struct State<'a> {
     pub palette_color_name: Option<Cow<'a, str>>,
     pub palette_idx: i32,
 
+    pub cols_per_row: i32,
+
     pub preview_texture: Option<(u64 /* hash */, usize /* texture_id */)>,
 }
 
@@ -32,6 +34,7 @@ impl<'a> State<'a> {
             preview_texture: None,
             palette_color_name: None,
             palette_idx: 0,
+            cols_per_row: 8,
         }
     }
 
