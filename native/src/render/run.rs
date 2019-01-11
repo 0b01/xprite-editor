@@ -17,14 +17,13 @@ struct MouseState {
 
 fn set_style(imgui: &mut ImGui) {
     let mut style = imgui.style_mut();
-    style.window_rounding = 0.0;
-    style.frame_rounding  = 0.0;
-    style.grab_rounding   = 0.0;
-    style.scrollbar_rounding = 5.0;
-    style.frame_border_size = 1.0;
+    style.window_rounding = 2.0;
+    style.frame_rounding  = 1.0;
+    style.grab_rounding   = 2.0;
+    style.scrollbar_rounding = 0.0;
     style.item_spacing.y = 4.5;
-    style.frame_border_size = 1.;
-    style.child_border_size = 1.;
+    style.frame_border_size = 0.;
+    style.child_border_size = 0.;
     style.window_border_size = 1.;
 
     let vals = ImGuiCol::values();
@@ -34,41 +33,55 @@ fn set_style(imgui: &mut ImGui) {
         };
     }
 
-    style.colors[find!(Text)]                  = ImVec4::new(0.860, 0.930, 0.890, 0.78);
-    style.colors[find!(TextDisabled)]          = ImVec4::new(0.860, 0.930, 0.890, 0.28);
-    style.colors[find!(WindowBg)]              = ImVec4::new(0.000, 0.000, 0.000, 1.00);
-    style.colors[find!(PopupBg)]               = ImVec4::new(0.200, 0.220, 0.270, 0.90);
-    style.colors[find!(Border)]                = ImVec4::new(1.000, 0.200, 0.000, 1.00);
-    style.colors[find!(BorderShadow)]          = ImVec4::new(0.000, 0.000, 0.000, 0.00);
-    style.colors[find!(FrameBg)]               = ImVec4::new(0.200, 0.220, 0.270, 1.00);
-    style.colors[find!(FrameBgHovered)]        = ImVec4::new(0.455, 0.198, 0.301, 0.78);
-    style.colors[find!(FrameBgActive)]         = ImVec4::new(0.455, 0.198, 0.301, 1.00);
-    style.colors[find!(TitleBg)]               = ImVec4::new(0.232, 0.201, 0.271, 1.00);
-    style.colors[find!(TitleBgActive)]         = ImVec4::new(1.000, 0.200, 0.000, 1.00);
-    style.colors[find!(TitleBgCollapsed)]      = ImVec4::new(0.200, 0.220, 0.270, 0.75);
-    style.colors[find!(MenuBarBg)]             = ImVec4::new(0.200, 0.220, 0.270, 0.47);
-    style.colors[find!(ScrollbarBg)]           = ImVec4::new(0.200, 0.220, 0.270, 1.00);
-    style.colors[find!(ScrollbarGrab)]         = ImVec4::new(0.09, 0.15, 0.16, 1.00);
-    style.colors[find!(ScrollbarGrabHovered)]  = ImVec4::new(0.455, 0.198, 0.301, 0.78);
-    style.colors[find!(ScrollbarGrabActive)]   = ImVec4::new(0.455, 0.198, 0.301, 1.00);
-    style.colors[find!(CheckMark)]             = ImVec4::new(0.71, 0.22, 0.27, 1.00);
-    style.colors[find!(SliderGrab)]            = ImVec4::new(0.47, 0.77, 0.83, 0.14);
-    style.colors[find!(SliderGrabActive)]      = ImVec4::new(0.71, 0.22, 0.27, 1.00);
-    style.colors[find!(Button)]                = ImVec4::new(0.47, 0.77, 0.83, 0.14);
-    style.colors[find!(ButtonHovered)]         = ImVec4::new(0.455, 0.198, 0.301, 0.86);
-    style.colors[find!(ButtonActive)]          = ImVec4::new(0.455, 0.198, 0.301, 1.00);
-    style.colors[find!(Header)]                = ImVec4::new(0.455, 0.198, 0.301, 0.76);
+    let GREY       = ImVec4::new(0.169, 0.157, 0.184, 1.000);
+    let CANVAS_BG  = ImVec4::new(0.114, 0.106, 0.125, 1.000);
+    let LIGHT_GREY = ImVec4::new(0.259, 0.251, 0.255, 1.000);
+    let TINT       = ImVec4::new(0.125, 0.118, 0.122, 1.000);
+
+    let BORDER     = ImVec4::new(0.086, 0.075, 0.102, 1.000);
+    let BORDER_SHD = ImVec4::new(0.082, 0.071, 0.098, 1.000);
+
+    // style.colors[find!(Text)]                  = ImVec4::new(0.860, 0.930, 0.890, 0.78);
+    // style.colors[find!(TextDisabled)]          = ImVec4::new(0.860, 0.930, 0.890, 0.28);
+    style.colors[find!(WindowBg)]              = GREY;
+    // style.colors[find!(PopupBg)]               = ImVec4::new(0.200, 0.220, 0.270, 0.90);
+
+    style.colors[find!(Border)]                = BORDER;
+    style.colors[find!(BorderShadow)]          = BORDER_SHD;
+
+    style.colors[find!(FrameBg)]               = GREY;
+    style.colors[find!(FrameBgHovered)]        = LIGHT_GREY;
+    style.colors[find!(FrameBgActive)]         = GREY;
+
+    style.colors[find!(TitleBg)]               = LIGHT_GREY;
+    style.colors[find!(TitleBgActive)]         = LIGHT_GREY;
+    style.colors[find!(TitleBgCollapsed)]      = LIGHT_GREY;
+    style.colors[find!(MenuBarBg)]             = LIGHT_GREY;
+
+    style.colors[find!(ScrollbarBg)]           = TINT;
+    style.colors[find!(ScrollbarGrab)]         = LIGHT_GREY;
+    style.colors[find!(ScrollbarGrabHovered)]  = LIGHT_GREY;
+    style.colors[find!(ScrollbarGrabActive)]   = GREY;
+
+    // style.colors[find!(CheckMark)]             = ImVec4::new(0.71, 0.22, 0.27, 1.00);
+    // style.colors[find!(SliderGrab)]            = ImVec4::new(0.47, 0.77, 0.83, 0.14);
+    // style.colors[find!(SliderGrabActive)]      = ImVec4::new(0.71, 0.22, 0.27, 1.00);
+    style.colors[find!(Button)]                = TINT;
+    style.colors[find!(ButtonHovered)]         = LIGHT_GREY;
+    style.colors[find!(ButtonActive)]          = GREY;
+
+    style.colors[find!(Header)]                = LIGHT_GREY;
     style.colors[find!(HeaderHovered)]         = ImVec4::new(0.455, 0.198, 0.301, 0.86);
-    style.colors[find!(HeaderActive)]          = ImVec4::new(1.000, 0.200, 0.000, 1.00);
-    style.colors[find!(ResizeGrip)]            = ImVec4::new(0.47, 0.77, 0.83, 0.04);
-    style.colors[find!(ResizeGripHovered)]     = ImVec4::new(0.455, 0.198, 0.301, 0.78);
-    style.colors[find!(ResizeGripActive)]      = ImVec4::new(0.455, 0.198, 0.301, 1.00);
-    style.colors[find!(PlotLines)]             = ImVec4::new(0.860, 0.930, 0.890, 0.63);
-    style.colors[find!(PlotLinesHovered)]      = ImVec4::new(0.455, 0.198, 0.301, 1.00);
-    style.colors[find!(PlotHistogram)]         = ImVec4::new(0.860, 0.930, 0.890, 0.63);
-    style.colors[find!(PlotHistogramHovered)]  = ImVec4::new(0.455, 0.198, 0.301, 1.00);
-    style.colors[find!(TextSelectedBg)]        = ImVec4::new(0.455, 0.198, 0.301, 0.43);
-    style.colors[find!(ModalWindowDarkening)]  = ImVec4::new(0.200, 0.220, 0.270, 0.73);
+    style.colors[find!(HeaderActive)]          = ImVec4::new(0.455, 0.198, 0.301, 0.76);
+    // style.colors[find!(ResizeGrip)]            = ImVec4::new(0.47, 0.77, 0.83, 0.04);
+    // style.colors[find!(ResizeGripHovered)]     = ImVec4::new(0.455, 0.198, 0.301, 0.78);
+    // style.colors[find!(ResizeGripActive)]      = ImVec4::new(0.455, 0.198, 0.301, 1.00);
+    // style.colors[find!(PlotLines)]             = ImVec4::new(0.860, 0.930, 0.890, 0.63);
+    // style.colors[find!(PlotLinesHovered)]      = ImVec4::new(0.455, 0.198, 0.301, 1.00);
+    // style.colors[find!(PlotHistogramHovered)]  = ImVec4::new(0.455, 0.198, 0.301, 1.00);
+    // style.colors[find!(ModalWindowDarkening)]  = ImVec4::new(0.200, 0.220, 0.270, 0.73);
+    // style.colors[find!(TextSelectedBg)]        = ImVec4::new(0.455, 0.198, 0.301, 0.43);
+
 }
 
 pub fn run<F>(title: &str, clear_color: [f32; 4], mut run_ui: F)

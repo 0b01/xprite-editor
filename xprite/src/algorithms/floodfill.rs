@@ -5,7 +5,7 @@ pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Vec2D, bg_col: Option<Col
     let canvas = pix.as_mat(w as usize, h as usize);
     let mut stack = vec![origin];
 
-    let mut visited = vec![vec![false; w as usize]; h as usize];
+    let mut visited = vec![vec![false; h as usize]; w as usize];
     let mut neighbors = Vec::with_capacity(4);
     while let Some(point) = stack.pop() {
         let Vec2D {x, y} = point;

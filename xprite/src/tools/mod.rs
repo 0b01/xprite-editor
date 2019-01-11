@@ -39,12 +39,11 @@ impl Default for ToolType {
 }
 
 impl ToolType {
-    pub const VARIANTS: [ToolType; 10] = [
+    pub const VARIANTS: [ToolType; 9] = [
         ToolType::Pencil,
         ToolType::Line,
         ToolType::PaintBucket,
         ToolType::Vector,
-        ToolType::ColorPicker,
         ToolType::Eraser,
         ToolType::Rect,
         ToolType::Texture,

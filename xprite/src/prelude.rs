@@ -34,7 +34,9 @@ pub const BGCOLOR: [f32; 4] = [0.,0.,0.,0.];
 #[cfg(not(debug_assertions))]
 pub const BACKGROUND: [f32;4] = [0.2,0.2,0.3,1.];
 #[cfg(debug_assertions)]
-pub const BACKGROUND: [f32;4] = [0.2,0.2,0.2,1.];
+pub const BACKGROUND: [f32;4] = [0.106, 0.118, 0.125, 1.000];
+
+
 
 pub const LIGHT_GREY: [f32;4] = [0.8,0.8,0.8,1.];
 

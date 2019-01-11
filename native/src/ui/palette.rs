@@ -1,21 +1,63 @@
 use crate::prelude::*;
 use xprite::rendering::Renderer;
-use std::ops::Index;
 use std::borrow::Cow;
 
 const COLORS_PER_ROW: usize = 8;
+const COLOR_PICKER_H: f32 = 200.;
 
 pub fn draw_palette(rdr: &Renderer, state: &mut State, ui: &Ui) {
+    let sz = ui.frame_size().logical_size;
+
     ui
     .window(im_str!("Palette"))
-    .position((0.,220.), ImGuiCond::Appearing)
-    .size((LEFT_SIDE_WIDTH, 800.), ImGuiCond::Appearing)
+    .position((0.,TOOLBOX_H), ImGuiCond::Always)
+    .size((LEFT_SIDE_WIDTH, sz.1 as f32 - TOOLBOX_H - COLOR_PICKER_H), ImGuiCond::Always)
     .movable(false)
     .collapsible(false)
     .resizable(false)
     .build(|| {
-        draw_color_picker(rdr, state, ui);
+        // ui.with_style_var()
         draw_cells(rdr, state, ui);
+    });
+}
+
+pub fn draw_color_picker(rdr: &Renderer, state: &mut State, ui: &Ui) {
+    let sz = ui.frame_size().logical_size;
+
+    ui
+    .window(im_str!("Color Picker"))
+    .position((0., sz.1 as f32 - COLOR_PICKER_H), ImGuiCond::Always)
+    .size((LEFT_SIDE_WIDTH, COLOR_PICKER_H), ImGuiCond::Always)
+    .movable(false)
+    .collapsible(false)
+    .resizable(false)
+    .build(|| {
+        let misc_flags = {
+            let mut f = ImGuiColorEditFlags::empty();
+            f.set(ImGuiColorEditFlags::AlphaBar, true);
+            f.set(ImGuiColorEditFlags::AlphaPreview, true);
+            f.set(ImGuiColorEditFlags::AlphaPreviewHalf, true);
+            f.set(ImGuiColorEditFlags::NoLabel, true);
+            f.set(ImGuiColorEditFlags::HEX, true);
+
+            f.set(ImGuiColorEditFlags::PickerHueBar, true);
+            // f.set(ImGuiColorEditFlags::PickerHueWheel, true);
+            f
+        };
+
+        let mut sel: [f32; 4] = state.xpr.selected_color.into();
+        let mut b = ui
+            .color_picker(im_str!("MyColor##4"), &mut sel)
+            .flags(misc_flags)
+            .alpha(true)
+            .alpha_bar(true)
+            .side_preview(true)
+            .rgb(true);
+
+        if b.build() {
+            let ret = sel.into();
+            state.xpr.selected_color = ret;
+        };
     });
 }
 
@@ -80,34 +122,4 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     if ui.small_button(im_str!("end")) {
         info!("end pressed");
     }
-}
-
-fn draw_color_picker(_rdr: &Renderer, state: &mut State, ui: &Ui) {
-
-    let misc_flags = {
-        let mut f = ImGuiColorEditFlags::empty();
-        f.set(ImGuiColorEditFlags::AlphaBar, true);
-        f.set(ImGuiColorEditFlags::AlphaPreview, true);
-        f.set(ImGuiColorEditFlags::AlphaPreviewHalf, true);
-        f.set(ImGuiColorEditFlags::NoLabel, true);
-        f.set(ImGuiColorEditFlags::HEX, true);
-
-        f.set(ImGuiColorEditFlags::PickerHueBar, true);
-        // f.set(ImGuiColorEditFlags::PickerHueWheel, true);
-        f
-    };
-
-    let mut sel: [f32; 4] = state.xpr.selected_color.into();
-    let mut b = ui
-        .color_picker(im_str!("MyColor##4"), &mut sel)
-        .flags(misc_flags)
-        .alpha(true)
-        .alpha_bar(true)
-        .side_preview(true)
-        .rgb(true);
-
-    if b.build() {
-        let ret = sel.into();
-        state.xpr.selected_color = ret;
-    };
 }

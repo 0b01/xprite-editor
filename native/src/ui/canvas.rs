@@ -16,13 +16,13 @@ pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         )
         .build(|| {
             let styles = [
-                StyleVar::FramePadding(ImVec2::new(0., 0.)),
-                StyleVar::WindowPadding(ImVec2::new(0., 0.)),
+                StyleVar::FramePadding(ImVec2::new(-1., -1.)),
+                StyleVar::WindowPadding(ImVec2::new(-1., -1.)),
             ];
             let colors = [ (ImGuiCol::ChildBg, BACKGROUND) ];
             ui.with_style_and_color_vars(&styles, &colors, || {
                 let win_sz = ui.get_window_size();
-                let child_frame_sz = (win_sz.0, win_sz.1 - 10.);
+                let child_frame_sz = (win_sz.0, win_sz.1);
                 ui.child_frame(im_str!("scrolling_region"), child_frame_sz)
                     .show_scrollbar(false)
                     .movable(false)
