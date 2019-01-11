@@ -7,6 +7,7 @@ extern crate xprite;
 extern crate glium;
 extern crate imgui;
 extern crate clap;
+extern crate imgui_winit_support;
 extern crate imgui_glium_renderer;
 #[cfg(feature = "cairo-renderer")]
 extern crate cairo;
@@ -94,7 +95,7 @@ fn run_ui() {
     let mut state = State::new(xpr);
 
 
-    render::run("Xprite", BGCOLOR, |ui, gl_ctx, textures| {
+    render::run("Xprite".to_owned(), BGCOLOR, |ui, gl_ctx, textures| {
         let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures);
         // let mut rdr = ImguiCairoRenderer::new(&ui, gl_ctx, textures, &state);
         ui::draw(&mut rdr, &mut state, ui)

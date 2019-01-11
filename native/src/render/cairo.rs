@@ -74,7 +74,7 @@ impl Renderer for CairoRenderer {
 
     fn set_mouse_cursor(&mut self, cursor_type: MouseCursorType) {
         // let c = match cursor_type {
-        //     MouseCursorType::Move => ImGuiMouseCursor::Move,
+        //     MouseCursorType::Hand => ImGuiMouseCursor::Hand,
         // };
         // self.ui.imgui().set_mouse_cursor(c);
     }

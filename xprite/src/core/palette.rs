@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use natord;
 use indexmap::IndexMap;
 use std::borrow::Cow;
 use std::{fs, io, path};
@@ -17,7 +18,12 @@ impl PaletteManager {
 
         let dir = "config/palettes";
         let mut entries: Vec<_> = fs::read_dir(dir)?.map(|r| r.unwrap()).collect();
-        entries.sort_by_key(|dir| dir.path());
+        entries.sort_by(|dir1, dir2|
+            natord::compare(
+                dir1.path().to_str().unwrap(),
+                dir2.path().to_str().unwrap()
+            )
+        );
         for entry in &entries {
             let path = entry.path();
             if path.extension().unwrap() == "hex" {

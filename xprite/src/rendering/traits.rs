@@ -1,5 +1,5 @@
 pub enum MouseCursorType {
-    Move,
+    Hand,
 }
 
 pub trait Renderer {

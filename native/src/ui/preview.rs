@@ -20,7 +20,10 @@ pub fn draw_preview(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         };
         ui.image(
             ImTexture::from(state.preview_texture.unwrap().1),
-            [100., 100.] // TODO
+            [
+                state.xpr.canvas.art_w as f32,
+                state.xpr.canvas.art_h as f32,
+            ]
         ).build();
     })
 }

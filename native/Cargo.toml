@@ -5,9 +5,10 @@ authors = ["Ricky Han <rickylqhan@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-imgui = "0.0.21"
-glium = { version = "0.22", default-features = true }
-imgui-glium-renderer = "0.0.21"
+glium = { version = "0.23", default-features = true }
+imgui = { version = "0.0.22-pre", path = "../imgui-rs" }
+imgui-glium-renderer = { version = "0.0.22-pre", path = "../imgui-rs/imgui-glium-renderer" }
+imgui-winit-support = { version = "0.0.22-pre", path = "../imgui-rs/imgui-winit-support" }
 
 # cmdline
 clap = "2.32.0"
@@ -19,6 +20,7 @@ chrono = "0.4"
 # rendering
 cairo-rs = { version = "0.5.0", optional = true }
 
+
 [dependencies.xprite]
 path = "../xprite"
 default-features = false
@@ -29,3 +31,6 @@ default = ["python-scripting"]
 cairo-renderer = ["cairo-rs"]
 dyon-scripting = []
 python-scripting = []
+
+# [dev-dependencies]
+# image = "0.20"

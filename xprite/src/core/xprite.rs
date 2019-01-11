@@ -193,11 +193,6 @@ impl Xprite {
     pub fn render(&self, rdr: &mut Renderer) {
         rdr.reset();
         self.canvas.draw_canvas(rdr);
-        // draw cursor
-        for p in self.cursor_pos.iter() {
-            let Vec2D {x, y} = p.point;
-            self.canvas.draw_pixel(rdr, x, y, Color::red().into(), false); // draw a rectangle
-        }
         // draw layers
         let top = self.history.top();
         for layer in top.iter_layers() {
@@ -216,8 +211,16 @@ impl Xprite {
             self.canvas.draw_pixel(rdr, x, y, color.into(), true);
         }
 
+        // draw cursor
+        for p in self.cursor_pos.iter() {
+            let Vec2D {x, y} = p.point;
+            self.canvas.draw_pixel(rdr, x, y, p.color.into(), true); // draw a rectangle
+        }
+
         rdr.render();
+
         self.canvas.draw_grid(rdr);
+
         for seg in &self.bz_buf {
             let &CubicBezierSegment { ctrl1, ctrl2, from, to } = seg;
             self.canvas.draw_bezier(rdr, from, ctrl1, ctrl2, to, Color::grey().into(), 4.);
@@ -234,7 +237,7 @@ impl Xprite {
             || self.canvas.within_circle(ctrl1, 0.5, self.last_mouse_pos)
             || self.canvas.within_circle(ctrl2, 0.5, self.last_mouse_pos)
             || self.canvas.within_circle(to, 0.5, self.last_mouse_pos) {
-                rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Move);
+                rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Hand);
             }
         }
     }

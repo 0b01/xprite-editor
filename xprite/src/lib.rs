@@ -16,6 +16,7 @@ extern crate serde;
 
 extern crate indexmap as imap;
 extern crate libtexsyn;
+extern crate natord;
 extern crate bincode as bc;
 
 pub mod bincode {

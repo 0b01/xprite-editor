@@ -82,7 +82,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     let using_window = ui.is_window_hovered() && !ui.is_item_active();
 
     if state.inputs.space {
-        ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Move);
+        ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Hand);
     }
 
     // middle key for scrolling
@@ -93,7 +93,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         )
     {
         // set cursor
-        ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Move);
+        ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Hand);
         let d = ui.imgui().mouse_delta();
         state.xpr.canvas.scroll.x += d.0;
         state.xpr.canvas.scroll.y += d.1;

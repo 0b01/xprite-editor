@@ -38,6 +38,7 @@ pub const BACKGROUND: [f32;4] = [0.106, 0.118, 0.125, 1.000];
 
 
 
+pub const BLACK: [f32;4] = [0.,0.,0.,1.];
 pub const LIGHT_GREY: [f32;4] = [0.8,0.8,0.8,1.];
 
 /// out of bounds checking
