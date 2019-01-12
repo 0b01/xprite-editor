@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use xprite::tools::ToolType;
+use crate::tools::ToolType;
 use std::collections::HashMap;
 
 #[derive(PartialEq, Clone, Copy)]
@@ -15,43 +15,6 @@ pub enum Bind {
     Unmapped,
 }
 
-impl Bind {
-    pub fn execute(self, state: &mut State, _ui: &Ui) -> Result<(), String> {
-        use self::Bind::*;
-        match self {
-            Redo => state.xpr.redo(),
-            Undo => state.xpr.undo(),
-            PushTool(tool) => state.xpr.change_tool(tool)?,
-            PopTool => state.xpr.toolbox.pop_tool(),
-            ToggleConsole => {state.show_console = !state.show_console;}
-
-            LoadXPR => state.load_xpr("1.xpr"),
-            SaveXPR => state.save_xpr("1.xpr"),
-            LoadPNG => state.load_png("1.png"),
-            SavePNG => state.save_png("1.png"),
-
-            RunScript => {
-                #[cfg(feature = "dyon-scripting")]
-                {
-                    let path = state.script_fname
-                        .clone()
-                        .unwrap_or_else( ||
-                            "/home/g/Desktop/xprite/scripts/render.dyon"
-                            .to_owned()
-                        );
-                    state.xpr.execute_dyon_script(&path).unwrap_or_else(
-                        |msg| {
-                            error!("{}", msg);
-                            state.xpr.log.lock().unwrap().push_str(&msg);
-                        }
-                    );
-                }
-            }
-            Unmapped => (),
-        }
-        Ok(())
-    }
-}
 
 #[derive(Hash, PartialEq, Clone, Eq, Debug)]
 pub enum Action {

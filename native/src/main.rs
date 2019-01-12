@@ -12,7 +12,6 @@ extern crate imgui_glium_renderer;
 #[cfg(feature = "cairo-renderer")]
 extern crate cairo;
 
-mod hotkey;
 mod consts;
 mod render;
 mod prelude;

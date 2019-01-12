@@ -28,17 +28,16 @@ fn main() {
     init_logger();
     stdweb::initialize();
 
-    let xprite = Rc::new(RefCell::new(Xprite::new(200., 200.)));
+    let xpr = Rc::new(RefCell::new(Xprite::new(200., 200.)));
     let mut rdr = StdwebRenderer::new("#canvas");
     // xprite.borrow_mut().init(renderer);
 
-    let xprite_clone = xprite.clone();
-
-    let callback = move |t: f64| {
-        xprite_clone.borrow_mut().draw().unwrap();
-        xprite_clone.borrow_mut().render(&mut rdr);
+    // --------------------------- register anim callback ----------------------
+    let xpr_ = xpr.clone();
+    let callback = move |_t: f64| {
+        xpr_.borrow_mut().draw().unwrap();
+        xpr_.borrow_mut().render(&mut rdr);
     };
-
     js!(
         let callback = @{callback};
         function mainloop(t) {
@@ -50,7 +49,7 @@ fn main() {
 
     let doc = stdweb::web::document();
 
-    let xpr = xprite.clone();
+    let xpr_ = xpr.clone();
     doc.add_event_listener({
         move |event: KeyDownEvent| {
             match event.key().as_ref() {
@@ -58,36 +57,36 @@ fn main() {
                 // "-" => xpr.borrow_mut().zoom_out().unwrap(),
                 // "p" => xpr.borrow().print_cursor_location(),
                 // "l" => xpr.borrow_mut().change_tool("line"),
-                "r" => xpr.borrow_mut().change_tool(ToolType::Rect).unwrap(),
-                "v" => xpr.borrow_mut().change_tool(ToolType::Vector).unwrap(),
-                "b" => xpr.borrow_mut().change_tool(ToolType::Pencil).unwrap(),
-                "g" => xpr.borrow_mut().change_tool(ToolType::PaintBucket).unwrap(),
-                "z" => if event.ctrl_key() { xpr.borrow_mut().undo() },
-                "Z" => if event.ctrl_key() { xpr.borrow_mut().redo() },
-                "y" => if event.ctrl_key() { xpr.borrow_mut().redo() },
-                "Control" => xpr.borrow_mut().set_option("ctrl", "true").unwrap(),
-                "Shift" => xpr.borrow_mut().set_option("shift", "true").unwrap(),
+                "r" => xpr_.borrow_mut().change_tool(ToolType::Rect).unwrap(),
+                "v" => xpr_.borrow_mut().change_tool(ToolType::Vector).unwrap(),
+                "b" => xpr_.borrow_mut().change_tool(ToolType::Pencil).unwrap(),
+                "g" => xpr_.borrow_mut().change_tool(ToolType::PaintBucket).unwrap(),
+                "z" => if event.ctrl_key() { xpr_.borrow_mut().undo() },
+                "Z" => if event.ctrl_key() { xpr_.borrow_mut().redo() },
+                "y" => if event.ctrl_key() { xpr_.borrow_mut().redo() },
+                "Control" => xpr_.borrow_mut().set_option("ctrl", "true").unwrap(),
+                "Shift" => xpr_.borrow_mut().set_option("shift", "true").unwrap(),
                 _ => (),
             };
         }
     });
 
-    let xpr = xprite.clone();
+    let xpr_ = xpr.clone();
     doc.add_event_listener({
         move |event: KeyUpEvent| {
             match event.key().as_ref() {
-                "Control" => xpr.borrow_mut().set_option("ctrl", "false").unwrap(),
-                "Shift" => xpr.borrow_mut().set_option("shift", "false").unwrap(),
+                "Control" => xpr_.borrow_mut().set_option("ctrl", "false").unwrap(),
+                "Shift" => xpr_.borrow_mut().set_option("shift", "false").unwrap(),
                 _ => (),
             };
         }
     });
 
-    let xprite_clone = xprite.clone();
+    let xpr_ = xpr.clone();
     doc.add_event_listener(move |event: MouseUpEvent| {
         let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
         let rect = canvas.get_bounding_client_rect();
-        xprite_clone.borrow_mut().mouse_up(
+        xpr_.borrow_mut().mouse_up(
             &InputEvent::MouseUp{
                 x: event.client_x() as f32 - rect.get_x() as f32,
                 y: event.client_y() as f32 - rect.get_y() as f32,
@@ -96,11 +95,11 @@ fn main() {
         ).unwrap();
     });
 
-    let xprite_clone = xprite.clone();
+    let xpr_ = xpr.clone();
     doc.add_event_listener(move |event: MouseMoveEvent| {
         let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
         let rect = canvas.get_bounding_client_rect();
-        xprite_clone.borrow_mut().event(
+        xpr_.borrow_mut().event(
             &InputEvent::MouseMove{
                 x: event.client_x() as f32 - rect.get_x() as f32,
                 y: event.client_y() as f32 - rect.get_y() as f32,
@@ -109,7 +108,7 @@ fn main() {
     });
 
 
-    let xprite_clone = xprite.clone();
+    let xpr_ = xpr.clone();
     doc.add_event_listener(move |event: MouseDownEvent| {
         let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
         let rect = canvas.get_bounding_client_rect();
@@ -118,7 +117,7 @@ fn main() {
             stdweb::web::event::MouseButton::Right => InputItem::Right,
             _ => unimplemented!(),
         };
-        xprite_clone.borrow_mut().mouse_down(
+        xpr_.borrow_mut().mouse_down(
             &InputEvent::MouseDown {
                 x: event.client_x() as f32 - rect.get_x() as f32,
                 y: event.client_y() as f32 - rect.get_y() as f32,
@@ -127,45 +126,45 @@ fn main() {
         ).unwrap();
     });
 
-    init_js_bindings(&xprite);
+    init_js_bindings(&xpr);
 
     stdweb::event_loop();
 }
 
-fn init_js_bindings(xprite: &Rc<RefCell<Xprite>>) {
-    let xpr = xprite.clone();
+fn init_js_bindings(xpr: &Rc<RefCell<Xprite>>) {
+    let xpr_ = xpr.clone();
     let fn_draw = move ||
-        {xpr.borrow_mut().draw(); ()};
-    let xpr = xprite.clone();
+        {xpr_.borrow_mut().draw().unwrap(); ()};
+    // let xpr_ = xpr.clone();
     // let fn_draw_pixel = move |x:u32, y:u32|
     //     {xpr.borrow_mut().draw_pixel(x, y, Color::red())};
-    let xpr = xprite.clone();
+    let xpr_ = xpr.clone();
     let fn_get_height = move ||
-        {xpr.borrow().canvas.art_w };
-    let xpr = xprite.clone();
+        {xpr_.borrow().canvas.art_w };
+    let xpr_ = xpr.clone();
     let fn_get_width = move ||
-        {xpr.borrow().canvas.art_h };
-    let xpr = xprite.clone();
+        {xpr_.borrow().canvas.art_h };
+    let xpr_ = xpr.clone();
     let fn_set_color = move |r:u8, g:u8, b:u8|
-        {xpr.borrow_mut().set_color(&Color::new(r,g,b)); ()};
-    let xpr = xprite.clone();
+        {xpr_.borrow_mut().set_color(&Color::new(r,g,b)); ()};
+    let xpr_ = xpr.clone();
     let fn_set_option = move |opt:String, val:String|
-        {xpr.borrow_mut().set_option(&opt, &val); ()};
-    let xpr = xprite.clone();
+        {xpr_.borrow_mut().set_option(&opt, &val).unwrap(); ()};
+    let xpr_ = xpr.clone();
     let fn_set_option_for_tool = move |name: String, opt:String, val:String| {
             let tool = ToolType::from_str(&name).unwrap();
-            xpr.borrow_mut().set_option_for_tool(&tool, &opt, &val);
+            xpr_.borrow_mut().set_option_for_tool(&tool, &opt, &val).unwrap();
             ()
         };
-    let xpr = xprite.clone();
+    let xpr_ = xpr.clone();
     let fn_change_tool = move |name: String| {
             let tool = ToolType::from_str(&name).unwrap();
-            xpr.borrow_mut().change_tool(tool);
+            xpr_.borrow_mut().change_tool(tool).unwrap();
             ()
         };
-    let xpr = xprite.clone();
+    let xpr_ = xpr.clone();
     let fn_enter = move || {
-            xpr.borrow_mut().history.enter();
+            xpr_.borrow_mut().history.enter().unwrap();
             ()
         };
 

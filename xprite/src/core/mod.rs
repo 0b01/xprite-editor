@@ -8,3 +8,4 @@ pub mod toolbox;
 pub mod input;
 pub mod xprite;
 pub mod palette;
+pub mod hotkey;

@@ -49,7 +49,12 @@ impl Tool for PaintBucket {
 
     fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
         self.is_mouse_down = false;
+
+        // reset cursor
         let point = xpr.canvas.shrink_size(p);
+        let color = xpr.color();
+        self.cursor = Some(pixels!(Pixel {point, color}));
+
         let (w, h) = (xpr.canvas.art_w, xpr.canvas.art_h);
         if oob(point.x, point.y, w, h) { return Ok(()); }
         let bg_color = xpr.current_layer().unwrap().get_color(point);

@@ -88,8 +88,8 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     // middle key for scrolling
     if using_window &&
         (
-            ui.imgui().is_mouse_dragging(ImMouseButton::Middle)
-        ||  (state.inputs.space && state.inputs.left)
+           ui.imgui().is_mouse_dragging(ImMouseButton::Middle)
+        || (state.inputs.space && state.inputs.left)
         )
     {
         // set cursor
@@ -138,19 +138,22 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
             if state.inputs.debounce(InputItem::$key_upper, $boolval) {
                 if $boolval {
                     handle_error!(state.xpr.event(&KeyDown{ key: $key_upper }));
-                    handle_error!(state.hotkeys
-                        .lookup(
-                            Action::$key_upper(
-                                state.inputs.ctrl,
-                                state.inputs.shift,
-                                state.inputs.alt,
-                                true,
-                            ),
-                        )
-                        .execute(state, ui));
+                    handle_error!({
+                        let bind = state.hotkeys
+                            .lookup(
+                                Action::$key_upper(
+                                    state.inputs.ctrl,
+                                    state.inputs.shift,
+                                    state.inputs.alt,
+                                    true,
+                                ),
+                            );
+                        execute(bind, state, ui)
+                        });
                 } else {
                     handle_error!(state.xpr.event(&KeyUp{ key: $key_upper }));
-                    handle_error!(state.hotkeys
+                    handle_error!({
+                        let bind = state.hotkeys
                         .lookup(
                             Action::$key_upper(
                                 state.inputs.ctrl,
@@ -158,8 +161,9 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
                                 state.inputs.alt,
                                 false,
                             ),
-                        )
-                        .execute(state, ui));
+                        );
+                        execute(bind, state, ui)
+                    });
                 }
             }
         };
@@ -197,4 +201,40 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     // }
 
     state.xpr.update_mouse_pos(x, y);
+}
+
+pub fn execute(bind: Bind, state: &mut State, _ui: &Ui) -> Result<(), String> {
+    use self::Bind::*;
+    match bind {
+        Redo => state.xpr.redo(),
+        Undo => state.xpr.undo(),
+        PushTool(tool) => state.xpr.change_tool(tool)?,
+        PopTool => state.xpr.toolbox.pop_tool(),
+        ToggleConsole => {state.show_console = !state.show_console;}
+
+        LoadXPR => state.load_xpr("1.xpr"),
+        SaveXPR => state.save_xpr("1.xpr"),
+        LoadPNG => state.load_png("1.png"),
+        SavePNG => state.save_png("1.png"),
+
+        RunScript => {
+            #[cfg(feature = "dyon-scripting")]
+            {
+                let path = state.script_fname
+                    .clone()
+                    .unwrap_or_else( ||
+                        "/home/g/Desktop/xprite/scripts/render.dyon"
+                        .to_owned()
+                    );
+                state.xpr.execute_dyon_script(&path).unwrap_or_else(
+                    |msg| {
+                        error!("{}", msg);
+                        state.xpr.log.lock().unwrap().push_str(&msg);
+                    }
+                );
+            }
+        }
+        Unmapped => (),
+    }
+    Ok(())
 }

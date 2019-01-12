@@ -4,8 +4,8 @@ pub fn find_perimeter(w: usize, h: usize, pixs: &Pixels) -> Pixels {
     let mut ret = Pixels::new();
     let grid = pixs.as_bool_mat(w, h);
     let canvas = pixs.as_mat(w, h);
-    for row in 0..w {
-        for col in 0..h {
+    for row in 0..h {
+        for col in 0..w {
             if grid[row][col] {
                 if (row >= 1 && grid[row - 1][col])
                 && (row + 1 < h && grid[row + 1][col])

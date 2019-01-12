@@ -222,7 +222,7 @@ impl Pixels {
         for p in self.0.iter() {
             let Pixel{point, ..} = p;
             let Vec2D {x, y} = point;
-            arr[*x as usize][*y as usize] = true;
+            arr[*y as usize][*x as usize] = true;
         }
         arr
     }
@@ -233,7 +233,7 @@ impl Pixels {
             let Pixel{point, ..} = p;
             let Vec2D {x, y} = point;
             if oob(*x, *y, w as f32, h as f32) { continue; }
-            arr[*x as usize][*y as usize] = Some(p.clone());
+            arr[*y as usize][*x as usize] = Some(p.clone());
         }
         arr
     }
