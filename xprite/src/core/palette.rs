@@ -16,23 +16,25 @@ impl PaletteManager {
         let mut palettes = IndexMap::new();
         palettes.insert("pico8".to_owned(), pico8());
 
-        let dir = "config/palettes";
-        let mut entries: Vec<_> = fs::read_dir(dir)?.map(|r| r.unwrap()).collect();
-        entries.sort_by(|dir1, dir2|
-            natord::compare(
-                dir1.path().to_str().unwrap(),
-                dir2.path().to_str().unwrap()
-            )
-        );
-        for entry in &entries {
-            let path = entry.path();
-            let palname = path.file_stem().unwrap().to_str().unwrap().to_owned();
-            let pal = match path.extension().unwrap().to_str().unwrap() {
-                "hex" => get_palette_hex(&path)?,
-                "png" => get_palette_png(&path)?,
-                _ => continue,
-            };
-            palettes.insert(palname, pal);
+        if cfg!(wasm32) {
+            let dir = "config/palettes";
+            let mut entries: Vec<_> = fs::read_dir(dir)?.map(|r| r.unwrap()).collect();
+            entries.sort_by(|dir1, dir2|
+                natord::compare(
+                    dir1.path().to_str().unwrap(),
+                    dir2.path().to_str().unwrap()
+                )
+            );
+            for entry in &entries {
+                let path = entry.path();
+                let palname = path.file_stem().unwrap().to_str().unwrap().to_owned();
+                let pal = match path.extension().unwrap().to_str().unwrap() {
+                    "hex" => get_palette_hex(&path)?,
+                    "png" => get_palette_png(&path)?,
+                    _ => continue,
+                };
+                palettes.insert(palname, pal);
+            }
         }
 
         Ok(Self {

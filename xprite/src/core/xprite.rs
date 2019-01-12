@@ -112,7 +112,7 @@ impl Xprite {
         Ok(())
     }
 
-    pub fn change_tool(&mut self, name: &ToolType) -> Result<(), String> {
+    pub fn change_tool(&mut self, name: ToolType) -> Result<(), String> {
         self.toolbox.change_tool(name);
         self.draw()
     }

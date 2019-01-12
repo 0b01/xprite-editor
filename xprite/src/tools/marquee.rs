@@ -17,16 +17,6 @@ impl Marquee {
         }
     }
 
-    fn set_cursor(&self, xpr: &mut Xprite) -> Option<()> {
-        if let Some(pix) = self.cursor_pos {
-            let c = pixel!(pix.point.x, pix.point.y, Color::red());
-            let mut pixels = Pixels::new();
-            pixels.push(c);
-            xpr.set_cursor(&pixels);
-        }
-        Some(())
-    }
-
     pub fn finalize(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
         self.quilt_img(xpr)
     }
@@ -70,6 +60,12 @@ impl Tool for Marquee {
     fn tool_type(&self) -> ToolType {
         ToolType::Marquee
     }
+
+    fn cursor(&self) -> Option<Pixels> {
+        let p = self.cursor_pos?;
+        Some(pixels!(p))
+    }
+
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
         // set current cursor_pos

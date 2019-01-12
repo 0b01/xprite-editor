@@ -38,17 +38,17 @@ impl Eraser {
         }
     }
 
-    fn set_cursor(&self, xpr: &mut Xprite) -> Option<()> {
-        self.cursor.as_ref().map(|cursor| {
-            xpr.set_cursor(cursor);
-        })
-    }
 }
 
 impl Tool for Eraser {
 
     fn tool_type(&self) -> ToolType {
         ToolType::Eraser
+    }
+
+    fn cursor(&self) -> Option<Pixels> {
+        let p = self.cursor_pos?;
+        Some(pixels!(p))
     }
 
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {

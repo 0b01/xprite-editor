@@ -21,7 +21,7 @@ impl Bind {
         match self {
             Redo => state.xpr.redo(),
             Undo => state.xpr.undo(),
-            PushTool(tool) => state.xpr.change_tool(&tool)?,
+            PushTool(tool) => state.xpr.change_tool(tool)?,
             PopTool => state.xpr.toolbox.pop_tool(),
             ToggleConsole => {state.show_console = !state.show_console;}
 
@@ -31,7 +31,8 @@ impl Bind {
             SavePNG => state.save_png("1.png"),
 
             RunScript => {
-                #[cfg(feature = "dyon-scripting")] {
+                #[cfg(feature = "dyon-scripting")]
+                {
                     let path = state.script_fname
                         .clone()
                         .unwrap_or_else( ||
@@ -123,7 +124,6 @@ impl HotkeyController {
             binds.insert( Action::E(false, false, false, true), Bind::PushTool(ToolType::Eraser) );
             binds.insert( Action::V(false, false, false, true), Bind::PushTool(ToolType::Vector) );
             binds.insert( Action::R(false, false, false, true), Bind::PushTool(ToolType::Rect) );
-            binds.insert( Action::F(false, false, false, true), Bind::PushTool(ToolType::FilledRect) );
             binds.insert( Action::T(false, false, false, true), Bind::PushTool(ToolType::Texture) );
 
             // alt

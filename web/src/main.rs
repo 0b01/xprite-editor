@@ -58,7 +58,10 @@ fn main() {
                 // "-" => xpr.borrow_mut().zoom_out().unwrap(),
                 // "p" => xpr.borrow().print_cursor_location(),
                 // "l" => xpr.borrow_mut().change_tool("line"),
-                // "f" => xpr.borrow_mut().change_tool("pencil"),
+                "r" => xpr.borrow_mut().change_tool(ToolType::Rect).unwrap(),
+                "v" => xpr.borrow_mut().change_tool(ToolType::Vector).unwrap(),
+                "b" => xpr.borrow_mut().change_tool(ToolType::Pencil).unwrap(),
+                "g" => xpr.borrow_mut().change_tool(ToolType::PaintBucket).unwrap(),
                 "z" => if event.ctrl_key() { xpr.borrow_mut().undo() },
                 "Z" => if event.ctrl_key() { xpr.borrow_mut().redo() },
                 "y" => if event.ctrl_key() { xpr.borrow_mut().redo() },
@@ -157,7 +160,7 @@ fn init_js_bindings(xprite: &Rc<RefCell<Xprite>>) {
     let xpr = xprite.clone();
     let fn_change_tool = move |name: String| {
             let tool = ToolType::from_str(&name).unwrap();
-            xpr.borrow_mut().change_tool(&tool);
+            xpr.borrow_mut().change_tool(tool);
             ()
         };
     let xpr = xprite.clone();

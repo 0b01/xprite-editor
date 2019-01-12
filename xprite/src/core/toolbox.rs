@@ -88,17 +88,23 @@ impl Toolbox {
         }
     }
 
-    pub fn change_tool(&mut self, tool: &ToolType) {
+    pub fn change_tool(&mut self, tool: ToolType) {
+        use self::ToolType::*;
         self.tool_stack.push(self.selected);
+        let tool = match tool {
+            Rect => match self.selected {
+                Rect => { self.rect.borrow_mut().filled = true; FilledRect }
+                FilledRect => { self.rect.borrow_mut().filled = false; Rect }
+                _ => Rect
+            }
+            Ellipse => match self.selected {
+                Ellipse =>  {self.rect.borrow_mut().filled = true; FilledEllipse }
+                FilledEllipse => { self.rect.borrow_mut().filled = false; Ellipse }
+                _ => Ellipse
+            }
+            _ => tool,
+        };
         self.selected = tool.clone();
-        match tool {
-            ToolType::Rect => { self.rect.borrow_mut().filled = false; }
-            ToolType::FilledRect => {self.rect.borrow_mut().filled = true; }
-
-            ToolType::Ellipse => { self.ellipse.borrow_mut().filled = false; }
-            ToolType::FilledEllipse => {self.ellipse.borrow_mut().filled = true; }
-            _ => (),
-        }
     }
 
     pub fn pop_tool(&mut self) {

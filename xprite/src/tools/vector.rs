@@ -43,6 +43,11 @@ impl Tool for Vector {
         ToolType::Vector
     }
 
+    fn cursor(&self) -> Option<Pixels> {
+        let p = self.cursor_pos?;
+        Some(pixels!(p))
+    }
+
     fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
         // update cursor pos
         let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
@@ -119,7 +124,7 @@ impl Tool for Vector {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         xpr.new_frame();
-
+        self.set_cursor(xpr);
         self.pixs_buf.clear();
         if let Ok(simple) = self.current_polyline.as_ref()
             .ok_or_else(||"cannot borrow as mut".to_owned())?

@@ -91,11 +91,6 @@ impl Pencil {
         rasterized
     }
 
-    fn set_cursor(&self, xpr: &mut Xprite) -> Option<()> {
-        self.cursor.as_ref().map(|cursor|{
-            xpr.set_cursor(cursor);
-        })
-    }
 }
 
 impl Tool for Pencil {
@@ -202,6 +197,10 @@ impl Tool for Pencil {
 
         self.draw(xpr)?;
         Ok(())
+    }
+
+    fn cursor(&self) -> Option<Pixels> {
+        self.cursor.clone()
     }
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
