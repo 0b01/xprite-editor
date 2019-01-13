@@ -48,7 +48,7 @@ impl Tool for Vector {
         Some(pixels!(p))
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
+    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2D) -> Result<(), String> {
         // update cursor pos
         let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         let point = xpr.canvas.shrink_size(p);
@@ -56,7 +56,7 @@ impl Tool for Vector {
         self.cursor_pos = Some(Pixel{point, color});
 
         if self.is_mouse_down.is_none() || pixels.is_none() {
-            return self.draw(xpr);
+            return Ok(())
         }
 
         // the rest handles when left button is pressed
@@ -74,10 +74,10 @@ impl Tool for Vector {
         // } else if button == InputItem::Right {
         //     // xpr.remove_pixels(&pixels.unwrap());
         // }
-        self.draw(xpr)
+        Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Result<(), String>{
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2D, button: InputItem) -> Result<(), String>{
         self.is_mouse_down = Some(button);
 
         let p = xpr.canvas.shrink_size_no_floor(p);
@@ -91,10 +91,10 @@ impl Tool for Vector {
         //         // xpr.remove_pixels(&pixels);
         //     }
         // }
-        self.draw(xpr)
+        Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Vec2D) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &Xprite, _p: Vec2D) -> Result<(), String> {
         if self.is_mouse_down.is_none() {return Ok(()); }
         let button = self.is_mouse_down.unwrap();
         if button == InputItem::Right { return Ok(()); }
@@ -117,8 +117,6 @@ impl Tool for Vector {
         // self.pixs_buf.clear();
 
         self.is_mouse_down = None;
-
-        self.draw(xpr)?;
         Ok(())
     }
 
@@ -148,7 +146,7 @@ impl Tool for Vector {
         Ok(())
     }
 
-    fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "tolerence" => {
                 if let Ok(val) = value.parse() {

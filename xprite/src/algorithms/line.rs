@@ -2,8 +2,8 @@ use crate::prelude::*;
 use std::f32::consts::PI;
 use std::f32;
 
-pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Vec<Pixel> {
-    let mut ret = Vec::new();
+pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
+    let mut ret = Pixels::new();
 
     let x0 = start.point.x;
     let y0 = start.point.y;
@@ -104,8 +104,8 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Vec<Pixel> {
     ret
 }
 
-pub fn bresenham(start: &Vec2D, stop: &Vec2D) -> Vec<Pixel> {
-    let mut ret = Vec::new();
+pub fn bresenham(start: &Vec2D, stop: &Vec2D) -> Pixels {
+    let mut ret = Pixels::new();
     let mut x0 = start.x;
     let mut y0 = start.y;
     let x1 = stop.x;
@@ -134,7 +134,7 @@ mod tests {
     fn test_snap_line() {
         let adjusted_end = snapped_line(true, &pixel!(0., 0., Color::red()), &pixel!(10., 9., Color::red()));
 
-        let expected = vec![
+        let expected = pixels![
             pixel!(0,0,Color::red()),
             pixel!(1,1,Color::red()),
             pixel!(2,2,Color::red()),

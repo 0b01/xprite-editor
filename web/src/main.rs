@@ -36,6 +36,7 @@ fn main() {
     let xpr_ = xpr.clone();
     let callback = move |_t: f64| {
         xpr_.borrow_mut().draw().unwrap();
+        xpr_.borrow_mut().update().unwrap();
         xpr_.borrow_mut().render(&mut rdr);
     };
     js!(

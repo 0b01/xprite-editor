@@ -8,7 +8,8 @@ pub struct Eraser {
     cursor_pos: Option<Pixel>,
     brush: Brush,
     pub brush_type: BrushType,
-    buffer: Pixels,
+    update_buffer: Option<Pixels>,
+    draw_buffer: Pixels,
 }
 
 impl Default for Eraser {
@@ -24,7 +25,6 @@ impl Eraser {
         let cursor_pos = None;
         let brush_type = BrushType::Pixel;
         let brush = Brush::pixel();
-        let buffer = Pixels::new();
         let current_polyline = Polyline::new();
 
         Self {
@@ -34,8 +34,21 @@ impl Eraser {
             cursor_pos,
             brush,
             brush_type,
-            buffer,
+            update_buffer: None,
+            draw_buffer: Pixels::new(),
         }
+    }
+
+    fn erase_stroke(&self, xpr: &Xprite) -> Result<Pixels, String> {
+        let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
+        let brushstroke = self.brush.follow_stroke(&line_pixs).unwrap();
+        Ok(brushstroke)
+    }
+
+    fn finalize(&mut self, xpr: &Xprite) -> Result<(), String> {
+        let stroke = self.erase_stroke(xpr)?;
+        self.update_buffer = Some(stroke);
+        Ok(())
     }
 
 }
@@ -51,7 +64,7 @@ impl Tool for Eraser {
         Some(pixels!(p))
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
+    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2D) -> Result<(), String> {
         let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         self.cursor = pixels.clone();
         let point = xpr.canvas.shrink_size(p);
@@ -60,55 +73,58 @@ impl Tool for Eraser {
 
         // if mouse is done
         if self.is_mouse_down.is_none() || pixels.is_none() {
-            return self.draw(xpr)
+            return Ok(())
         }
 
         self.current_polyline.push(p);
-        let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
-        let brushstroke = self.brush.follow_stroke(&line_pixs).unwrap();
-        self.buffer.extend(&brushstroke);
+
+        let stroke = self.erase_stroke(xpr)?;
+        self.draw_buffer.extend(&stroke);
 
         // let pixels = self.brush.to_canvas_pixels(p, xpr.color());
         // if let Some(pixels) = pixels {
         //     self.buffer.extend(&pixels);
         // }
-
-        self.draw(xpr)
+        Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Result<(), String>{
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2D, button: InputItem) -> Result<(), String>{
         self.is_mouse_down = Some(button);
         self.current_polyline.push(p);
 
-        self.buffer.clear();
         let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         if let Some(pixels) = pixels {
             if button == InputItem::Left {
-                self.buffer.extend(&pixels);
+                self.draw_buffer.extend(&pixels);
             } else {
                 // xpr.remove_pixels(&pixels);
             }
         }
-        self.draw(xpr)
+        Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Vec2D) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &Xprite, _p: Vec2D) -> Result<(), String> {
         if self.is_mouse_down.is_none() {return Ok(()); }
         let button = self.is_mouse_down.unwrap();
         if button == InputItem::Right { return Ok(()); }
-
-        xpr.history.enter()?;
-        {
-            let layer = &mut xpr.current_layer_mut().unwrap();
-            layer.content.sub(&self.buffer);
-            layer.visible = true;
-        }
-
+        self.finalize(xpr)?;
         self.current_polyline.clear();
-        self.buffer.clear();
+        self.draw_buffer.clear();
         self.is_mouse_down = None;
+        Ok(())
+    }
 
-        self.draw(xpr)?;
+
+    fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+        if let Some(pixs) = &self.update_buffer {
+            xpr.history.enter()?;
+            {
+                let layer = &mut xpr.current_layer_mut().unwrap();
+                layer.content.sub(&pixs);
+                layer.visible = true;
+            }
+        }
+        self.update_buffer = None;
         Ok(())
     }
 
@@ -117,19 +133,19 @@ impl Tool for Eraser {
         self.set_cursor(xpr);
 
         let layer = xpr.current_layer_mut().unwrap();
-        if !self.buffer.0.is_empty() {
+        if !self.draw_buffer.is_empty() {
             layer.visible = false;
             // set current layer to invisible
             let content = layer.content.clone(); // HACK: doesn't borrowck
             xpr.add_pixels(&content);
-            xpr.remove_pixels(&self.buffer);
+            xpr.remove_pixels(&self.draw_buffer);
         } else {
             layer.visible = true;
         }
         Ok(())
     }
 
-    fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "mode" => {
             }

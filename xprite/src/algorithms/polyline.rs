@@ -69,7 +69,7 @@ impl Polyline {
             let p0 = xpr.canvas.shrink_size(*p0);
             let p1 = xpr.canvas.shrink_size(*p1);
             let seg = bresenham(&p0, &p1);
-            ret.extend(&Pixels::from_slice(&seg));
+            ret.extend(&seg);
         }
         Ok(ret)
     }

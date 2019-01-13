@@ -270,6 +270,5 @@ fn line(start: &PyTuple, stop: &PyTuple) -> PyResult<MyPixels> {
     let p0: Pixel = start.into();
     let p1: Pixel = stop.into();
     let p = algorithms::line::bresenham(&p0.point, &p1.point);
-    let p = Pixels::from_slice(&p);
     Ok(MyPixels {p})
 }

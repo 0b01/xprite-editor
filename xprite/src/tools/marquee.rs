@@ -67,18 +67,17 @@ impl Tool for Marquee {
     }
 
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
+    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2D) -> Result<(), String> {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         if self.is_mouse_down.is_some() {
             self.cursor_pos = Some(Pixel {point, color});
         }
-        self.draw(xpr)?;
         Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &Xprite, p: Vec2D) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel {point, color});
@@ -86,12 +85,10 @@ impl Tool for Marquee {
 
         self.is_mouse_down = None;
         // self.start_pos = None;
-
-        self.draw(xpr)?;
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Result<(), String> {
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2D, button: InputItem) -> Result<(), String> {
         if InputItem::Left != button { return Ok(()); }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(p);
@@ -107,19 +104,17 @@ impl Tool for Marquee {
         Ok(())
     }
 
-    fn set(&mut self, xpr: &mut Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(&mut self, xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "ctrl" => {
                 match value {
                     _ => error!("unimpl for ctrl: {}", value)
                 }
-                self.draw(xpr)?;
             }
             "shift" => {
                 match value {
                     _ => error!("unimpl for ctrl: {}", value)
                 }
-                self.draw(xpr)?;
             }
             "alt" => {
                 info!("alt pressed (unimplemented)");

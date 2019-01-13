@@ -121,6 +121,10 @@ impl Xprite {
         self.toolbox.tool().borrow_mut().draw(self)
     }
 
+    pub fn update(&mut self) -> Result<(), String> {
+        self.toolbox.tool().borrow_mut().update(self)
+    }
+
     pub fn color(&self) -> Color {
         self.selected_color
     }

@@ -49,8 +49,9 @@ pub struct Pencil {
     brush: Brush,
     pub mode: PencilMode,
     pub brush_type: BrushType,
-    buffer: Pixels,
     moved: bool,
+    draw_buffer: Pixels,
+    update_buffer: Option<Pixels>,
 }
 
 impl Default for Pencil {
@@ -67,7 +68,6 @@ impl Pencil {
         let cursor_pos = None;
         let brush_type = BrushType::Pixel;
         let brush = Brush::pixel();
-        let buffer = Pixels::new();
         let current_polyline = Polyline::new();
 
         Self {
@@ -78,17 +78,54 @@ impl Pencil {
             brush,
             brush_type,
             mode: PencilMode::PixelPerfect,
-            buffer,
             moved: false,
+            draw_buffer: Pixels::new(),
+            update_buffer: None,
         }
     }
 
-    pub fn draw_polyline(&mut self, xpr: &mut Xprite, polyline: &Polyline) -> Pixels {
-        let path = polyline.interp();
-        let mut rasterized = path.rasterize(xpr).unwrap();
-        rasterized.set_color(&xpr.color());
-        // self.buffer.extend(&pixels);
-        rasterized
+    pub fn draw_stroke(&self, xpr: &Xprite) -> Result<Pixels, String> {
+        let mut line_pixs = self.current_polyline.connect_with_line(&xpr)?;
+        let pixs = if self.mode == PencilMode::Raw {
+            line_pixs
+        } else {
+            line_pixs.pixel_perfect();
+            line_pixs
+        };
+        let mut pixs = self.brush.follow_stroke(&pixs).unwrap();
+        pixs.set_color(&xpr.color());
+        Ok(pixs)
+    }
+
+    pub fn finalize(&mut self, xpr: &Xprite) -> Result<(), String> {
+        use self::PencilMode::*;
+        let mut buf = match self.mode {
+            Raw => {
+                self.draw_stroke(xpr)?
+            }
+            PixelPerfect => {
+                // if mousedown w/o move
+                if !self.moved {
+                    self.cursor.clone().unwrap()
+                } else {
+                    let mut points = self.current_polyline.connect_with_line(xpr)?;
+                    points.pixel_perfect();
+                    let path = self.brush.follow_stroke(&points).unwrap();
+                    path
+                }
+            }
+            SortedMonotonic => {
+                let mut points = self.current_polyline.connect_with_line(xpr)?;
+                points.pixel_perfect();
+                points.monotonic_sort();
+                let path = self.brush.follow_stroke(&points).unwrap();
+                path
+            }
+        };
+
+        buf.set_color(&xpr.color());
+        self.update_buffer = Some(buf);
+        Ok(())
     }
 
 }
@@ -99,7 +136,7 @@ impl Tool for Pencil {
         ToolType::Pencil
     }
 
-    fn mouse_move(&mut self, xpr: &mut Xprite, p: Vec2D) -> Result<(), String> {
+    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2D) -> Result<(), String> {
         let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         self.cursor = pixels.clone();
         let point = xpr.canvas.shrink_size(p);
@@ -108,94 +145,45 @@ impl Tool for Pencil {
 
         // if mouse is done
         if self.is_mouse_down.is_none() || pixels.is_none() {
-            return self.draw(xpr);
+            return Ok(())
         }
         self.moved = true;
-
         self.current_polyline.push(p);
 
-        let button = self.is_mouse_down.unwrap();
-        if button == InputItem::Left {
-            self.buffer.clear();
-            let mut line_pixs = self.current_polyline.connect_with_line(&xpr)?;
-            let pixs = if self.mode != PencilMode::Raw {
-                line_pixs.pixel_perfect();
-                line_pixs
-            } else {
-                line_pixs
-            };
-            let mut pixs = self.brush.follow_stroke(&pixs).unwrap();
-            pixs.with_color(&xpr.color());
-            self.buffer.extend(&pixs);
-        } else if button == InputItem::Right {
-            // xpr.remove_pixels(&pixels.unwrap());
-        }
+        let stroke = self.draw_stroke(xpr)?;
+        self.draw_buffer.extend(&stroke);
 
-        self.draw(xpr)
+        Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &mut Xprite, p: Vec2D, button: InputItem) -> Result<(), String>{
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2D, button: InputItem) -> Result<(), String>{
         self.is_mouse_down = Some(button);
 
         self.current_polyline.push(p);
-        self.buffer.clear();
         let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         // TODO:
         if let Some(pixels) = pixels {
             if button == InputItem::Left {
-                self.buffer.extend(&pixels);
+                self.draw_buffer.extend(&pixels);
             } else {
                 // xpr.remove_pixels(&pixels);
             }
         }
-        self.draw(xpr)
+        Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &mut Xprite, _p: Vec2D) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &Xprite, _p: Vec2D) -> Result<(), String> {
         if self.is_mouse_down.is_none() {return Ok(()); }
         let button = self.is_mouse_down.unwrap();
         if button == InputItem::Right { return Ok(()); }
 
-        use self::PencilMode::*;
-        match self.mode {
-            Raw => {
-                // noop
-            }
-            PixelPerfect => {
-                // if mousedown w/o move
-                if !self.moved {
-                    // noop
-                } else {
-                    self.buffer.clear();
-                    let mut points = self.current_polyline.connect_with_line(xpr)?;
-                    points.pixel_perfect();
-                    let path = self.brush.follow_stroke(&points).unwrap();
-                    self.buffer.extend(&path);
-                }
-            }
-            SortedMonotonic => {
-                self.buffer.clear();
-                let mut points = self.current_polyline.connect_with_line(xpr)?;
-                points.pixel_perfect();
-                points.monotonic_sort();
-                let path = self.brush.follow_stroke(&points).unwrap();
-                self.buffer.extend(&path);
-            }
-        }
-
-        self.buffer.set_color(&xpr.color());
-
-        xpr.history.enter()?;
-        xpr.current_layer_mut().ok_or_else(||"Layer doesn't exist.".to_owned())?
-            .content
-            .extend(&self.buffer);
+        self.finalize(xpr)?;
 
         self.current_polyline.clear();
-        self.buffer.clear();
         self.is_mouse_down = None;
+        self.draw_buffer.clear();
         self.moved = false;
 
-        self.draw(xpr)?;
         Ok(())
     }
 
@@ -203,16 +191,26 @@ impl Tool for Pencil {
         self.cursor.clone()
     }
 
-    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
-        xpr.new_frame();
-        self.set_cursor(xpr);
-        self.buffer.set_color(&xpr.color());
-        xpr.add_pixels(&self.buffer);
-
+    fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+        if let Some(pixs) = &self.update_buffer {
+            xpr.history.enter()?;
+            xpr.current_layer_mut()
+                .ok_or_else(||"Layer doesn't exist.".to_owned())?
+                .content
+                .extend(pixs);
+        }
+        self.update_buffer = None;
         Ok(())
     }
 
-    fn set(&mut self, _xpr: &mut Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+        xpr.new_frame();
+        self.set_cursor(xpr);
+        xpr.add_pixels(&self.draw_buffer.with_color(&xpr.color()));
+        Ok(())
+    }
+
+    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "mode" => {
                 use self::PencilMode::*;
