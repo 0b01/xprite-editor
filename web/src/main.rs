@@ -87,13 +87,12 @@ fn main() {
     doc.add_event_listener(move |event: MouseUpEvent| {
         let canvas: CanvasElement = stdweb::web::document().query_selector("#canvas").unwrap().unwrap().try_into().unwrap();
         let rect = canvas.get_bounding_client_rect();
-        xpr_.borrow_mut().mouse_up(
-            &InputEvent::MouseUp{
-                x: event.client_x() as f32 - rect.get_x() as f32,
-                y: event.client_y() as f32 - rect.get_y() as f32,
-                button: InputItem::Left, // XXX:
-            }
-        ).unwrap();
+        let x = event.client_x() as f32 - rect.get_x() as f32;
+        let y = event.client_y() as f32 - rect.get_y() as f32;
+        let w = rect.get_width() as f32;
+        let h = rect.get_height() as f32;
+        if oob(x, y, w, h) { return; }
+        xpr_.borrow_mut().mouse_up( &InputEvent::MouseUp{ x, y, button: InputItem::Left }).unwrap();
     });
 
     let xpr_ = xpr.clone();
@@ -118,13 +117,12 @@ fn main() {
             stdweb::web::event::MouseButton::Right => InputItem::Right,
             _ => unimplemented!(),
         };
-        xpr_.borrow_mut().mouse_down(
-            &InputEvent::MouseDown {
-                x: event.client_x() as f32 - rect.get_x() as f32,
-                y: event.client_y() as f32 - rect.get_y() as f32,
-                button,
-            }
-        ).unwrap();
+        let x = event.client_x() as f32 - rect.get_x() as f32;
+        let y = event.client_y() as f32 - rect.get_y() as f32;
+        let w = rect.get_width() as f32;
+        let h = rect.get_height() as f32;
+        if oob(x, y, w, h) { return; }
+        xpr_.borrow_mut().mouse_down(&InputEvent::MouseDown { x, y, button, }).unwrap();
     });
 
     init_js_bindings(&xpr);

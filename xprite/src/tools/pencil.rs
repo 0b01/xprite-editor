@@ -151,7 +151,7 @@ impl Tool for Pencil {
         self.current_polyline.push(p);
 
         let stroke = self.draw_stroke(xpr)?;
-        self.draw_buffer.extend(&stroke);
+        self.draw_buffer = stroke;
 
         Ok(())
     }
