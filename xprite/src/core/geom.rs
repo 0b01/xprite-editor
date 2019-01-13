@@ -1,13 +1,26 @@
 use crate::prelude::*;
 use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
-use std::collections::HashMap;
 
 /// represents a 2D vector
+#[cfg(feature = "python-scripting")]
+#[pyclass]
 #[derive(Debug, Copy, Clone, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Vec2D {
     pub x: f32,
     pub y: f32,
+}
+
+#[cfg(feature = "python-scripting")]
+impl<'a> pyo3::FromPyObject<'a> for Vec2D {
+    fn extract(ob: &'a pyo3::types::PyObjectRef) -> PyResult<Vec2D> {
+        let tup: &pyo3::types::PyTuple = ob.extract()?;
+        let ret: Vec2D = Vec2D::new(
+            tup.get_item(0).extract().unwrap(),
+            tup.get_item(1).extract().unwrap(),
+        );
+        Ok(ret)
+    }
 }
 
 impl Ord for Vec2D {

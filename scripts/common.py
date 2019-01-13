@@ -56,8 +56,8 @@ def underline(pixs, w, h, shading_len, color):
         for j in range(w-1):
             if mat[i][j] and not mat[i][j+1]:
                 for k in range(shading_len):
-                    ret.push(xpr.Pixel((i, j+k), xpr.RED))
-    return ret.with_color(color)
+                    ret.push(xpr.Pixel((i, j+k), color))
+    return ret
 
 def to_corners(bits):
     corners = []

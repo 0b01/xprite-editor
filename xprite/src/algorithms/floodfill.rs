@@ -12,8 +12,7 @@ pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Vec2D, bg_col: Option<Col
     let mut neighbors = Vec::with_capacity(4);
     while let Some(point) = stack.pop() {
         let Vec2D {x, y} = point;
-        // println!("background color: {:?} \n\n ({},{}) {:?}", bg_col, x, y, canvas[x as usize][y as usize]);
-        match (bg_col, canvas[y as usize][x as usize]) {
+        match (bg_col, canvas[x as usize][y as usize]) {
             (Some(bg), Some(Pixel{color, ..})) => if bg != color { continue },
             (None, Some(_)) => continue,
             (Some(_), None) => continue,
@@ -26,12 +25,12 @@ pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Vec2D, bg_col: Option<Col
         if y < h - 1. { neighbors.push((x, y+1.)) };
         if y > 0. { neighbors.push((x, y-1.)) };
         for &(nx, ny) in neighbors.iter() {
-            if visited[ny as usize][nx as usize] { continue };
+            if visited[nx as usize][ny as usize] { continue };
             stack.push(Vec2D{x: nx, y: ny});
-            visited[ny as usize][nx as usize] = true;
+            visited[nx as usize][ny as usize] = true;
         }
         ret.push(Pixel{point, color});
-        visited[y as usize][x as usize] = true;
+        visited[x as usize][y as usize] = true;
     }
 
     ret

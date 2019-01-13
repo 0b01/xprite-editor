@@ -26,27 +26,29 @@ use clap::{App, Arg, SubCommand};
 
 #[allow(unused)]
 fn main() -> Result<(), String> {
-    let matches = App::new("xprite")
+    let mut t = App::new("xprite")
                     .version("1.0")
                     .author("Ricky Han <xprite@rickyhan.com>")
-                    .about("pixel art editor with extra tools")
-                    .arg(Arg::with_name("INPUT")
-                        .short("-p")
-                        .long("python")
-                        .value_name("PY_FILE")
-                        .help("Run python script"))
-                    .subcommand(SubCommand::with_name("dyon")
-                                .about("run dyon script")
-                                .version("1.0")
-                                .arg(Arg::with_name("INPUT")
-                                    .help("INPUT.dyon script")
-                                    .required(true)
-                                    .index(1)
-                                )
-                                .arg(Arg::with_name("debug")
-                                    .short("d")
-                                    .help("print debug information verbosely")))
-                    .get_matches();
+                    .about("pixel art editor");
+    if cfg!(feature="python-scripting") {
+        t = t.arg(Arg::with_name("INPUT")
+            .short("-p")
+            .long("python")
+            .value_name("PY_FILE")
+            .help("Run python script"));
+    }
+    if cfg!(feature="dyon-scripting") {
+        t = t.subcommand(SubCommand::with_name("dyon")
+            .about("run dyon script")
+            .version("1.0")
+            .arg(Arg::with_name("INPUT")
+                .help("INPUT.dyon script")
+                .required(true)
+                .index(1)
+            )
+        );
+    }
+    let matches = t.get_matches();
 
     if let Some(matches) = matches.subcommand_matches("dyon") {
         #[cfg(feature = "dyon-scripting")]

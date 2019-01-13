@@ -4,4 +4,5 @@ members = [
     "web",
     "native",
     "libtexsyn",
+    # "rectdecomp",
 ]

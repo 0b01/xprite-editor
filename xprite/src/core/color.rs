@@ -1,5 +1,8 @@
+use crate::prelude::*;
 use hex;
 
+#[cfg(feature = "python-scripting")]
+#[pyclass]
 #[derive(Debug, Hash, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Color {
     pub r: u8,
@@ -7,6 +10,20 @@ pub struct Color {
     pub b: u8,
     pub a: u8,
 }
+
+#[cfg(feature = "python-scripting")]
+impl<'a> pyo3::FromPyObject<'a> for Color {
+    fn extract(ob: &'a pyo3::types::PyObjectRef) -> PyResult<Color> {
+        let tup: &pyo3::types::PyTuple = ob.extract()?;
+        let ret: Color = Color::new(
+            tup.get_item(0).extract().unwrap(),
+            tup.get_item(1).extract().unwrap(),
+            tup.get_item(2).extract().unwrap(),
+        );
+        Ok(ret)
+    }
+}
+
 
 impl ToString for Color {
     fn to_string(&self) -> String {

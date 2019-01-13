@@ -134,9 +134,18 @@ fn init_js_bindings(xpr: &Rc<RefCell<Xprite>>) {
     let xpr_ = xpr.clone();
     let fn_draw = move ||
         {xpr_.borrow_mut().draw().unwrap(); ()};
-    // let xpr_ = xpr.clone();
-    // let fn_draw_pixel = move |x:u32, y:u32|
-    //     {xpr.borrow_mut().draw_pixel(x, y, Color::red())};
+    let xpr_ = xpr.clone();
+    let fn_draw_pixel = move |x:u32, y:u32|
+        {
+            xpr_.borrow_mut()
+                .current_layer_mut()
+                .unwrap()
+                .content
+                .push(Pixel{
+                    point: Vec2D::new(x as f32, y as f32),
+                    color: Color::red()
+                })
+        };
     let xpr_ = xpr.clone();
     let fn_get_height = move ||
         {xpr_.borrow().canvas.art_w };
@@ -170,7 +179,7 @@ fn init_js_bindings(xpr: &Rc<RefCell<Xprite>>) {
     js! {
         window.xprite = {};
         window.xprite.draw = @{fn_draw};
-        // window.xprite.draw_pixel = @{fn_draw_pixel};
+        window.xprite.draw_pixel = @{fn_draw_pixel};
         window.xprite.get_height = @{fn_get_height};
         window.xprite.get_width = @{fn_get_width};
         window.xprite.set_color = @{fn_set_color};

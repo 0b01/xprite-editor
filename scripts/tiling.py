@@ -42,7 +42,7 @@ def run():
     underlined = xpr.Pixels()
     perimeter = xpr.Pixels()
     ret_pixs = xpr.Pixels()
-    for cc in ccs:
+    for cc in tqdm(ccs):
         ret_pixs @= cc.with_color(get_color())
         perimeter @= cc.perimeter(512, 512).with_color(PALETTE["outline"])
         underlined @= underline(cc, 512, 512, 3, PALETTE["outline"])

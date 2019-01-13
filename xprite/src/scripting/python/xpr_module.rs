@@ -7,15 +7,12 @@ use pyo3::class::{
 };
 use pyo3::types::PyTuple;
 
-type PyPoint = (i32, i32);
-type PyColor = (i32, i32, i32, i32);
-
 pub fn init_mod(py: Python) -> PyResult<&PyModule> {
     let pymod = PyModule::new(py, "xpr")?;
-    pymod.add::<PyColor>("RED", Color::red().into())?;
-    pymod.add::<PyColor>("GREEN", Color::green().into())?;
-    pymod.add::<PyColor>("BLUE", Color::blue().into())?;
-    pymod.add_class::<MyPixel>()?;
+    pymod.add::<(i32,i32,i32,i32)>("RED", Color::red().into())?;
+    pymod.add::<(i32,i32,i32,i32)>("GREEN", Color::green().into())?;
+    pymod.add::<(i32,i32,i32,i32)>("BLUE", Color::blue().into())?;
+    pymod.add_class::<Pixel>()?;
     pymod.add_class::<MyPixels>()?;
 
     pymod.add_function(wrap_function!(add))?;
@@ -39,8 +36,8 @@ impl MyPixels {
     fn __new__(obj: &PyRawObject, args: &PyTuple) -> PyResult<()> {
         let mut p = Pixels::new();
         for i in args.iter() {
-            let i: &MyPixel = i.try_into()?;
-            p.push(i.as_pixel());
+            let i: &Pixel = i.try_into()?;
+            p.push(*i);
         }
         obj.init(|_| {
             MyPixels {
@@ -64,12 +61,12 @@ impl MyPixels {
     pub fn intersection(&mut self, other: &MyPixels) -> PyResult<MyPixels> {
         Ok(Self{p:self.p.intersection(&other.p)})
     }
-    pub fn push(&mut self, px: &MyPixel) -> PyResult<()> {
-        self.p.push(px.as_pixel());
+    pub fn push(&mut self, px: &Pixel) -> PyResult<()> {
+        self.p.push(px.clone());
         Ok(())
     }
-    pub fn contains(&mut self, px: &MyPixel) -> PyResult<bool> {
-        Ok(self.p.contains(&px.as_pixel()))
+    pub fn contains(&mut self, px: &Pixel) -> PyResult<bool> {
+        Ok(self.p.contains(&px))
     }
     pub fn clear(&mut self) -> PyResult<()> {
         self.p.clear();
@@ -107,6 +104,10 @@ impl MyPixels {
         Ok(self.p.as_bool_mat(w, h))
     }
 
+    pub fn as_mat(&self, w: usize, h: usize) -> PyResult<Vec<Vec<Option<Pixel>>>> {
+        Ok(self.p.as_mat(w, h))
+    }
+
     pub fn shift(&self, dist: &PyTuple) -> PyResult<MyPixels> {
         let d: Vec2D = dist.into();
         let mut p = Pixels::new();
@@ -142,37 +143,6 @@ impl PyNumberProtocol for MyPixels {
 }
 
 
-#[pyclass(name=Pixel)]
-pub struct MyPixel {
-   point: PyPoint,
-   color: PyColor,
-}
-
-#[pymethods]
-impl MyPixel {
-    #[new]
-    fn __new__(obj: &PyRawObject, point: PyPoint, color: PyColor) -> PyResult<()> {
-        obj.init(|_| {
-            MyPixel {
-                point, color
-            }
-        })
-    }
-}
-
-impl MyPixel {
-    pub fn as_pixel(&self) -> Pixel {
-        let (x, y) = self.point;
-        let (r, g, b, a) = self.color;
-        pixel!(x, y, Color {
-            r:r as u8,
-            g:g as u8,
-            b:b as u8,
-            a:a as u8
-        })
-    }
-}
-
 impl From<&PyTuple> for Vec2D {
     fn from(p: &PyTuple) -> Vec2D {
         Vec2D {
@@ -198,38 +168,6 @@ impl From<&PyTuple> for Pixel {
         let point = p.into();
         let color = Color::red();
         Pixel {point, color}
-    }
-}
-
-
-
-impl From<&MyPixel> for Vec2D {
-    fn from(p: &MyPixel) -> Vec2D {
-        Vec2D {
-            x: p.point.0 as f32,
-            y: p.point.1 as f32,
-        }
-    }
-}
-
-impl From<&MyPixel> for Color {
-    fn from(p: &MyPixel) -> Color {
-        p.color.into()
-    }
-}
-
-impl From<&MyPixel> for Pixel {
-    fn from(p: &MyPixel) -> Pixel {
-        let point = p.into();
-        let color = p.into();
-        Pixel { point, color }
-    }
-}
-
-#[pyproto]
-impl PyObjectProtocol for MyPixel {
-    fn __repr__(&'p self) -> PyResult<String> {
-        Ok(format!("Pixel<({:?}), ({:?})>", self.point, self.color))
     }
 }
 

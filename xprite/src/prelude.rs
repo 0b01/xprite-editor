@@ -20,6 +20,9 @@ pub use crate::rendering::{
     image_renderer::{ImageRenderer, save_img},
 };
 
+#[cfg(feature = "python-scripting")]
+pub use pyo3::prelude::*;
+
 pub use crate::tools::{Tool, ToolType};
 pub use crate::layer::{Layer, Layers};
 

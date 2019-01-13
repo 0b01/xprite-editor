@@ -14,6 +14,7 @@ Pixel art editor with algorithmic tools.
 * [ ] Tabs
 * [ ] Preview bounding box
 * [x] Connected component algorithm
+* [ ] rect decomp (for efficient render)
 * [ ] Fix web target
 * [ ] Fix zoom
 

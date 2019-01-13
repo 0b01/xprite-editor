@@ -12,10 +12,33 @@ use std::fmt::{Debug, Formatter, Error};
 use indexmap::{IndexSet, set::Iter};
 use img::GenericImageView;
 
+#[cfg(feature = "python-scripting")]
+#[pyclass]
 #[derive(Copy, Clone, Eq, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Pixel {
     pub point: Vec2D,
     pub color: Color,
+}
+
+#[cfg(feature = "python-scripting")]
+use pyo3::class::basic::PyObjectProtocol;
+#[cfg(feature = "python-scripting")]
+#[pyproto]
+impl PyObjectProtocol for Pixel {
+    fn __repr__(&'p self) -> PyResult<String> {
+        Ok(format!("Pixel<({:?}), ({:?})>", self.point, self.color))
+    }
+}
+
+#[cfg(feature = "python-scripting")]
+#[pymethods]
+impl Pixel {
+    #[new]
+    fn __new__(obj: &PyRawObject, point: Vec2D, color: Color) -> PyResult<()> {
+        obj.init(|_| {
+            Pixel { point, color }
+        })
+    }
 }
 
 impl Hash for Pixel {
@@ -222,7 +245,7 @@ impl Pixels {
         for p in self.0.iter() {
             let Pixel{point, ..} = p;
             let Vec2D {x, y} = point;
-            arr[*y as usize][*x as usize] = true;
+            arr[*x as usize][*y as usize] = true;
         }
         arr
     }
@@ -233,7 +256,7 @@ impl Pixels {
             let Pixel{point, ..} = p;
             let Vec2D {x, y} = point;
             if oob(*x, *y, w as f32, h as f32) { continue; }
-            arr[*y as usize][*x as usize] = Some(p.clone());
+            arr[*x as usize][*y as usize] = Some(p.clone());
         }
         arr
     }
@@ -294,6 +317,25 @@ mod tests {
         expected.insert(pixel!(0.,0., Color::red()));
         expected.insert(pixel!(0.,1., Color::blue()));
         assert_eq!(expected, v1.0);
+    }
+
+    #[test]
+    fn test_bool_mat() {
+        use super::*;
+        let pixs = pixels!{
+            pixel!(0,0,Color::red()),
+            pixel!(0,1,Color::red()),
+            // pixel!(1,0,Color::red()),
+            pixel!(1,1,Color::red())
+        };
+
+        assert_eq!(
+            pixs.as_bool_mat(2,2),
+            vec![
+                vec![true, true],
+                vec![false, true]
+            ]
+        );
     }
 
     #[test]
