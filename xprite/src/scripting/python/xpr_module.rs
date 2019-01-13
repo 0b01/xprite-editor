@@ -251,7 +251,8 @@ fn bezier(
         ctrl2: ctrl2.into(),
         to: to.into()
     };
-    let p = seg.rasterize().unwrap();
+    let sort = true;
+    let p = seg.rasterize(sort).unwrap();
     Ok(MyPixels{ p })
 }
 

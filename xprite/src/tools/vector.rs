@@ -9,6 +9,7 @@ pub struct Vector {
     pixs_buf: Pixels,
     current_polyline: Option<Polyline>,
     pub draw_bezier: bool,
+    pub sort: bool,
 }
 
 impl Default for Vector {
@@ -32,7 +33,8 @@ impl Vector {
             brush,
             pixs_buf,
             tolerence: 1.,
-            draw_bezier: false,
+            draw_bezier: true,
+            sort: true,
         }
     }
 }
@@ -130,7 +132,7 @@ impl Tool for Vector {
 
             let (path, pixs_buf) = {
                 let path = simple.interp();
-                let mut rasterized = path.rasterize(xpr).unwrap();
+                let mut rasterized = path.rasterize(xpr, self.sort).unwrap();
                 rasterized.set_color(&Color::orange());
                 (path, rasterized)
             };

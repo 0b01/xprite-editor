@@ -77,7 +77,7 @@ impl CubicBezierSegment {
     }
 
     /// rasterize a single bezier curve by sampling
-    pub fn rasterize(&self) -> Option<Pixels> {
+    pub fn rasterize(&self, sort: bool) -> Option<Pixels> {
         let mut pixs = Pixels::new();
 
         let mut extrema = vec![0.];
@@ -99,7 +99,9 @@ impl CubicBezierSegment {
                 t += step;
             }
             monotone_seg.pixel_perfect();
-            monotone_seg.monotonic_sort();
+            if sort {
+                monotone_seg.monotonic_sort();
+            }
             pixs.extend(&monotone_seg);
         }
 

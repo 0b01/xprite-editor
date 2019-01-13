@@ -8,4 +8,5 @@ pub fn draw(state: &mut State, ui: &Ui) {
         .speed(0.1)
         .build();
     ui.checkbox(im_str!("Draw Bezier"), &mut tool.draw_bezier);
+    ui.checkbox(im_str!("Monotonic sort"), &mut tool.sort);
 }

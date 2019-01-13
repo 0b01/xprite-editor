@@ -229,11 +229,11 @@ impl Path {
         }
     }
 
-    pub fn rasterize(&self, xpr: &Xprite) -> Option<Pixels> {
+    pub fn rasterize(&self, xpr: &Xprite, sort: bool) -> Option<Pixels> {
         let mut ret = Pixels::new();
         // convert each segment
         for seg in &self.segments {
-            let pixs = seg.rasterize()?;
+            let pixs = seg.rasterize(sort)?;
             ret.extend(&pixs);
         }
         ret.pixel_perfect();
