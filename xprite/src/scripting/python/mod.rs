@@ -1,8 +1,7 @@
 mod xpr_module;
-use self::xpr_module::*;
 
 use crate::prelude::*;
-use pyo3::prelude::*;
+use self::xpr_module::*;
 use pyo3::types::{PyDict, PyList};
 use std::fs::File;
 use std::io::Read;

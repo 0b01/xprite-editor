@@ -9,6 +9,7 @@ use std::cmp::Ordering;
 use std::fmt::{Debug, Error, Formatter};
 use std::hash::{Hash, Hasher};
 use std::ops::{Index, Sub};
+use std::f32;
 
 #[cfg_attr(feature = "python-scripting", pyclass)]
 #[derive(Copy, Clone, Eq, PartialOrd, Serialize, Deserialize, Default)]
@@ -200,6 +201,25 @@ impl Pixels {
         find_perimeter(w, h, self)
     }
 
+    pub fn bounding_rect(&self) -> (Vec2f, Vec2f) {
+        let mut min_x = f32::MAX;
+        let mut max_x = f32::MIN;
+        let mut min_y = f32::MAX;
+        let mut max_y = f32::MIN;
+        for Pixel{point: Vec2f{x, y}, ..} in self.iter() {
+            min_x = min_x.min(*x);
+            max_x = max_x.max(*x);
+            min_y = min_y.min(*y);
+            max_y = max_y.max(*y);
+        }
+
+        (
+            Vec2f {x: min_x, y: min_y},
+            Vec2f {x: max_x, y: max_y},
+        )
+    }
+
+    #[deprecated]
     pub fn to_strips(&self, w: usize, h: usize) -> Vec<(usize, (usize, usize), Color)> {
         let ccs = self.connected_components(w, h);
         let mut rect_list = vec![];
@@ -425,5 +445,33 @@ mod tests {
             strips,
             vec![(0, (0, 3), Color::red()), (1, (0, 2), Color::red()),]
         );
+    }
+
+    #[test]
+    fn test_bounding_box() {
+        use super::*;
+        /*
+         *   ###
+         *   ##.
+         */
+        let pixs = pixels!(
+            pixel!(0, 0, Color::red()),
+            pixel!(0, 1, Color::red()),
+            pixel!(0, 2, Color::red()),
+            pixel!(1, 0, Color::red()),
+            pixel!(1, 1, Color::red())
+        );
+
+        let bb = pixs.bounding_rect();
+        assert_eq!((
+            Vec2f {
+                x: 0.0,
+                y: 0.0
+            },
+            Vec2f {
+                x: 2.0,
+                y: 1.0
+            }
+        ), bb);
     }
 }

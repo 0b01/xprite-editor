@@ -1,7 +1,6 @@
 use crate::algorithms;
 use crate::prelude::*;
 use pyo3::class::{basic::PyObjectProtocol, number::PyNumberProtocol};
-use pyo3::prelude::*;
 use pyo3::types::PyTuple;
 
 pub fn init_mod(py: Python) -> PyResult<&PyModule> {
