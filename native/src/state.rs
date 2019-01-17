@@ -4,7 +4,6 @@ use std::fs::File;
 use std::io::{BufReader, BufWriter, Read, Write};
 use xprite::bincode::{deserialize, serialize};
 use xprite::image::GenericImageView;
-use xprite::prelude::*;
 use xprite::rendering::image_renderer::ImageRenderer;
 
 pub struct State<'a> {

@@ -21,7 +21,7 @@ pub struct Xprite {
     #[serde(skip_serializing, skip_deserializing)]
     pub toolbox: Toolbox,
     pub cursor: Pixels,
-    pub last_mouse_pos: (f32, f32),
+    pub last_mouse_pos: Vec2f,
 
     #[cfg(feature = "dyon-scripting")]
     #[serde(skip_serializing, skip_deserializing)]
@@ -49,7 +49,7 @@ impl Xprite {
             let scripting = Rc::new(RefCell::new(DyonRuntime::new()));
             Xprite {
                 scripting,
-                last_mouse_pos: (0., 0.),
+                last_mouse_pos: Vec2f { x:0., y:0. },
                 history,
                 im_buf,
                 bz_buf,
@@ -64,7 +64,7 @@ impl Xprite {
         #[cfg(not(feature = "dyon-scripting"))]
         {
             Xprite {
-                last_mouse_pos: (0., 0.),
+                last_mouse_pos: Vec2f { x:0., y:0. },
                 history,
                 im_buf,
                 bz_buf,
@@ -87,8 +87,8 @@ impl Xprite {
     }
 
     pub fn update_mouse_pos(&mut self, x: f32, y: f32) {
-        self.last_mouse_pos.0 = x;
-        self.last_mouse_pos.1 = y;
+        self.last_mouse_pos.x = x;
+        self.last_mouse_pos.y = y;
     }
 
     /// add pixels to temp im_buf
@@ -244,7 +244,7 @@ impl Xprite {
                 to,
             } = seg;
             self.canvas
-                .draw_bezier(rdr, from, ctrl1, ctrl2, to, Color::grey().into(), 4.);
+                .draw_bezier(rdr, from, ctrl1, ctrl2, to, Color::grey().into(), 1.);
             let red = Color::red().into();
             let blue = Color::blue().into();
             self.canvas.draw_circle(rdr, from, 0.3, blue, true);
@@ -254,10 +254,10 @@ impl Xprite {
             self.canvas.draw_line(rdr, from, ctrl1, blue);
             self.canvas.draw_line(rdr, to, ctrl2, blue);
 
-            if self.canvas.within_circle(from, 0.5, self.last_mouse_pos)
-                || self.canvas.within_circle(ctrl1, 0.5, self.last_mouse_pos)
-                || self.canvas.within_circle(ctrl2, 0.5, self.last_mouse_pos)
-                || self.canvas.within_circle(to, 0.5, self.last_mouse_pos)
+            if self.canvas.within_circle(from, self.last_mouse_pos)
+                || self.canvas.within_circle(ctrl1, self.last_mouse_pos)
+                || self.canvas.within_circle(ctrl2, self.last_mouse_pos)
+                || self.canvas.within_circle(to, self.last_mouse_pos)
             {
                 rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Hand);
             }

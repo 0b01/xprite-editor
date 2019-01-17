@@ -150,8 +150,14 @@ impl Tool for Eraser {
         match option {
             "mode" => {}
             "brush" => match value {
-                "+" => self.brush = Brush::cross(),
-                "." => self.brush = Brush::pixel(),
+                "+" => {
+                    self.brush = Brush::cross();
+                    self.brush_type = BrushType::Cross;
+                }
+                "." => {
+                    self.brush = Brush::pixel();
+                    self.brush_type = BrushType::Pixel;
+                }
                 _ => error!("malformed value: {}", value),
             },
             _ => (),

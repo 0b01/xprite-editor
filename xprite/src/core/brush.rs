@@ -16,11 +16,25 @@ impl BrushType {
     pub const VARIANTS: [BrushType; 2] = [BrushType::Pixel, BrushType::Cross];
 }
 
-#[derive(Debug, Default)]
+impl Default for BrushType {
+    fn default() -> Self {
+        BrushType::Pixel
+    }
+}
+
+
+
+#[derive(Debug, Clone)]
 pub struct Brush {
     pub shape: PixelOffsets,
     pub bb: (f32, f32),
     pub offset: (f32, f32),
+}
+
+impl Default for Brush {
+    fn default() -> Self {
+        Self::pixel()
+    }
 }
 
 impl Brush {

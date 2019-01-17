@@ -62,7 +62,7 @@ impl Tool for ColorPicker {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         xpr.new_frame();
-        self.set_cursor(xpr).unwrap();
+        let _ = self.set_cursor(xpr);
         // noop
         Ok(())
     }

@@ -1,6 +1,46 @@
 use crate::prelude::*;
 use std::cmp::Ordering;
 use std::hash::{Hash, Hasher};
+use std::ops::{Sub, Add, AddAssign, SubAssign};
+
+impl Sub for Vec2f {
+    type Output = Vec2f;
+    fn sub(self, other: Vec2f) -> Vec2f {
+        Vec2f {
+            x: self.x - other.x,
+            y: self.y - other.y,
+        }
+    }
+}
+
+impl Add for Vec2f {
+    type Output = Vec2f;
+    fn add(self, other: Vec2f) -> Vec2f {
+        Vec2f {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
+impl AddAssign for Vec2f {
+    fn add_assign(&mut self, other: Vec2f) {
+        *self = Vec2f {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        };
+    }
+}
+
+impl SubAssign for Vec2f {
+    fn sub_assign(&mut self, other: Vec2f) {
+        *self = Vec2f {
+            x: self.x - other.x,
+            y: self.y - other.y,
+        };
+    }
+}
+
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Rect(pub Vec2f, pub Vec2f);

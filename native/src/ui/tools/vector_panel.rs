@@ -18,10 +18,29 @@ pub fn draw(state: &mut State, ui: &Ui) {
         im_str!("Monotonic sort"),
         &mut state.xpr.toolbox.vector.borrow_mut().mono_sort
     );
+
+    draw_brush(state, ui);
     draw_mode(state, ui);
 }
 
-pub fn draw_mode(state: &mut State, ui: &Ui) {
+fn draw_brush(state: &mut State, ui: &Ui) {
+    ui.tree_node(im_str!("Brush")).build(|| {
+        let brushes = BrushType::VARIANTS;
+        for (_index, brush) in brushes.iter().enumerate() {
+            let is_sel = &state.xpr.toolbox.vector.borrow().brush_type == brush;
+            if ui.selectable(
+                im_str!("{}", brush.as_str()),
+                is_sel,
+                ImGuiSelectableFlags::empty(),
+                (0., 0.),
+            ) {
+                state.xpr.set_option("brush", brush.as_str()).unwrap();
+            }
+        }
+    });
+}
+
+fn draw_mode(state: &mut State, ui: &Ui) {
     ui.tree_node(im_str!("Mode")).build(|| {
         let modes = vector::VectorMode::VARIANTS;
         for (_index, mode) in modes.iter().enumerate() {

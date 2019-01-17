@@ -70,7 +70,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     let wheel_delta = ui.imgui().mouse_wheel();
     let (x, y) = ui.imgui().mouse_pos();
 
-    if (state.xpr.last_mouse_pos.0 != x || state.xpr.last_mouse_pos.1 != y) && !state.inputs.space {
+    if (state.xpr.last_mouse_pos.x != x || state.xpr.last_mouse_pos.y != y) && !state.inputs.space {
         handle_error!(state.xpr.mouse_move(&MouseMove { x, y }));
     }
 

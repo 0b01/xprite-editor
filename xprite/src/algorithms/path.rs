@@ -44,7 +44,7 @@ fn line_finite_diff(points: &[Vec2f]) -> Vec<f32> {
     m
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Default)]
 pub struct Path {
     pub segments: Vec<CubicBezierSegment>,
 }

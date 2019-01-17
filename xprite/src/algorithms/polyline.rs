@@ -1,7 +1,7 @@
 use crate::algorithms::line::bresenham;
 use crate::prelude::*;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct Polyline {
     pub pos: Vec<Vec2f>,
 }
@@ -22,7 +22,7 @@ impl Polyline {
 
     /// line simplification algorithm
     pub fn reumann_witkam(&self, tol: f32) -> Result<Polyline, String> {
-        if self.pos.len() < 10 {
+        if self.pos.len() < 3 {
             return Err("polyline has fewer than 10 points".to_owned());
         }
 

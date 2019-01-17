@@ -49,8 +49,8 @@ pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
             ui.checkbox(im_str!("grid"), &mut state.xpr.canvas.show_grid);
             ui.text(im_str!(
                 "{}, {}",
-                state.xpr.last_mouse_pos.0,
-                state.xpr.last_mouse_pos.1
+                state.xpr.last_mouse_pos.y,
+                state.xpr.last_mouse_pos.x
             ));
         });
 }

@@ -45,9 +45,11 @@ pub struct Pencil {
     current_polyline: Polyline,
     cursor: Option<Pixels>,
     cursor_pos: Option<Pixel>,
-    brush: Brush,
     pub mode: PencilMode,
+
+    brush: Brush,
     pub brush_type: BrushType,
+
     moved: bool,
     draw_buffer: Pixels,
     update_buffer: Option<Pixels>,
@@ -218,8 +220,14 @@ impl Tool for Pencil {
                 };
             }
             "brush" => match value {
-                "+" => self.brush = Brush::cross(),
-                "." => self.brush = Brush::pixel(),
+                "+" => {
+                    self.brush = Brush::cross();
+                    self.brush_type = BrushType::Cross;
+                }
+                "." => {
+                    self.brush = Brush::pixel();
+                    self.brush_type = BrushType::Pixel;
+                }
                 _ => error!("malformed value: {}", value),
             },
             _ => (),

@@ -100,28 +100,29 @@ impl Canvas {
     pub fn to_cli(&self, p: Vec2f) -> Vec2f {
         let o = self.origin();
         Vec2f {
-            x: o.0 + self.scale * p.x,
-            y: o.1 + self.scale * p.y,
+            x: o.x + self.scale * p.x,
+            y: o.y + self.scale * p.y,
         }
     }
 
-    pub fn within_circle(&self, point: Vec2f, radius: f32, mouse: (f32, f32)) -> bool {
+    pub fn within_circle(&self, point: Vec2f, mouse: Vec2f) -> bool {
+        let radius = 2.;
         let Vec2f { x, y } = point;
         let o = self.origin();
-        let p0 = (o.0 + self.scale * x, o.1 + self.scale * y);
+        let p0 = Vec2f {x: o.x + self.scale * x, y: o.y + self.scale * y};
         let rad = self.scale * radius;
 
-        mouse.0 < p0.0 + rad && mouse.0 > p0.0 - rad && mouse.1 < p0.1 + rad && mouse.1 > p0.1 - rad
+        mouse.x < p0.x + rad && mouse.x > p0.x - rad && mouse.y < p0.y + rad && mouse.y > p0.y - rad
     }
 
     pub fn draw_pixels_simplified(&self, rdr: &mut Renderer, pixels: &Pixels) {
         let rect_list = pixels.to_strips(self.art_w as usize, self.art_h as usize);
         let o = self.origin();
         for &(y, (x0, x1), col) in &rect_list {
-            let p0 = [o.0 + self.scale * x0 as f32, o.1 + self.scale * y as f32];
+            let p0 = [o.x + self.scale * x0 as f32, o.y + self.scale * y as f32];
             let p1 = [
-                o.0 + self.scale * x1 as f32,
-                o.1 + self.scale * (y + 1) as f32,
+                o.x + self.scale * x1 as f32,
+                o.y + self.scale * (y + 1) as f32,
             ];
 
             rdr.rect(p0, p1, col.into(), true);
@@ -133,21 +134,21 @@ impl Canvas {
         if oob(x, y, self.art_w, self.art_h) {
             return;
         }
-        let p0 = [o.0 + self.scale * x, o.1 + self.scale * y];
-        let p1 = [o.0 + self.scale * (x + 1.), o.1 + self.scale * (y + 1.)];
+        let p0 = [o.x + self.scale * x, o.y + self.scale * y];
+        let p1 = [o.x + self.scale * (x + 1.), o.y + self.scale * (y + 1.)];
 
         rdr.rect(p0, p1, color, filled);
     }
 
-    pub fn origin(&self) -> (f32, f32) {
-        (self.win_x + self.scroll.x, self.win_y + self.scroll.y)
+    pub fn origin(&self) -> Vec2f {
+        Vec2f { x: self.win_x + self.scroll.x, y: self.win_y + self.scroll.y }
     }
 
     pub fn draw_canvas(&self, rdr: &mut Renderer) {
         let o = self.origin();
         rdr.rect(
-            [o.0, o.1],
-            [o.0 + self.art_w * self.scale, o.1 + self.art_h * self.scale],
+            [o.x, o.y],
+            [o.x + self.art_w * self.scale, o.y + self.art_h * self.scale],
             LIGHT_GREY,
             true,
         );
@@ -163,8 +164,8 @@ impl Canvas {
         let mut x = 0.;
         while x < self.scale * self.art_w {
             rdr.line(
-                [o.0 + x, o.1],
-                [o.0 + x, o.1 + self.scale * self.art_h],
+                [o.x + x, o.y],
+                [o.x + x, o.y + self.scale * self.art_h],
                 color,
             );
             x += self.scale;
@@ -173,8 +174,8 @@ impl Canvas {
         let mut y = 0.;
         while y < self.scale * self.art_h {
             rdr.line(
-                [o.0, o.1 + y],
-                [o.0 + self.scale * self.art_w, o.1 + y],
+                [o.x, o.y + y],
+                [o.x + self.scale * self.art_w, o.y + y],
                 color,
             );
             y += self.scale;
@@ -192,8 +193,8 @@ impl Canvas {
     pub fn shrink_size_no_floor(&self, p: Vec2f) -> Vec2f {
         let Vec2f { x: cli_x, y: cli_y } = p;
         let o = self.origin();
-        let x = (cli_x - o.0) / self.scale;
-        let y = (cli_y - o.1) / self.scale;
+        let x = (cli_x - o.x) / self.scale;
+        let y = (cli_y - o.y) / self.scale;
         Vec2f { x, y }
     }
 
@@ -201,8 +202,8 @@ impl Canvas {
     pub fn shrink_size(&self, p: Vec2f) -> Vec2f {
         let Vec2f { x: cli_x, y: cli_y } = p;
         let o = self.origin();
-        let x = ((cli_x - o.0) / self.scale).floor();
-        let y = ((cli_y - o.1) / self.scale).floor();
+        let x = ((cli_x - o.x) / self.scale).floor();
+        let y = ((cli_y - o.y) / self.scale).floor();
         Vec2f { x, y }
     }
     /// snap point to grid

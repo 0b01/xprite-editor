@@ -11,6 +11,7 @@ pub fn floodfill(
     bg_col: Option<Color>,
     color: Color,
 ) -> Pixels {
+    if oob(origin.x, origin.y, w, h) { return pixels!{}; }
     let mut ret = Pixels::new();
     let canvas = pix.as_mat(w as usize, h as usize);
     let mut stack = vec![origin];
