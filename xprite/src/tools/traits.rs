@@ -1,7 +1,6 @@
 use crate::prelude::*;
 
 pub trait Tool {
-    fn tool_type(&self) -> ToolType;
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String>;
     fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String>;
     fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String>;

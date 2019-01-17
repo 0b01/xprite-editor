@@ -75,10 +75,6 @@ impl Rect {
 }
 
 impl Tool for Rect {
-    fn tool_type(&self) -> ToolType {
-        ToolType::Rect
-    }
-
     fn cursor(&self) -> Option<Pixels> {
         let p = self.cursor_pos?;
         Some(pixels!(p))

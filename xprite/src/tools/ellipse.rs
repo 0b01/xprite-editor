@@ -75,10 +75,6 @@ impl Ellipse {
 }
 
 impl Tool for Ellipse {
-    fn tool_type(&self) -> ToolType {
-        ToolType::Ellipse
-    }
-
     fn cursor(&self) -> Option<Pixels> {
         let p = self.cursor_pos?;
         Some(pixels!(p))

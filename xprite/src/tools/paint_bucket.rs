@@ -76,10 +76,6 @@ impl PaintBucket {
 }
 
 impl Tool for PaintBucket {
-    fn tool_type(&self) -> ToolType {
-        ToolType::PaintBucket
-    }
-
     fn cursor(&self) -> Option<Pixels> {
         self.cursor.clone()
     }

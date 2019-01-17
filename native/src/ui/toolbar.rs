@@ -10,10 +10,10 @@ pub fn draw_toolbar(state: &mut State, ui: &Ui) {
         .collapsible(false)
         .resizable(false)
         .build(|| {
+            let selected = state.xpr.toolbox.selected.clone();
             let tools = ToolType::VARIANTS;
-
             for (_index, name) in tools.iter().enumerate() {
-                let is_sel = &state.xpr.toolbox.tool().borrow().tool_type() == name;
+                let is_sel = selected == *name;
                 if ui.selectable(
                     im_str!("{}", name.as_str()),
                     is_sel,

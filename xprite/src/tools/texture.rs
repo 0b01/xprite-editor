@@ -80,10 +80,6 @@ impl Texture {
 }
 
 impl Tool for Texture {
-    fn tool_type(&self) -> ToolType {
-        ToolType::Texture
-    }
-
     fn cursor(&self) -> Option<Pixels> {
         let p = self.cursor_pos?;
         Some(pixels!(p))

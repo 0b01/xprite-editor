@@ -85,10 +85,6 @@ impl Vector {
 }
 
 impl Tool for Vector {
-    fn tool_type(&self) -> ToolType {
-        ToolType::Vector
-    }
-
     fn cursor(&self) -> Option<Pixels> {
         let p = self.cursor_pos?;
         Some(pixels!(p))

@@ -51,10 +51,6 @@ impl Line {
 }
 
 impl Tool for Line {
-    fn tool_type(&self) -> ToolType {
-        ToolType::Line
-    }
-
     fn cursor(&self) -> Option<Pixels> {
         let p = self.cursor_pos?;
         Some(pixels!(p))

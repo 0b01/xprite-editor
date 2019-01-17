@@ -55,10 +55,6 @@ impl Marquee {
 }
 
 impl Tool for Marquee {
-    fn tool_type(&self) -> ToolType {
-        ToolType::Marquee
-    }
-
     fn cursor(&self) -> Option<Pixels> {
         let p = self.cursor_pos?;
         Some(pixels!(p))

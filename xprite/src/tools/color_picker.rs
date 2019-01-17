@@ -16,10 +16,6 @@ impl ColorPicker {
 }
 
 impl Tool for ColorPicker {
-    fn tool_type(&self) -> ToolType {
-        ToolType::ColorPicker
-    }
-
     fn cursor(&self) -> Option<Pixels> {
         self.cursor.clone()
     }

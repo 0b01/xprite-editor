@@ -126,10 +126,6 @@ impl Pencil {
 }
 
 impl Tool for Pencil {
-    fn tool_type(&self) -> ToolType {
-        ToolType::Pencil
-    }
-
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         let pixels = self.brush.to_canvas_pixels(point, xpr.color());
