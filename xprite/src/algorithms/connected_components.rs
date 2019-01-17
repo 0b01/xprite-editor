@@ -1,25 +1,50 @@
-use super::floodfill::floodfill;
 use crate::prelude::*;
 
 pub fn connected_components(pixs: &Pixels, w: usize, h: usize) -> Vec<Pixels> {
-    let mut pixs = pixs.clone();
     let mut ret = Vec::new();
-    while !pixs.is_empty() {
-        let grid = pixs.as_mat(w, h);
-        let p = get_first_true(&grid);
-        if p.is_none() {
-            break;
+    let mut canvas = pixs.as_mat(w, h);
+
+    let ff = |canvas: &[Vec<Option<Pixel>>], origin: Vec2f, bg_col: Option<Color>| {
+        let mut cc = Pixels::new();
+        let mut stack = vec![origin];
+        let mut visited = vec![vec![false; w as usize]; h as usize];
+        while let Some(point) = stack.pop() {
+            let Vec2f { x, y } = point;
+            match (bg_col, canvas[y as usize][x as usize]) {
+                (Some(bg), Some(Pixel { color, .. })) => {
+                    if bg != color {
+                        continue;
+                    }
+                }
+                (None, Some(_)) => continue,
+                (Some(_), None) => continue,
+                (None, None) => (),
+            };
+            let neighbors = [
+                (x + 1., y),
+                (x - 1., y),
+                (x, y + 1.),
+                (x, y - 1.)
+            ];
+            for &(nx, ny) in neighbors.iter() {
+                if visited[ny as usize][nx as usize] {
+                    continue;
+                };
+                stack.push(Vec2f { x: nx, y: ny });
+                visited[ny as usize][nx as usize] = true;
+            }
+            cc.push(Pixel { point, color: Color::red() });
+            visited[y as usize][x as usize] = true;
         }
-        // possible when some pixels are oob
-        else {
-            let p = p.unwrap();
-            let origin = p.point;
-            let bg_col = Some(p.color);
-            let connected = floodfill(w as f32, h as f32, &pixs, origin, bg_col, Color::red());
-            let cc = pixs.intersection(&connected);
-            ret.push(cc);
-            pixs.sub_(&connected);
+        cc
+    };
+
+    while let Some(p) = get_first_true(&canvas) {
+        let connected = ff(&canvas, p.point, Some(p.color));
+        for &Pixel {point: Vec2f {x, y}, ..} in connected.iter() {
+            canvas[y as usize][x as usize] = None;
         }
+        ret.push(connected);
     }
     ret
 }
@@ -41,6 +66,11 @@ mod tests {
     fn test_connected_components() {
         use super::*;
         assert_eq!(
+            /*
+             *  ##.
+             *  .#.
+             *  ...
+             */
             connected_components(
                 &pixels! {
                     pixel!(0.,0., Color::red()),
@@ -58,6 +88,10 @@ mod tests {
         );
 
         assert_eq!(
+            /*
+             *  #.
+             *  .#
+             */
             connected_components(
                 &pixels! {
                     pixel!(0.,0., Color::red()),
@@ -71,5 +105,52 @@ mod tests {
                 pixels![pixel!(1., 1., Color::red())]
             ]
         );
+
+        assert_eq!(
+            /*
+             *  #.
+             *  .#
+             *  .#
+             */
+            connected_components(
+                &pixels! {
+                    pixel!(0.,0., Color::red()),
+                    pixel!(1.,1., Color::red()),
+                    pixel!(2.,1., Color::red())
+                },
+                3,
+                3
+            ),
+            vec![
+                pixels![pixel!(0., 0., Color::red())],
+                pixels![pixel!(1., 1., Color::red()), pixel!(2., 1., Color::red())]
+            ]
+        );
+
     }
+
+    #[test]
+    fn test_connected_components_oob() {
+        use super::*;
+        assert_eq!(
+            /*
+             *  ##.
+             *  .#.
+             *  ...
+             */
+            connected_components(
+                &pixels! {
+                    pixel!(0.,0., Color::red()),
+                    pixel!(0.,1., Color::red()),
+                    pixel!(1.,1., Color::red())
+                },
+                1,
+                1
+            ),
+            vec![pixels![
+                pixel!(0., 0., Color::red())
+            ]]
+        );
+    }
+
 }

@@ -32,13 +32,9 @@ pub struct Xprite {
 }
 
 impl Xprite {
-    pub fn new(art_w: f32, art_h: f32) -> Xprite {
-        let selected_color = Color {
-            r: 100,
-            g: 100,
-            b: 100,
-            a: 255,
-        };
+    pub fn new(art_w:f32, art_h: f32) -> Xprite {
+        let palette_man = PaletteManager::new().expect("Cannot initialize palettes");
+        let selected_color = Color { r: 0, g: 0, b: 0, a: 255 };
         let history = History::new();
         let cursor = Pixels::new();
         let toolbox = Toolbox::new();
@@ -46,7 +42,6 @@ impl Xprite {
         let im_buf = Pixels::new();
         let bz_buf = Vec::new();
         let log = Arc::new(Mutex::new(String::new()));
-        let palette_man = PaletteManager::new().expect("Cannot initialize palettes");
 
         #[cfg(feature = "dyon-scripting")]
         {
@@ -229,14 +224,14 @@ impl Xprite {
         }
         buf.extend(&self.pixels()); // draw current_buffer
         buf.extend(&self.cursor); // draw cursor
-                                  /*
-                                          for p in buf.iter() {
-                                              let Vec2f {x, y} = p.point;
-                                              self.canvas.draw_pixel(rdr, x, y, p.color.into(), true);
-                                          }
-                                  */
-
-        self.canvas.draw_pixels_simplified(rdr, &buf);
+        if true {
+            for p in buf.iter() {
+                let Vec2f {x, y} = p.point;
+                self.canvas.draw_pixel(rdr, x, y, p.color.into(), true);
+            }
+        } else {
+            self.canvas.draw_pixels_simplified(rdr, &buf);
+        }
         rdr.render();
 
         self.canvas.draw_grid(rdr);

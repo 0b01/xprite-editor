@@ -136,7 +136,7 @@ impl Pixels {
         self.0 = self.0.sub(&other.0)
     }
 
-    pub fn intersection(&mut self, other: &Pixels) -> Pixels {
+    pub fn intersection(&self, other: &Pixels) -> Pixels {
         let common: Vec<_> = self.0.intersection(&other.0).cloned().collect();
         Pixels::from_slice(&common)
     }
@@ -382,7 +382,7 @@ mod tests {
     #[test]
     fn test_intersection() {
         use super::*;
-        let mut v1 = Pixels::from_slice(&vec![
+        let v1 = Pixels::from_slice(&vec![
             pixel!(0., 0., Color::red()),
             pixel!(0., 1., Color::red()),
         ]);

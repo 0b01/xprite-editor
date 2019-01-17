@@ -1,11 +1,51 @@
 use crate::algorithms;
 use crate::prelude::*;
+use std::str::FromStr;
 
-#[derive(Clone, Default, Debug)]
+#[derive(Eq, PartialEq, Clone, Copy, Debug)]
+pub enum PaintBucketMode {
+    Fill,
+    Outline,
+}
+
+impl PaintBucketMode {
+    pub fn as_str(&self) -> &str {
+        match self {
+            PaintBucketMode::Fill => "Fill",
+            PaintBucketMode::Outline => "Outline",
+        }
+    }
+
+    pub const VARIANTS: [PaintBucketMode; 2] = [
+        PaintBucketMode::Fill,
+        PaintBucketMode::Outline,
+    ];
+}
+
+impl FromStr for PaintBucketMode {
+    type Err = ();
+    fn from_str(string: &str) -> Result<Self, ()> {
+        match string {
+            "Fill" => Ok(PaintBucketMode::Fill),
+            "Outline" => Ok(PaintBucketMode::Outline),
+            _ => Err(()),
+        }
+    }
+}
+
+impl Default for PaintBucketMode {
+    fn default() -> Self {
+        PaintBucketMode::Fill
+    }
+}
+
+
+#[derive(Clone, Debug, Default)]
 pub struct PaintBucket {
     cursor: Option<Pixels>,
     is_mouse_down: bool,
     buffer: Option<Pixels>,
+    pub mode: PaintBucketMode,
 }
 
 impl PaintBucket {
@@ -14,6 +54,7 @@ impl PaintBucket {
             cursor: None,
             is_mouse_down: false,
             buffer: None,
+            mode: PaintBucketMode::Fill,
         }
     }
 
@@ -66,7 +107,20 @@ impl Tool for PaintBucket {
             return Ok(());
         }
         let bg_color = xpr.current_layer().unwrap().get_color(point);
-        self.buffer = Some(self.floodfill(xpr, point, bg_color)?);
+        match self.mode {
+            PaintBucketMode::Fill => {
+                self.buffer = Some(self.floodfill(xpr, point, bg_color)?);
+            }
+            PaintBucketMode::Outline => {
+                let buffer = self.floodfill(xpr, point, bg_color)?;
+                let perim = {
+                    let w = xpr.canvas.art_w;
+                    let h = xpr.canvas.art_h;
+                    algorithms::perimeter::find_perimeter(w as usize, h as usize, &buffer)
+                };
+                self.buffer = Some(perim);
+            }
+        }
 
         Ok(())
     }
@@ -108,10 +162,18 @@ impl Tool for PaintBucket {
         Ok(())
     }
 
-    fn set(&mut self, _xpr: &Xprite, option: &str, _value: &str) -> Result<(), String> {
+    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
-            _ => (), // noop
-        }
+            "mode" => {
+                use self::PaintBucketMode::*;
+                match PaintBucketMode::from_str(value) {
+                    Ok(Fill) => self.mode = Fill,
+                    Ok(Outline) => self.mode = Outline,
+                    _ => (),
+                };
+            }
+            _ => (),
+        };
         Ok(())
     }
 }
