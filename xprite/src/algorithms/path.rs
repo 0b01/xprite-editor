@@ -1,23 +1,22 @@
-use std::f32;
-use std::cmp::{min, max};
 use crate::prelude::*;
+use std::cmp::{max, min};
+use std::f32;
 
 fn convert(p1: Vec2f, p2: Vec2f, p3: Vec2f, p4: Vec2f) -> CubicBezierSegment {
     let t = 0.5;
     CubicBezierSegment {
-        from: Vec2f{x: p2.x, y: p2.y},
+        from: Vec2f { x: p2.x, y: p2.y },
         ctrl1: Vec2f {
-            x: p2.x + (p3.x-p1.x)/(6.*t),
-            y: p2.y + (p3.y-p1.y)/(6.*t)
+            x: p2.x + (p3.x - p1.x) / (6. * t),
+            y: p2.y + (p3.y - p1.y) / (6. * t),
         },
         ctrl2: Vec2f {
-            x: p3.x - (p4.x-p2.x)/(6.*t),
-            y: p3.y - (p4.y-p2.y)/(6.*t)
+            x: p3.x - (p4.x - p2.x) / (6. * t),
+            y: p3.y - (p4.y - p2.y) / (6. * t),
         },
         to: p3,
     }
 }
-
 
 fn line_slope(p0: Vec2f, p1: Vec2f) -> f32 {
     if p1.x == p0.x {
@@ -34,7 +33,7 @@ fn line_finite_diff(points: &[Vec2f]) -> Vec<f32> {
     let mut d = line_slope(p0, p1);
     m.push(d);
 
-    for i in 1..(points.len()-1) {
+    for i in 1..(points.len() - 1) {
         p0 = p1;
         p1 = points[i + 1];
         let d1 = line_slope(p0, p1);
@@ -44,7 +43,6 @@ fn line_finite_diff(points: &[Vec2f]) -> Vec<f32> {
     m.push(d);
     m
 }
-
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Path {
@@ -57,7 +55,9 @@ impl Path {
         let mut segments = Vec::new();
 
         if points.len() < 3 {
-            return Path {segments: Vec::new()}
+            return Path {
+                segments: Vec::new(),
+            };
         }
         let tangents = Path::d3_svg_line_monotone(&points);
 
@@ -70,10 +70,21 @@ impl Path {
             pi += 1;
 
             let from = p0;
-            let ctrl1 = Vec2f{ x: p0.x + t0.x, y: p0.y + t0.y};
-            let ctrl2 = Vec2f{x:p.x - t.x, y:p.y - t.y};
-            let to =  Vec2f{x: p.x, y: p.y};
-            let curve = CubicBezierSegment {from, ctrl1, ctrl2, to};
+            let ctrl1 = Vec2f {
+                x: p0.x + t0.x,
+                y: p0.y + t0.y,
+            };
+            let ctrl2 = Vec2f {
+                x: p.x - t.x,
+                y: p.y - t.y,
+            };
+            let to = Vec2f { x: p.x, y: p.y };
+            let curve = CubicBezierSegment {
+                from,
+                ctrl1,
+                ctrl2,
+                to,
+            };
             segments.push(curve);
 
             let mut i = 2;
@@ -81,10 +92,21 @@ impl Path {
                 let p = points[pi];
                 let t = tangents[i];
                 let from = points[pi - 1];
-                let ctrl1 = Vec2f{ x: from.x + tangents[i-1].x, y: from.y + tangents[i-1].y};
-                let ctrl2 = Vec2f{ x: p.x - t.x, y: p.y - t.y};
+                let ctrl1 = Vec2f {
+                    x: from.x + tangents[i - 1].x,
+                    y: from.y + tangents[i - 1].y,
+                };
+                let ctrl2 = Vec2f {
+                    x: p.x - t.x,
+                    y: p.y - t.y,
+                };
                 let to = p;
-                let curve = CubicBezierSegment {from, ctrl1, ctrl2, to};
+                let curve = CubicBezierSegment {
+                    from,
+                    ctrl1,
+                    ctrl2,
+                    to,
+                };
                 segments.push(curve);
                 i += 1;
                 pi += 1;
@@ -119,10 +141,10 @@ impl Path {
         }
 
         for i in 0..points.len() {
-            let p0 = points[min(points.len()-1, i + 1)];
+            let p0 = points[min(points.len() - 1, i + 1)];
             let p1 = points[max(0, i as isize - 1) as usize];
             let s = (p0.x - p1.x) / (6. * (1. + m[i] * m[i]));
-            tangents.push(Vec2f{x: s, y: m[i] * s});
+            tangents.push(Vec2f { x: s, y: m[i] * s });
         }
         tangents
     }
@@ -144,7 +166,7 @@ impl Path {
             p2 = points[i];
             tangents.push(Vec2f {
                 x: a * (p2.x - p0.x),
-                y: a * (p2.y - p0.y)
+                y: a * (p2.y - p0.y),
             });
             i += 1;
         }
@@ -178,25 +200,24 @@ impl Path {
 
         let distance = 0.;
 
-        for _ in 0..(polyline.pos.len()-3) {
+        for _ in 0..(polyline.pos.len() - 3) {
             let mut p1 = polyline.pos[first];
             let mut p2 = polyline.pos[second];
             let mut p3 = polyline.pos[third];
 
             let mut dx = p3.x - p1.x;
             let mut dy = p3.y - p1.y;
-            let m = (dx*dx + dy*dy).sqrt();
+            let m = (dx * dx + dy * dy).sqrt();
             dx /= m;
             dy /= m;
 
-
             let mut p0 = Vec2f {
                 x: p1.x + (p3.x - p2.x) - distance * dx,
-                y: p1.y + (p3.y - p2.y) - distance * dy
+                y: p1.y + (p3.y - p2.y) - distance * dy,
             };
             let p4 = Vec2f {
                 x: p1.x + (p3.x - p2.x) + distance * dx,
-                y: p1.y + (p3.y - p2.y) + distance * dy
+                y: p1.y + (p3.y - p2.y) + distance * dy,
             };
 
             let seg0 = convert(p0, p1, p2, p3);
@@ -204,15 +225,12 @@ impl Path {
             let seg1 = convert(p1, p2, p3, p4);
             segments.push(seg1);
 
-            first  += 1;
+            first += 1;
             second += 1;
-            third  += 1;
+            third += 1;
         }
 
-
-        Path {
-            segments
-        }
+        Path { segments }
     }
 
     pub fn rasterize(&self, _xpr: &Xprite, sort: bool) -> Option<Pixels> {
@@ -225,8 +243,6 @@ impl Path {
         ret.pixel_perfect();
         Some(ret)
     }
-
-
 }
 
 #[cfg(test)]
@@ -235,18 +251,15 @@ mod test {
 
     #[test]
     fn test_line_finite_diff() {
-        let points = vec![
-            Vec2f{ x: 10., y: 10. },
-            Vec2f{ x: 50., y: 10. },
-        ];
+        let points = vec![Vec2f { x: 10., y: 10. }, Vec2f { x: 50., y: 10. }];
         assert_eq!(vec![0., 0.], line_finite_diff(&points));
     }
 
     #[test]
     fn test_line_slope() {
-        let p0 = Vec2f{ x: 10., y: 10. };
-        let p1 = Vec2f{ x: 10., y: 10. };
-        let p2 = Vec2f{ x: 0., y: 0. };
+        let p0 = Vec2f { x: 10., y: 10. };
+        let p1 = Vec2f { x: 10., y: 10. };
+        let p2 = Vec2f { x: 0., y: 0. };
 
         assert_eq!(0., line_slope(p0, p1));
         assert_eq!(1., line_slope(p0, p2));
@@ -254,14 +267,17 @@ mod test {
 
     #[test]
     fn test_monotonic_tangent() {
-        let points = vec![
-            Vec2f{ x: 10., y: 10. },
-            Vec2f{ x: 50., y: 10. },
-        ];
+        let points = vec![Vec2f { x: 10., y: 10. }, Vec2f { x: 50., y: 10. }];
         assert_eq!(
             vec![
-                Vec2f{x: 6.666666666666667, y: 0.0},
-                Vec2f{x: 6.666666666666667, y: 0.0}
+                Vec2f {
+                    x: 6.666666666666667,
+                    y: 0.0
+                },
+                Vec2f {
+                    x: 6.666666666666667,
+                    y: 0.0
+                }
             ],
             Path::d3_svg_line_monotone(&points),
         )

@@ -1,5 +1,5 @@
-use crate::tools::*;
 use crate::algorithms::rect::*;
+use crate::tools::*;
 use libtexsyn::{
     distance::l1,
     generators::patch::{Quilter, QuilterParams},
@@ -37,9 +37,9 @@ impl Texture {
         let x1 = self.cursor_pos?.point.x;
         let y1 = self.cursor_pos?.point.y;
         Some((
-            (x1-x0).abs(),
-            (y1-y0).abs(),
-            (f32::min(x0, x1), f32::min(y0,y1))
+            (x1 - x0).abs(),
+            (y1 - y0).abs(),
+            (f32::min(x0, x1), f32::min(y0, y1)),
         ))
     }
 
@@ -49,12 +49,21 @@ impl Texture {
         pixs.set_color(&xpr.color());
         let content = &mut xpr.current_layer_mut().unwrap().content;
         let intersection = content.intersection(&pixs);
-        let (w, h, origin) = self.get_dims().ok_or_else(||"cannot get dimension".to_owned())?;
+        let (w, h, origin) = self
+            .get_dims()
+            .ok_or_else(|| "cannot get dimension".to_owned())?;
         let img = intersection.as_image(w, h, origin);
 
         let width = xpr.canvas.art_w as u32;
         let height = xpr.canvas.art_h as u32;
-        let params = QuilterParams::new((width, height), self.blocksize as u32, self.overlap as u32, None, None, l1)?;
+        let params = QuilterParams::new(
+            (width, height),
+            self.blocksize as u32,
+            self.overlap as u32,
+            None,
+            None,
+            l1,
+        )?;
         let mut quilter = Quilter::new(img.to_rgb(), params);
         let res = quilter.quilt_image()?;
         Ok(img::DynamicImage::ImageRgb8(res))
@@ -68,11 +77,9 @@ impl Texture {
         }
         Ok(())
     }
-
 }
 
 impl Tool for Texture {
-
     fn tool_type(&self) -> ToolType {
         ToolType::Texture
     }
@@ -87,7 +94,7 @@ impl Tool for Texture {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         if self.is_mouse_down.is_some() {
-            self.cursor_pos = Some(Pixel {point, color});
+            self.cursor_pos = Some(Pixel { point, color });
         }
         Ok(())
     }
@@ -95,7 +102,7 @@ impl Tool for Texture {
     fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.cursor_pos = Some(Pixel {point, color});
+        self.cursor_pos = Some(Pixel { point, color });
         // self.quilt_img(xpr)?;
 
         self.is_mouse_down = None;
@@ -105,11 +112,13 @@ impl Tool for Texture {
     }
 
     fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
-        if InputItem::Left != button { return Ok(()); }
+        if InputItem::Left != button {
+            return Ok(());
+        }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.start_pos = Some(Pixel{point, color});
+        self.start_pos = Some(Pixel { point, color });
         Ok(())
     }
 
@@ -122,16 +131,12 @@ impl Tool for Texture {
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
-            "ctrl" => {
-                match value {
-                    _ => error!("unimpl for ctrl: {}", value)
-                }
-            }
-            "shift" => {
-                match value {
-                    _ => error!("unimpl for ctrl: {}", value)
-                }
-            }
+            "ctrl" => match value {
+                _ => error!("unimpl for ctrl: {}", value),
+            },
+            "shift" => match value {
+                _ => error!("unimpl for ctrl: {}", value),
+            },
             "alt" => {
                 info!("alt pressed (unimplemented)");
             }
@@ -139,6 +144,4 @@ impl Tool for Texture {
         }
         Ok(())
     }
-
-
 }

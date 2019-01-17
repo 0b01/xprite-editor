@@ -1,3 +1,3 @@
 mod quilt;
 
-pub use self::quilt::{QuilterParams, Quilter};
+pub use self::quilt::{Quilter, QuilterParams};

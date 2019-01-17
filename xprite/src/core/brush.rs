@@ -13,10 +13,7 @@ impl BrushType {
             BrushType::Cross => "+",
         }
     }
-    pub const VARIANTS: [BrushType; 2] = [
-        BrushType::Pixel,
-        BrushType::Cross,
-    ];
+    pub const VARIANTS: [BrushType; 2] = [BrushType::Pixel, BrushType::Cross];
 }
 
 #[derive(Debug)]
@@ -29,7 +26,7 @@ pub struct Brush {
 impl Brush {
     pub fn pixel() -> Self {
         let mut pxs = Pixels::new();
-        pxs.push(pixel!(0., 0.,Color::red()));
+        pxs.push(pixel!(0., 0., Color::red()));
 
         Self {
             shape: pxs,
@@ -55,24 +52,29 @@ impl Brush {
 
     pub fn follow_stroke(&self, stroke: &Pixels) -> Option<Pixels> {
         let mut ret = Pixels::new();
-        for Pixel{point, ..} in &stroke.0 {
+        for Pixel { point, .. } in &stroke.0 {
             if let Some(pixs) = self.to_canvas_pixels(*point, Color::red()) {
                 ret.extend(&pixs);
             }
         }
-        return Some(ret)
+        return Some(ret);
     }
 
     /// convert brush shape to actual pixel on canvas
     pub fn to_canvas_pixels(&self, cursor: Vec2f, color: Color) -> Option<Pixels> {
-        let Vec2f {x, y} = cursor;
+        let Vec2f { x, y } = cursor;
         let (offset_x, offset_y) = self.offset;
-        let ret: Vec<Pixel> = self.shape.iter().map(
-            |Pixel {point,..}| Pixel {
-                point: Vec2f{x: point.x+x + offset_x, y: point.y+y + offset_y},
+        let ret: Vec<Pixel> = self
+            .shape
+            .iter()
+            .map(|Pixel { point, .. }| Pixel {
+                point: Vec2f {
+                    x: point.x + x + offset_x,
+                    y: point.y + y + offset_y,
+                },
                 color: color,
-            }
-        ).collect();
+            })
+            .collect();
         Some(Pixels::from_slice(&ret))
     }
 }

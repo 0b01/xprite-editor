@@ -40,7 +40,6 @@ impl Vector {
 }
 
 impl Tool for Vector {
-
     fn tool_type(&self) -> ToolType {
         ToolType::Vector
     }
@@ -52,18 +51,23 @@ impl Tool for Vector {
 
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // update cursor pos
-        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
+        let pixels = self
+            .brush
+            .to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.cursor_pos = Some(Pixel{point, color});
+        self.cursor_pos = Some(Pixel { point, color });
 
         if self.is_mouse_down.is_none() || pixels.is_none() {
-            return Ok(())
+            return Ok(());
         }
 
         // the rest handles when left button is pressed
         let p = xpr.canvas.shrink_size_no_floor(p);
-        self.current_polyline.as_mut().ok_or_else(||"cannot borrow as mut")?.push(p);
+        self.current_polyline
+            .as_mut()
+            .ok_or_else(|| "cannot borrow as mut")?
+            .push(p);
 
         // let button = self.is_mouse_down.clone().unwrap();
         // if button == InputItem::Left {
@@ -79,11 +83,14 @@ impl Tool for Vector {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String>{
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
         self.is_mouse_down = Some(button);
 
         let p = xpr.canvas.shrink_size_no_floor(p);
-        self.current_polyline.as_mut().ok_or_else(||"cannot borrow as mut".to_owned())?.push(p);
+        self.current_polyline
+            .as_mut()
+            .ok_or_else(|| "cannot borrow as mut".to_owned())?
+            .push(p);
         // self.pixs_buf.clear();
         // let pixels = self.to_canvas_pixels(xpr, xpr.canvas.shrink_size(p), xpr.color());
         // if let Some(pixels) = pixels {
@@ -97,9 +104,13 @@ impl Tool for Vector {
     }
 
     fn mouse_up(&mut self, _xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
-        if self.is_mouse_down.is_none() {return Ok(()); }
+        if self.is_mouse_down.is_none() {
+            return Ok(());
+        }
         let button = self.is_mouse_down.unwrap();
-        if button == InputItem::Right { return Ok(()); }
+        if button == InputItem::Right {
+            return Ok(());
+        }
 
         // xpr.history.enter()?;
         // // commit pixels
@@ -126,10 +137,12 @@ impl Tool for Vector {
         xpr.new_frame();
         self.set_cursor(xpr);
         self.pixs_buf.clear();
-        if let Ok(simple) = self.current_polyline.as_ref()
-            .ok_or_else(||"cannot borrow as mut".to_owned())?
-            .reumann_witkam(self.tolerence) {
-
+        if let Ok(simple) = self
+            .current_polyline
+            .as_ref()
+            .ok_or_else(|| "cannot borrow as mut".to_owned())?
+            .reumann_witkam(self.tolerence)
+        {
             let (path, pixs_buf) = {
                 let path = simple.interp();
                 let mut rasterized = path.rasterize(xpr, self.sort).unwrap();
@@ -157,13 +170,11 @@ impl Tool for Vector {
                     error!("cannot parse val: {}", value);
                 }
             }
-            "brush" => {
-                match value {
-                    "cross" => self.brush = Brush::cross(),
-                    "pixel" => self.brush = Brush::pixel(),
-                    _ => error!("malformed value: {}", value),
-                }
-            }
+            "brush" => match value {
+                "cross" => self.brush = Brush::cross(),
+                "pixel" => self.brush = Brush::pixel(),
+                _ => error!("malformed value: {}", value),
+            },
             _ => (),
         }
         Ok(())

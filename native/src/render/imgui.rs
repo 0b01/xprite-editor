@@ -1,14 +1,18 @@
-use imgui::*;
-use xprite::rendering::{Renderer, MouseCursorType};
 use crate::image::{self, GenericImageView};
-use glium::{ backend::Facade, Texture2d, texture::{RawImage2d, ClientFormat} };
+use glium::{
+    backend::Facade,
+    texture::{ClientFormat, RawImage2d},
+    Texture2d,
+};
+use imgui::*;
 use std::borrow::Cow;
-use xprite::indexmap::IndexMap;
 use std::f32;
+use xprite::indexmap::IndexMap;
+use xprite::rendering::{MouseCursorType, Renderer};
 
-type DrawListPoint1 = [u32;2];
-type DrawListPoint2 = [u32;2];
-type DrawListColor = [f32;4];
+type DrawListPoint1 = [u32; 2];
+type DrawListPoint2 = [u32; 2];
+type DrawListColor = [f32; 4];
 type DrawListFill = bool;
 
 pub struct ImguiRenderer<'ui> {
@@ -19,7 +23,6 @@ pub struct ImguiRenderer<'ui> {
 }
 
 impl<'ui> Renderer for ImguiRenderer<'ui> {
-
     fn width(&self) -> f32 {
         self.ui.get_window_size().0
     }
@@ -28,15 +31,20 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         self.ui.get_window_size().1
     }
 
-    fn circ(&mut self, p0:[f32;2], r:f32, color:[f32;4], filled: bool) {
+    fn circ(&mut self, p0: [f32; 2], r: f32, color: [f32; 4], filled: bool) {
         let draw_list = self.ui.get_window_draw_list();
-        draw_list
-            .add_circle(p0, r, color)
-            .filled(filled)
-            .build();
+        draw_list.add_circle(p0, r, color).filled(filled).build();
     }
 
-    fn bezier(&mut self, p0:[f32;2], cp1:[f32;2], cp2: [f32;2], p1:[f32;2], color:[f32;4], thickness: f32) {
+    fn bezier(
+        &mut self,
+        p0: [f32; 2],
+        cp1: [f32; 2],
+        cp2: [f32; 2],
+        p1: [f32; 2],
+        color: [f32; 4],
+        thickness: f32,
+    ) {
         let draw_list = self.ui.get_window_draw_list();
         draw_list
             .add_bezier_curve(p0, cp1, cp2, p1, color)
@@ -45,18 +53,14 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
             .build();
     }
 
-    fn rect(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
-        self.draw_list.insert(
-            (canonicalize(p0), canonicalize(p1)),
-            (color, filled)
-        );
+    fn rect(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4], filled: bool) {
+        self.draw_list
+            .insert((canonicalize(p0), canonicalize(p1)), (color, filled));
     }
 
-    fn line(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4]) {
+    fn line(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4]) {
         let draw_list = self.ui.get_window_draw_list();
-        draw_list
-            .add_line(p0, p1, color)
-            .build();
+        draw_list.add_line(p0, p1, color).build();
     }
 
     fn set_mouse_cursor(&mut self, cursor_type: MouseCursorType) {
@@ -86,13 +90,9 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
 
     fn render(&mut self) {
         let imgui_draw_list = self.ui.get_window_draw_list();
-        for ((p0,p1),(color,filled)) in self.draw_list.clone().into_iter() {
+        for ((p0, p1), (color, filled)) in self.draw_list.clone().into_iter() {
             imgui_draw_list
-                .add_rect(
-                    uncanonicalize(p0),
-                    uncanonicalize(p1),
-                    color
-                )
+                .add_rect(uncanonicalize(p0), uncanonicalize(p1), color)
                 .filled(filled)
                 .build();
         }
@@ -113,11 +113,10 @@ impl<'ui> ImguiRenderer<'ui> {
             draw_list,
         }
     }
-
 }
 
 #[inline(always)]
-fn canonicalize(p: [f32;2]) -> [u32;2] {
+fn canonicalize(p: [f32; 2]) -> [u32; 2] {
     unsafe {
         [
             ::std::mem::transmute::<f32, u32>(p[0]),
@@ -127,9 +126,6 @@ fn canonicalize(p: [f32;2]) -> [u32;2] {
 }
 
 #[inline(always)]
-fn uncanonicalize(p: [u32;2]) -> [f32;2] {
-    [
-        f32::from_bits(p[0]),
-        f32::from_bits(p[1]),
-    ]
+fn uncanonicalize(p: [u32; 2]) -> [f32; 2] {
+    [f32::from_bits(p[0]), f32::from_bits(p[1])]
 }

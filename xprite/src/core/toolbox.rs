@@ -1,38 +1,29 @@
 use crate::prelude::*;
 
-use std::rc::Rc;
 use std::cell::RefCell;
+use std::rc::Rc;
 
 use crate::tools::{
-    Tool,
-    pencil::Pencil,
-    line::Line,
-    paint_bucket::PaintBucket,
-    vector::Vector,
-    color_picker::ColorPicker,
-    eraser::Eraser,
-    rect::Rect,
-    texture::Texture,
-    ellipse::Ellipse,
-    marquee::Marquee,
+    color_picker::ColorPicker, ellipse::Ellipse, eraser::Eraser, line::Line, marquee::Marquee,
+    paint_bucket::PaintBucket, pencil::Pencil, rect::Rect, texture::Texture, vector::Vector, Tool,
 };
 
 #[derive(Default, Debug)]
 pub struct Toolbox {
-    pub pencil:         Rc<RefCell<Pencil>>,
-    pub paint_bucket:   Rc<RefCell<PaintBucket>>,
-    pub line:           Rc<RefCell<Line>>,
-    pub vector:         Rc<RefCell<Vector>>,
-    pub color_picker:   Rc<RefCell<ColorPicker>>,
-    pub eraser:         Rc<RefCell<Eraser>>,
-    pub rect:           Rc<RefCell<Rect>>,
-    pub texture:        Rc<RefCell<Texture>>,
-    pub ellipse:        Rc<RefCell<Ellipse>>,
-    pub marquee:        Rc<RefCell<Marquee>>,
+    pub pencil: Rc<RefCell<Pencil>>,
+    pub paint_bucket: Rc<RefCell<PaintBucket>>,
+    pub line: Rc<RefCell<Line>>,
+    pub vector: Rc<RefCell<Vector>>,
+    pub color_picker: Rc<RefCell<ColorPicker>>,
+    pub eraser: Rc<RefCell<Eraser>>,
+    pub rect: Rc<RefCell<Rect>>,
+    pub texture: Rc<RefCell<Texture>>,
+    pub ellipse: Rc<RefCell<Ellipse>>,
+    pub marquee: Rc<RefCell<Marquee>>,
 
-    pub selected:       ToolType,
+    pub selected: ToolType,
 
-    pub tool_stack:     Vec<ToolType>,
+    pub tool_stack: Vec<ToolType>,
 }
 
 impl Toolbox {
@@ -84,7 +75,6 @@ impl Toolbox {
             Ellipse | FilledEllipse => self.ellipse.clone(),
             Texture => self.texture.clone(),
             Marquee => self.marquee.clone(),
-
         }
     }
 
@@ -93,15 +83,27 @@ impl Toolbox {
         self.tool_stack.push(self.selected);
         let tool = match tool {
             Rect => match self.selected {
-                Rect => { self.rect.borrow_mut().filled = true; FilledRect }
-                FilledRect => { self.rect.borrow_mut().filled = false; Rect }
-                _ => Rect
-            }
+                Rect => {
+                    self.rect.borrow_mut().filled = true;
+                    FilledRect
+                }
+                FilledRect => {
+                    self.rect.borrow_mut().filled = false;
+                    Rect
+                }
+                _ => Rect,
+            },
             Ellipse => match self.selected {
-                Ellipse =>  {self.rect.borrow_mut().filled = true; FilledEllipse }
-                FilledEllipse => { self.rect.borrow_mut().filled = false; Ellipse }
-                _ => Ellipse
-            }
+                Ellipse => {
+                    self.rect.borrow_mut().filled = true;
+                    FilledEllipse
+                }
+                FilledEllipse => {
+                    self.rect.borrow_mut().filled = false;
+                    Ellipse
+                }
+                _ => Ellipse,
+            },
             _ => tool,
         };
         self.selected = tool.clone();

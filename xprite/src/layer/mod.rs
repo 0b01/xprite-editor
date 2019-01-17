@@ -1,8 +1,8 @@
 pub mod layers;
 
+pub use self::layers::Layers;
 use crate::prelude::*;
 use crate::rendering::Renderer;
-pub use self::layers::Layers;
 
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Layer {
@@ -42,16 +42,16 @@ impl Layer {
     }
 
     pub fn get_color(&self, p: Vec2f) -> Option<Color> {
-        self.content.iter()
-            .find(|i| i.point == p)
-            .map(|i| i.color)
+        self.content.iter().find(|i| i.point == p).map(|i| i.color)
     }
 
     pub fn draw(&self, rdr: &mut Renderer) {
-        for &Pixel{point, color} in self.content.iter() {
-            let Vec2f {x, y} = point;
-            if oob(x, y, rdr.width(), rdr.height()) {continue;}
-            rdr.rect([x,y],[x+1.,y+1.],color.into(), true);
+        for &Pixel { point, color } in self.content.iter() {
+            let Vec2f { x, y } = point;
+            if oob(x, y, rdr.width(), rdr.height()) {
+                continue;
+            }
+            rdr.rect([x, y], [x + 1., y + 1.], color.into(), true);
         }
     }
 }

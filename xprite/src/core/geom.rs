@@ -1,6 +1,6 @@
 use crate::prelude::*;
-use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
+use std::hash::{Hash, Hasher};
 
 /// represents a 2D vector
 #[cfg_attr(feature = "python-scripting", pyclass)]
@@ -32,11 +32,9 @@ impl Eq for Vec2f {}
 
 impl PartialEq for Vec2f {
     fn eq(&self, other: &Vec2f) -> bool {
-        (self.x as i32 == other.x as i32) &&
-        (self.y as i32 == other.y as i32)
+        (self.x as i32 == other.x as i32) && (self.y as i32 == other.y as i32)
     }
 }
-
 
 impl Hash for Vec2f {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -45,12 +43,11 @@ impl Hash for Vec2f {
     }
 }
 
-impl From<Vec2f> for [f32;2] {
+impl From<Vec2f> for [f32; 2] {
     fn from(p: Vec2f) -> Self {
         [p.x, p.y]
     }
 }
-
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct CubicBezierSegment {
@@ -68,17 +65,17 @@ impl CubicBezierSegment {
         let one_t2 = one_t * one_t;
         let one_t3 = one_t2 * one_t;
 
-        let x = self.from.x * one_t3 +
-            self.ctrl1.x * 3. * one_t2 * t +
-            self.ctrl2.x * 3. * one_t * t2 +
-            self.to.x * t3;
+        let x = self.from.x * one_t3
+            + self.ctrl1.x * 3. * one_t2 * t
+            + self.ctrl2.x * 3. * one_t * t2
+            + self.to.x * t3;
 
-        let y = self.from.y * one_t3 +
-            self.ctrl1.y * 3. * one_t2 * t +
-            self.ctrl2.y * 3. * one_t * t2 +
-            self.to.y * t3;
+        let y = self.from.y * one_t3
+            + self.ctrl1.y * 3. * one_t2 * t
+            + self.ctrl2.y * 3. * one_t * t2
+            + self.to.y * t3;
 
-        Vec2f{x,y}
+        Vec2f { x, y }
     }
 
     /// rasterize a single bezier curve by sampling
@@ -95,7 +92,7 @@ impl CubicBezierSegment {
             let step = (stop - start) / n_steps as f32;
             for _ in 0..n_steps {
                 let point = self.sample(t);
-                let Vec2f {x, y} = Canvas::snap(point);
+                let Vec2f { x, y } = Canvas::snap(point);
                 let pixel = pixel!(y, x, Color::red());
                 // don't allow duplicate pixels
                 if !monotone_seg.contains(&pixel) {
@@ -118,35 +115,35 @@ impl CubicBezierSegment {
         // https://github.com/Pomax/bezierjs/blob/gh-pages/lib/bezier.js#L470
 
         let dims = vec![0, 1];
-        let mut result = vec![
-            vec![],
-            vec![],
-        ];
+        let mut result = vec![vec![], vec![]];
 
         let mut roots = Vec::new();
 
-        let points = vec![
-            self.from,
-            self.ctrl1,
-            self.ctrl2,
-            self.to,
-        ];
+        let points = vec![self.from, self.ctrl1, self.ctrl2, self.to];
 
         let dpoints = derive(points);
 
         for &dim in &dims {
             let mfn = |point: &Vec2f| {
-                if dim == 0 { point.x } else { point.y }
+                if dim == 0 {
+                    point.x
+                } else {
+                    point.y
+                }
             };
             let p: Vec<f32> = dpoints[0].iter().map(mfn).collect();
             result[dim] = droots(&p);
             let p: Vec<f32> = dpoints[1].iter().map(mfn).collect();
             result[dim].extend(droots(&p));
-            result[dim] = result[dim].iter().filter(|&t| *t >= 0. && *t <= 1.).cloned().collect();
+            result[dim] = result[dim]
+                .iter()
+                .filter(|&t| *t >= 0. && *t <= 1.)
+                .cloned()
+                .collect();
             result[dim].sort_by(|a: &f32, b: &f32| a.partial_cmp(b).unwrap());
             roots.extend(&result[dim]);
-        };
-        roots.sort_by(|a:&f32, b| a.partial_cmp(b).unwrap());
+        }
+        roots.sort_by(|a: &f32, b| a.partial_cmp(b).unwrap());
         return roots;
     }
 }
@@ -160,11 +157,11 @@ fn derive(points: Vec<Vec2f>) -> Vec<Vec<Vec2f>> {
     while d > 1 {
         let mut list = vec![];
         for j in 0..c {
-          let dpt = Vec2f{
-            x: c as f32 * (p[j + 1].x - p[j].x),
-            y: c as f32 * (p[j + 1].y - p[j].y)
-          };
-          list.push(dpt);
+            let dpt = Vec2f {
+                x: c as f32 * (p[j + 1].x - p[j].x),
+                y: c as f32 * (p[j + 1].y - p[j].y),
+            };
+            list.push(dpt);
         }
         dpoints.push(list.clone());
         p = list;
@@ -202,13 +199,15 @@ fn droots(p: &[f32]) -> Vec<f32> {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
 
     macro_rules! vec2f {
         ($y:expr, $x: expr) => {
-            Vec2f{ y:($y) as f32, x:($x) as f32}
+            Vec2f {
+                y: ($y) as f32,
+                x: ($x) as f32,
+            }
         };
     }
 
@@ -224,10 +223,6 @@ mod tests {
         };
 
         let ex = seg.extrema();
-        assert_eq!(vec![
-            0.29352384841237594,
-            0.39285714285714285,
-            0.76,
-        ], ex);
+        assert_eq!(vec![0.29352384841237594, 0.39285714285714285, 0.76,], ex);
     }
 }

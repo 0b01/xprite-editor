@@ -2,7 +2,9 @@ use crate::prelude::*;
 use hex;
 
 #[cfg_attr(feature = "python-scripting", pyclass)]
-#[derive(Debug, Hash, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize, Default)]
+#[derive(
+    Debug, Hash, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize, Default,
+)]
 pub struct Color {
     pub r: u8,
     pub g: u8,
@@ -23,30 +25,20 @@ impl<'a> pyo3::FromPyObject<'a> for Color {
     }
 }
 
-
 impl ToString for Color {
     fn to_string(&self) -> String {
-        format!("rgba({}, {}, {}, {})",
-            self.r,
-            self.g,
-            self.b,
-            self.a,
-        )
+        format!("rgba({}, {}, {}, {})", self.r, self.g, self.b, self.a,)
     }
 }
 
-impl From<Color> for (i32,i32,i32,i32) {
+impl From<Color> for (i32, i32, i32, i32) {
     fn from(c: Color) -> Self {
-        (c.r as i32,
-         c.g as i32,
-         c.b as i32,
-         c.a as i32,
-        )
+        (c.r as i32, c.g as i32, c.b as i32, c.a as i32)
     }
 }
 
-impl From<(i32,i32,i32,i32)> for Color {
-    fn from(c: (i32,i32,i32,i32)) -> Self {
+impl From<(i32, i32, i32, i32)> for Color {
+    fn from(c: (i32, i32, i32, i32)) -> Self {
         Color {
             r: c.0 as u8,
             g: c.1 as u8,
@@ -59,22 +51,23 @@ impl From<(i32,i32,i32,i32)> for Color {
 /// [f32;4] = [0.,0.,0.,0.9];
 impl From<Color> for [f32; 4] {
     fn from(c: Color) -> Self {
-        [c.r as f32 / 255.,
-         c.g as f32 / 255.,
-         c.b as f32 / 255.,
-         c.a as f32/ 255.,
+        [
+            c.r as f32 / 255.,
+            c.g as f32 / 255.,
+            c.b as f32 / 255.,
+            c.a as f32 / 255.,
         ]
     }
 }
 
 /// [f32;4] = [0.,0.,0.,0.9];
-impl From<[f32;4]> for Color {
-    fn from(c: [f32;4]) -> Self {
+impl From<[f32; 4]> for Color {
+    fn from(c: [f32; 4]) -> Self {
         Color {
-            r: (c[0]*255.).floor() as u8,
-            g: (c[1]*255.).floor() as u8,
-            b: (c[2]*255.).floor() as u8,
-            a: (c[3]*255.).floor() as u8,
+            r: (c[0] * 255.).floor() as u8,
+            g: (c[1] * 255.).floor() as u8,
+            b: (c[2] * 255.).floor() as u8,
+            a: (c[3] * 255.).floor() as u8,
         }
     }
 }
@@ -91,10 +84,8 @@ impl From<img::Rgba<u8>> for Color {
 }
 
 impl Color {
-    pub fn new(r:u8, g:u8, b:u8) -> Self {
-        Color {
-            r, g, b, a:255,
-        }
+    pub fn new(r: u8, g: u8, b: u8) -> Self {
+        Color { r, g, b, a: 255 }
     }
 
     pub fn from_hex(col: &str) -> Result<Self, hex::FromHexError> {
@@ -106,44 +97,64 @@ impl Color {
 
     pub fn red() -> Color {
         Color {
-            r: 255, g: 0, b: 0, a: 255,
+            r: 255,
+            g: 0,
+            b: 0,
+            a: 255,
         }
     }
 
     pub fn green() -> Color {
         Color {
-            r: 0, g: 255, b: 0, a: 255,
+            r: 0,
+            g: 255,
+            b: 0,
+            a: 255,
         }
     }
 
     pub fn blue() -> Color {
         Color {
-            r: 0, g: 0, b: 255, a: 255,
+            r: 0,
+            g: 0,
+            b: 255,
+            a: 255,
         }
     }
 
     pub fn black() -> Color {
         Color {
-            r: 0, g: 0, b: 0, a: 255,
+            r: 0,
+            g: 0,
+            b: 0,
+            a: 255,
         }
     }
 
     pub fn orange() -> Color {
         Color {
-            r: 255, g: 128, b: 0, a: 255,
+            r: 255,
+            g: 128,
+            b: 0,
+            a: 255,
         }
     }
 
     pub fn grey() -> Color {
         Color {
-            r: 1, g: 1, b: 1, a: 255,
+            r: 1,
+            g: 1,
+            b: 1,
+            a: 255,
         }
     }
 
     pub fn transparent() -> Color {
         Color {
-            r: 0, g: 0, b: 0, a: 0,
+            r: 0,
+            g: 0,
+            b: 0,
+            a: 0,
         }
     }
-
 }

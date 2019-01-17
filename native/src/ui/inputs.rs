@@ -64,16 +64,14 @@ macro_rules! handle_error {
 }
 
 pub fn bind_input(state: &mut State, ui: &Ui) {
-    use self::InputItem::*;
     use self::InputEvent::*;
+    use self::InputItem::*;
 
     let wheel_delta = ui.imgui().mouse_wheel();
     let (x, y) = ui.imgui().mouse_pos();
 
-    if (state.xpr.last_mouse_pos.0 != x || state.xpr.last_mouse_pos.1 != y)
-    && !state.inputs.space
-    {
-        handle_error!(state.xpr.mouse_move(&MouseMove{ x, y }));
+    if (state.xpr.last_mouse_pos.0 != x || state.xpr.last_mouse_pos.1 != y) && !state.inputs.space {
+        handle_error!(state.xpr.mouse_move(&MouseMove { x, y }));
     }
 
     let left = ui.imgui().is_mouse_down(ImMouseButton::Left);
@@ -86,11 +84,9 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     // middle key for scrolling
-    if using_window &&
-        (
-           ui.imgui().is_mouse_dragging(ImMouseButton::Middle)
-        || (state.inputs.space && state.inputs.left)
-        )
+    if using_window
+        && (ui.imgui().is_mouse_dragging(ImMouseButton::Middle)
+            || (state.inputs.space && state.inputs.left))
     {
         // set cursor
         ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Hand);
@@ -110,15 +106,17 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     // left
-    if state.inputs.debounce(InputItem::Left, left)
-    && using_window
-    && !state.inputs.space {
+    if state.inputs.debounce(InputItem::Left, left) && using_window && !state.inputs.space {
         if left {
             trace!("mouse left down");
-            handle_error!(state.xpr.event(&MouseDown{ x, y, button: Left }));
+            handle_error!(state.xpr.event(&MouseDown { x, y, button: Left }));
         } else {
             trace!("mouse left up");
-            handle_error!(state.xpr.event(&MouseUp{ x, y, button: Right }));
+            handle_error!(state.xpr.event(&MouseUp {
+                x,
+                y,
+                button: Right
+            }));
         }
     }
 
@@ -126,10 +124,18 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     if state.inputs.debounce(InputItem::Right, right) && using_window {
         if right {
             let (x, y) = ui.imgui().mouse_pos();
-            handle_error!(state.xpr.event(&MouseDown{ x, y, button: Right }));
+            handle_error!(state.xpr.event(&MouseDown {
+                x,
+                y,
+                button: Right
+            }));
         } else {
             trace!("mouse right up");
-            handle_error!(state.xpr.event(&MouseUp{ x, y, button: Right }));
+            handle_error!(state.xpr.event(&MouseUp {
+                x,
+                y,
+                button: Right
+            }));
         }
     }
 
@@ -137,38 +143,31 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         ($boolval: expr, $key_upper: ident) => {
             if state.inputs.debounce(InputItem::$key_upper, $boolval) {
                 if $boolval {
-                    handle_error!(state.xpr.event(&KeyDown{ key: $key_upper }));
+                    handle_error!(state.xpr.event(&KeyDown { key: $key_upper }));
                     handle_error!({
-                        let bind = state.hotkeys
-                            .lookup(
-                                Action::$key_upper(
-                                    state.inputs.ctrl,
-                                    state.inputs.shift,
-                                    state.inputs.alt,
-                                    true,
-                                ),
-                            );
+                        let bind = state.hotkeys.lookup(Action::$key_upper(
+                            state.inputs.ctrl,
+                            state.inputs.shift,
+                            state.inputs.alt,
+                            true,
+                        ));
                         execute(bind, state, ui)
-                        });
+                    });
                 } else {
-                    handle_error!(state.xpr.event(&KeyUp{ key: $key_upper }));
+                    handle_error!(state.xpr.event(&KeyUp { key: $key_upper }));
                     handle_error!({
-                        let bind = state.hotkeys
-                        .lookup(
-                            Action::$key_upper(
-                                state.inputs.ctrl,
-                                state.inputs.shift,
-                                state.inputs.alt,
-                                false,
-                            ),
-                        );
+                        let bind = state.hotkeys.lookup(Action::$key_upper(
+                            state.inputs.ctrl,
+                            state.inputs.shift,
+                            state.inputs.alt,
+                            false,
+                        ));
                         execute(bind, state, ui)
                     });
                 }
             }
         };
     }
-
 
     let is_ctrl = ui.imgui().key_ctrl();
     handle_input!(is_ctrl, Ctrl);
@@ -189,9 +188,8 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     expand_handle_input!(
-        A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V,
-        W, X, Y, Z, Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9,
-        Return, Space, Grave
+        A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Key0, Key1,
+        Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9, Return, Space, Grave
     );
 
     // for i in 0..512 {
@@ -210,29 +208,25 @@ pub fn execute(bind: Bind, state: &mut State, _ui: &Ui) -> Result<(), String> {
         Undo => state.xpr.undo(),
         PushTool(tool) => state.xpr.change_tool(tool)?,
         PopTool => state.xpr.toolbox.pop_tool(),
-        ToggleConsole => {state.show_console = !state.show_console;}
+        ToggleConsole => {
+            state.show_console = !state.show_console;
+        }
 
         LoadXPR => state.load_xpr("1.xpr"),
         SaveXPR => state.save_xpr("1.xpr"),
         LoadPNG => state.load_png("1.png"),
         SavePNG => state.save_png("1.png"),
 
-        RunScript => {
-            #[cfg(feature = "dyon-scripting")]
-            {
-                let path = state.script_fname
-                    .clone()
-                    .unwrap_or_else( ||
-                        "/home/g/Desktop/xprite/scripts/render.dyon"
-                        .to_owned()
-                    );
-                state.xpr.execute_dyon_script(&path).unwrap_or_else(
-                    |msg| {
-                        error!("{}", msg);
-                        state.xpr.log.lock().unwrap().push_str(&msg);
-                    }
-                );
-            }
+        RunScript => #[cfg(feature = "dyon-scripting")]
+        {
+            let path = state
+                .script_fname
+                .clone()
+                .unwrap_or_else(|| "/home/g/Desktop/xprite/scripts/render.dyon".to_owned());
+            state.xpr.execute_dyon_script(&path).unwrap_or_else(|msg| {
+                error!("{}", msg);
+                state.xpr.log.lock().unwrap().push_str(&msg);
+            });
         }
         Unmapped => (),
     }

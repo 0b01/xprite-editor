@@ -50,11 +50,9 @@ impl Eraser {
         self.update_buffer = Some(stroke);
         Ok(())
     }
-
 }
 
 impl Tool for Eraser {
-
     fn tool_type(&self) -> ToolType {
         ToolType::Eraser
     }
@@ -65,15 +63,17 @@ impl Tool for Eraser {
     }
 
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
-        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
+        let pixels = self
+            .brush
+            .to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         self.cursor = pixels.clone();
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.cursor_pos = Some(Pixel{point, color});
+        self.cursor_pos = Some(Pixel { point, color });
 
         // if mouse is done
         if self.is_mouse_down.is_none() || pixels.is_none() {
-            return Ok(())
+            return Ok(());
         }
 
         self.current_polyline.push(p);
@@ -88,11 +88,13 @@ impl Tool for Eraser {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String>{
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
         self.is_mouse_down = Some(button);
         self.current_polyline.push(p);
 
-        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
+        let pixels = self
+            .brush
+            .to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         if let Some(pixels) = pixels {
             if button == InputItem::Left {
                 self.draw_buffer.extend(&pixels);
@@ -104,16 +106,19 @@ impl Tool for Eraser {
     }
 
     fn mouse_up(&mut self, xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
-        if self.is_mouse_down.is_none() {return Ok(()); }
+        if self.is_mouse_down.is_none() {
+            return Ok(());
+        }
         let button = self.is_mouse_down.unwrap();
-        if button == InputItem::Right { return Ok(()); }
+        if button == InputItem::Right {
+            return Ok(());
+        }
         self.finalize(xpr)?;
         self.current_polyline.clear();
         self.draw_buffer.clear();
         self.is_mouse_down = None;
         Ok(())
     }
-
 
     fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         if let Some(pixs) = &self.update_buffer {
@@ -147,15 +152,12 @@ impl Tool for Eraser {
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
-            "mode" => {
-            }
-            "brush" => {
-                match value {
-                    "+" => self.brush = Brush::cross(),
-                    "." => self.brush = Brush::pixel(),
-                    _ => error!("malformed value: {}", value),
-                }
-            }
+            "mode" => {}
+            "brush" => match value {
+                "+" => self.brush = Brush::cross(),
+                "." => self.brush = Brush::pixel(),
+                _ => error!("malformed value: {}", value),
+            },
             _ => (),
         }
         Ok(())

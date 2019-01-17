@@ -59,7 +59,6 @@ impl Default for Pencil {
     }
 }
 
-
 impl Pencil {
     pub fn new() -> Self {
         let is_mouse_down = None;
@@ -99,9 +98,7 @@ impl Pencil {
     pub fn finalize(&mut self, xpr: &Xprite) -> Result<(), String> {
         use self::PencilMode::*;
         let mut buf = match self.mode {
-            Raw => {
-                self.draw_stroke(xpr)?
-            }
+            Raw => self.draw_stroke(xpr)?,
             PixelPerfect => {
                 // if mousedown w/o move
                 if !self.moved {
@@ -126,11 +123,9 @@ impl Pencil {
         self.update_buffer = Some(buf);
         Ok(())
     }
-
 }
 
 impl Tool for Pencil {
-
     fn tool_type(&self) -> ToolType {
         ToolType::Pencil
     }
@@ -140,11 +135,11 @@ impl Tool for Pencil {
         let pixels = self.brush.to_canvas_pixels(point, xpr.color());
         self.cursor = pixels.clone();
         let color = xpr.color();
-        self.cursor_pos = Some(Pixel{point, color});
+        self.cursor_pos = Some(Pixel { point, color });
 
         // if mouse is done
         if self.is_mouse_down.is_none() || pixels.is_none() {
-            return Ok(())
+            return Ok(());
         }
         self.moved = true;
         self.current_polyline.push(p);
@@ -155,11 +150,13 @@ impl Tool for Pencil {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String>{
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
         self.is_mouse_down = Some(button);
 
         self.current_polyline.push(p);
-        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
+        let pixels = self
+            .brush
+            .to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         // TODO:
         if let Some(pixels) = pixels {
             if button == InputItem::Left {
@@ -172,9 +169,13 @@ impl Tool for Pencil {
     }
 
     fn mouse_up(&mut self, xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
-        if self.is_mouse_down.is_none() {return Ok(()); }
+        if self.is_mouse_down.is_none() {
+            return Ok(());
+        }
         let button = self.is_mouse_down.unwrap();
-        if button == InputItem::Right { return Ok(()); }
+        if button == InputItem::Right {
+            return Ok(());
+        }
 
         self.finalize(xpr)?;
 
@@ -194,7 +195,7 @@ impl Tool for Pencil {
         if let Some(pixs) = &self.update_buffer {
             xpr.history.enter()?;
             xpr.current_layer_mut()
-                .ok_or_else(||"Layer doesn't exist.".to_owned())?
+                .ok_or_else(|| "Layer doesn't exist.".to_owned())?
                 .content
                 .extend(pixs);
         }
@@ -214,19 +215,17 @@ impl Tool for Pencil {
             "mode" => {
                 use self::PencilMode::*;
                 match PencilMode::from_str(value) {
-                    Ok(Raw)             => self.mode = Raw,
+                    Ok(Raw) => self.mode = Raw,
                     Ok(SortedMonotonic) => self.mode = SortedMonotonic,
-                    Ok(PixelPerfect)    => self.mode = PixelPerfect,
+                    Ok(PixelPerfect) => self.mode = PixelPerfect,
                     _ => (),
                 };
             }
-            "brush" => {
-                match value {
-                    "+" => self.brush = Brush::cross(),
-                    "." => self.brush = Brush::pixel(),
-                    _ => error!("malformed value: {}", value),
-                }
-            }
+            "brush" => match value {
+                "+" => self.brush = Brush::cross(),
+                "." => self.brush = Brush::pixel(),
+                _ => error!("malformed value: {}", value),
+            },
             _ => (),
         }
         Ok(())

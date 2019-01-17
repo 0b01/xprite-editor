@@ -1,8 +1,8 @@
 use crate::prelude::*;
-use xprite::rendering::{Renderer, MouseCursorType};
-use cairo::{ImageSurface, Context, Format};
-use xprite::image::{ImageBuffer, DynamicImage, Rgba};
+use cairo::{Context, Format, ImageSurface};
 use std::mem;
+use xprite::image::{DynamicImage, ImageBuffer, Rgba};
+use xprite::rendering::{MouseCursorType, Renderer};
 
 #[allow(unused)]
 pub struct CairoRenderer {
@@ -15,7 +15,6 @@ pub struct CairoRenderer {
 
 #[allow(unused)]
 impl Renderer for CairoRenderer {
-
     fn width(&self) -> f32 {
         self.w
     }
@@ -24,7 +23,7 @@ impl Renderer for CairoRenderer {
         self.h
     }
 
-    fn circ(&mut self, p0:[f32;2], r:f32, color:[f32;4], filled: bool) {
+    fn circ(&mut self, p0: [f32; 2], r: f32, color: [f32; 4], filled: bool) {
         // let draw_list = self.ui.get_window_draw_list();
         // draw_list
         //     .add_circle(p0, r, color)
@@ -32,7 +31,15 @@ impl Renderer for CairoRenderer {
         //     .build();
     }
 
-    fn bezier(&mut self, p0:[f32;2], cp1:[f32;2], cp2: [f32;2], p1:[f32;2], color:[f32;4], thickness: f32) {
+    fn bezier(
+        &mut self,
+        p0: [f32; 2],
+        cp1: [f32; 2],
+        cp2: [f32; 2],
+        p1: [f32; 2],
+        color: [f32; 4],
+        thickness: f32,
+    ) {
         // let draw_list = self.ui.get_window_draw_list();
         // draw_list
         //     .add_bezier_curve(p0, cp1, cp2, p1, color)
@@ -41,22 +48,20 @@ impl Renderer for CairoRenderer {
         //     .build();
     }
 
-
-    fn rect(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
+    fn rect(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4], filled: bool) {
         self.cr.as_ref().unwrap().set_source_rgba(
             f64::from(color[0]),
             f64::from(color[1]),
             f64::from(color[2]),
-            f64::from(color[3])
+            f64::from(color[3]),
         );
         self.cr.as_ref().unwrap().rectangle(
             f64::from(p0[0]),
             f64::from(p0[1]),
             f64::from(p1[0] - p0[0]),
-            f64::from(p1[1] - p0[1])
+            f64::from(p1[1] - p0[1]),
         );
         self.cr.as_ref().unwrap().fill();
-
 
         // let draw_list = self.ui.get_window_draw_list();
         // draw_list
@@ -65,7 +70,7 @@ impl Renderer for CairoRenderer {
         //     .build();
     }
 
-    fn line(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4]) {
+    fn line(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4]) {
         // let draw_list = self.ui.get_window_draw_list();
         // draw_list
         //     .add_line(p0, p1, color)
@@ -80,16 +85,20 @@ impl Renderer for CairoRenderer {
     }
 
     fn render(&mut self) {
-        let w = self.width() ;
+        let w = self.width();
         let h = self.height();
-        if self.w != w || self.h != h { return }
+        if self.w != w || self.h != h {
+            return;
+        }
 
         // drop cairo context which contains a reference to surface
         self.cr = None;
         let data = self.surface.get_data().expect("Cannot get data"); // ARGB
         let im = DynamicImage::ImageRgba8({
             let mut vec32: Vec<_> = unsafe { mem::transmute::<&[u8], &[u32]>(&*data) }
-                .iter().map(|&i|argb2rgba(i)).collect();
+                .iter()
+                .map(|&i| argb2rgba(i))
+                .collect();
             let vec8 = unsafe {
                 let ratio = mem::size_of::<u32>() / mem::size_of::<u8>();
                 let length = vec32.len() * ratio;
@@ -108,10 +117,7 @@ impl Renderer for CairoRenderer {
 
 #[inline(always)]
 fn argb2rgba(i: u32) -> u32 {
-     (i & 0xFF00_0000)        |
-    ((i & 0x00FF_0000) >> 16) |
-     (i & 0x0000_FF00)        |
-    ((i & 0x0000_00FF) << 16)
+    (i & 0xFF00_0000) | ((i & 0x00FF_0000) >> 16) | (i & 0x0000_FF00) | ((i & 0x0000_00FF) << 16)
 }
 
 #[allow(unused)]
@@ -120,7 +126,8 @@ impl CairoRenderer {
         let w = art_w;
         let h = art_h;
 
-        let surface = ImageSurface::create(Format::ARgb32, w as i32, h as i32).expect("Cannot create surface.");
+        let surface = ImageSurface::create(Format::ARgb32, w as i32, h as i32)
+            .expect("Cannot create surface.");
         let cr = Context::new(&surface);
         // cr.set_source_rgb(1.0, 0.0, 1.0);
         // cr.paint();

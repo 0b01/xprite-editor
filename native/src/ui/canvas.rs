@@ -1,25 +1,31 @@
 use crate::prelude::*;
-use xprite::rendering::Renderer;
 use imgui::ImGuiWindowFlags;
+use xprite::rendering::Renderer;
 
 pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
     ui.window(im_str!("canvas"))
         .position((LEFT_SIDE_WIDTH, 20.0), ImGuiCond::Always)
-        .size((sz.0 as f32 - RIGHT_SIDE_WIDTH - LEFT_SIDE_WIDTH, sz.1 as f32 - 20.), ImGuiCond::Always)
+        .size(
+            (
+                sz.0 as f32 - RIGHT_SIDE_WIDTH - LEFT_SIDE_WIDTH,
+                sz.1 as f32 - 20.,
+            ),
+            ImGuiCond::Always,
+        )
         .flags(
-            ImGuiWindowFlags::NoBringToFrontOnFocus |
-            ImGuiWindowFlags::NoTitleBar |
-            ImGuiWindowFlags::NoResize |
-            ImGuiWindowFlags::NoMove |
-            ImGuiWindowFlags::NoCollapse
+            ImGuiWindowFlags::NoBringToFrontOnFocus
+                | ImGuiWindowFlags::NoTitleBar
+                | ImGuiWindowFlags::NoResize
+                | ImGuiWindowFlags::NoMove
+                | ImGuiWindowFlags::NoCollapse,
         )
         .build(|| {
             let styles = [
                 StyleVar::FramePadding(ImVec2::new(-1., -1.)),
                 StyleVar::WindowPadding(ImVec2::new(-1., -1.)),
             ];
-            let colors = [ (ImGuiCol::ChildBg, BACKGROUND) ];
+            let colors = [(ImGuiCol::ChildBg, BACKGROUND)];
             ui.with_style_and_color_vars(&styles, &colors, || {
                 let win_sz = ui.get_window_size();
                 let child_frame_sz = (win_sz.0, win_sz.1);
@@ -41,11 +47,11 @@ pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
 
             // checkbox for show grid
             ui.checkbox(im_str!("grid"), &mut state.xpr.canvas.show_grid);
-            ui.text(
-                im_str!("{}, {}",
+            ui.text(im_str!(
+                "{}, {}",
                 state.xpr.last_mouse_pos.0,
-                state.xpr.last_mouse_pos.1)
-            );
+                state.xpr.last_mouse_pos.1
+            ));
         });
 }
 

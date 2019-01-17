@@ -1,11 +1,11 @@
-use xprite::prelude::*;
 use crate::prelude::*;
-use xprite::rendering::image_renderer::ImageRenderer;
-use xprite::image::GenericImageView;
-use xprite::bincode::{serialize, deserialize};
-use std::io::{BufWriter, Write, BufReader, Read};
 use std::borrow::Cow;
 use std::fs::File;
+use std::io::{BufReader, BufWriter, Read, Write};
+use xprite::bincode::{deserialize, serialize};
+use xprite::image::GenericImageView;
+use xprite::prelude::*;
+use xprite::rendering::image_renderer::ImageRenderer;
 
 pub struct State<'a> {
     pub xpr: Xprite,
@@ -80,5 +80,4 @@ impl<'a> State<'a> {
         let xpr: Xprite = deserialize(&encoded).unwrap();
         self.xpr = xpr;
     }
-
 }

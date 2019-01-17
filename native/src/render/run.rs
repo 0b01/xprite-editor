@@ -1,12 +1,11 @@
-use imgui::*;
 use glium::{
     backend::{Context, Facade},
     Texture2d,
 };
+use imgui::*;
 use imgui_winit_support;
 use std::rc::Rc;
 use std::time::Instant;
-
 
 use crate::ui::inputs::KeyCode;
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
@@ -19,8 +18,8 @@ struct MouseState {
 fn set_style(imgui: &mut ImGui) {
     let mut style = imgui.style_mut();
     style.window_rounding = 2.0;
-    style.frame_rounding  = 1.0;
-    style.grab_rounding   = 2.0;
+    style.frame_rounding = 1.0;
+    style.grab_rounding = 2.0;
     style.scrollbar_rounding = 0.0;
     style.item_spacing.y = 4.5;
     style.frame_border_size = 1.;
@@ -30,50 +29,50 @@ fn set_style(imgui: &mut ImGui) {
     let vals = ImGuiCol::VARIANTS;
     macro_rules! find {
         ($item: ident) => {
-            vals.iter().position(|&i|i==ImGuiCol::$item).unwrap()
+            vals.iter().position(|&i| i == ImGuiCol::$item).unwrap()
         };
     }
 
-    let GREY       = ImVec4::new(0.169, 0.157, 0.184, 1.000);
+    let GREY = ImVec4::new(0.169, 0.157, 0.184, 1.000);
     // let CANVAS_BG  = ImVec4::new(0.114, 0.106, 0.125, 1.000);
     let LIGHT_GREY = ImVec4::new(0.259, 0.251, 0.255, 1.000);
-    let TINT       = ImVec4::new(0.125, 0.118, 0.122, 1.000);
+    let TINT = ImVec4::new(0.125, 0.118, 0.122, 1.000);
 
-    let BORDER     = ImVec4::new(0.086, 0.075, 0.102, 1.000);
+    let BORDER = ImVec4::new(0.086, 0.075, 0.102, 1.000);
     let BORDER_SHD = ImVec4::new(0.082, 0.071, 0.098, 1.000);
 
     // style.colors[find!(Text)]                  = ImVec4::new(0.860, 0.930, 0.890, 0.78);
     // style.colors[find!(TextDisabled)]          = ImVec4::new(0.860, 0.930, 0.890, 0.28);
-    style.colors[find!(WindowBg)]              = GREY;
+    style.colors[find!(WindowBg)] = GREY;
     // style.colors[find!(PopupBg)]               = ImVec4::new(0.200, 0.220, 0.270, 0.90);
 
-    style.colors[find!(Border)]                = BORDER;
-    style.colors[find!(BorderShadow)]          = BORDER_SHD;
+    style.colors[find!(Border)] = BORDER;
+    style.colors[find!(BorderShadow)] = BORDER_SHD;
 
-    style.colors[find!(FrameBg)]               = GREY;
-    style.colors[find!(FrameBgHovered)]        = LIGHT_GREY;
+    style.colors[find!(FrameBg)] = GREY;
+    style.colors[find!(FrameBgHovered)] = LIGHT_GREY;
     // style.colors[find!(FrameBgActive)]         = GREY;
 
-    style.colors[find!(TitleBg)]               = LIGHT_GREY;
-    style.colors[find!(TitleBgActive)]         = LIGHT_GREY;
-    style.colors[find!(TitleBgCollapsed)]      = LIGHT_GREY;
-    style.colors[find!(MenuBarBg)]             = LIGHT_GREY;
+    style.colors[find!(TitleBg)] = LIGHT_GREY;
+    style.colors[find!(TitleBgActive)] = LIGHT_GREY;
+    style.colors[find!(TitleBgCollapsed)] = LIGHT_GREY;
+    style.colors[find!(MenuBarBg)] = LIGHT_GREY;
 
-    style.colors[find!(ScrollbarBg)]           = TINT;
-    style.colors[find!(ScrollbarGrab)]         = LIGHT_GREY;
-    style.colors[find!(ScrollbarGrabHovered)]  = LIGHT_GREY;
-    style.colors[find!(ScrollbarGrabActive)]   = GREY;
+    style.colors[find!(ScrollbarBg)] = TINT;
+    style.colors[find!(ScrollbarGrab)] = LIGHT_GREY;
+    style.colors[find!(ScrollbarGrabHovered)] = LIGHT_GREY;
+    style.colors[find!(ScrollbarGrabActive)] = GREY;
 
     // style.colors[find!(CheckMark)]             = ImVec4::new(0.71, 0.22, 0.27, 1.00);
     // style.colors[find!(SliderGrab)]            = ImVec4::new(0.47, 0.77, 0.83, 0.14);
     // style.colors[find!(SliderGrabActive)]      = ImVec4::new(0.71, 0.22, 0.27, 1.00);
-    style.colors[find!(Button)]                = TINT;
-    style.colors[find!(ButtonHovered)]         = LIGHT_GREY;
+    style.colors[find!(Button)] = TINT;
+    style.colors[find!(ButtonHovered)] = LIGHT_GREY;
     // style.colors[find!(ButtonActive)]          = GREY;
 
-    style.colors[find!(Header)]                = LIGHT_GREY;
-    style.colors[find!(HeaderHovered)]         = ImVec4::new(0.455, 0.198, 0.301, 0.86);
-    style.colors[find!(HeaderActive)]          = ImVec4::new(0.455, 0.198, 0.301, 0.76);
+    style.colors[find!(Header)] = LIGHT_GREY;
+    style.colors[find!(HeaderHovered)] = ImVec4::new(0.455, 0.198, 0.301, 0.86);
+    style.colors[find!(HeaderActive)] = ImVec4::new(0.455, 0.198, 0.301, 0.76);
     // style.colors[find!(ResizeGrip)]            = ImVec4::new(0.47, 0.77, 0.83, 0.04);
     // style.colors[find!(ResizeGripHovered)]     = ImVec4::new(0.455, 0.198, 0.301, 0.78);
     // style.colors[find!(ResizeGripActive)]      = ImVec4::new(0.455, 0.198, 0.301, 1.00);
@@ -82,7 +81,6 @@ fn set_style(imgui: &mut ImGui) {
     // style.colors[find!(PlotHistogramHovered)]  = ImVec4::new(0.455, 0.198, 0.301, 1.00);
     // style.colors[find!(ModalWindowDarkening)]  = ImVec4::new(0.200, 0.220, 0.270, 0.73);
     // style.colors[find!(TextSelectedBg)]        = ImVec4::new(0.455, 0.198, 0.301, 0.43);
-
 }
 
 pub type Textures = imgui::Textures<Texture2d>;
@@ -135,11 +133,7 @@ where
             use glium::glutin::ElementState::Pressed;
             use glium::glutin::WindowEvent::*;
             use glium::glutin::{
-                MouseButton,
-                MouseScrollDelta,
-                TouchPhase,
-                Event,
-                WindowEvent::CloseRequested
+                Event, MouseButton, MouseScrollDelta, TouchPhase, WindowEvent::CloseRequested,
             };
 
             imgui_winit_support::handle_event(
@@ -156,19 +150,19 @@ where
                         use glium::glutin::VirtualKeyCode as Key;
                         let pressed = input.state == Pressed;
                         match input.virtual_keycode {
-                            Some(Key::Tab) =>       imgui.set_key(KeyCode::Tab as u8, pressed),
-                            Some(Key::Left) =>      imgui.set_key(KeyCode::Left as u8, pressed),
-                            Some(Key::Right) =>     imgui.set_key(KeyCode::Right as u8, pressed),
-                            Some(Key::Up) =>        imgui.set_key(KeyCode::Up as u8, pressed),
-                            Some(Key::Down) =>      imgui.set_key(KeyCode::Down as u8, pressed),
-                            Some(Key::PageUp) =>    imgui.set_key(KeyCode::PageUp as u8, pressed),
-                            Some(Key::PageDown) =>  imgui.set_key(KeyCode::PageDown as u8, pressed),
-                            Some(Key::Home) =>      imgui.set_key(KeyCode::Home as u8, pressed),
-                            Some(Key::End) =>       imgui.set_key(KeyCode::End as u8, pressed),
-                            Some(Key::Delete) =>    imgui.set_key(KeyCode::Delete as u8, pressed),
-                            Some(Key::Back) =>      imgui.set_key(KeyCode::Back as u8, pressed),
-                            Some(Key::Return) =>    imgui.set_key(KeyCode::Return as u8, pressed),
-                            Some(Key::Escape) =>    imgui.set_key(KeyCode::Escape as u8, pressed),
+                            Some(Key::Tab) => imgui.set_key(KeyCode::Tab as u8, pressed),
+                            Some(Key::Left) => imgui.set_key(KeyCode::Left as u8, pressed),
+                            Some(Key::Right) => imgui.set_key(KeyCode::Right as u8, pressed),
+                            Some(Key::Up) => imgui.set_key(KeyCode::Up as u8, pressed),
+                            Some(Key::Down) => imgui.set_key(KeyCode::Down as u8, pressed),
+                            Some(Key::PageUp) => imgui.set_key(KeyCode::PageUp as u8, pressed),
+                            Some(Key::PageDown) => imgui.set_key(KeyCode::PageDown as u8, pressed),
+                            Some(Key::Home) => imgui.set_key(KeyCode::Home as u8, pressed),
+                            Some(Key::End) => imgui.set_key(KeyCode::End as u8, pressed),
+                            Some(Key::Delete) => imgui.set_key(KeyCode::Delete as u8, pressed),
+                            Some(Key::Back) => imgui.set_key(KeyCode::Back as u8, pressed),
+                            Some(Key::Return) => imgui.set_key(KeyCode::Return as u8, pressed),
+                            Some(Key::Escape) => imgui.set_key(KeyCode::Escape as u8, pressed),
                             Some(Key::Grave) => imgui.set_key(KeyCode::Grave as u8, pressed),
                             Some(Key::A) => imgui.set_key(KeyCode::A as u8, pressed),
                             Some(Key::B) => imgui.set_key(KeyCode::B as u8, pressed),
@@ -207,7 +201,9 @@ where
                             Some(Key::Key8) => imgui.set_key(KeyCode::Key8 as u8, pressed),
                             Some(Key::Key9) => imgui.set_key(KeyCode::Key9 as u8, pressed),
                             Some(Key::Space) => imgui.set_key(KeyCode::Space as u8, pressed),
-                            Some(Key::LControl) | Some(Key::RControl) => imgui.set_key_ctrl(pressed),
+                            Some(Key::LControl) | Some(Key::RControl) => {
+                                imgui.set_key_ctrl(pressed)
+                            }
                             Some(Key::LShift) | Some(Key::RShift) => imgui.set_key_shift(pressed),
                             Some(Key::LAlt) | Some(Key::RAlt) => imgui.set_key_alt(pressed),
                             Some(Key::LWin) | Some(Key::RWin) => imgui.set_key_super(pressed),

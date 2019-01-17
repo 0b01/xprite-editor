@@ -1,7 +1,41 @@
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum InputItem {
-    A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V,
-    W, X, Y, Z, Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9,
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L,
+    M,
+    N,
+    O,
+    P,
+    Q,
+    R,
+    S,
+    T,
+    U,
+    V,
+    W,
+    X,
+    Y,
+    Z,
+    Key0,
+    Key1,
+    Key2,
+    Key3,
+    Key4,
+    Key5,
+    Key6,
+    Key7,
+    Key8,
+    Key9,
     Ctrl,
     Shift,
     Space,
@@ -15,7 +49,8 @@ pub enum InputItem {
 impl InputItem {
     pub fn as_str(&self) -> &str {
         match &self {
-            InputItem::Ctrl => "ctrl", InputItem::Shift => "shift",
+            InputItem::Ctrl => "ctrl",
+            InputItem::Shift => "shift",
             InputItem::Space => "space",
             InputItem::Alt => "alt",
             InputItem::Left => "left",
@@ -63,31 +98,14 @@ impl InputItem {
     }
 }
 
-
 #[derive(Debug)]
 pub enum InputEvent {
-    MouseMove {
-        x: f32,
-        y: f32,
-    },
-    MouseDown {
-        x: f32,
-        y: f32,
-        button: InputItem,
-    },
-    MouseUp {
-        x: f32,
-        y: f32,
-        button: InputItem,
-    },
-    KeyUp {
-        key: InputItem,
-    },
-    KeyDown {
-        key: InputItem,
-    }
+    MouseMove { x: f32, y: f32 },
+    MouseDown { x: f32, y: f32, button: InputItem },
+    MouseUp { x: f32, y: f32, button: InputItem },
+    KeyUp { key: InputItem },
+    KeyDown { key: InputItem },
 }
-
 
 pub struct InputState {
     pub left: bool,
@@ -189,7 +207,6 @@ impl Default for InputState {
         }
     }
 }
-
 
 impl InputState {
     pub fn debounce(&mut self, item: InputItem, new_state: bool) -> bool {

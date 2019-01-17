@@ -1,5 +1,5 @@
-use crate::prelude::*;
 use crate::algorithms;
+use crate::prelude::*;
 
 #[derive(Clone, Default, Debug)]
 pub struct PaintBucket {
@@ -17,7 +17,12 @@ impl PaintBucket {
         }
     }
 
-    pub fn floodfill(&self, xpr: &Xprite, p: Vec2f, bg_color: Option<Color>) -> Result<Pixels, String> {
+    pub fn floodfill(
+        &self,
+        xpr: &Xprite,
+        p: Vec2f,
+        bg_color: Option<Color>,
+    ) -> Result<Pixels, String> {
         let color = xpr.color();
         let w = xpr.canvas.art_w;
         let h = xpr.canvas.art_h;
@@ -27,11 +32,9 @@ impl PaintBucket {
         // info!{"{:#?}", buffer};
         Ok(buffer)
     }
-
 }
 
 impl Tool for PaintBucket {
-
     fn tool_type(&self) -> ToolType {
         ToolType::PaintBucket
     }
@@ -41,10 +44,12 @@ impl Tool for PaintBucket {
     }
 
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
-        if self.is_mouse_down { return self.mouse_down(xpr, p, InputItem::Left) }
+        if self.is_mouse_down {
+            return self.mouse_down(xpr, p, InputItem::Left);
+        }
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.cursor = Some(pixels!(Pixel {point, color}));
+        self.cursor = Some(pixels!(Pixel { point, color }));
         Ok(())
     }
 
@@ -54,10 +59,12 @@ impl Tool for PaintBucket {
         // reset cursor
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.cursor = Some(pixels!(Pixel {point, color}));
+        self.cursor = Some(pixels!(Pixel { point, color }));
 
         let (w, h) = (xpr.canvas.art_w, xpr.canvas.art_h);
-        if oob(point.x, point.y, w, h) { return Ok(()); }
+        if oob(point.x, point.y, w, h) {
+            return Ok(());
+        }
         let bg_color = xpr.current_layer().unwrap().get_color(point);
         self.buffer = Some(self.floodfill(xpr, point, bg_color)?);
 
@@ -74,7 +81,10 @@ impl Tool for PaintBucket {
             let h = xpr.canvas.art_h;
             algorithms::perimeter::find_perimeter(w as usize, h as usize, &buffer)
         };
-        perim.push(Pixel{point, color: xpr.color()});
+        perim.push(Pixel {
+            point,
+            color: xpr.color(),
+        });
         self.cursor = Some(perim);
         Ok(())
     }
@@ -82,8 +92,10 @@ impl Tool for PaintBucket {
     fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         if let Some(pixs) = &self.buffer {
             xpr.history.enter()?;
-            xpr.history.top_mut()
-                .selected_layer_mut().unwrap()
+            xpr.history
+                .top_mut()
+                .selected_layer_mut()
+                .unwrap()
                 .content
                 .extend(&pixs);
         }

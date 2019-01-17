@@ -1,15 +1,15 @@
 use crate::prelude::*;
 
-pub mod pencil;
-pub mod eraser;
-pub mod vector;
-pub mod line;
-pub mod paint_bucket;
 pub mod color_picker;
-pub mod rect;
 pub mod ellipse;
-pub mod texture;
+pub mod eraser;
+pub mod line;
 pub mod marquee;
+pub mod paint_bucket;
+pub mod pencil;
+pub mod rect;
+pub mod texture;
+pub mod vector;
 
 pub mod traits;
 

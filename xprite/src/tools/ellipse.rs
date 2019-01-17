@@ -1,5 +1,5 @@
-use crate::tools::*;
 use crate::algorithms::ellipse::*;
+use crate::tools::*;
 
 #[derive(Clone, Default, Debug)]
 pub struct Ellipse {
@@ -44,9 +44,9 @@ impl Ellipse {
             };
 
             let begin_pos = if self.symmetric {
-                let x = start.point.x - (end.point.x-start.point.x);
-                let y = start.point.y - (end.point.y-start.point.y);
-                Some(pixel!{x, y, Color::red()})
+                let x = start.point.x - (end.point.x - start.point.x);
+                let y = start.point.y - (end.point.y - start.point.y);
+                Some(pixel! {x, y, Color::red()})
             } else {
                 self.start_pos
             };
@@ -57,7 +57,7 @@ impl Ellipse {
         }
     }
 
-    fn finalize_ellipse(&mut self, xpr: &Xprite) -> Result<(), String>{
+    fn finalize_ellipse(&mut self, xpr: &Xprite) -> Result<(), String> {
         if let Ok(mut pixs) = self.get_ellipse() {
             pixs.set_color(&xpr.color());
             self.buffer = Some(pixs);
@@ -72,11 +72,9 @@ impl Ellipse {
         }
         Ok(())
     }
-
 }
 
 impl Tool for Ellipse {
-
     fn tool_type(&self) -> ToolType {
         ToolType::Ellipse
     }
@@ -90,14 +88,14 @@ impl Tool for Ellipse {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.cursor_pos = Some(Pixel {point, color});
+        self.cursor_pos = Some(Pixel { point, color });
         Ok(())
     }
 
     fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.cursor_pos = Some(Pixel {point, color});
+        self.cursor_pos = Some(Pixel { point, color });
         self.finalize_ellipse(xpr)?;
         self.is_mouse_down = None;
         self.start_pos = None;
@@ -105,11 +103,13 @@ impl Tool for Ellipse {
     }
 
     fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
-        if InputItem::Left != button { return Ok(()); }
+        if InputItem::Left != button {
+            return Ok(());
+        }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.start_pos = Some(Pixel{point, color});
+        self.start_pos = Some(Pixel { point, color });
         Ok(())
     }
 
@@ -130,20 +130,20 @@ impl Tool for Ellipse {
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
-            "ctrl" => {
-                match value {
-                    "true" => { self.symmetric = true }
-                    "false" => { self.symmetric = false }
-                    _ => error!("unimpl for ctrl: {}", value)
+            "ctrl" => match value {
+                "true" => self.symmetric = true,
+                "false" => self.symmetric = false,
+                _ => error!("unimpl for ctrl: {}", value),
+            },
+            "shift" => match value {
+                "true" => {
+                    self.snap = true;
                 }
-            }
-            "shift" => {
-                match value {
-                    "true" => { self.snap = true; }
-                    "false" => { self.snap = false; }
-                    _ => error!("unimpl for ctrl: {}", value)
+                "false" => {
+                    self.snap = false;
                 }
-            }
+                _ => error!("unimpl for ctrl: {}", value),
+            },
             "alt" => {
                 info!("alt pressed (unimplemented)");
             }
@@ -151,6 +151,4 @@ impl Tool for Ellipse {
         }
         Ok(())
     }
-
-
 }

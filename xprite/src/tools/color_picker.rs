@@ -16,7 +16,6 @@ impl ColorPicker {
 }
 
 impl Tool for ColorPicker {
-
     fn tool_type(&self) -> ToolType {
         ToolType::ColorPicker
     }
@@ -28,7 +27,7 @@ impl Tool for ColorPicker {
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.cursor = Some(pixels!(Pixel{point, color}));
+        self.cursor = Some(pixels!(Pixel { point, color }));
         Ok(())
     }
 
@@ -38,17 +37,21 @@ impl Tool for ColorPicker {
 
     fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, _button: InputItem) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
-        let colors : Vec<_> =
-            xpr.history.top()
-                .groups.iter()
-                .map(|group|
-                    group.1.iter().map(|layer| layer.get_color(point))
-                ).flatten().collect();
+        let colors: Vec<_> = xpr
+            .history
+            .top()
+            .groups
+            .iter()
+            .map(|group| group.1.iter().map(|layer| layer.get_color(point)))
+            .flatten()
+            .collect();
         let picked = colors.iter().find(|i| i.is_some());
         match picked {
-            Some(Some(col)) => { self.col = Some(*col); }
+            Some(Some(col)) => {
+                self.col = Some(*col);
+            }
             Some(None) => panic!("impossible"),
-            None => {self.col = Some( Color::transparent() )},
+            None => self.col = Some(Color::transparent()),
         }
         Ok(())
     }

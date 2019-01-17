@@ -1,16 +1,14 @@
-use crate::prelude::*;
 use crate::algorithms::{
-    pixel_perfect::pixel_perfect,
-    sorter::sort_path,
-    connected_components::connected_components,
-    perimeter::find_perimeter,
+    connected_components::connected_components, perimeter::find_perimeter,
+    pixel_perfect::pixel_perfect, sorter::sort_path,
 };
-use std::ops::{Index, Sub};
-use std::cmp::Ordering;
-use std::hash::{Hash, Hasher};
-use std::fmt::{Debug, Formatter, Error};
-use indexmap::{IndexSet, set::Iter};
+use crate::prelude::*;
 use img::GenericImageView;
+use indexmap::{set::Iter, IndexSet};
+use std::cmp::Ordering;
+use std::fmt::{Debug, Error, Formatter};
+use std::hash::{Hash, Hasher};
+use std::ops::{Index, Sub};
 
 #[cfg_attr(feature = "python-scripting", pyclass)]
 #[derive(Copy, Clone, Eq, PartialOrd, Serialize, Deserialize, Default)]
@@ -34,9 +32,7 @@ impl PyObjectProtocol for Pixel {
 impl Pixel {
     #[new]
     fn __new__(obj: &PyRawObject, point: Vec2f, color: Color) -> PyResult<()> {
-        obj.init(|_| {
-            Pixel { point, color }
-        })
+        obj.init(|_| Pixel { point, color })
     }
 }
 
@@ -75,12 +71,14 @@ impl Debug for Pixel {
 macro_rules! pixel {
     ($y:expr, $x: expr, $k: expr) => {
         Pixel {
-            point: Vec2f{ y:($y) as f32, x:($x) as f32 },
+            point: Vec2f {
+                y: ($y) as f32,
+                x: ($x) as f32,
+            },
             color: $k,
         }
     };
 }
-
 
 macro_rules! pixels {
     ($($i: expr),*) => {
@@ -93,8 +91,6 @@ macro_rules! pixels {
         }
     };
 }
-
-
 
 #[derive(Clone, Eq, Serialize, Deserialize, Default)]
 pub struct Pixels(pub IndexSet<Pixel>);
@@ -115,7 +111,6 @@ impl PartialEq for Pixels {
 }
 
 impl Pixels {
-
     pub fn new() -> Self {
         Pixels(IndexSet::new())
     }
@@ -166,17 +161,25 @@ impl Pixels {
 
     pub fn set_color(&mut self, color: &Color) {
         let color = *color;
-        self.0 = self.0
+        self.0 = self
+            .0
             .iter()
-            .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
+            .map(|Pixel { point, .. }| Pixel {
+                point: *point,
+                color,
+            })
             .collect();
     }
 
     pub fn with_color(&mut self, color: &Color) -> &Self {
         let color = *color;
-        self.0 = self.0
+        self.0 = self
+            .0
             .iter()
-            .map(|Pixel {point,..}| { Pixel{ point: *point, color } })
+            .map(|Pixel { point, .. }| Pixel {
+                point: *point,
+                color,
+            })
             .collect();
         self
     }
@@ -189,11 +192,11 @@ impl Pixels {
         *self = sort_path(self).unwrap();
     }
 
-    pub fn connected_components(&self, w:usize, h: usize) -> Vec<Pixels> {
+    pub fn connected_components(&self, w: usize, h: usize) -> Vec<Pixels> {
         connected_components(self, w, h)
     }
 
-    pub fn perimeter(&self, w:usize, h: usize) -> Pixels {
+    pub fn perimeter(&self, w: usize, h: usize) -> Pixels {
         find_perimeter(w, h, self)
     }
 
@@ -208,7 +211,9 @@ impl Pixels {
                 for (x, pix) in row.iter().enumerate() {
                     match (*pix, init) {
                         (true, Some(_)) => continue,
-                        (true, None) => { init = Some(x); }
+                        (true, None) => {
+                            init = Some(x);
+                        }
                         (false, None) => continue,
                         (false, Some(_)) => {
                             rect_list.push((y, (init.unwrap(), x), fill_col));
@@ -231,7 +236,6 @@ impl Index<usize> for Pixels {
         self.0.get_index(idx).unwrap()
     }
 }
-
 
 impl Debug for Pixels {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
@@ -262,24 +266,25 @@ impl From<img::DynamicImage> for Pixels {
     }
 }
 
-
 impl Pixels {
     pub fn as_bool_mat(&self, w: usize, h: usize) -> Vec<Vec<bool>> {
-        let mut arr = vec![vec![false;w];h];
+        let mut arr = vec![vec![false; w]; h];
         for p in self.0.iter() {
-            let Pixel{point, ..} = p;
-            let Vec2f {x, y} = point;
+            let Pixel { point, .. } = p;
+            let Vec2f { x, y } = point;
             arr[*y as usize][*x as usize] = true;
         }
         arr
     }
 
     pub fn as_mat(&self, w: usize, h: usize) -> Vec<Vec<Option<Pixel>>> {
-        let mut arr = vec![vec![None;w];h];
+        let mut arr = vec![vec![None; w]; h];
         for p in self.0.iter() {
-            let Pixel{point, ..} = p;
-            let Vec2f {x, y} = point;
-            if oob(*x, *y, w as f32, h as f32) { continue; }
+            let Pixel { point, .. } = p;
+            let Vec2f { x, y } = point;
+            if oob(*x, *y, w as f32, h as f32) {
+                continue;
+            }
             arr[*y as usize][*x as usize] = Some(p.clone());
         }
         arr
@@ -296,16 +301,24 @@ impl Pixels {
     pub fn as_image(&self, w: f32, h: f32, origin: (f32, f32)) -> img::DynamicImage {
         let mut rdr = ImageRenderer::new(w, h);
         for pix in &self.0 {
-            let Pixel{point:Vec2f{x,y}, color} = pix;
-            if oob(*x - origin.0, *y - origin.1, w as f32, h as f32) { continue; }
-            rdr.rect([*x - origin.0,*y - origin.1], [0.,0.,], (*color).into(), true);
+            let Pixel {
+                point: Vec2f { x, y },
+                color,
+            } = pix;
+            if oob(*x - origin.0, *y - origin.1, w as f32, h as f32) {
+                continue;
+            }
+            rdr.rect(
+                [*x - origin.0, *y - origin.1],
+                [0., 0.],
+                (*color).into(),
+                true,
+            );
         }
         rdr.render();
         rdr.image
     }
 }
-
-
 
 mod tests {
 
@@ -313,16 +326,14 @@ mod tests {
     fn test_extend() {
         use super::*;
         let mut v1 = Pixels::from_slice(&vec![
-            pixel!(0.,0., Color::blue()),
-            pixel!(0.,1., Color::blue())]
-        );
-        let v2 = Pixels::from_slice(&vec![
-            pixel!(0.,1., Color::blue())
+            pixel!(0., 0., Color::blue()),
+            pixel!(0., 1., Color::blue()),
         ]);
+        let v2 = Pixels::from_slice(&vec![pixel!(0., 1., Color::blue())]);
         v1.extend(&v2);
         let mut expected = IndexSet::new();
-        expected.insert(pixel!(0.,0., Color::blue()));
-        expected.insert(pixel!(0.,1., Color::blue()));
+        expected.insert(pixel!(0., 0., Color::blue()));
+        expected.insert(pixel!(0., 1., Color::blue()));
         assert_eq!(expected, v1.0);
     }
 
@@ -330,23 +341,21 @@ mod tests {
     fn test_extend_dup() {
         use super::*;
         let mut v1 = Pixels::from_slice(&vec![
-            pixel!(0.,0., Color::red()),
-            pixel!(0.,1., Color::red())]
-        );
-        let v2 = Pixels::from_slice(&vec![
-            pixel!(0.,1., Color::blue())
+            pixel!(0., 0., Color::red()),
+            pixel!(0., 1., Color::red()),
         ]);
+        let v2 = Pixels::from_slice(&vec![pixel!(0., 1., Color::blue())]);
         v1.extend(&v2);
         let mut expected = IndexSet::new();
-        expected.insert(pixel!(0.,0., Color::red()));
-        expected.insert(pixel!(0.,1., Color::blue()));
+        expected.insert(pixel!(0., 0., Color::red()));
+        expected.insert(pixel!(0., 1., Color::blue()));
         assert_eq!(expected, v1.0);
     }
 
     #[test]
     fn test_bool_mat() {
         use super::*;
-        let pixs = pixels!{
+        let pixs = pixels! {
             pixel!(0,0,Color::red()),
             pixel!(0,1,Color::red()),
             // pixel!(1,0,Color::red()),
@@ -354,11 +363,8 @@ mod tests {
         };
 
         assert_eq!(
-            pixs.as_bool_mat(2,2),
-            vec![
-                vec![true, true],
-                vec![false, true]
-            ]
+            pixs.as_bool_mat(2, 2),
+            vec![vec![true, true], vec![false, true]]
         );
     }
 
@@ -366,37 +372,34 @@ mod tests {
     fn test_sub() {
         use super::*;
         let mut v1 = Pixels::from_slice(&vec![
-            pixel!(0.,0., Color::red()),
-            pixel!(0.,1., Color::red())
+            pixel!(0., 0., Color::red()),
+            pixel!(0., 1., Color::red()),
         ]);
-        v1.sub_(&Pixels::from_slice(&vec![
-            pixel!(0.,1., Color::blue())
-        ]));
-        assert_eq!(Pixels::from_slice(&vec![pixel!(0.,0., Color::red())]), v1);
+        v1.sub_(&Pixels::from_slice(&vec![pixel!(0., 1., Color::blue())]));
+        assert_eq!(Pixels::from_slice(&vec![pixel!(0., 0., Color::red())]), v1);
     }
-
 
     #[test]
     fn test_intersection() {
         use super::*;
         let mut v1 = Pixels::from_slice(&vec![
-            pixel!(0.,0., Color::red()),
-            pixel!(0.,1., Color::red())
+            pixel!(0., 0., Color::red()),
+            pixel!(0., 1., Color::red()),
         ]);
-        let intersection = v1.intersection(&Pixels::from_slice(&vec![
-            pixel!(0.,1., Color::blue())
-        ]));
-        assert_eq!(Pixels::from_slice(&vec![
-            pixel!(0.,1., Color::red())
-        ]), intersection);
+        let intersection =
+            v1.intersection(&Pixels::from_slice(&vec![pixel!(0., 1., Color::blue())]));
+        assert_eq!(
+            Pixels::from_slice(&vec![pixel!(0., 1., Color::red())]),
+            intersection
+        );
     }
 
     #[test]
     fn test_to_strip() {
         use super::*;
-        let pixs = pixels!( pixel!(1, 1, Color::red()) );
+        let pixs = pixels!(pixel!(1, 1, Color::red()));
         let strips = pixs.to_strips(3, 3);
-        assert_eq!(strips, vec![(1, (1,2), Color::red())]);
+        assert_eq!(strips, vec![(1, (1, 2), Color::red())]);
 
         let pixs = pixels!(
             pixel!(0, 0, Color::red()),
@@ -404,7 +407,7 @@ mod tests {
             pixel!(0, 2, Color::red())
         );
         let strips = pixs.to_strips(3, 3);
-        assert_eq!(strips, vec![(0, (0,3), Color::red())]);
+        assert_eq!(strips, vec![(0, (0, 3), Color::red())]);
 
         /*
          *   ###
@@ -418,9 +421,9 @@ mod tests {
             pixel!(1, 1, Color::red())
         );
         let strips = pixs.to_strips(3, 3);
-        assert_eq!(strips, vec![
-            (0, (0,3), Color::red()),
-            (1, (0,2), Color::red()),
-        ]);
+        assert_eq!(
+            strips,
+            vec![(0, (0, 3), Color::red()), (1, (0, 2), Color::red()),]
+        );
     }
 }

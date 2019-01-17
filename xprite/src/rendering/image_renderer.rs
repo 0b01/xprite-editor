@@ -1,7 +1,7 @@
 use crate::prelude::*;
-use crate::rendering::{Renderer, MouseCursorType};
-use img::{DynamicImage, Rgba};
+use crate::rendering::{MouseCursorType, Renderer};
 use img::GenericImage;
+use img::{DynamicImage, Rgba};
 
 pub struct ImageRenderer {
     w: f32,
@@ -12,27 +12,41 @@ pub struct ImageRenderer {
 
 #[allow(unused)]
 impl Renderer for ImageRenderer {
+    fn width(&self) -> f32 {
+        self.w
+    }
 
-    fn width(&self) -> f32 { self.w }
+    fn height(&self) -> f32 {
+        self.h
+    }
 
-    fn height(&self) -> f32 { self.h }
+    fn circ(&mut self, p0: [f32; 2], r: f32, color: [f32; 4], filled: bool) {}
 
-    fn circ(&mut self, p0:[f32;2], r:f32, color:[f32;4], filled: bool) { }
+    fn bezier(
+        &mut self,
+        p0: [f32; 2],
+        cp1: [f32; 2],
+        cp2: [f32; 2],
+        p1: [f32; 2],
+        color: [f32; 4],
+        thickness: f32,
+    ) {
+    }
 
-    fn bezier(&mut self, p0:[f32;2], cp1:[f32;2], cp2: [f32;2], p1:[f32;2], color:[f32;4], thickness: f32) { }
-
-    fn rect(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4], filled: bool) {
+    fn rect(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4], filled: bool) {
         self.draw_list.push(pixel!(p0[0], p0[1], color.into()));
     }
 
-    fn line(&mut self, p0:[f32;2], p1:[f32;2], color:[f32;4]) { }
+    fn line(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4]) {}
 
-    fn set_mouse_cursor(&mut self, cursor_type: MouseCursorType) { }
+    fn set_mouse_cursor(&mut self, cursor_type: MouseCursorType) {}
 
     fn render(&mut self) {
-        for Pixel{point, color} in self.draw_list.iter() {
+        for Pixel { point, color } in self.draw_list.iter() {
             let color = {
-                Rgba { data: [color.r, color.g, color.b, color.a] }
+                Rgba {
+                    data: [color.r, color.g, color.b, color.a],
+                }
             };
             if !oob(point.x, point.y, self.w, self.h) {
                 let x = point.x as u32;
@@ -40,7 +54,6 @@ impl Renderer for ImageRenderer {
                 self.image.put_pixel(x, y, color);
             }
         }
-
     }
 }
 
@@ -75,7 +88,7 @@ mod tests {
     fn test_img_render() {
         use super::*;
         let mut rdr = ImageRenderer::new(10., 10.);
-        rdr.rect([0.,0.,], [0.,0.,], [1.,0.,0.,1.], true);
+        rdr.rect([0., 0.], [0., 0.], [1., 0., 0., 1.], true);
         let path = "test.png";
         save_img(path, rdr.img());
         ::std::fs::remove_file(path).unwrap();

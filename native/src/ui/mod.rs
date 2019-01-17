@@ -1,15 +1,14 @@
+pub mod canvas;
+pub mod console;
 pub mod inputs;
+pub mod layers;
+pub mod menu;
+pub mod palette;
+pub mod preview;
+pub mod settings;
 pub mod tool_panel;
 pub mod toolbar;
-pub mod menu;
-pub mod canvas;
-pub mod palette;
-pub mod settings;
 pub mod tools;
-pub mod layers;
-pub mod console;
-pub mod preview;
-
 
 use crate::prelude::*;
 use xprite::rendering::Renderer;

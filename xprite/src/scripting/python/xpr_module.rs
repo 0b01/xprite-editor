@@ -1,17 +1,14 @@
-use crate::prelude::*;
 use crate::algorithms;
+use crate::prelude::*;
+use pyo3::class::{basic::PyObjectProtocol, number::PyNumberProtocol};
 use pyo3::prelude::*;
-use pyo3::class::{
-    basic::PyObjectProtocol,
-    number::PyNumberProtocol,
-};
 use pyo3::types::PyTuple;
 
 pub fn init_mod(py: Python) -> PyResult<&PyModule> {
     let pymod = PyModule::new(py, "xpr")?;
-    pymod.add::<(i32,i32,i32,i32)>("RED", Color::red().into())?;
-    pymod.add::<(i32,i32,i32,i32)>("GREEN", Color::green().into())?;
-    pymod.add::<(i32,i32,i32,i32)>("BLUE", Color::blue().into())?;
+    pymod.add::<(i32, i32, i32, i32)>("RED", Color::red().into())?;
+    pymod.add::<(i32, i32, i32, i32)>("GREEN", Color::green().into())?;
+    pymod.add::<(i32, i32, i32, i32)>("BLUE", Color::blue().into())?;
     pymod.add_class::<Pixel>()?;
     pymod.add_class::<MyPixels>()?;
 
@@ -32,18 +29,14 @@ pub struct MyPixels {
 #[pymethods]
 impl MyPixels {
     #[new]
-    #[args(args="*")]
+    #[args(args = "*")]
     fn __new__(obj: &PyRawObject, args: &PyTuple) -> PyResult<()> {
         let mut p = Pixels::new();
         for i in args.iter() {
             let i: &Pixel = i.try_into()?;
             p.push(*i);
         }
-        obj.init(|_| {
-            MyPixels {
-                p
-            }
-        })
+        obj.init(|_| MyPixels { p })
     }
     pub fn extend(&mut self, other: &MyPixels) -> PyResult<()> {
         self.p.extend(&other.p);
@@ -59,7 +52,9 @@ impl MyPixels {
         Ok(new_self)
     }
     pub fn intersection(&mut self, other: &MyPixels) -> PyResult<MyPixels> {
-        Ok(Self{p:self.p.intersection(&other.p)})
+        Ok(Self {
+            p: self.p.intersection(&other.p),
+        })
     }
     pub fn push(&mut self, px: &Pixel) -> PyResult<()> {
         self.p.push(px.clone());
@@ -90,14 +85,14 @@ impl MyPixels {
     }
 
     pub fn connected_components(&mut self, w: usize, h: usize) -> PyResult<Vec<MyPixels>> {
-        let ccs =self.p.connected_components(w, h);
-        let ret = ccs.into_iter().map(|p|MyPixels{p}).collect();
+        let ccs = self.p.connected_components(w, h);
+        let ret = ccs.into_iter().map(|p| MyPixels { p }).collect();
         Ok(ret)
     }
 
     pub fn perimeter(&self, w: usize, h: usize) -> PyResult<MyPixels> {
         let p = self.p.perimeter(w, h);
-        Ok(MyPixels{p})
+        Ok(MyPixels { p })
     }
 
     pub fn as_bool_mat(&self, w: usize, h: usize) -> PyResult<Vec<Vec<bool>>> {
@@ -117,14 +112,13 @@ impl MyPixels {
             pixel.point.y += d.y;
             p.push(pixel)
         }
-        Ok(MyPixels{p})
+        Ok(MyPixels { p })
     }
 
     pub fn shift_(&mut self, dist: &PyTuple) -> PyResult<&MyPixels> {
         self.p = self.shift(dist)?.p;
         Ok(self)
     }
-
 }
 
 #[pyproto]
@@ -142,7 +136,6 @@ impl PyNumberProtocol for MyPixels {
     }
 }
 
-
 impl From<&PyTuple> for Vec2f {
     fn from(p: &PyTuple) -> Vec2f {
         Vec2f {
@@ -159,7 +152,8 @@ impl From<&PyTuple> for Color {
             p.get_item(1).extract().unwrap(),
             p.get_item(2).extract().unwrap(),
             p.get_item(3).extract().unwrap(),
-        ).into()
+        )
+            .into()
     }
 }
 
@@ -167,7 +161,7 @@ impl From<&PyTuple> for Pixel {
     fn from(p: &PyTuple) -> Pixel {
         let point = p.into();
         let color = Color::red();
-        Pixel {point, color}
+        Pixel { point, color }
     }
 }
 
@@ -177,31 +171,22 @@ fn add(a: i64, b: i64) -> i64 {
 }
 
 #[pyfunction(name=bezier)]
-fn bezier(
-    from: &PyTuple,
-    ctrl1: &PyTuple,
-    ctrl2: &PyTuple,
-    to: &PyTuple,
-) -> PyResult<MyPixels> {
+fn bezier(from: &PyTuple, ctrl1: &PyTuple, ctrl2: &PyTuple, to: &PyTuple) -> PyResult<MyPixels> {
     let seg = CubicBezierSegment {
         from: from.into(),
         ctrl1: ctrl1.into(),
         ctrl2: ctrl2.into(),
-        to: to.into()
+        to: to.into(),
     };
     let sort = true;
     let p = seg.rasterize(sort).unwrap();
-    Ok(MyPixels{ p })
+    Ok(MyPixels { p })
 }
 
 #[pyfunction(name=rect)]
 fn rect(start: &PyTuple, stop: &PyTuple, filled: bool) -> PyResult<MyPixels> {
-    let p = algorithms::rect::get_rect(
-        Some(start.into()),
-        Some(stop.into()),
-        filled
-    ).unwrap();
-    Ok(MyPixels {p})
+    let p = algorithms::rect::get_rect(Some(start.into()), Some(stop.into()), filled).unwrap();
+    Ok(MyPixels { p })
 }
 
 #[pyfunction(name=line)]
@@ -209,5 +194,5 @@ fn line(start: &PyTuple, stop: &PyTuple) -> PyResult<MyPixels> {
     let p0: Pixel = start.into();
     let p1: Pixel = stop.into();
     let p = algorithms::line::bresenham(&p0.point, &p1.point);
-    Ok(MyPixels {p})
+    Ok(MyPixels { p })
 }

@@ -1,6 +1,5 @@
 use crate::prelude::*;
 
-
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct History {
     stack: Vec<Layers>,
@@ -11,10 +10,7 @@ impl History {
     pub fn new() -> Self {
         let stack = vec![Layers::new()];
         let redos = vec![];
-        History {
-            stack,
-            redos,
-        }
+        History { stack, redos }
     }
 
     pub fn enter(&mut self) -> Result<(), String> {

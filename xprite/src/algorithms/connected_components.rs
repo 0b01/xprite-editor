@@ -1,5 +1,5 @@
-use crate::prelude::*;
 use super::floodfill::floodfill;
+use crate::prelude::*;
 
 pub fn connected_components(pixs: &Pixels, w: usize, h: usize) -> Vec<Pixels> {
     let mut pixs = pixs.clone();
@@ -7,7 +7,10 @@ pub fn connected_components(pixs: &Pixels, w: usize, h: usize) -> Vec<Pixels> {
     while !pixs.is_empty() {
         let grid = pixs.as_mat(w, h);
         let p = get_first_true(&grid);
-        if p.is_none() {break} // possible when some pixels are oob
+        if p.is_none() {
+            break;
+        }
+        // possible when some pixels are oob
         else {
             let p = p.unwrap();
             let origin = p.point;
@@ -25,7 +28,7 @@ fn get_first_true(grid: &[Vec<Option<Pixel>>]) -> Option<Pixel> {
     for row in grid.iter() {
         for cell in row.iter() {
             if cell.is_some() {
-                return cell.clone()
+                return cell.clone();
             }
         }
     }
@@ -38,28 +41,35 @@ mod tests {
     fn test_connected_components() {
         use super::*;
         assert_eq!(
-            connected_components(&pixels!{
-                pixel!(0.,0., Color::red()),
-                pixel!(0.,1., Color::red()),
-                pixel!(1.,1., Color::red())
-            }, 3, 3),
+            connected_components(
+                &pixels! {
+                    pixel!(0.,0., Color::red()),
+                    pixel!(0.,1., Color::red()),
+                    pixel!(1.,1., Color::red())
+                },
+                3,
+                3
+            ),
             vec![pixels![
-                pixel!(0.,0., Color::red()),
-                pixel!(0.,1., Color::red()),
-                pixel!(1.,1., Color::red())
+                pixel!(0., 0., Color::red()),
+                pixel!(0., 1., Color::red()),
+                pixel!(1., 1., Color::red())
             ]]
         );
 
         assert_eq!(
-            connected_components(&pixels!{
-                pixel!(0.,0., Color::red()),
-                pixel!(1.,1., Color::red())
-            }, 3, 3),
+            connected_components(
+                &pixels! {
+                    pixel!(0.,0., Color::red()),
+                    pixel!(1.,1., Color::red())
+                },
+                3,
+                3
+            ),
             vec![
-                pixels![ pixel!(0.,0., Color::red()) ],
-                pixels![ pixel!(1.,1., Color::red()) ]
+                pixels![pixel!(0., 0., Color::red())],
+                pixels![pixel!(1., 1., Color::red())]
             ]
         );
-
     }
 }

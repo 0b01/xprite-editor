@@ -15,12 +15,7 @@ impl Default for Layers {
 
 impl Layers {
     pub fn new() -> Self {
-        let groups = vec![
-            (
-                "Group 1".to_owned(),
-                vec![Layer::new("Layer 0".to_owned())],
-            )
-        ];
+        let groups = vec![("Group 1".to_owned(), vec![Layer::new("Layer 0".to_owned())])];
         let selected = 0;
         let sel_group = 0;
         Self {
@@ -45,40 +40,30 @@ impl Layers {
         self.groups.get(self.sel_group)
     }
 
-
     pub fn selected_group_mut(&mut self) -> Option<&mut (String, Vec<Layer>)> {
         self.groups.get_mut(self.sel_group)
     }
 
     pub fn add_group(&mut self, name: Option<&str>) {
         let name = name
-                .and_then(|i: &str| Some(i.to_owned()))
-                .unwrap_or_else(||
-                    format!("Group {}", self.groups.len() + 1)
-                );
+            .and_then(|i: &str| Some(i.to_owned()))
+            .unwrap_or_else(|| format!("Group {}", self.groups.len() + 1));
         let new_group = (name, vec![Layer::new("Layer 1".to_owned())]);
         self.groups.push(new_group);
     }
 
-
     pub fn add_layer(&mut self, name: Option<&str>) {
         let name = name
-                .and_then(|i: &str| Some(i.to_owned()))
-                .unwrap_or_else(||
-                    format!("Layer {}", self.selected_group().unwrap().1.len())
-                );
+            .and_then(|i: &str| Some(i.to_owned()))
+            .unwrap_or_else(|| format!("Layer {}", self.selected_group().unwrap().1.len()));
         let new_layer = Layer::new(name);
-        self.selected_group_mut().unwrap()
-            .1
-            .push(new_layer);
+        self.selected_group_mut().unwrap().1.push(new_layer);
     }
 
     pub fn duplicate_current(&mut self) {
         let selected = self.selected_layer().unwrap();
         let new_layer = selected.clone();
-        self.selected_group_mut().unwrap()
-            .1
-            .push(new_layer);
+        self.selected_group_mut().unwrap().1.push(new_layer);
     }
 
     pub fn remove_layer(&mut self, group: usize, to_remove: usize) {
@@ -86,7 +71,8 @@ impl Layers {
     }
 
     pub fn toggle_layer_visibility(&mut self, group: usize, layer: usize) -> Option<()> {
-        self.groups.get_mut(group)?
+        self.groups
+            .get_mut(group)?
             .1
             .get_mut(layer)?
             .toggle_visible();
@@ -100,8 +86,7 @@ impl Layers {
         Some(())
     }
 
-
-    pub fn iter_layers(&self) -> impl Iterator<Item=&Layer> {
-        self.groups.iter().map(|g|g.1.iter()).flatten()
+    pub fn iter_layers(&self) -> impl Iterator<Item = &Layer> {
+        self.groups.iter().map(|g| g.1.iter()).flatten()
     }
 }

@@ -1,5 +1,5 @@
-use crate::tools::*;
 use crate::algorithms::line::*;
+use crate::tools::*;
 
 #[derive(Clone, Default, Debug)]
 pub struct Line {
@@ -48,11 +48,9 @@ impl Line {
         }
         Ok(())
     }
-
 }
 
 impl Tool for Line {
-
     fn tool_type(&self) -> ToolType {
         ToolType::Line
     }
@@ -66,14 +64,14 @@ impl Tool for Line {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.cursor_pos = Some(Pixel {point, color});
+        self.cursor_pos = Some(Pixel { point, color });
         Ok(())
     }
 
     fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.cursor_pos = Some(Pixel {point, color});
+        self.cursor_pos = Some(Pixel { point, color });
         self.finalize_line(xpr)?;
         self.is_mouse_down = None;
         self.start_pos = None;
@@ -81,11 +79,13 @@ impl Tool for Line {
     }
 
     fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
-        if InputItem::Left != button { return Ok(()); }
+        if InputItem::Left != button {
+            return Ok(());
+        }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.start_pos = Some(Pixel{point, color});
+        self.start_pos = Some(Pixel { point, color });
         Ok(())
     }
 
@@ -107,27 +107,27 @@ impl Tool for Line {
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
-            "ctrl" => {
-                match value {
-                    "true" => { self.snap = true; self.is_snap_45 = true }
-                    "false" => { self.snap = false }
-                    _ => error!("unimpl for ctrl: {}", value)
+            "ctrl" => match value {
+                "true" => {
+                    self.snap = true;
+                    self.is_snap_45 = true
                 }
-            }
-            "shift" => {
-                match value {
-                    "true" => { self.snap = true; self.is_snap_45 = false }
-                    "false" => { self.snap = false }
-                    _ => error!("unimpl for ctrl: {}", value)
+                "false" => self.snap = false,
+                _ => error!("unimpl for ctrl: {}", value),
+            },
+            "shift" => match value {
+                "true" => {
+                    self.snap = true;
+                    self.is_snap_45 = false
                 }
-            }
+                "false" => self.snap = false,
+                _ => error!("unimpl for ctrl: {}", value),
+            },
             "alt" => {
                 info!("alt pressed (unimplemented)");
             }
-            _ => info!("unimplemented option: {}", option)
+            _ => info!("unimplemented option: {}", option),
         }
         Ok(())
     }
-
-
 }
