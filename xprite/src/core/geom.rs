@@ -5,55 +5,55 @@ use std::cmp::Ordering;
 /// represents a 2D vector
 #[cfg_attr(feature = "python-scripting", pyclass)]
 #[derive(Debug, Copy, Clone, PartialOrd, Serialize, Deserialize, Default)]
-pub struct Vec2D {
+pub struct Vec2f {
     pub x: f32,
     pub y: f32,
 }
 
+macro_rules! vec2f {
+    ($y:expr, $x: expr) => {
+        Vec2f{ y:($y) as f32, x:($x) as f32}
+    };
+}
+
+
 #[cfg(feature = "python-scripting")]
-impl<'a> pyo3::FromPyObject<'a> for Vec2D {
-    fn extract(ob: &'a pyo3::types::PyObjectRef) -> PyResult<Vec2D> {
+impl<'a> pyo3::FromPyObject<'a> for Vec2f {
+    fn extract(ob: &'a pyo3::types::PyObjectRef) -> PyResult<Vec2f> {
         let tup: &pyo3::types::PyTuple = ob.extract()?;
-        let ret: Vec2D = Vec2D::new(
-            tup.get_item(0).extract().unwrap(),
-            tup.get_item(1).extract().unwrap(),
-        );
+        let ret: Vec2f = Vec2f {
+            y: tup.get_item(0).extract().unwrap(),
+            x: tup.get_item(1).extract().unwrap(),
+        };
         Ok(ret)
     }
 }
 
-impl Ord for Vec2D {
-    fn cmp(&self, other: &Vec2D) -> Ordering {
+impl Ord for Vec2f {
+    fn cmp(&self, other: &Vec2f) -> Ordering {
         self.partial_cmp(other).unwrap()
     }
 }
 
-impl Eq for Vec2D {}
+impl Eq for Vec2f {}
 
-impl PartialEq for Vec2D {
-    fn eq(&self, other: &Vec2D) -> bool {
+impl PartialEq for Vec2f {
+    fn eq(&self, other: &Vec2f) -> bool {
         (self.x as i32 == other.x as i32) &&
         (self.y as i32 == other.y as i32)
     }
 }
 
 
-impl Hash for Vec2D {
+impl Hash for Vec2f {
     fn hash<H: Hasher>(&self, state: &mut H) {
         (self.x as i32).hash(state);
         (self.y as i32).hash(state);
     }
 }
 
-impl Vec2D {
-    /// create a new point
-    pub fn new(x: f32, y: f32) -> Self {
-        Self { x, y }
-    }
-}
-
-impl From<Vec2D> for [f32;2] {
-    fn from(p: Vec2D) -> Self {
+impl From<Vec2f> for [f32;2] {
+    fn from(p: Vec2f) -> Self {
         [p.x, p.y]
     }
 }
@@ -61,14 +61,14 @@ impl From<Vec2D> for [f32;2] {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct CubicBezierSegment {
-    pub from: Vec2D,
-    pub ctrl1: Vec2D,
-    pub ctrl2: Vec2D,
-    pub to: Vec2D,
+    pub from: Vec2f,
+    pub ctrl1: Vec2f,
+    pub ctrl2: Vec2f,
+    pub to: Vec2f,
 }
 
 impl CubicBezierSegment {
-    pub fn sample(&self, t: f32) -> Vec2D {
+    pub fn sample(&self, t: f32) -> Vec2f {
         let t2 = t * t;
         let t3 = t2 * t;
         let one_t = 1. - t;
@@ -85,7 +85,7 @@ impl CubicBezierSegment {
             self.ctrl2.y * 3. * one_t * t2 +
             self.to.y * t3;
 
-        Vec2D::new(x, y)
+        Vec2f{x,y}
     }
 
     /// rasterize a single bezier curve by sampling
@@ -102,8 +102,8 @@ impl CubicBezierSegment {
             let step = (stop - start) / n_steps as f32;
             for _ in 0..n_steps {
                 let point = self.sample(t);
-                let Vec2D {x, y} = Canvas::snap(point);
-                let pixel = pixel!(x, y, Color::red());
+                let Vec2f {x, y} = Canvas::snap(point);
+                let pixel = pixel!(y, x, Color::red());
                 // don't allow duplicate pixels
                 if !monotone_seg.contains(&pixel) {
                     monotone_seg.push(pixel);
@@ -142,7 +142,7 @@ impl CubicBezierSegment {
         let dpoints = derive(points);
 
         for &dim in &dims {
-            let mfn = |point: &Vec2D| {
+            let mfn = |point: &Vec2f| {
                 if dim == 0 { point.x } else { point.y }
             };
             let p: Vec<f32> = dpoints[0].iter().map(mfn).collect();
@@ -159,7 +159,7 @@ impl CubicBezierSegment {
 }
 
 /// https://github.com/Pomax/bezierjs/blob/gh-pages/lib/utils.js#L173
-fn derive(points: Vec<Vec2D>) -> Vec<Vec<Vec2D>> {
+fn derive(points: Vec<Vec2f>) -> Vec<Vec<Vec2f>> {
     let mut dpoints = vec![];
     let mut p = points;
     let mut d = p.len();
@@ -167,10 +167,10 @@ fn derive(points: Vec<Vec2D>) -> Vec<Vec<Vec2D>> {
     while d > 1 {
         let mut list = vec![];
         for j in 0..c {
-          let dpt = Vec2D::new(
-            c as f32 * (p[j + 1].x - p[j].x),
-            c as f32 * (p[j + 1].y - p[j].y)
-          );
+          let dpt = Vec2f{
+            x: c as f32 * (p[j + 1].x - p[j].x),
+            y: c as f32 * (p[j + 1].y - p[j].y)
+          };
           list.push(dpt);
         }
         dpoints.push(list.clone());
@@ -218,10 +218,10 @@ mod tests {
         use super::*;
 
         let seg = CubicBezierSegment {
-            from: Vec2D::new(100., 25.),
-            ctrl1: Vec2D::new(10., 90.),
-            ctrl2: Vec2D::new(110., 100.),
-            to: Vec2D::new(150., 195.),
+            from: vec2f!(100., 25.),
+            ctrl1: vec2f!(10., 90.),
+            ctrl2: vec2f!(110., 100.),
+            to: vec2f!(150., 195.),
         };
 
         let ex = seg.extrema();

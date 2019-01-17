@@ -62,7 +62,7 @@ impl Tool for Line {
         Some(pixels!(p))
     }
 
-    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2D) -> Result<(), String> {
+    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
@@ -70,7 +70,7 @@ impl Tool for Line {
         Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &Xprite, p: Vec2D) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel {point, color});
@@ -80,7 +80,7 @@ impl Tool for Line {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2D, button: InputItem) -> Result<(), String> {
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
         if InputItem::Left != button { return Ok(()); }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(p);

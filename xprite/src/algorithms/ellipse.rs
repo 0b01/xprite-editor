@@ -20,10 +20,10 @@ pub fn ellipse(x1: i32, y1: i32, x2:i32, y2:i32, col: Color) -> Result<Pixels, S
     let mut y = height;
     let mut sigma = 2*b2+a2*(1-2*height);
     while b2*x <= a2*y {
-        ret.push(pixel!(xc + x, yc + y, col));
-        ret.push(pixel!(xc - x, yc + y, col));
-        ret.push(pixel!(xc + x, yc - y, col));
-        ret.push(pixel!(xc - x, yc - y, col));
+        ret.push(pixel!(yc + y, xc + x, col));
+        ret.push(pixel!(yc + y, xc - x, col));
+        ret.push(pixel!(yc - y, xc + x, col));
+        ret.push(pixel!(yc - y, xc - x, col));
         if sigma >= 0 {
             sigma += fa2 * (1 - y);
             y -= 1;
@@ -37,10 +37,10 @@ pub fn ellipse(x1: i32, y1: i32, x2:i32, y2:i32, col: Color) -> Result<Pixels, S
     let mut y = 0;
     let mut sigma = 2*a2+b2*(1-2*width);
     while a2*y <= b2*x {
-        ret.push(pixel!(xc + x, yc + y, col));
-        ret.push(pixel!(xc - x, yc + y, col));
-        ret.push(pixel!(xc + x, yc - y, col));
-        ret.push(pixel!(xc - x, yc - y, col));
+        ret.push(pixel!(yc + y, xc + x, col));
+        ret.push(pixel!(yc + y, xc - x, col));
+        ret.push(pixel!(yc - y, xc + x, col));
+        ret.push(pixel!(yc - y, xc - x, col));
         if sigma >= 0 {
             sigma += fb2 * (1 - x);
             x -= 1;
@@ -73,7 +73,7 @@ pub fn get_ellipse(start: Option<Pixel>, stop: Option<Pixel>, filled: bool) -> R
     if filled {
         // let x_m = (x0+x1)/2;
         // let y_m = (y0+y1)/2;
-        // let origin = Vec2D::new(x_m as f32, y_m as f32);
+        // let origin = Vec2f::new(x_m as f32, y_m as f32);
         // let ok = floodfill((x0-x1).abs() as f32, (y0-y1).abs() as f32, &ret, origin, None, Color::blue());
         // return Ok(ok)
         unimplemented!()

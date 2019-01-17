@@ -70,7 +70,7 @@ impl Canvas {
         self.canvas_h = canvas_h;
     }
 
-    pub fn draw_circle(&self, rdr: &mut Renderer, p0: Vec2D, radius: f32, color: [f32;4], filled: bool) {
+    pub fn draw_circle(&self, rdr: &mut Renderer, p0: Vec2f, radius: f32, color: [f32;4], filled: bool) {
         let p0 = self.to_cli(p0).into();
         let rad = self.scale * radius;
         rdr.circ(p0, rad, color, filled);
@@ -78,10 +78,10 @@ impl Canvas {
 
     pub fn draw_bezier(&self,
                        rdr: &mut Renderer,
-                       from: Vec2D,
-                       ctrl1:Vec2D,
-                       ctrl2: Vec2D,
-                       to: Vec2D,
+                       from: Vec2f,
+                       ctrl1:Vec2f,
+                       ctrl2: Vec2f,
+                       to: Vec2f,
                        c: [f32;4],
                        thickness: f32,
                        ) {
@@ -92,16 +92,16 @@ impl Canvas {
         rdr.bezier(p0, cp0, cp1, p1, c, thickness);
     }
 
-    pub fn to_cli(&self, p: Vec2D) -> Vec2D {
+    pub fn to_cli(&self, p: Vec2f) -> Vec2f {
         let o = self.origin();
-        Vec2D::new(
-            o.0 + self.scale * p.x,
-            o.1 + self.scale * p.y,
-        )
+        Vec2f {
+            x: o.0 + self.scale * p.x,
+            y: o.1 + self.scale * p.y,
+        }
     }
 
-    pub fn within_circle(&self, point: Vec2D, radius: f32, mouse: (f32, f32)) -> bool {
-        let Vec2D {x,y} = point;
+    pub fn within_circle(&self, point: Vec2f, radius: f32, mouse: (f32, f32)) -> bool {
+        let Vec2f {x,y} = point;
         let o = self.origin();
         let p0 = (
             o.0 + self.scale * x,
@@ -113,6 +113,25 @@ impl Canvas {
         && mouse.0 > p0.0 - rad
         && mouse.1 < p0.1 + rad
         && mouse.1 > p0.1 - rad
+    }
+
+    pub fn draw_pixels_simplified(&self, rdr: &mut Renderer, pixels: &Pixels) {
+        let rect_list = pixels.to_strips(self.art_w as usize, self.art_h as usize);
+        // info!("{:?}", rect_list);
+
+        let o = self.origin();
+        for &(row, (col0, col1), col) in &rect_list {
+            let p0 = [
+                o.0 + self.scale * row as f32,
+                o.1 + self.scale * col0 as f32,
+            ];
+            let p1 = [
+                o.0 + self.scale * (row + 1) as f32,
+                o.1 + self.scale * col1 as f32,
+            ];
+
+            rdr.rect(p0, p1, col.into(), true);
+        }
     }
 
     pub fn draw_pixel(&self, rdr: &mut Renderer, x: f32, y: f32, color: [f32;4], filled: bool) {
@@ -176,7 +195,7 @@ impl Canvas {
         }
     }
 
-    pub fn draw_line(&self, rdr: &mut Renderer, p0: Vec2D, p1: Vec2D, c:[f32;4]) {
+    pub fn draw_line(&self, rdr: &mut Renderer, p0: Vec2f, p1: Vec2f, c:[f32;4]) {
         let p0 = self.to_cli(p0).into();
         let p1 = self.to_cli(p1).into();
 
@@ -184,30 +203,30 @@ impl Canvas {
     }
 
     /// convert screen pos to pixel location
-    pub fn shrink_size_no_floor(&self, p: Vec2D) -> Vec2D {
-        let Vec2D {x: cli_x , y: cli_y} = p;
+    pub fn shrink_size_no_floor(&self, p: Vec2f) -> Vec2f {
+        let Vec2f {x: cli_x , y: cli_y} = p;
         let o = self.origin();
         let x = (cli_x - o.0) / self.scale;
         let y = (cli_y - o.1) / self.scale;
-        Vec2D {
+        Vec2f {
             x, y,
         }
     }
 
     /// convert screen pos to pixel location
-    pub fn shrink_size(&self, p: Vec2D) -> Vec2D {
-        let Vec2D {x: cli_x , y: cli_y} = p;
+    pub fn shrink_size(&self, p: Vec2f) -> Vec2f {
+        let Vec2f {x: cli_x , y: cli_y} = p;
         let o = self.origin();
         let x = ((cli_x - o.0) / self.scale).floor();
         let y = ((cli_y - o.1) / self.scale).floor();
-        Vec2D {
-            x, y,
+        Vec2f {
+            x, y
         }
     }
     /// snap point to grid
-    pub fn snap(p: Vec2D) -> Vec2D {
-        let Vec2D {x: cli_x , y: cli_y} = p;
-        Vec2D {
+    pub fn snap(p: Vec2f) -> Vec2f {
+        let Vec2f {x: cli_x , y: cli_y} = p;
+        Vec2f {
             x: cli_x.floor(),
             y: cli_y.floor(),
         }

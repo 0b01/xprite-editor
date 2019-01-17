@@ -25,18 +25,18 @@ impl Tool for ColorPicker {
         self.cursor.clone()
     }
 
-    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2D) -> Result<(), String> {
+    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor = Some(pixels!(Pixel{point, color}));
         Ok(())
     }
 
-    fn mouse_up(&mut self, _xpr: &Xprite, _p: Vec2D) -> Result<(), String> {
+    fn mouse_up(&mut self, _xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2D, _button: InputItem) -> Result<(), String> {
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, _button: InputItem) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         let colors : Vec<_> =
             xpr.history.top()

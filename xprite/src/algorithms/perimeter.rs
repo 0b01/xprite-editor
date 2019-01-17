@@ -1,20 +1,20 @@
 use crate::prelude::*;
 
 pub fn find_perimeter(w: usize, h: usize, pixs: &Pixels) -> Pixels {
+    debug!("{} {}", w, h);
     let mut ret = Pixels::new();
-    let grid = pixs.as_bool_mat(w, h);
     let canvas = pixs.as_mat(w, h);
-    for row in 0..h {
-        for col in 0..w {
-            if grid[row][col] {
-                if (row >= 1 && grid[row - 1][col])
-                && (row + 1 < h && grid[row + 1][col])
-                && (col >= 1 && grid[row][col - 1])
-                && (col + 1 < w && grid[row][col + 1]) {
+    for y in 0..h {
+        for x in 0..w {
+            if canvas[y][x].is_some(){
+                if (y >= 1 && canvas[y - 1][x].is_some())
+                && (y < h -1 && canvas[y + 1][x].is_some())
+                && (x >= 1 && canvas[y][x - 1].is_some())
+                && (x < w -1 && canvas[y][x + 1].is_some()) {
                     continue
                 }
                 else {
-                    ret.push(canvas[row][col].unwrap())
+                    ret.push(canvas[y][x].unwrap())
                 }
             }
         }

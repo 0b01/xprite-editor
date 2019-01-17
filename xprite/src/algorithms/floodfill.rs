@@ -3,7 +3,8 @@ use crate::prelude::*;
 /// flood fill algorithm
 /// converts pixels into a grid of size (w, h)
 /// The operation starts at origin
-pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Vec2D, bg_col: Option<Color>, color: Color) -> Pixels {
+pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Vec2f, bg_col: Option<Color>, color: Color) -> Pixels {
+    debug!("{} {}", w, h);
     let mut ret = Pixels::new();
     let canvas = pix.as_mat(w as usize, h as usize);
     let mut stack = vec![origin];
@@ -11,26 +12,25 @@ pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Vec2D, bg_col: Option<Col
     let mut visited = vec![vec![false; w as usize]; h as usize];
     let mut neighbors = Vec::with_capacity(4);
     while let Some(point) = stack.pop() {
-        let Vec2D {x, y} = point;
-        match (bg_col, canvas[x as usize][y as usize]) {
+        let Vec2f {x, y} = point;
+        match (bg_col, canvas[y as usize][x as usize]) {
             (Some(bg), Some(Pixel{color, ..})) => if bg != color { continue },
             (None, Some(_)) => continue,
             (Some(_), None) => continue,
             (None, None) => (),
         };
-        // Checking only 4 neighbors
-        neighbors.clear();
+        neighbors.clear(); // Checking only 4 neighbors
         if x < w - 1. { neighbors.push((x+1., y)) };
         if x > 0. { neighbors.push((x-1., y)) };
         if y < h - 1. { neighbors.push((x, y+1.)) };
         if y > 0. { neighbors.push((x, y-1.)) };
         for &(nx, ny) in neighbors.iter() {
-            if visited[nx as usize][ny as usize] { continue };
-            stack.push(Vec2D{x: nx, y: ny});
-            visited[nx as usize][ny as usize] = true;
+            if visited[ny as usize][nx as usize] { continue };
+            stack.push(Vec2f{x: nx, y: ny});
+            visited[ny as usize][nx as usize] = true;
         }
         ret.push(Pixel{point, color});
-        visited[x as usize][y as usize] = true;
+        visited[y as usize][x as usize] = true;
     }
 
     ret
@@ -61,7 +61,7 @@ mod test {
         let mut pixs = Pixels::new();
         pixs.push(pixel!(0., 0., Color::black()));
         pixs.push(pixel!(0., 1., Color::black()));
-        let to_fill = floodfill(2., 2., &pixs, Vec2D{x:1.,y:1.}, None, Color::red());
+        let to_fill = floodfill(2., 2., &pixs, Vec2f{x:1.,y:1.}, None, Color::red());
         assert_eq!(
             Pixels::from_slice(&vec![
                 pixel!(1,1,Color::red()),
@@ -82,7 +82,7 @@ mod test {
         pixs.push(pixel!(1., 2., Color::black()));
         pixs.push(pixel!(2., 1., Color::black()));
 
-        let to_fill = floodfill(100., 100., &pixs, Vec2D{ x:1., y:1. }, None, Color::black());
+        let to_fill = floodfill(100., 100., &pixs, Vec2f{ x:1., y:1. }, None, Color::black());
         assert_eq!(
             Pixels::from_slice(&vec![
                 pixel!(1,1,Color::black()),
@@ -90,7 +90,7 @@ mod test {
             to_fill
         );
 
-        let to_fill = floodfill(100., 100., &pixs, Vec2D{x:1., y:1.}, None, Color::black());
+        let to_fill = floodfill(100., 100., &pixs, Vec2f{x:1., y:1.}, None, Color::black());
         assert_eq!(
             Pixels::from_slice(&vec![
                 pixel!(1,1,Color::black()),
@@ -112,7 +112,7 @@ mod test {
         pixs.push(pixel!(2., 1., Color::black()));
         pixs.push(pixel!(2., 2., Color::black()));
 
-        let to_fill = floodfill(4., 3., &pixs, Vec2D{x:1., y:1.}, None, Color::blue());
+        let to_fill = floodfill(4., 3., &pixs, Vec2f{x:1., y:1.}, None, Color::blue());
         assert_eq!(
             Pixels::from_slice(&vec![
                 pixel!(1,1,Color::blue()),

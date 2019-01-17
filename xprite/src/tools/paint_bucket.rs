@@ -17,7 +17,7 @@ impl PaintBucket {
         }
     }
 
-    pub fn floodfill(&self, xpr: &Xprite, p: Vec2D, bg_color: Option<Color>) -> Result<Pixels, String> {
+    pub fn floodfill(&self, xpr: &Xprite, p: Vec2f, bg_color: Option<Color>) -> Result<Pixels, String> {
         let color = xpr.color();
         let w = xpr.canvas.art_w;
         let h = xpr.canvas.art_h;
@@ -40,7 +40,7 @@ impl Tool for PaintBucket {
         self.cursor.clone()
     }
 
-    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2D) -> Result<(), String> {
+    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         if self.is_mouse_down { return self.mouse_down(xpr, p, InputItem::Left) }
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
@@ -48,7 +48,7 @@ impl Tool for PaintBucket {
         Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &Xprite, p: Vec2D) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         self.is_mouse_down = false;
 
         // reset cursor
@@ -64,7 +64,7 @@ impl Tool for PaintBucket {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2D, _button: InputItem) -> Result<(), String> {
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, _button: InputItem) -> Result<(), String> {
         self.is_mouse_down = true;
         let point = xpr.canvas.shrink_size(p);
         let bg_color = xpr.current_layer().unwrap().get_color(point);

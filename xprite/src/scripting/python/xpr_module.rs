@@ -109,7 +109,7 @@ impl MyPixels {
     }
 
     pub fn shift(&self, dist: &PyTuple) -> PyResult<MyPixels> {
-        let d: Vec2D = dist.into();
+        let d: Vec2f = dist.into();
         let mut p = Pixels::new();
         for pixel in self.p.iter() {
             let mut pixel = pixel.clone();
@@ -143,9 +143,9 @@ impl PyNumberProtocol for MyPixels {
 }
 
 
-impl From<&PyTuple> for Vec2D {
-    fn from(p: &PyTuple) -> Vec2D {
-        Vec2D {
+impl From<&PyTuple> for Vec2f {
+    fn from(p: &PyTuple) -> Vec2f {
+        Vec2f {
             x: p.get_item(0).extract().unwrap(),
             y: p.get_item(1).extract().unwrap(),
         }

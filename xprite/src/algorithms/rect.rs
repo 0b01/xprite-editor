@@ -6,12 +6,12 @@ pub fn rect(x1: i32, y1: i32, x2:i32, y2:i32, col: Color) -> Result<Pixels, Stri
     if y2 == 0 || x2 == 0 { return Err("i32 must be greater than 0".to_owned()); }
     let mut ret = Pixels::new();
     for i in x1..x2 {
-        ret.push(pixel!(i,y1, col));
-        ret.push(pixel!(i,y2-1, col));
+        ret.push(pixel!(y1, i, col));
+        ret.push(pixel!(y2-1, i, col));
     }
     for j in y1..y2 {
-        ret.push(pixel!(x1, j, col));
-        ret.push(pixel!(x2-1, j, col));
+        ret.push(pixel!(j, x1, col));
+        ret.push(pixel!(j, x2-1, col));
     }
     Ok(ret)
 }
@@ -21,7 +21,7 @@ pub fn filled_rect(x1: i32, y1: i32, x2: i32, y2: i32, col: Color) -> Result<Pix
     let mut ret = Pixels::new();
     for i in x1..x2 {
         for j in y1..y2 {
-            ret.push(pixel!(i,j, col));
+            ret.push(pixel!(j, i, col));
         }
     }
     Ok(ret)

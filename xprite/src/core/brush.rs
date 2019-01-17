@@ -64,12 +64,12 @@ impl Brush {
     }
 
     /// convert brush shape to actual pixel on canvas
-    pub fn to_canvas_pixels(&self, cursor: Vec2D, color: Color) -> Option<Pixels> {
-        let Vec2D {x, y} = cursor;
+    pub fn to_canvas_pixels(&self, cursor: Vec2f, color: Color) -> Option<Pixels> {
+        let Vec2f {x, y} = cursor;
         let (offset_x, offset_y) = self.offset;
         let ret: Vec<Pixel> = self.shape.iter().map(
             |Pixel {point,..}| Pixel {
-                point: Vec2D::new(point.x+x + offset_x, point.y+y + offset_y),
+                point: Vec2f{x: point.x+x + offset_x, y: point.y+y + offset_y},
                 color: color,
             }
         ).collect();

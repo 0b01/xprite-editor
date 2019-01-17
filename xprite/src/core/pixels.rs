@@ -15,7 +15,7 @@ use img::GenericImageView;
 #[cfg_attr(feature = "python-scripting", pyclass)]
 #[derive(Copy, Clone, Eq, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Pixel {
-    pub point: Vec2D,
+    pub point: Vec2f,
     pub color: Color,
 }
 
@@ -33,7 +33,7 @@ impl PyObjectProtocol for Pixel {
 #[pymethods]
 impl Pixel {
     #[new]
-    fn __new__(obj: &PyRawObject, point: Vec2D, color: Color) -> PyResult<()> {
+    fn __new__(obj: &PyRawObject, point: Vec2f, color: Color) -> PyResult<()> {
         obj.init(|_| {
             Pixel { point, color }
         })
@@ -68,14 +68,14 @@ impl Pixel {
 
 impl Debug for Pixel {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "@({},{})", self.point.x, self.point.y)
+        write!(f, "@({},{})", self.point.y, self.point.x)
     }
 }
 
 macro_rules! pixel {
-    ($i:expr, $j: expr, $k: expr) => {
+    ($y:expr, $x: expr, $k: expr) => {
         Pixel {
-            point: Vec2D::new(($i) as f32, ($j) as f32),
+            point: Vec2f{ y:($y) as f32, x:($x) as f32 },
             color: $k,
         }
     };
@@ -197,7 +197,32 @@ impl Pixels {
         find_perimeter(w, h, self)
     }
 
-
+    pub fn to_strips(&self, w: usize, h: usize) -> Vec<(usize, (usize, usize), Color)> {
+        let ccs = self.connected_components(w, h);
+        let mut rect_list = vec![];
+        for cc in &ccs {
+            let fill_col = cc[0].color;
+            let mat = cc.as_bool_mat(w, h);
+            for (i, row) in mat.iter().enumerate() {
+                let mut init = None;
+                for (j, pix) in row.iter().enumerate() {
+                    match (*pix, init) {
+                        (true, Some(_)) => continue,
+                        (true, None) => { init = Some(j); }
+                        (false, None) => continue,
+                        (false, Some(_)) => {
+                            rect_list.push((i, (init.unwrap(), j), fill_col));
+                            init = None;
+                        }
+                    }
+                }
+                if let Some(init) = init {
+                    rect_list.push((i, (init, w), fill_col));
+                }
+            }
+        }
+        rect_list
+    }
 }
 
 impl Index<usize> for Pixels {
@@ -243,8 +268,8 @@ impl Pixels {
         let mut arr = vec![vec![false;w];h];
         for p in self.0.iter() {
             let Pixel{point, ..} = p;
-            let Vec2D {x, y} = point;
-            arr[*x as usize][*y as usize] = true;
+            let Vec2f {x, y} = point;
+            arr[*y as usize][*x as usize] = true;
         }
         arr
     }
@@ -253,9 +278,9 @@ impl Pixels {
         let mut arr = vec![vec![None;w];h];
         for p in self.0.iter() {
             let Pixel{point, ..} = p;
-            let Vec2D {x, y} = point;
+            let Vec2f {x, y} = point;
             if oob(*x, *y, w as f32, h as f32) { continue; }
-            arr[*x as usize][*y as usize] = Some(p.clone());
+            arr[*y as usize][*x as usize] = Some(p.clone());
         }
         arr
     }
@@ -271,7 +296,7 @@ impl Pixels {
     pub fn as_image(&self, w: f32, h: f32, origin: (f32, f32)) -> img::DynamicImage {
         let mut rdr = ImageRenderer::new(w, h);
         for pix in &self.0 {
-            let Pixel{point:Vec2D{x,y}, color} = pix;
+            let Pixel{point:Vec2f{x,y}, color} = pix;
             if oob(*x - origin.0, *y - origin.1, w as f32, h as f32) { continue; }
             rdr.rect([*x - origin.0,*y - origin.1], [0.,0.,], (*color).into(), true);
         }
@@ -364,5 +389,17 @@ mod tests {
         assert_eq!(Pixels::from_slice(&vec![
             pixel!(0.,1., Color::red())
         ]), intersection);
+    }
+
+    #[test]
+    fn test_to_strip() {
+        use super::*;
+        let pixs = pixels!(
+            pixel!(1, 1, Color::red())
+        );
+
+        let strips = pixs.to_strips(3, 3);
+
+        println!("{:#?}", strips);
     }
 }

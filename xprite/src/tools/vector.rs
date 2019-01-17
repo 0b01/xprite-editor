@@ -50,7 +50,7 @@ impl Tool for Vector {
         Some(pixels!(p))
     }
 
-    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2D) -> Result<(), String> {
+    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // update cursor pos
         let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         let point = xpr.canvas.shrink_size(p);
@@ -79,7 +79,7 @@ impl Tool for Vector {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2D, button: InputItem) -> Result<(), String>{
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String>{
         self.is_mouse_down = Some(button);
 
         let p = xpr.canvas.shrink_size_no_floor(p);
@@ -96,7 +96,7 @@ impl Tool for Vector {
         Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &Xprite, _p: Vec2D) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
         if self.is_mouse_down.is_none() {return Ok(()); }
         let button = self.is_mouse_down.unwrap();
         if button == InputItem::Right { return Ok(()); }

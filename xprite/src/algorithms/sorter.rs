@@ -8,9 +8,9 @@ pub fn get_concavity(path: &[Pixel]) -> bool {
     let p2 = path[path.len() / 2];
     let p3 = path[path.len() - 1];
 
-    let Vec2D {x: x1, y: y1} = p1.point;
-    let Vec2D {x: x2, y: y2} = p2.point;
-    let Vec2D {x: x3, y: y3} = p3.point;
+    let Vec2f {x: x1, y: y1} = p1.point;
+    let Vec2f {x: x2, y: y2} = p2.point;
+    let Vec2f {x: x3, y: y3} = p3.point;
 
     // console!(log, x1, x2, x3);
     // assert!(x1 < x2);

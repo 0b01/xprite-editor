@@ -1,9 +1,8 @@
-#[macro_use]
-pub mod pixels;
+#[macro_use] pub mod pixels;
+#[macro_use] pub mod geom;
 pub mod brush;
 pub mod history;
 pub mod color;
-pub mod geom;
 pub mod toolbox;
 pub mod input;
 pub mod xprite;

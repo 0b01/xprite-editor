@@ -21,7 +21,7 @@ pub struct Xprite {
 
     #[serde(skip_serializing, skip_deserializing)]
     pub toolbox: Toolbox,
-    pub cursor_pos: Pixels,
+    pub cursor: Pixels,
     pub last_mouse_pos: (f32, f32),
 
     #[cfg(feature= "dyon-scripting")]
@@ -36,7 +36,7 @@ impl Xprite {
     pub fn new(art_w: f32, art_h: f32) -> Xprite {
         let selected_color = Color {r: 100, g: 100, b: 100, a: 255};
         let history = History::new();
-        let cursor_pos = Pixels::new();
+        let cursor = Pixels::new();
         let toolbox = Toolbox::new();
         let canvas = Canvas::new(art_w, art_h);
         let im_buf = Pixels::new();
@@ -50,14 +50,14 @@ impl Xprite {
             let scripting = Rc::new(RefCell::new(DyonRuntime::new()));
             Xprite {
                 scripting, last_mouse_pos: (0., 0.), history, im_buf, bz_buf, canvas,
-                selected_color, cursor_pos, toolbox, log, palette_man,
+                selected_color, cursor, toolbox, log, palette_man,
             }
         }
         #[cfg(not(feature = "dyon-scripting"))]
         {
             Xprite {
                 last_mouse_pos: (0., 0.), history, im_buf, bz_buf, canvas,
-                selected_color, cursor_pos, toolbox, log, palette_man,
+                selected_color, cursor, toolbox, log, palette_man,
             }
         }
 
@@ -139,7 +139,7 @@ impl Xprite {
     }
 
     pub fn set_cursor(&mut self, pos: &Pixels) {
-        self.cursor_pos = pos.clone();
+        self.cursor = pos.clone();
     }
 }
 
@@ -197,30 +197,19 @@ impl Xprite {
     pub fn render(&self, rdr: &mut Renderer) {
         rdr.reset();
         self.canvas.draw_canvas(rdr);
-        // draw layers
-        let top = self.history.top();
-        for layer in top.iter_layers() {
-            // skip invisible layers
-            if !layer.visible {
-                continue;
-            }
-            for &Pixel{point, color } in layer.content.iter() {
-                let Vec2D {x, y} = point;
-                self.canvas.draw_pixel(rdr, x, y, color.into(), true);
-            }
-        }
-        // draw current layer pixels
-        for &Pixel{point, color} in self.pixels().iter() {
-            let Vec2D {x, y} = point;
-            self.canvas.draw_pixel(rdr, x, y, color.into(), true);
-        }
 
-        // draw cursor
-        for p in self.cursor_pos.iter() {
-            let Vec2D {x, y} = p.point;
-            self.canvas.draw_pixel(rdr, x, y, p.color.into(), true); // draw a rectangle
+        let mut buf = Pixels::new();
+        for layer in self.history.top().iter_layers() { // draw layers
+            if !layer.visible { continue; } // skip invisible layers
+            buf.extend(&layer.content);
         }
-
+        buf.extend(&self.pixels()); // draw current_buffer
+        buf.extend(&self.cursor); // draw cursor
+        for p in buf.iter() {
+            let Vec2f {x, y} = p.point;
+            self.canvas.draw_pixel(rdr, x, y, p.color.into(), true);
+        }
+        // self.canvas.draw_pixels_simplified(rdr, &buf);
         rdr.render();
 
         self.canvas.draw_grid(rdr);
@@ -278,7 +267,7 @@ impl Xprite {
 
         // draw current layer pixels
         for &Pixel{point, color} in self.pixels().iter() {
-            let Vec2D {x, y} = point;
+            let Vec2f {x, y} = point;
             rdr.rect([x, y], [x+1., y+1.], color.into(), true);
         }
 
@@ -300,7 +289,7 @@ impl Xprite {
 /*
         // draw current layer pixels
         for &Pixel{point, color} in self.pixels().iter() {
-            let Vec2D {x, y} = point;
+            let Vec2f {x, y} = point;
             rdr.rect([x,y],[x+1.,y+1.],color.into(), true);
         }
 */
@@ -335,7 +324,7 @@ impl Xprite {
 
     pub fn mouse_move(&mut self, evt: &InputEvent) -> Result<(), String> {
         if let &InputEvent::MouseMove{x, y} = evt {
-            let p = Vec2D::new(x, y);
+            let p = Vec2f{x, y};
             let tool = self.toolbox.tool();
             tool.borrow_mut().mouse_move(self, p)?;
         }
@@ -345,7 +334,7 @@ impl Xprite {
     pub fn mouse_up(&mut self, evt: &InputEvent) -> Result<(), String> {
         if let &InputEvent::MouseUp{x, y, ..} = evt {
             let tool = self.toolbox.tool();
-            let p = Vec2D::new(x, y);
+            let p = Vec2f {x, y};
             tool.borrow_mut().mouse_up(self, p)?;
         }
         Ok(())
@@ -354,7 +343,7 @@ impl Xprite {
     pub fn mouse_down(&mut self, evt: &InputEvent) -> Result<(), String> {
         if let &InputEvent::MouseDown{x, y, button} = evt {
             let tool = self.toolbox.tool();
-            let p = Vec2D::new(x, y);
+            let p = Vec2f{x, y};
             tool.borrow_mut().mouse_down(self, p, button)?;
         }
         Ok(())

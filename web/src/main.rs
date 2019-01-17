@@ -142,7 +142,7 @@ fn init_js_bindings(xpr: &Rc<RefCell<Xprite>>) {
                 .unwrap()
                 .content
                 .push(Pixel{
-                    point: Vec2D::new(x as f32, y as f32),
+                    point: Vec2f{x: x as f32, y: y as f32},
                     color: Color::red()
                 })
         };

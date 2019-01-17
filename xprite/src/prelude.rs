@@ -6,7 +6,7 @@ pub use crate::core::{
     color::Color,
     input::{InputEvent, InputItem, InputState},
     brush::{Brush, BrushType},
-    geom::{Vec2D, CubicBezierSegment},
+    geom::{Vec2f, CubicBezierSegment},
     xprite::Xprite,
     palette::PaletteManager,
 };

@@ -136,10 +136,10 @@ impl Tool for Pencil {
         ToolType::Pencil
     }
 
-    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2D) -> Result<(), String> {
-        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
-        self.cursor = pixels.clone();
+    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
+        let pixels = self.brush.to_canvas_pixels(point, xpr.color());
+        self.cursor = pixels.clone();
         let color = xpr.color();
         self.cursor_pos = Some(Pixel{point, color});
 
@@ -156,7 +156,7 @@ impl Tool for Pencil {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2D, button: InputItem) -> Result<(), String>{
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String>{
         self.is_mouse_down = Some(button);
 
         self.current_polyline.push(p);
@@ -172,7 +172,7 @@ impl Tool for Pencil {
         Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &Xprite, _p: Vec2D) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
         if self.is_mouse_down.is_none() {return Ok(()); }
         let button = self.is_mouse_down.unwrap();
         if button == InputItem::Right { return Ok(()); }
