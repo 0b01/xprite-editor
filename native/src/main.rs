@@ -1,4 +1,5 @@
 #![allow(clippy::float_cmp)]
+#![allow(non_snake_case)]
 
 extern crate fern;
 #[macro_use] extern crate log;

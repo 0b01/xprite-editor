@@ -4,7 +4,6 @@ use crate::prelude::*;
 /// converts pixels into a grid of size (w, h)
 /// The operation starts at origin
 pub fn floodfill(w: f32, h: f32, pix: &Pixels, origin: Vec2f, bg_col: Option<Color>, color: Color) -> Pixels {
-    debug!("{} {}", w, h);
     let mut ret = Pixels::new();
     let canvas = pix.as_mat(w as usize, h as usize);
     let mut stack = vec![origin];

@@ -18,7 +18,7 @@ impl Marquee {
     }
 
     pub fn finalize(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
-        self.quilt_img(xpr)
+        self.unknown(xpr)
     }
 
     pub fn get_dims(&self) -> Option<(f32, f32, (f32, f32))> {
@@ -33,12 +33,12 @@ impl Marquee {
         ))
     }
 
-    fn quilt_img(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
+    fn unknown(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
         let mut pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
         xpr.history.enter()?;
         pixs.set_color(&xpr.color());
         let content = &mut xpr.current_layer_mut().unwrap().content;
-        let intersection = content.intersection(&pixs);
+        let _intersection = content.intersection(&pixs);
 
         // Ok(img::DynamicImage::ImageRgb8(res))
         unimplemented!()
@@ -81,7 +81,7 @@ impl Tool for Marquee {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel {point, color});
-        // self.quilt_img(xpr)?;
+        // self.unknown(xpr)?;
 
         self.is_mouse_down = None;
         // self.start_pos = None;
@@ -104,7 +104,7 @@ impl Tool for Marquee {
         Ok(())
     }
 
-    fn set(&mut self, xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "ctrl" => {
                 match value {

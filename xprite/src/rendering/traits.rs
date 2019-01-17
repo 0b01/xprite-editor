@@ -13,5 +13,5 @@ pub trait Renderer {
     fn set_mouse_cursor(&mut self, cursor_type: MouseCursorType) {}
     fn render(&mut self) {}
     fn reset(&mut self) {}
-    fn add_img(&mut self, _img: img::DynamicImage, format: img::ColorType) -> usize { 0 }
+    fn add_img(&mut self, _img: img::DynamicImage, _format: img::ColorType) -> usize { 0 }
 }

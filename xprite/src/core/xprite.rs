@@ -88,7 +88,7 @@ impl Xprite {
 
     /// remove pixels from temp im_buf
     pub fn remove_pixels(&mut self, pixels: &Pixels) {
-        self.pixels_mut().sub(pixels);
+        self.pixels_mut().sub_(pixels);
     }
 
     pub fn pixels_mut(&mut self) -> &mut Pixels {
@@ -205,11 +205,14 @@ impl Xprite {
         }
         buf.extend(&self.pixels()); // draw current_buffer
         buf.extend(&self.cursor); // draw cursor
+/*
         for p in buf.iter() {
             let Vec2f {x, y} = p.point;
             self.canvas.draw_pixel(rdr, x, y, p.color.into(), true);
         }
-        // self.canvas.draw_pixels_simplified(rdr, &buf);
+*/
+
+        self.canvas.draw_pixels_simplified(rdr, &buf);
         rdr.render();
 
         self.canvas.draw_grid(rdr);

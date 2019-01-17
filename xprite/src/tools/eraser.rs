@@ -120,7 +120,7 @@ impl Tool for Eraser {
             xpr.history.enter()?;
             {
                 let layer = &mut xpr.current_layer_mut().unwrap();
-                layer.content.sub(&pixs);
+                layer.content.sub_(&pixs);
                 layer.visible = true;
             }
         }

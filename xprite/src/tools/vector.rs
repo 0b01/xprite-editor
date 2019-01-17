@@ -96,7 +96,7 @@ impl Tool for Vector {
         Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
+    fn mouse_up(&mut self, _xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
         if self.is_mouse_down.is_none() {return Ok(()); }
         let button = self.is_mouse_down.unwrap();
         if button == InputItem::Right { return Ok(()); }

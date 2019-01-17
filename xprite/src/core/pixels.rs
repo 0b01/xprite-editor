@@ -137,7 +137,7 @@ impl Pixels {
         }
     }
 
-    pub fn sub(&mut self, other: &Pixels) {
+    pub fn sub_(&mut self, other: &Pixels) {
         self.0 = self.0.sub(&other.0)
     }
 
@@ -203,21 +203,21 @@ impl Pixels {
         for cc in &ccs {
             let fill_col = cc[0].color;
             let mat = cc.as_bool_mat(w, h);
-            for (i, row) in mat.iter().enumerate() {
+            for (y, row) in mat.iter().enumerate() {
                 let mut init = None;
-                for (j, pix) in row.iter().enumerate() {
+                for (x, pix) in row.iter().enumerate() {
                     match (*pix, init) {
                         (true, Some(_)) => continue,
-                        (true, None) => { init = Some(j); }
+                        (true, None) => { init = Some(x); }
                         (false, None) => continue,
                         (false, Some(_)) => {
-                            rect_list.push((i, (init.unwrap(), j), fill_col));
+                            rect_list.push((y, (init.unwrap(), x), fill_col));
                             init = None;
                         }
                     }
                 }
                 if let Some(init) = init {
-                    rect_list.push((i, (init, w), fill_col));
+                    rect_list.push((y, (init, w), fill_col));
                 }
             }
         }
@@ -369,7 +369,7 @@ mod tests {
             pixel!(0.,0., Color::red()),
             pixel!(0.,1., Color::red())
         ]);
-        v1.sub(&Pixels::from_slice(&vec![
+        v1.sub_(&Pixels::from_slice(&vec![
             pixel!(0.,1., Color::blue())
         ]));
         assert_eq!(Pixels::from_slice(&vec![pixel!(0.,0., Color::red())]), v1);
@@ -394,12 +394,33 @@ mod tests {
     #[test]
     fn test_to_strip() {
         use super::*;
+        let pixs = pixels!( pixel!(1, 1, Color::red()) );
+        let strips = pixs.to_strips(3, 3);
+        assert_eq!(strips, vec![(1, (1,2), Color::red())]);
+
         let pixs = pixels!(
+            pixel!(0, 0, Color::red()),
+            pixel!(0, 1, Color::red()),
+            pixel!(0, 2, Color::red())
+        );
+        let strips = pixs.to_strips(3, 3);
+        assert_eq!(strips, vec![(0, (0,3), Color::red())]);
+
+        /*
+         *   ###
+         *   ##.
+         */
+        let pixs = pixels!(
+            pixel!(0, 0, Color::red()),
+            pixel!(0, 1, Color::red()),
+            pixel!(0, 2, Color::red()),
+            pixel!(1, 0, Color::red()),
             pixel!(1, 1, Color::red())
         );
-
         let strips = pixs.to_strips(3, 3);
-
-        println!("{:#?}", strips);
+        assert_eq!(strips, vec![
+            (0, (0,3), Color::red()),
+            (1, (0,2), Color::red()),
+        ]);
     }
 }

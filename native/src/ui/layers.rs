@@ -64,7 +64,7 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     })
 }
 
-fn draw_group_line(state: &mut State, ui: &Ui, group_id: usize, group: &mut (String, Vec<Layer>)) {
+fn draw_group_line(_state: &mut State, ui: &Ui, _group_id: usize, group: &mut (String, Vec<Layer>)) {
     ui.text(im_str!("{}", group.0));
 }
 

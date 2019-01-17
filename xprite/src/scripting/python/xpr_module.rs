@@ -50,7 +50,7 @@ impl MyPixels {
         Ok(())
     }
     pub fn sub_(&mut self, other: &MyPixels) -> PyResult<&MyPixels> {
-        self.p.sub(&other.p);
+        self.p.sub_(&other.p);
         Ok(self)
     }
     pub fn sub(&self, other: &MyPixels) -> PyResult<MyPixels> {

@@ -1,7 +1,6 @@
 use crate::prelude::*;
 
 pub fn find_perimeter(w: usize, h: usize, pixs: &Pixels) -> Pixels {
-    debug!("{} {}", w, h);
     let mut ret = Pixels::new();
     let canvas = pixs.as_mat(w, h);
     for y in 0..h {

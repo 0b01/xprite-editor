@@ -1,7 +1,6 @@
 use std::f32;
 use std::cmp::{min, max};
 use crate::prelude::*;
-use super::pixel_perfect::pixel_perfect;
 
 fn convert(p1: Vec2f, p2: Vec2f, p3: Vec2f, p4: Vec2f) -> CubicBezierSegment {
     let t = 0.5;
@@ -61,19 +60,6 @@ impl Path {
             return Path {segments: Vec::new()}
         }
         let tangents = Path::d3_svg_line_monotone(&points);
-        // let tangents = Path::d3_svg_line_cardinal_tangents(&points, 0.7);
-
-        // let mut i = 0;
-        // for _ in 0..(points.len()-1) {
-        //     let line = CubicBezierSegment {
-        //         from: points[i],
-        //         ctrl1: points[i] + tangents[i],
-        //         ctrl2: points[i+1] + tangents[i+1],
-        //         to: points[i+1]
-        //     };
-        //     segments.push(line);
-        //     i += 1;
-        // }
 
         let mut pi = 1;
         let p0 = points[0];
@@ -229,7 +215,7 @@ impl Path {
         }
     }
 
-    pub fn rasterize(&self, xpr: &Xprite, sort: bool) -> Option<Pixels> {
+    pub fn rasterize(&self, _xpr: &Xprite, sort: bool) -> Option<Pixels> {
         let mut ret = Pixels::new();
         // convert each segment
         for seg in &self.segments {

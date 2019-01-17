@@ -30,7 +30,7 @@ pub fn draw_palette(rdr: &Renderer, state: &mut State, ui: &Ui) {
     })
 }
 
-pub fn draw_color_picker(rdr: &Renderer, state: &mut State, ui: &Ui) {
+pub fn draw_color_picker(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
 
     ui
@@ -83,10 +83,10 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     MARGIN += 1.5;
     PALETTE_BEGIN_Y += 1.5;
     let PALETTE_W = LEFT_SIDE_WIDTH - 2. * MARGIN;
-    let PALETTE_H = 400.;
     let BLOCK_SZ = PALETTE_W / state.cols_per_row as f32;
+    // let PALETTE_H = 400.;
 
-    let draw_list = ui.get_window_draw_list();
+    // let draw_list = ui.get_window_draw_list();
     // draw_list.add_rect(
     //     (MARGIN - 5., PALETTE_BEGIN_Y - 5.),
     //     (RIGHT_SIDE_WIDTH - MARGIN + 5., PALETTE_BEGIN_Y + PALETTE_H + 5.),

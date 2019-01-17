@@ -120,7 +120,7 @@ impl Tool for Texture {
         Ok(())
     }
 
-    fn set(&mut self, xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "ctrl" => {
                 match value {

@@ -28,7 +28,7 @@ pub fn draw_preview(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     })
 }
 
-fn update_preview(rdr: &mut Renderer, state: &mut State, ui: &Ui, new_hash: u64) {
+fn update_preview(rdr: &mut Renderer, state: &mut State, _ui: &Ui, new_hash: u64) {
     let mut img_rdr = ImageRenderer::new(state.xpr.canvas.art_w, state.xpr.canvas.art_h);
     state.xpr.preview(&mut img_rdr).unwrap();
     img_rdr.render();

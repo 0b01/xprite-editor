@@ -10,13 +10,6 @@ pub struct Vec2f {
     pub y: f32,
 }
 
-macro_rules! vec2f {
-    ($y:expr, $x: expr) => {
-        Vec2f{ y:($y) as f32, x:($x) as f32}
-    };
-}
-
-
 #[cfg(feature = "python-scripting")]
 impl<'a> pyo3::FromPyObject<'a> for Vec2f {
     fn extract(ob: &'a pyo3::types::PyObjectRef) -> PyResult<Vec2f> {
@@ -207,12 +200,18 @@ fn droots(p: &[f32]) -> Vec<f32> {
     } else {
         unreachable!()
     }
-    unreachable!()
 }
 
 
 #[cfg(test)]
 mod tests {
+
+    macro_rules! vec2f {
+        ($y:expr, $x: expr) => {
+            Vec2f{ y:($y) as f32, x:($x) as f32}
+        };
+    }
+
     #[test]
     fn test_extrema() {
         use super::*;

@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::algorithms::pixel_perfect::pixel_perfect;
 use std::str::FromStr;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]

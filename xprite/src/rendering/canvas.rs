@@ -117,17 +117,15 @@ impl Canvas {
 
     pub fn draw_pixels_simplified(&self, rdr: &mut Renderer, pixels: &Pixels) {
         let rect_list = pixels.to_strips(self.art_w as usize, self.art_h as usize);
-        // info!("{:?}", rect_list);
-
         let o = self.origin();
-        for &(row, (col0, col1), col) in &rect_list {
+        for &(y, (x0, x1), col) in &rect_list {
             let p0 = [
-                o.0 + self.scale * row as f32,
-                o.1 + self.scale * col0 as f32,
+                o.0 + self.scale * x0 as f32,
+                o.1 + self.scale * y as f32,
             ];
             let p1 = [
-                o.0 + self.scale * (row + 1) as f32,
-                o.1 + self.scale * col1 as f32,
+                o.0 + self.scale * x1 as f32,
+                o.1 + self.scale * (y + 1) as f32,
             ];
 
             rdr.rect(p0, p1, col.into(), true);
