@@ -1,3 +1,6 @@
 [submodule "imgui-rs"]
 	path = imgui-rs
 	url = https://github.com/rickyhan/imgui-rs
+[submodule "ase-rs"]
+	path = ase-rs
+	url = git@github.com:rickyhan/ase-rs.git
