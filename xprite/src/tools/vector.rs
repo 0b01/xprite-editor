@@ -1,3 +1,4 @@
+//! This module contains the implementation for the vector tool
 use crate::prelude::*;
 use std::str::FromStr;
 
@@ -42,7 +43,7 @@ impl FromStr for VectorMode {
 
 impl Default for VectorMode {
     fn default() -> Self {
-        VectorMode::Curvature
+        VectorMode::Continuous
     }
 }
 
@@ -59,10 +60,10 @@ pub struct Vector {
     end_pos: Option<Vec2f>,
     ctrl1_pos: Option<Vec2f>,
     ctrl2_pos: Option<Vec2f>,
+    curves: Vec<CubicBezierSegment>,
 
     current_polyline: Polyline,
-
-    curves: Vec<CubicBezierSegment>,
+    recording: bool,
 
     brush: Brush,
     pub brush_type: BrushType,
@@ -86,11 +87,12 @@ impl Vector {
         Self {
             is_mouse_down,
             current_polyline,
-            tolerence: 5.,
+            tolerence: 15.,
             draw_bezier: true,
             mono_sort: true,
             brush,
             brush_type,
+            recording: true,
             .. Default::default()
         }
     }
@@ -106,6 +108,7 @@ impl Vector {
             Ok((Path::default(), Pixels::new()))
         }
     }
+
 
     fn get_draw_curvature(&self) -> Option<CubicBezierSegment> {
         match (self.start_pos, self.end_pos, self.ctrl1_pos, self.ctrl2_pos) {
@@ -144,12 +147,16 @@ impl Vector {
         Ok(())
     }
 
-    pub fn finalize(&mut self) -> Result<(), String> {
+    pub fn add_to_hist(&mut self, xpr: &Xprite) -> Result<(), String> {
         self.update_buffer = Some({
             let mut ret = Pixels::new();
             for curve in &self.curves {
                 if let Some(ras) = curve.rasterize(self.mono_sort) {
-                    ret.extend(&ras);
+                    let mut pixs = self.brush
+                        .follow_stroke(&ras).unwrap();
+                    let pixs = pixs
+                        .with_color(&xpr.color());
+                    ret.extend(&pixs);
                 }
             }
             ret
@@ -175,7 +182,7 @@ impl Vector {
         None
     }
 
-    fn update_drag(&mut self) -> Option<()> {
+    fn dragging(&mut self) -> Option<()> {
         let (idx, ty) = self.dragging_anchor?;
         let pos = self.cursor_pos?;
         let curve = &mut self.curves[idx];
@@ -217,7 +224,7 @@ impl Tool for Vector {
         let point = xpr.canvas.shrink_size(p);
         self.cursor_pos = Some(point);
 
-        if let Some(_) = self.update_drag() {
+        if let Some(_) = self.dragging() {
             return Ok(());
         }
 
@@ -229,7 +236,7 @@ impl Tool for Vector {
         let p = xpr.canvas.shrink_size_no_floor(p);
         match self.mode {
             VectorMode::Continuous => {
-                self.current_polyline.push(p);
+                if self.recording { self.current_polyline.push(p); }
             }
             VectorMode::Curvature => {
                 // noop
@@ -248,15 +255,21 @@ impl Tool for Vector {
 
         if button == InputItem::Right {
             self.reset_curvature()?;
+            self.recording = false;
+            return Ok(());
+        }
+
+        if self.dragging_anchor.is_some() {
             return Ok(());
         }
 
         match self.mode {
             VectorMode::Continuous => {
+                self.recording = true;
                 self.current_polyline.push(p);
             }
             VectorMode::Curvature => {
-                if self.start_pos.is_none() && self.dragging_anchor.is_none() /*not starting to drag*/ {
+                if self.start_pos.is_none() {
                     self.start_pos = Some(p);
                 } else if self.end_pos.is_none() {
                     self.end_pos = Some(p);
@@ -282,6 +295,15 @@ impl Tool for Vector {
         if self.is_mouse_down.is_none() {
             return Ok(());
         }
+        self.recording = false;
+
+        let simple = self.current_polyline.reumann_witkam(self.tolerence);
+        if let Ok(simple) = simple {
+            let path = simple.interp();
+            self.curves.extend(path.segments);
+        }
+        self.current_polyline.clear();
+
         self.dragging_anchor = None;
         let button = self.is_mouse_down.unwrap();
         if button == InputItem::Right {
@@ -296,29 +318,36 @@ impl Tool for Vector {
         xpr.new_frame();
         self.set_cursor(xpr);
 
+        let mut ret = Pixels::new();
         match self.mode {
             VectorMode::Continuous => {
-                let (path, buf) = self.draw_continuous()?;
-                if self.draw_bezier {
-                    xpr.bz_buf.extend(path.segments);
+                if let Ok((path, buf)) = self.draw_continuous() {
+                    if self.draw_bezier { xpr.bz_buf.extend(path.segments); }
+                    ret.extend(&buf);
                 }
-                xpr.add_pixels(&buf);
             }
             VectorMode::Curvature => {
-                for curve in &self.curves {
-                    if self.draw_bezier { xpr.bz_buf.push(curve.clone()); }
-                    if let Some(ras) = curve.rasterize(self.mono_sort) {
-                        xpr.add_pixels(&ras);
-                    }
-                }
                 if let Some(c) = self.get_draw_curvature() {
                     if self.draw_bezier { xpr.bz_buf.push(c.clone()); }
                     if let Some(ras) = c.rasterize(self.mono_sort) {
-                        xpr.add_pixels(&ras);
+                        ret.extend(&ras);
                     }
                 }
             }
         };
+
+        // rasterize curves buffer
+        for curve in &self.curves {
+            if self.draw_bezier { xpr.bz_buf.push(curve.clone()); }
+            if let Some(ras) = curve.rasterize(self.mono_sort) {
+                ret.extend(&ras);
+            }
+        }
+
+
+        let pixs = self.brush.follow_stroke(&ret).unwrap();
+        xpr.add_pixels(&pixs);
+
         Ok(())
     }
 
@@ -334,7 +363,7 @@ impl Tool for Vector {
         Ok(())
     }
 
-    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(&mut self, xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "tolerence" => {
                 if let Ok(val) = value.parse() {
@@ -363,7 +392,7 @@ impl Tool for Vector {
                 _ => error!("malformed value: {}", value),
             },
             "return" => {
-                self.finalize()?;
+                self.add_to_hist(xpr)?;
             }
             _ => (),
             // i => info!("{}", i),
