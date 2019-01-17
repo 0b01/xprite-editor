@@ -2,6 +2,18 @@ use crate::prelude::*;
 use std::cmp::Ordering;
 use std::hash::{Hash, Hasher};
 
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Serialize, Deserialize, Default)]
+pub struct Rect(pub Vec2f, pub Vec2f);
+
+impl Rect {
+    pub fn w(&self) -> f32 {
+        (self.1.x - self.0.x).abs()
+    }
+    pub fn h(&self) -> f32 {
+        (self.1.y - self.0.y).abs()
+    }
+}
+
 /// represents a 2D vector
 #[cfg_attr(feature = "python-scripting", pyclass)]
 #[derive(Debug, Copy, Clone, PartialOrd, Serialize, Deserialize, Default)]

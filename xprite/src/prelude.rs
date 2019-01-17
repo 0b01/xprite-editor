@@ -3,7 +3,7 @@ pub use crate::algorithms::{path::Path, polyline::Polyline};
 pub use crate::core::{
     brush::{Brush, BrushType},
     color::Color,
-    geom::{CubicBezierSegment, Vec2f},
+    geom::{CubicBezierSegment, Vec2f, Rect},
     history::History,
     input::{InputEvent, InputItem, InputState},
     palette::PaletteManager,

@@ -8,6 +8,7 @@ pub fn connected_components(pixs: &Pixels, w: usize, h: usize) -> Vec<Pixels> {
         let mut cc = Pixels::new();
         let mut stack = vec![origin];
         let mut visited = vec![vec![false; w as usize]; h as usize];
+        let mut neighbors = Vec::with_capacity(4);
         while let Some(point) = stack.pop() {
             let Vec2f { x, y } = point;
             match (bg_col, canvas[y as usize][x as usize]) {
@@ -20,12 +21,19 @@ pub fn connected_components(pixs: &Pixels, w: usize, h: usize) -> Vec<Pixels> {
                 (Some(_), None) => continue,
                 (None, None) => (),
             };
-            let neighbors = [
-                (x + 1., y),
-                (x - 1., y),
-                (x, y + 1.),
-                (x, y - 1.)
-            ];
+            neighbors.clear(); // Checking only 4 neighbors
+            if x < w as f32 - 1. {
+                neighbors.push((x + 1., y))
+            };
+            if x > 0. {
+                neighbors.push((x - 1., y))
+            };
+            if y < h as f32 - 1. {
+                neighbors.push((x, y + 1.))
+            };
+            if y > 0. {
+                neighbors.push((x, y - 1.))
+            };
             for &(nx, ny) in neighbors.iter() {
                 if visited[ny as usize][nx as usize] {
                     continue;

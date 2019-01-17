@@ -201,7 +201,7 @@ impl Pixels {
         find_perimeter(w, h, self)
     }
 
-    pub fn bounding_rect(&self) -> (Vec2f, Vec2f) {
+    pub fn bounding_rect(&self) -> Rect {
         let mut min_x = f32::MAX;
         let mut max_x = f32::MIN;
         let mut min_y = f32::MAX;
@@ -212,8 +212,7 @@ impl Pixels {
             min_y = min_y.min(*y);
             max_y = max_y.max(*y);
         }
-
-        (
+        Rect(
             Vec2f {x: min_x, y: min_y},
             Vec2f {x: max_x, y: max_y},
         )
@@ -296,19 +295,35 @@ impl Pixels {
         }
         arr
     }
-
     pub fn as_mat(&self, w: usize, h: usize) -> Vec<Vec<Option<Pixel>>> {
-        let mut arr = vec![vec![None; w]; h];
+        let mut arr = vec![vec![None; w as usize]; h as usize];
         for p in self.0.iter() {
             let Pixel { point, .. } = p;
             let Vec2f { x, y } = point;
             if oob(*x, *y, w as f32, h as f32) {
                 continue;
             }
-            arr[*y as usize][*x as usize] = Some(p.clone());
+            arr[*y as usize][*x as usize] = Some(*p);
         }
         arr
     }
+
+
+    // // TODO:
+    // pub fn as_mat(&self, bb: Rect) -> Vec<Vec<Option<Pixel>>> {
+    //     let w = bb.w();
+    //     let h = bb.h();
+    //     let mut arr = vec![vec![None; w as usize]; h as usize];
+    //     for p in self.0.iter() {
+    //         let Pixel { point, .. } = p;
+    //         let Vec2f { x, y } = point;
+    //         if oob(*x, *y, w, h) {
+    //             continue;
+    //         }
+    //         arr[(*y - bb.0.y) as usize][(*x - bb.0.x) as usize] = Some(*p);
+    //     }
+    //     arr
+    // }
 
     pub fn len(&self) -> usize {
         self.0.len()
@@ -463,7 +478,7 @@ mod tests {
         );
 
         let bb = pixs.bounding_rect();
-        assert_eq!((
+        assert_eq!(Rect(
             Vec2f {
                 x: 0.0,
                 y: 0.0
