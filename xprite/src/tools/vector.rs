@@ -1,21 +1,57 @@
 use crate::prelude::*;
+use std::str::FromStr;
 
-#[derive(Debug)]
+#[derive(Eq, PartialEq, Clone, Copy, Debug)]
+pub enum VectorMode {
+    Continuous,
+    Curvature,
+}
+
+impl VectorMode {
+    pub fn as_str(&self) -> &str {
+        match self {
+            VectorMode::Continuous => "Continuous",
+            VectorMode::Curvature => "Curvature",
+        }
+    }
+
+    pub const VARIANTS: [VectorMode; 2] = [
+        VectorMode::Continuous,
+        VectorMode::Curvature,
+    ];
+}
+
+impl FromStr for VectorMode {
+    type Err = ();
+    fn from_str(string: &str) -> Result<Self, ()> {
+        match string {
+            "Continuous" => Ok(VectorMode::Continuous),
+            "Curvature" => Ok(VectorMode::Curvature),
+            _ => Err(()),
+        }
+    }
+}
+
+impl Default for VectorMode {
+    fn default() -> Self {
+        VectorMode::Continuous
+    }
+}
+
+#[derive(Debug, Default)]
 pub struct Vector {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,
     brush: Brush,
-    pub tolerence: f32,
-    pixs_buf: Pixels,
     current_polyline: Option<Polyline>,
+    /// edit mode
+    pub mode: VectorMode,
+    /// polyline simplification tolerance threshold
+    pub tolerence: f32,
+    /// whether to draw bezier curve
     pub draw_bezier: bool,
-    pub sort: bool,
-}
-
-impl Default for Vector {
-    fn default() -> Self {
-        Self::new()
-    }
+    /// sort by segment
+    pub mono_sort: bool,
 }
 
 impl Vector {
@@ -24,18 +60,27 @@ impl Vector {
         let cursor_pos = None;
         let brush = Brush::pixel();
         let current_polyline = Some(Polyline::new());
-        let pixs_buf = Pixels::new();
 
         Self {
             is_mouse_down,
             current_polyline,
             cursor_pos,
             brush,
-            pixs_buf,
             tolerence: 1.,
             draw_bezier: true,
-            sort: true,
+            mono_sort: true,
+            ..Default::default()
         }
+    }
+
+    fn draw_continuous(&self) -> Result<(Path, Pixels), String> {
+        let simple = self.current_polyline
+            .as_ref().ok_or_else(||"cannot borrow as mut".to_owned())?.reumann_witkam(self.tolerence)?;
+        let path = simple.interp();
+        let mut buf = path.rasterize(self.mono_sort).unwrap();
+        buf.set_color(&Color::orange());
+
+        Ok((path, buf))
     }
 }
 
@@ -69,17 +114,6 @@ impl Tool for Vector {
             .ok_or_else(|| "cannot borrow as mut")?
             .push(p);
 
-        // let button = self.is_mouse_down.clone().unwrap();
-        // if button == InputItem::Left {
-        //     let line_pixs = self.current_polyline.as_mut()?.connect_with_line(&xpr)?;
-        //     let pixs = {
-        //         let perfect = pixel_perfect(&line_pixs);
-        //         Pixels::from_slice(&perfect)
-        //     };
-        //     self.pixs_buf.extend(&pixs);
-        // } else if button == InputItem::Right {
-        //     // xpr.remove_pixels(&pixels.unwrap());
-        // }
         Ok(())
     }
 
@@ -91,15 +125,6 @@ impl Tool for Vector {
             .as_mut()
             .ok_or_else(|| "cannot borrow as mut".to_owned())?
             .push(p);
-        // self.pixs_buf.clear();
-        // let pixels = self.to_canvas_pixels(xpr, xpr.canvas.shrink_size(p), xpr.color());
-        // if let Some(pixels) = pixels {
-        //     if button == InputItem::Left {
-        //         self.pixs_buf.extend(&pixels);
-        //     } else {
-        //         // xpr.remove_pixels(&pixels);
-        //     }
-        // }
         Ok(())
     }
 
@@ -112,23 +137,6 @@ impl Tool for Vector {
             return Ok(());
         }
 
-        // xpr.history.enter()?;
-        // // commit pixels
-        // xpr.history.top()
-        //     .selected_layer
-        //     .borrow_mut()
-        //     .content
-        //     .extend(&self.pixs_buf);
-
-        // xpr.history.top()
-        //     .selected_layer
-        //     .borrow_mut()
-        //     .paths
-        //     .push((simple.clone(), path));
-
-        // self.current_polyline.clear();
-        // self.pixs_buf.clear();
-
         self.is_mouse_down = None;
         Ok(())
     }
@@ -136,28 +144,18 @@ impl Tool for Vector {
     fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         xpr.new_frame();
         self.set_cursor(xpr);
-        self.pixs_buf.clear();
-        if let Ok(simple) = self
-            .current_polyline
-            .as_ref()
-            .ok_or_else(|| "cannot borrow as mut".to_owned())?
-            .reumann_witkam(self.tolerence)
-        {
-            let (path, pixs_buf) = {
-                let path = simple.interp();
-                let mut rasterized = path.rasterize(xpr, self.sort).unwrap();
-                rasterized.set_color(&Color::orange());
-                (path, rasterized)
-            };
 
-            self.pixs_buf.extend(&pixs_buf);
-            if self.draw_bezier {
-                xpr.bz_buf.extend(path.segments);
-            }
+        let (path, buf) = self.draw_continuous()?;
 
-            xpr.add_pixels(&self.pixs_buf);
+        if self.draw_bezier {
+            xpr.bz_buf.extend(path.segments);
         }
+        xpr.add_pixels(&buf);
 
+        Ok(())
+    }
+
+    fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         Ok(())
     }
 
@@ -170,11 +168,19 @@ impl Tool for Vector {
                     error!("cannot parse val: {}", value);
                 }
             }
-            "brush" => match value {
-                "cross" => self.brush = Brush::cross(),
-                "pixel" => self.brush = Brush::pixel(),
-                _ => error!("malformed value: {}", value),
-            },
+            "mode" => {
+                use self::VectorMode::*;
+                match VectorMode::from_str(value) {
+                    Ok(Continuous) => self.mode = Continuous,
+                    Ok(Curvature) => self.mode = Curvature,
+                    _ => (),
+                };
+            }
+            // "brush" => match value {
+            //     "cross" => self.brush = Brush::cross(),
+            //     "pixel" => self.brush = Brush::pixel(),
+            //     _ => error!("malformed value: {}", value),
+            // },
             _ => (),
         }
         Ok(())

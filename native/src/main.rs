@@ -24,7 +24,6 @@ use self::prelude::*;
 use crate::render::imgui::ImguiRenderer;
 use clap::{App, Arg, SubCommand};
 use std::sync::{Arc, Mutex};
-use xprite::prelude::*;
 
 #[allow(unused)]
 fn main() -> Result<(), String> {

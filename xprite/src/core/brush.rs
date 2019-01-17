@@ -16,7 +16,7 @@ impl BrushType {
     pub const VARIANTS: [BrushType; 2] = [BrushType::Pixel, BrushType::Cross];
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Brush {
     pub shape: PixelOffsets,
     pub bb: (f32, f32),
@@ -24,6 +24,10 @@ pub struct Brush {
 }
 
 impl Brush {
+    pub fn new() -> Self {
+        Brush::pixel()
+    }
+
     pub fn pixel() -> Self {
         let mut pxs = Pixels::new();
         pxs.push(pixel!(0., 0., Color::red()));

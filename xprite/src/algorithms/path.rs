@@ -233,7 +233,7 @@ impl Path {
         Path { segments }
     }
 
-    pub fn rasterize(&self, _xpr: &Xprite, sort: bool) -> Option<Pixels> {
+    pub fn rasterize(&self, sort: bool) -> Option<Pixels> {
         let mut ret = Pixels::new();
         // convert each segment
         for seg in &self.segments {
