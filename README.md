@@ -2,6 +2,13 @@
 
 Pixel art editor with algorithmic tools.
 
+To build:
+
+```
+git submodule update --init --recursive
+```
+
+
 [![Build Status](https://travis-ci.org/rickyhan/xprite-editor.svg?branch=master)](https://travis-ci.org/rickyhan/xprite-editor)
 
 ## Bugs and Improvements
