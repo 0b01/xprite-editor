@@ -3,8 +3,7 @@ use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
 
 /// represents a 2D vector
-#[cfg(feature = "python-scripting")]
-#[pyclass]
+#[cfg_attr(feature = "python-scripting", pyclass)]
 #[derive(Debug, Copy, Clone, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Vec2D {
     pub x: f32,

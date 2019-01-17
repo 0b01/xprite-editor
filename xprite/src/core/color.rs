@@ -1,8 +1,7 @@
 use crate::prelude::*;
 use hex;
 
-#[cfg(feature = "python-scripting")]
-#[pyclass]
+#[cfg_attr(feature = "python-scripting", pyclass)]
 #[derive(Debug, Hash, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Color {
     pub r: u8,

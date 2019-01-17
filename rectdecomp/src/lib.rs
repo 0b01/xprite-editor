@@ -1,7 +1,5 @@
 extern crate intervaltree;
 use intervaltree::{IntervalTree, Element};
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::ops::Sub;
 use std::ops::Range;
 
@@ -23,17 +21,17 @@ use std::ops::Range;
 //   this.visited = false
 // }
 
-struct Vertex<T> {
+struct Vertex<T: Copy> {
     point: [T;2],
     path: usize,
     index: usize,
     concave: bool,
-    next: Option<Rc<RefCell<Vertex<T>>>>,
-    prev: Option<Rc<RefCell<Vertex<T>>>>,
+    next: Option<Vertex<T>>,
+    prev: Option<Vertex<T>>,
     visited: bool,
 }
 
-impl<T> Vertex<T> {
+impl<T:Copy> Vertex<T> {
     fn new(point: [T;2], path: usize, index: usize, concave: bool) -> Self {
         Self {
             point, path, index, concave, next:None, prev:None, visited: false
@@ -41,9 +39,9 @@ impl<T> Vertex<T> {
     }
 }
 
-fn get_diagonals<T: Sub + PartialEq + Ord>(
-  vertices: &[Rc<RefCell<Vertex<T>>>],
-  paths: &[Vec<Rc<RefCell<Vertex<T>>>>],
+fn get_diagonals<T: Copy+Sub + PartialEq + Ord>(
+  vertices: &[Vertex<T>],
+  paths: &[Vec<Vertex<T>>],
   direction:usize,
   tree: IntervalTree<T, Segment<T>>
 ) -> Vec<Segment<T>> {
@@ -80,7 +78,7 @@ fn get_diagonals<T: Sub + PartialEq + Ord>(
   return diagonals
 }
 
-fn test_segment<T: Ord>(a: Rc<RefCell<Vertex<T>>>, b: Rc<RefCell<Vertex<T>>>, tree: IntervalTree<T, Segment<T>>, direction: usize) -> bool {
+fn test_segment<T: Copy+Ord>(a: Vertex<T>, b: Vertex<T>, tree: IntervalTree<T, Segment<T>>, direction: usize) -> bool {
     let ax = a.borrow().point[direction^1];
     let bx = b.borrow().point[direction^1];
     let s = tree.query_point(a.borrow().point[direction]).next().unwrap();
@@ -92,15 +90,15 @@ fn test_segment<T: Ord>(a: Rc<RefCell<Vertex<T>>>, b: Rc<RefCell<Vertex<T>>>, tr
 }
 
 
-struct Segment<T: PartialOrd> {
+struct Segment<T: PartialOrd+Copy> {
     range: Range<T>,
-    start: Rc<RefCell<Vertex<T>>>,
-    end: Rc<RefCell<Vertex<T>>>,
+    start: Vertex<T>,
+    end: Vertex<T>,
     direction: usize,
     number: i32,
 }
 
-impl<T:PartialOrd> Into<Element<T,Segment<T>>> for Segment<T> {
+impl<T:PartialOrd+Copy> Into<Element<T,Segment<T>>> for Segment<T> {
     fn into(self) -> Element<T, Segment<T>> {
         Element {
             range: self.range,
@@ -109,10 +107,10 @@ impl<T:PartialOrd> Into<Element<T,Segment<T>>> for Segment<T> {
     }
 }
 
-impl<T: PartialOrd> Segment<T> {
-    fn new(start: Rc<RefCell<Vertex<T>>>, end: Rc<RefCell<Vertex<T>>>, direction: usize) -> Self{
-        let a = start.borrow().point[(direction^1) as usize];
-        let b = end.borrow().point[(direction^1) as usize];
+impl<T:Copy+ PartialOrd> Segment<T> {
+    fn new(start: Vertex<T>, end: Vertex<T>, direction: usize) -> Self{
+        let a = start.point[(direction^1) as usize];
+        let b = end.point[(direction^1) as usize];
         let range = if a < b {
             a..b
         } else {
@@ -129,14 +127,14 @@ impl<T: PartialOrd> Segment<T> {
 }
 
 // //Find all crossings between diagonals
-fn find_crossings<T:PartialOrd+Ord+Clone>(hdiagonals:&[Segment<T>], vdiagonals:&[Segment<T>]) -> Vec<[Segment<T>;2]> {
+fn find_crossings<T:Copy+PartialOrd+Ord+Clone>(hdiagonals:&[Segment<T>], vdiagonals:&[Segment<T>]) -> Vec<[Segment<T>;2]> {
   let htree: IntervalTree<T,Segment<T>> = hdiagonals.into_iter().map(|i|i.into()).collect();
   let mut crossings = vec![];
   for i in 0..vdiagonals.len() {
     let v = vdiagonals[i];
-    let x = v.start.borrow().point[0];
-    let h = htree.query_point(v.start.borrow().point[1]).next().unwrap();
-    let x = h.value.start.borrow().point[0];
+    let x = v.start.point[0];
+    let h = htree.query_point(v.start.point[1]).next().unwrap();
+    let x = h.value.start.point[0];
     if v.range.start <= x && x <= v.range.end {
       crossings.push([h.value, v])
     }

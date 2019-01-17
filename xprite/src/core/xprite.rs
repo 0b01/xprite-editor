@@ -243,6 +243,7 @@ impl Xprite {
             || self.canvas.within_circle(to, 0.5, self.last_mouse_pos) {
                 rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Hand);
             }
+
         }
     }
 }

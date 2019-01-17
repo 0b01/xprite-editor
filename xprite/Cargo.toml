@@ -16,7 +16,7 @@ serde_derive = "1.0.82"
 serde = "1.0.82"
 hex = "0.3.2"
 natord = "1.0.9"
-
+ase = { path = "../ase-rs" }
 
 [dependencies.indexmap]
 version = "1.0.2"

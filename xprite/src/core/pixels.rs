@@ -12,8 +12,7 @@ use std::fmt::{Debug, Formatter, Error};
 use indexmap::{IndexSet, set::Iter};
 use img::GenericImageView;
 
-#[cfg(feature = "python-scripting")]
-#[pyclass]
+#[cfg_attr(feature = "python-scripting", pyclass)]
 #[derive(Copy, Clone, Eq, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Pixel {
     pub point: Vec2D,

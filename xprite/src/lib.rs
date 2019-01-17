@@ -4,6 +4,7 @@
 #![feature(specialization)]
 
 extern crate hex;
+extern crate ase;
 extern crate image as img;
 extern crate serde;
 #[macro_use] extern crate serde_derive;
