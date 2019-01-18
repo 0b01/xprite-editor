@@ -54,8 +54,15 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
     }
 
     fn rect(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4], filled: bool) {
-        self.draw_list
-            .insert((canonicalize(p0), canonicalize(p1)), (color, filled));
+        // self.draw_list
+        //     .insert((canonicalize(p0), canonicalize(p1)), (color, filled));
+
+            let draw_list = self.ui.get_window_draw_list();
+            draw_list
+                .add_rect(p0, p1, color)
+                .filled(filled)
+                .build();
+
     }
 
     fn line(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4]) {
@@ -90,10 +97,10 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
 
     fn render(&mut self) {
         let imgui_draw_list = self.ui.get_window_draw_list();
-        for ((p0, p1), (color, filled)) in self.draw_list.clone().into_iter() {
+        for ((p0, p1), (color, filled)) in self.draw_list.iter() {
             imgui_draw_list
-                .add_rect(uncanonicalize(p0), uncanonicalize(p1), color)
-                .filled(filled)
+                .add_rect(uncanonicalize(p0), uncanonicalize(p1), *color)
+                .filled(*filled)
                 .build();
         }
     }
@@ -126,6 +133,6 @@ fn canonicalize(p: [f32; 2]) -> [u32; 2] {
 }
 
 #[inline(always)]
-fn uncanonicalize(p: [u32; 2]) -> [f32; 2] {
+fn uncanonicalize(p: &[u32; 2]) -> [f32; 2] {
     [f32::from_bits(p[0]), f32::from_bits(p[1])]
 }

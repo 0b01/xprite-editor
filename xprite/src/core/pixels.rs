@@ -105,7 +105,7 @@ impl PartialEq for Pixels {
 
 impl Pixels {
     pub fn new() -> Self {
-        Pixels(IndexSet::new())
+        Pixels(IndexSet::with_capacity(800))
     }
 
     pub fn from_slice(slice: &[Pixel]) -> Self {

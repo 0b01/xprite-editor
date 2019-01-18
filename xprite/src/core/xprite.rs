@@ -213,25 +213,28 @@ impl Xprite {
     pub fn render(&self, rdr: &mut Renderer) {
         rdr.reset();
         self.canvas.draw_canvas(rdr);
+        macro_rules! draw_buf {
+            ($buffer: expr) => {
+                for p in $buffer.iter() {
+                    let Vec2f {x, y} = p.point;
+                    self.canvas.draw_pixel(rdr, x, y, p.color.into(), true);
+                }
+            }
+        }
 
-        let mut buf = Pixels::new();
         for layer in self.history.top().iter_layers() {
             // draw layers
             if !layer.visible {
                 continue;
             } // skip invisible layers
-            buf.extend(&layer.content);
+            draw_buf!(&layer.content);
         }
-        buf.extend(&self.pixels()); // draw current_buffer
-        buf.extend(&self.cursor); // draw cursor
-        if true {
-            for p in buf.iter() {
-                let Vec2f {x, y} = p.point;
-                self.canvas.draw_pixel(rdr, x, y, p.color.into(), true);
-            }
-        } else {
-            self.canvas.draw_pixels_simplified(rdr, &buf);
-        }
+        draw_buf!(&self.pixels()); // draw current_buffer
+        draw_buf!(&self.cursor); // draw cursor
+        // if true {
+        // } else {
+        //     self.canvas.draw_pixels_simplified(rdr, &buf);
+        // }
         rdr.render();
 
         self.canvas.draw_grid(rdr);

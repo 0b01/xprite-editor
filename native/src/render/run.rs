@@ -7,6 +7,11 @@ use imgui_winit_support;
 use std::rc::Rc;
 use std::time::Instant;
 
+use glium::glutin;
+use glium::{Display, Surface};
+use imgui_glium_renderer::Renderer;
+
+
 use crate::ui::inputs::KeyCode;
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 struct MouseState {
@@ -25,6 +30,9 @@ fn set_style(imgui: &mut ImGui) {
     style.frame_border_size = 1.;
     style.child_border_size = 1.;
     style.window_border_size = 1.;
+    style.anti_aliased_lines = false;
+    style.anti_aliased_fill = false;
+
 
     let vals = ImGuiCol::VARIANTS;
     macro_rules! find {
@@ -89,10 +97,6 @@ pub fn run<F>(title: String, clear_color: [f32; 4], mut run_ui: F)
 where
     F: FnMut(&Ui, &Rc<Context>, &mut Textures) -> bool,
 {
-    use glium::glutin;
-    use glium::{Display, Surface};
-    use imgui_glium_renderer::Renderer;
-
     let mut events_loop = glutin::EventsLoop::new();
     let context = glutin::ContextBuilder::new().with_vsync(true);
     let builder = glutin::WindowBuilder::new()
@@ -269,6 +273,7 @@ where
             clear_color[3],
         );
         renderer.render(&mut target, ui).expect("Rendering failed");
+        // render_canvas(&mut target, &display);
         target.finish().unwrap();
 
         if quit {

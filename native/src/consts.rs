@@ -5,8 +5,8 @@ pub const TOOLBOX_H: f32 = 220.;
 
 pub const COLOR_PICKER_H: f32 = 200.;
 
-pub const DEFAULT_WIDTH: f32 = 480.;
-pub const DEFAULT_HEIGHT: f32 = 270.;
+pub const DEFAULT_WIDTH: f32 = 800.;
+pub const DEFAULT_HEIGHT: f32 = 600.;
 
 // pub const DEFAULT_WIDTH: f32 = 100.;
 // pub const DEFAULT_HEIGHT: f32 = 100.;

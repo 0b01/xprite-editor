@@ -112,7 +112,10 @@ impl<'ui> Renderer for ImguiCairoRenderer<'ui> {
         // println!("cairo rerender");
         drop(data);
 
-        self.ui.image(texture_id, [w as f32, h as f32]).build();
+        self.ui.image(texture_id, [
+            w as f32 * 2.,
+            h as f32 * 2.,
+        ]).build();
     }
 }
 

@@ -9,6 +9,7 @@ use stdweb::web::{document, CanvasRenderingContext2d};
 pub struct StdwebRenderer {
     pub canvas: CanvasElement,
     pub ctx: CanvasRenderingContext2d,
+    pub last: Option<[f32;4]>,
 }
 
 #[allow(unused)]
@@ -32,13 +33,29 @@ impl Renderer for StdwebRenderer {
         let c = f64::from(p1[0]) - a;
         let d = f64::from(p1[1]) - b;
         if filled {
-            self.set_fill_style_color(&format!(
-                "rgba({},{},{},{})",
-                color[0] * 255.,
-                color[1] * 255.,
-                color[2] * 255.,
-                color[3],
-            ));
+            if self.last.is_none() {
+                let col = format!(
+                    "rgba({},{},{},{})",
+                    color[0] * 255.,
+                    color[1] * 255.,
+                    color[2] * 255.,
+                    color[3],
+                );
+                self.ctx.set_fill_style_color(&col);
+                self.last = Some(color);
+            } else if let Some(last) = self.last.as_ref() {
+                let col = format!(
+                    "rgba({},{},{},{})",
+                    color[0] * 255.,
+                    color[1] * 255.,
+                    color[2] * 255.,
+                    color[3],
+                );
+                if last != &color {
+                    self.ctx.set_fill_style_color(&col);
+                    self.last = Some(color);
+                }
+            }
             self.ctx.fill_rect(a, b, c, d)
         } else {
             self.ctx.rect(a, b, c, d);
@@ -50,7 +67,7 @@ impl Renderer for StdwebRenderer {
         let x = f64::from(p0[0]);
         let y = f64::from(p0[1]);
         if filled {
-            self.set_fill_style_color(&format!(
+            self.ctx.set_fill_style_color(&format!(
                 "rgba({},{},{},{})",
                 color[0] * 255.,
                 color[1] * 255.,
@@ -68,7 +85,7 @@ impl Renderer for StdwebRenderer {
     }
 
     fn line(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4]) {
-        self.set_fill_style_color(&format!(
+        self.ctx.set_fill_style_color(&format!(
             "rgba({},{},{},{})",
             color[0] * 255.,
             color[1] * 255.,
@@ -90,7 +107,7 @@ impl Renderer for StdwebRenderer {
         color: [f32; 4],
         thickness: f32,
     ) {
-        self.set_fill_style_color(&format!(
+        self.ctx.set_fill_style_color(&format!(
             "rgba({},{},{},{})",
             color[0] * 255.,
             color[1] * 255.,
@@ -121,10 +138,6 @@ impl StdwebRenderer {
             .unwrap();
 
         let ctx: CanvasRenderingContext2d = canvas.get_context().unwrap();
-        Self { canvas, ctx }
-    }
-
-    pub fn set_fill_style_color(&self, color: &str) {
-        self.ctx.set_fill_style_color(color)
+        Self { canvas, ctx, last: None }
     }
 }

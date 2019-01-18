@@ -8,7 +8,7 @@ extern crate log;
 #[cfg(feature = "cairo-renderer")]
 extern crate cairo;
 extern crate clap;
-extern crate glium;
+#[macro_use] extern crate glium;
 extern crate imgui;
 extern crate imgui_glium_renderer;
 extern crate imgui_winit_support;

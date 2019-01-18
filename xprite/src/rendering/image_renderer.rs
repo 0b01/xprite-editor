@@ -51,7 +51,7 @@ impl Renderer for ImageRenderer {
             if !oob(point.x, point.y, self.w, self.h) {
                 let x = point.x as u32;
                 let y = point.y as u32;
-                self.image.put_pixel(x, y, color);
+                self.image.put_pixel(y, x, color);
             }
         }
     }
