@@ -1,4 +1,4 @@
-use crate::algorithms::line::bresenham;
+use crate::algorithms::line::continuous_line;
 use crate::prelude::*;
 
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -71,7 +71,7 @@ impl Polyline {
         for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
             let p0 = xpr.canvas.shrink_size(*p0);
             let p1 = xpr.canvas.shrink_size(*p1);
-            let seg = bresenham(&p0, &p1);
+            let seg = continuous_line(p0, p1);
             ret.extend(&seg);
         }
         Ok(ret)

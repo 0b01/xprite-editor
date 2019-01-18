@@ -36,7 +36,7 @@ impl Marquee {
     fn unknown(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
         let mut pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
         xpr.history.enter()?;
-        pixs.set_color(&xpr.color());
+        pixs.set_color(xpr.color());
         let content = &mut xpr.current_layer_mut().unwrap().content;
         let _intersection = content.intersection(&pixs);
 
@@ -47,7 +47,7 @@ impl Marquee {
     fn draw_line(&self, xpr: &mut Xprite) -> Result<(), String> {
         let pixs = get_rect(self.start_pos, self.cursor_pos, false);
         if let Ok(mut pixs) = pixs {
-            pixs.set_color(&xpr.color());
+            pixs.set_color(xpr.color());
             xpr.add_pixels(&pixs);
         }
         Ok(())

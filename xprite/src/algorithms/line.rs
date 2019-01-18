@@ -152,7 +152,92 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
     ret
 }
 
-pub fn bresenham(start: &Vec2f, stop: &Vec2f) -> Pixels {
+pub fn pixel_perfect_line(start: Vec2f, stop: Vec2f) -> Pixels {
+    let Vec2f { x: mut x1, y: mut y1 } = start;
+    let Vec2f { x: mut x2, y: mut y2 } = stop;
+    let yaxis: bool = if (y2-y1).abs() > (x2-x1).abs() {
+        true
+    } else {
+      false
+    };
+    if yaxis {
+        std::mem::swap(&mut x1, &mut y1);
+        std::mem::swap(&mut x2, &mut y2);
+    }
+
+    let w = (x2-x1).abs()+1.;
+    let h = (y2-y1).abs()+1.;
+    let dx = (x2-x1).signum();
+    let dy = (y2-y1).signum();
+
+    // Move x2 one extra pixel to the dx direction so we can use
+    // operator!=() instead of operator<(). Here I prefer operator!=()
+    // instead of swapping x1 with x2 so the error always start from 0
+    // in the origin (x1,y1).
+    x2 += dx;
+
+    let mut ret = Pixels::new();
+    let mut x = x1;
+    let mut e = 0.;
+    let mut y = y1;
+    while x!=x2 {
+        if yaxis {
+            ret.push(pixel!(x, y, Color::red()))
+        } else {
+            ret.push(pixel!(y, x, Color::red()))
+        }
+
+        // The error advances "h/w" per each "x" step. As we're using a
+        // integer value for "e", we use "w" as the unit.
+        e += h;
+        if e >= w {
+            y += dy;
+            e -= w;
+        }
+
+        x+=dx
+    }
+
+    ret
+}
+
+pub fn continuous_line(start: Vec2f, stop: Vec2f) -> Pixels {
+    let Vec2f { x: mut x0, y: mut y0 } = start;
+    let Vec2f { x: x1, y: y1 } = stop;
+
+    let dx = (x1-x0).abs();
+    let sx = (x1-x0).signum();
+    let dy = -(y1-y0).abs();
+    let sy = (y1-y0).signum();
+    let mut err = dx + dy;
+    let mut e2;
+
+    let mut ret = Pixels::new();
+    loop {
+        ret.push(pixel!(y0, x0, Color::red()));
+        e2 = 2. * err;
+        if e2 >= dy {
+            if x0 == x1 {
+                break;
+            }
+            err += dy;
+            x0 += sx;
+        }
+        if e2 <= dx {
+            if y0 == y1 {
+                break;
+            }
+            err += dx;
+            y0 += sy;
+        }
+    }
+
+    ret
+}
+
+
+#[deprecated]
+pub fn bresenham(start: Vec2f, stop: Vec2f) -> Pixels {
     let mut ret = Pixels::new();
     let mut x0 = start.x;
     let mut y0 = start.y;

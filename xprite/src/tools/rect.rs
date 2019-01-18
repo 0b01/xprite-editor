@@ -59,7 +59,7 @@ impl Rect {
 
     fn finalize_rect(&mut self, xpr: &Xprite) -> Result<(), String> {
         if let Ok(mut pixs) = self.get_rect() {
-            pixs.set_color(&xpr.color());
+            pixs.set_color(xpr.color());
             self.buffer = Some(pixs);
         }
         Ok(())
@@ -67,7 +67,7 @@ impl Rect {
 
     fn draw_rect(&self, xpr: &mut Xprite) -> Result<(), String> {
         if let Ok(mut pixs) = self.get_rect() {
-            pixs.set_color(&xpr.color());
+            pixs.set_color(xpr.color());
             xpr.add_pixels(&pixs);
         }
         Ok(())

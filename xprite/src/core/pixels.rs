@@ -55,14 +55,6 @@ impl PartialEq for Pixel {
     }
 }
 
-impl Pixel {
-    pub fn with_color(&self, col: Color) -> Self {
-        let mut self_ = self.clone();
-        self_.color = col;
-        self_
-    }
-}
-
 impl Debug for Pixel {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         write!(f, "@({},{})", self.point.y, self.point.x)
@@ -160,28 +152,18 @@ impl Pixels {
         self.0.iter()
     }
 
-    pub fn set_color(&mut self, color: &Color) {
-        let color = *color;
-        self.0 = self
-            .0
-            .iter()
-            .map(|Pixel { point, .. }| Pixel {
-                point: *point,
-                color,
-            })
-            .collect();
+    #[allow(mutable_transmutes)]
+    pub fn set_color(&mut self, color: Color) {
+        for pix in self.0.iter() {
+            unsafe{
+                let mut p = ::std::mem::transmute::<&Pixel, &mut Pixel>(pix);
+                p.color = color;
+            }
+        }
     }
 
-    pub fn with_color(&mut self, color: &Color) -> &Self {
-        let color = *color;
-        self.0 = self
-            .0
-            .iter()
-            .map(|Pixel { point, .. }| Pixel {
-                point: *point,
-                color,
-            })
-            .collect();
+    pub fn with_color(&mut self, color: Color) -> &Self {
+        self.set_color(color);
         self
     }
 

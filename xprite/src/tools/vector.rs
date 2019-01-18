@@ -102,7 +102,7 @@ impl Vector {
         if let Ok(simple) = simple {
             let path = simple.interp();
             let mut buf = path.rasterize(self.mono_sort).unwrap();
-            buf.set_color(&Color::orange());
+            buf.set_color(Color::orange());
             Ok((path, buf))
         } else {
             Ok((Path::default(), Pixels::new()))
@@ -155,7 +155,7 @@ impl Vector {
                     let mut pixs = self.brush
                         .follow_stroke(&ras).unwrap();
                     let pixs = pixs
-                        .with_color(&xpr.color());
+                        .with_color(xpr.color());
                     ret.extend(&pixs);
                 }
             }

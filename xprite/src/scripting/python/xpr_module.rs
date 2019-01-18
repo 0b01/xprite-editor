@@ -69,7 +69,7 @@ impl MyPixels {
 
     pub fn set_color(&mut self, pycolor: &PyTuple) -> PyResult<()> {
         let color = pycolor.into();
-        self.p.set_color(&color);
+        self.p.set_color(color);
         Ok(())
     }
 
@@ -192,6 +192,6 @@ fn rect(start: &PyTuple, stop: &PyTuple, filled: bool) -> PyResult<MyPixels> {
 fn line(start: &PyTuple, stop: &PyTuple) -> PyResult<MyPixels> {
     let p0: Pixel = start.into();
     let p1: Pixel = stop.into();
-    let p = algorithms::line::bresenham(&p0.point, &p1.point);
+    let p = algorithms::line::continuous_line(p0.point, p1.point);
     Ok(MyPixels { p })
 }

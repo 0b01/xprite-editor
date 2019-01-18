@@ -29,13 +29,13 @@ impl Line {
         if self.snap {
             Some(snapped_line(self.is_snap_45, &start, &stop))
         } else {
-            Some(bresenham(&start.point, &stop.point))
+            Some(continuous_line(start.point, stop.point))
         }
     }
 
     fn finalize_line(&mut self, xpr: &Xprite) -> Result<(), String> {
         if let Some(mut pixs) = self.get_line() {
-            pixs.set_color(&xpr.color());
+            pixs.set_color(xpr.color());
             self.buffer = Some(pixs);
         }
         Ok(())
@@ -43,7 +43,7 @@ impl Line {
 
     fn draw_line(&self, xpr: &mut Xprite) -> Result<(), String> {
         if let Some(mut pixs) = self.get_line() {
-            pixs.set_color(&xpr.color());
+            pixs.set_color(xpr.color());
             xpr.add_pixels(&pixs);
         }
         Ok(())

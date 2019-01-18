@@ -1,4 +1,6 @@
 use crate::prelude::*;
+use crate::algorithms::line::continuous_line;
+
 use std::str::FromStr;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
@@ -44,8 +46,11 @@ pub struct Pencil {
     is_mouse_down: Option<InputItem>,
     current_polyline: Polyline,
     cursor: Option<Pixels>,
-    cursor_pos: Option<Pixel>,
+    cursor_pos: Option<Vec2f>,
     pub mode: PencilMode,
+
+    last_mouse_down_or_up: Option<Vec2f>,
+    shift: bool,
 
     brush: Brush,
     pub brush_type: BrushType,
@@ -65,16 +70,17 @@ impl Pencil {
     pub fn new() -> Self {
         let is_mouse_down = None;
         let cursor = None;
-        let cursor_pos = None;
         let brush_type = BrushType::Pixel;
         let brush = Brush::pixel();
         let current_polyline = Polyline::new();
 
         Self {
             is_mouse_down,
+            cursor_pos: None,
+            last_mouse_down_or_up: None,
+            shift: false,
             current_polyline,
             cursor,
-            cursor_pos,
             brush,
             brush_type,
             mode: PencilMode::PixelPerfect,
@@ -93,11 +99,19 @@ impl Pencil {
             line_pixs
         };
         let mut pixs = self.brush.follow_stroke(&pixs).unwrap();
-        pixs.set_color(&xpr.color());
+        pixs.set_color(xpr.color());
         Ok(pixs)
     }
 
-    pub fn finalize(&mut self, xpr: &Xprite) -> Result<(), String> {
+
+    fn finalize_continuous_line(&mut self, xpr: &Xprite, start:Option<Vec2f>, stop:Option<Vec2f> ) -> Result<(), String> {
+        let mut buf = continuous_line(start.unwrap(), stop.unwrap());
+        buf.set_color(xpr.color());
+        self.update_buffer = Some(buf);
+        Ok(())
+    }
+
+    fn finalize(&mut self, xpr: &Xprite) -> Result<(), String> {
         use self::PencilMode::*;
         let mut buf = match self.mode {
             Raw => self.draw_stroke(xpr)?,
@@ -121,9 +135,13 @@ impl Pencil {
             }
         };
 
-        buf.set_color(&xpr.color());
+        buf.set_color(xpr.color());
         self.update_buffer = Some(buf);
         Ok(())
+    }
+
+    fn draw_line(&self) -> Option<Pixels> {
+        Some(continuous_line(self.last_mouse_down_or_up?, self.cursor_pos?))
     }
 }
 
@@ -132,10 +150,16 @@ impl Tool for Pencil {
         let point = xpr.canvas.shrink_size(p);
         let pixels = self.brush.to_canvas_pixels(point, xpr.color());
         self.cursor = pixels.clone();
-        let color = xpr.color();
-        self.cursor_pos = Some(Pixel { point, color });
+        self.cursor_pos = Some(point);
 
-        // if mouse is done
+        if self.shift {
+            if let Some(pixs) = self.draw_line() {
+                self.draw_buffer = pixs;
+                return Ok(());
+            }
+        }
+
+        // if mouse is down
         if self.is_mouse_down.is_none() || pixels.is_none() {
             return Ok(());
         }
@@ -166,16 +190,24 @@ impl Tool for Pencil {
         Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         if self.is_mouse_down.is_none() {
             return Ok(());
         }
+        let prev = self.last_mouse_down_or_up;
+        let point = xpr.canvas.shrink_size(p);
+        self.last_mouse_down_or_up = Some(point);
+
         let button = self.is_mouse_down.unwrap();
         if button == InputItem::Right {
             return Ok(());
         }
 
-        self.finalize(xpr)?;
+        if self.shift {
+            self.finalize_continuous_line(xpr, prev, self.cursor_pos)?;
+        } else {
+            self.finalize(xpr)?;
+        }
 
         self.current_polyline.clear();
         self.is_mouse_down = None;
@@ -204,7 +236,7 @@ impl Tool for Pencil {
     fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         xpr.new_frame();
         self.set_cursor(xpr);
-        xpr.add_pixels(&self.draw_buffer.with_color(&xpr.color()));
+        xpr.add_pixels(&self.draw_buffer.with_color(xpr.color()));
         Ok(())
     }
 
@@ -230,6 +262,19 @@ impl Tool for Pencil {
                 }
                 _ => error!("malformed value: {}", value),
             },
+            "shift" => match value {
+                "true" => {
+                    self.shift = true;
+                    if let Some(pixs) = self.draw_line() {
+                        self.draw_buffer = pixs;
+                    }
+                }
+                "false" => {
+                    self.shift = false;
+                    self.draw_buffer.clear();
+                }
+                _ => error!("malformed value: {}", value),
+            }
             _ => (),
         }
         Ok(())

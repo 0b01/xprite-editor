@@ -59,7 +59,7 @@ impl Ellipse {
 
     fn finalize_ellipse(&mut self, xpr: &Xprite) -> Result<(), String> {
         if let Ok(mut pixs) = self.get_ellipse() {
-            pixs.set_color(&xpr.color());
+            pixs.set_color(xpr.color());
             self.buffer = Some(pixs);
         }
         Ok(())
@@ -67,7 +67,7 @@ impl Ellipse {
 
     fn draw_ellipse(&self, xpr: &mut Xprite) -> Result<(), String> {
         if let Ok(mut pixs) = self.get_ellipse() {
-            pixs.set_color(&xpr.color());
+            pixs.set_color(xpr.color());
             xpr.add_pixels(&pixs);
         }
         Ok(())
