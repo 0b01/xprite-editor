@@ -5,6 +5,7 @@ use std::io::{BufReader, BufWriter, Read, Write};
 use xprite::bincode::{deserialize, serialize};
 use xprite::image::GenericImageView;
 use xprite::rendering::image_renderer::ImageRenderer;
+use crate::render::imgui::ImguiRenderer;
 
 pub struct State<'a> {
     pub xpr: Xprite,
@@ -37,15 +38,19 @@ impl<'a> State<'a> {
         }
     }
 
-    pub fn update_preview(&mut self, rdr: &mut Renderer) {
+    pub fn update_preview(&mut self, rdr: &mut ImguiRenderer) {
         let mut img_rdr = ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
         self.xpr.preview(&mut img_rdr).unwrap();
         img_rdr.render();
         let img = img_rdr.img();
-        self.preview_texture = Some(rdr.add_img(img.to_owned(), image::RGBA(0)));
+        if let Some(id) = self.preview_texture {
+            rdr.replace_img(img.to_owned(), image::RGBA(0), id);
+        } else {
+            self.preview_texture = Some(rdr.add_img(img.to_owned(), image::RGBA(0)));
+        }
     }
 
-    pub fn redraw_pixels(&mut self, rdr: &mut Renderer) -> Result<(), String> {
+    pub fn redraw_pixels(&mut self, rdr: &mut ImguiRenderer) -> Result<(), String> {
         dbg!(self.xpr.redraw);
         if self.xpr.redraw || self.preview_texture.is_none() {
             dbg!("redrawing");

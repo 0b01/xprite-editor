@@ -80,20 +80,7 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
     }
 
     fn add_img(&mut self, img: image::DynamicImage, format: image::ColorType) -> usize {
-        let format = match format {
-            image::ColorType::RGBA(_) => ClientFormat::U8U8U8U8,
-            image::ColorType::RGB(_) => ClientFormat::U8U8U8,
-            _ => unimplemented!("Color type"),
-        };
-        let (width, height) = img.dimensions();
-        let img = RawImage2d {
-            data: Cow::Owned(img.raw_pixels()),
-            width,
-            height,
-            format,
-        };
-
-        let gl_texture = Texture2d::new(self.gl_ctx, img).unwrap();
+        let gl_texture = self.to_gl_texture(img, format);
         self.textures.insert(gl_texture).id()
     }
 
@@ -114,5 +101,26 @@ impl<'ui> ImguiRenderer<'ui> {
             gl_ctx,
             textures,
         }
+    }
+
+    pub fn replace_img(&mut self, img: image::DynamicImage, format: image::ColorType, texture_id: usize) {
+        let gl_texture = self.to_gl_texture(img, format);
+        self.textures.replace(ImTexture::from(texture_id), gl_texture);
+    }
+
+    fn to_gl_texture(&self, img: image::DynamicImage, format: image::ColorType,) -> Texture2d {
+        let format = match format {
+            image::ColorType::RGBA(_) => ClientFormat::U8U8U8U8,
+            image::ColorType::RGB(_) => ClientFormat::U8U8U8,
+            _ => unimplemented!("Color type"),
+        };
+        let (width, height) = img.dimensions();
+        let img = RawImage2d {
+            data: Cow::Owned(img.raw_pixels()),
+            width,
+            height,
+            format,
+        };
+        Texture2d::new(self.gl_ctx, img).unwrap()
     }
 }

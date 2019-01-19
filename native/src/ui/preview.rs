@@ -1,7 +1,8 @@
 use crate::prelude::*;
+use crate::render::imgui::ImguiRenderer;
 use xprite::rendering::Renderer;
 
-pub fn draw_preview(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
+pub fn draw_preview(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
     ui.window(im_str!("Preview"))
         .position((LEFT_SIDE_WIDTH, 220.), ImGuiCond::Appearing)
         .size((LEFT_SIDE_WIDTH, 100.), ImGuiCond::Appearing)
