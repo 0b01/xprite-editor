@@ -32,7 +32,9 @@ fn main() {
     let callback = move |_t: f64| {
         xpr_.borrow_mut().draw().unwrap();
         xpr_.borrow_mut().update().unwrap();
-        xpr_.borrow_mut().render(&mut rdr);
+        xpr_.borrow_mut().render_canvas(&mut rdr);
+        xpr_.borrow_mut().render_cursor(&mut rdr);
+        xpr_.borrow_mut().render_bezier(&mut rdr);
     };
     js!(
         let callback = @{callback};

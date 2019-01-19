@@ -5,11 +5,13 @@ authors = ["Ricky Han <rickylqhan@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+indexmap = {version="1.0.2", features=["serde-1"]}
 fern = "0.5.6"
 log = { version = "0.4", features = ["std"] }
 libtexsyn = { path = "../libtexsyn" }
 chrono = "0.4"
 image = "0.20.1"
+pyo3 = { version = "0.5.2", optional = true }
 # saving/loading
 bincode = "1.0.1"
 serde_derive = "1.0.82"
@@ -18,14 +20,7 @@ hex = "0.3.2"
 natord = "1.0.9"
 ase = { path = "../ase-rs" }
 fnv = "1.0.6"
-
-[dependencies.indexmap]
-version = "1.0.2"
-features = ["serde-1"]
-
-[dependencies.pyo3]
-version = "0.5.2"
-optional = true
+bitflags = "1.0.4"
 
 [features]
 default = []

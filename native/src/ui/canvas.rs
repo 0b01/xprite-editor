@@ -35,7 +35,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                     .movable(false)
                     .build(|| {
                         update_viewport(state, ui);
-                        state.xpr.render(rdr);
+                        state.xpr.render_canvas(rdr);
                         super::inputs::bind_input(state, ui);
                         let origin = state.xpr.canvas.origin();
                         ui.set_cursor_screen_pos([origin.x, origin.y]);
@@ -49,6 +49,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         ]).build();
 
                         state.xpr.render_cursor(rdr);
+                        state.xpr.render_bezier(rdr);
                     });
             });
 

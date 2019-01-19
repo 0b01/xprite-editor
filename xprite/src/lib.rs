@@ -3,6 +3,8 @@
 #![feature(vec_remove_item)]
 #![feature(specialization)]
 
+#[macro_use]
+extern crate bitflags;
 extern crate fnv;
 extern crate ase;
 extern crate hex;

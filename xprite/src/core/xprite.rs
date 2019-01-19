@@ -192,13 +192,13 @@ impl Xprite {
     }
 
     /// render to canvas
-    pub fn render(&self, rdr: &mut Renderer) {
+    pub fn render_canvas(&self, rdr: &mut Renderer) {
         rdr.reset();
         self.canvas.draw_canvas(rdr);
-
-
         self.canvas.draw_grid(rdr);
+    }
 
+    pub fn render_bezier(&self, rdr: &mut Renderer) {
         for seg in &self.bz_buf {
             let &CubicBezierSegment {
                 ctrl1,

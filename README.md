@@ -18,7 +18,6 @@ git submodule update --init --recursive
 * [ ] Line modes(perfect span, predictable, continuous, bresenham)
 * [ ] Curves(increment modes: fibonacci, odd, even)
 * [ ] Set brush size
-* [ ] Tabs
 * [ ] Preview bounding box
 * [ ] Fix zoom
 * [ ] Save/load .aseprite
@@ -27,11 +26,12 @@ git submodule update --init --recursive
 
 ## Done
 
+* [ ] Tabs
+* [ ] Output svg
 * [x] Fix ellipse( i.center stroke; ii. filled )
 * [x] Connected component algorithm
 * [x] Stroke caching
 * [x] Fix eraser !moved
-* [ ] Output svg
 * [x] ImageImguiRenderer(integrated to imgui)
 * [x] Change ImDrawIdx to u32
 * [x] Floodfill crashing when index is negative
