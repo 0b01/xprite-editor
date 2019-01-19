@@ -53,7 +53,6 @@ impl<'a> State<'a> {
     pub fn redraw_pixels(&mut self, rdr: &mut ImguiRenderer) -> Result<(), String> {
         dbg!(self.xpr.redraw);
         if self.xpr.redraw || self.preview_texture.is_none() {
-            dbg!("redrawing");
             self.update_preview(rdr);
             self.xpr.redraw = false;
         }

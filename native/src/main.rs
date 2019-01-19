@@ -22,7 +22,7 @@ mod ui;
 
 use self::prelude::*;
 use crate::render::imgui::ImguiRenderer;
-use clap::{App, Arg, SubCommand};
+use clap::{App, Arg};
 use std::sync::{Arc, Mutex};
 
 #[allow(unused)]

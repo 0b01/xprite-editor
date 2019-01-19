@@ -115,21 +115,6 @@ impl Canvas {
         mouse.x < p0.x + rad && mouse.x > p0.x - rad && mouse.y < p0.y + rad && mouse.y > p0.y - rad
     }
 
-    #[deprecated]
-    pub fn draw_pixels_simplified(&self, rdr: &mut Renderer, pixels: &Pixels) {
-        let rect_list = pixels.to_strips(self.art_w as usize, self.art_h as usize);
-        let o = self.origin();
-        for &(y, (x0, x1), col) in &rect_list {
-            let p0 = [o.x + self.scale * x0 as f32, o.y + self.scale * y as f32];
-            let p1 = [
-                o.x + self.scale * x1 as f32,
-                o.y + self.scale * (y + 1) as f32,
-            ];
-
-            rdr.rect(p0, p1, col.into(), true);
-        }
-    }
-
     pub fn draw_pixel_rect(&self, rdr: &mut Renderer, x: f32, y: f32, color: [f32; 4], filled: bool) {
         let o = self.origin();
         if oob(x, y, self.art_w, self.art_h) {

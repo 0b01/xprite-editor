@@ -126,7 +126,6 @@ impl Vector {
                 CubicBezierSegment{from, to, ctrl1, ctrl2}
             }),
             (Some(_), Some(_), Some(_), Some(_)) => self.finalize_curvature(),
-            _ => unreachable!(),
         }
     }
 
@@ -224,7 +223,7 @@ impl Tool for Vector {
         let point = xpr.canvas.shrink_size(p);
         self.cursor_pos = Some(point);
 
-        if let Some(_) = self.dragging() {
+        if self.dragging().is_some() {
             return Ok(());
         }
 

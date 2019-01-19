@@ -7,11 +7,7 @@ use glium::{
 use imgui::*;
 use std::borrow::Cow;
 use std::f32;
-use xprite::rendering::{
-    MouseCursorType,
-    image_renderer::ImageRenderer,
-    Renderer,
-};
+use xprite::rendering::{ MouseCursorType, Renderer };
 
 pub struct ImguiRenderer<'ui> {
     pub ui: &'ui Ui<'ui>,
@@ -63,7 +59,7 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
             .build();
     }
 
-    fn pixel(&mut self, x: f32, y: f32, color: [f32; 4], filled: bool) {
+    fn pixel(&mut self, _x: f32, _y: f32, _color: [f32; 4], _filled: bool) {
         ()
     }
 

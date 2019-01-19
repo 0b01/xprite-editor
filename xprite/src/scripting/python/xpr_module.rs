@@ -105,8 +105,7 @@ impl MyPixels {
     pub fn shift(&self, dist: &PyTuple) -> PyResult<MyPixels> {
         let d: Vec2f = dist.into();
         let mut p = Pixels::new();
-        for pixel in self.p.iter() {
-            let mut pixel = pixel.clone();
+        for mut pixel in self.p.iter().cloned() {
             pixel.point.x += d.x;
             pixel.point.y += d.y;
             p.push(pixel)
