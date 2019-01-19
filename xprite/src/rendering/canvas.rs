@@ -115,6 +115,7 @@ impl Canvas {
         mouse.x < p0.x + rad && mouse.x > p0.x - rad && mouse.y < p0.y + rad && mouse.y > p0.y - rad
     }
 
+    #[deprecated]
     pub fn draw_pixels_simplified(&self, rdr: &mut Renderer, pixels: &Pixels) {
         let rect_list = pixels.to_strips(self.art_w as usize, self.art_h as usize);
         let o = self.origin();
@@ -134,10 +135,11 @@ impl Canvas {
         if oob(x, y, self.art_w, self.art_h) {
             return;
         }
-        let p0 = [o.x + self.scale * x, o.y + self.scale * y];
-        let p1 = [o.x + self.scale * (x + 1.), o.y + self.scale * (y + 1.)];
+        // screen coords
+        // let p0 = [o.x + self.scale * x, o.y + self.scale * y];
+        // let p1 = [o.x + self.scale * (x + 1.), o.y + self.scale * (y + 1.)];
 
-        rdr.rect(p0, p1, color, filled);
+        rdr.pixel(x, y, color, filled);
     }
 
     pub fn origin(&self) -> Vec2f {

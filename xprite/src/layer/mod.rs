@@ -51,7 +51,7 @@ impl Layer {
             if oob(x, y, rdr.width(), rdr.height()) {
                 continue;
             }
-            rdr.rect([x, y], [x + 1., y + 1.], color.into(), true);
+            rdr.pixel(y, x, color.into(), true);
         }
     }
 }

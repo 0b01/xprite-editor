@@ -63,6 +63,10 @@ impl Renderer for StdwebRenderer {
         }
     }
 
+    fn pixel(&mut self, x: f32, y: f32, color: [f32; 4], filled: bool) {
+        ()
+    }
+
     fn circ(&mut self, p0: [f32; 2], r: f32, color: [f32; 4], filled: bool) {
         let x = f64::from(p0[0]);
         let y = f64::from(p0[1]);

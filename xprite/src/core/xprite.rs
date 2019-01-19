@@ -235,7 +235,6 @@ impl Xprite {
         // } else {
         //     self.canvas.draw_pixels_simplified(rdr, &buf);
         // }
-        rdr.render();
 
         self.canvas.draw_grid(rdr);
 
@@ -299,7 +298,7 @@ impl Xprite {
         // draw current layer pixels
         for &Pixel { point, color } in self.pixels().iter() {
             let Vec2f { x, y } = point;
-            rdr.rect([x, y], [x + 1., y + 1.], color.into(), true);
+            rdr.pixel(y, x, color.into(), true);
         }
 
         rdr.render();
@@ -317,13 +316,6 @@ impl Xprite {
             }
             layer.draw(rdr);
         }
-        /*
-                // draw current layer pixels
-                for &Pixel{point, color} in self.pixels().iter() {
-                    let Vec2f {x, y} = point;
-                    rdr.rect([x,y],[x+1.,y+1.],color.into(), true);
-                }
-        */
         rdr.render();
         Ok(())
     }

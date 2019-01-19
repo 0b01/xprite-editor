@@ -94,12 +94,14 @@ fn run_dyon_script(fname: &str) -> Result<(), String> {
 
 fn run_ui() {
     trace!("Starting Xprite");
-    let xpr = Xprite::new(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    let art_w = DEFAULT_WIDTH;
+    let art_h = DEFAULT_HEIGHT;
+    let xpr = Xprite::new(art_w, art_h);
     init_full_logger(Arc::clone(&xpr.log));
     let mut state = State::new(xpr);
 
     render::run("Xprite".to_owned(), BGCOLOR, |ui, gl_ctx, textures| {
-        let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures);
+        let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures, art_w, art_h);
         // let mut rdr = ImguiCairoRenderer::new(&ui, gl_ctx, textures, &state);
         ui::draw(&mut rdr, &mut state, ui)
     });

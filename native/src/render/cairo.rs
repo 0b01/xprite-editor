@@ -6,8 +6,8 @@ use xprite::rendering::{MouseCursorType, Renderer};
 
 #[allow(unused)]
 pub struct CairoRenderer {
-    w: f32,
-    h: f32,
+    art_w: f32,
+    art_h: f32,
     pub surface: ImageSurface,
     pub cr: Option<Context>,
     image: Option<image::DynamicImage>,
@@ -87,7 +87,7 @@ impl Renderer for CairoRenderer {
     fn render(&mut self) {
         let w = self.width();
         let h = self.height();
-        if self.w != w || self.h != h {
+        if self.art_w != w || self.art_h != h {
             return;
         }
 
@@ -123,9 +123,6 @@ fn argb2rgba(i: u32) -> u32 {
 #[allow(unused)]
 impl CairoRenderer {
     pub fn new(art_w: f32, art_h: f32) -> Self {
-        let w = art_w;
-        let h = art_h;
-
         let surface = ImageSurface::create(Format::ARgb32, w as i32, h as i32)
             .expect("Cannot create surface.");
         let cr = Context::new(&surface);
@@ -135,8 +132,8 @@ impl CairoRenderer {
         let cr = Some(cr);
 
         Self {
-            w,
-            h,
+            art_w,
+            art_h,
             surface,
             cr,
             image: None,

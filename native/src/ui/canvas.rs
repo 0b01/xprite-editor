@@ -1,8 +1,9 @@
 use crate::prelude::*;
 use imgui::ImGuiWindowFlags;
 use xprite::rendering::Renderer;
+use crate::render::imgui::ImguiRenderer;
 
-pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
+pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
     ui.window(im_str!("canvas"))
         .position((LEFT_SIDE_WIDTH, 20.0), ImGuiCond::Always)
@@ -36,6 +37,16 @@ pub fn draw_canvas(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
                         update_viewport(state, ui);
                         state.xpr.render(rdr);
                         super::inputs::bind_input(state, ui);
+                        let origin = state.xpr.canvas.origin();
+                        ui.set_cursor_screen_pos([origin.x, origin.y]);
+                        rdr.render();
+
+                        if let Some(tex_id) = &rdr.texture_id {
+                            ui.image(*tex_id, [
+                                rdr.art_w * state.xpr.canvas.scale,
+                                rdr.art_h * state.xpr.canvas.scale,
+                            ]).build();
+                        }
                     });
             });
 

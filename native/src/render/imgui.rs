@@ -7,19 +7,20 @@ use glium::{
 use imgui::*;
 use std::borrow::Cow;
 use std::f32;
-use xprite::indexmap::IndexMap;
-use xprite::rendering::{MouseCursorType, Renderer};
-
-type DrawListPoint1 = [u32; 2];
-type DrawListPoint2 = [u32; 2];
-type DrawListColor = [f32; 4];
-type DrawListFill = bool;
+use xprite::rendering::{
+    MouseCursorType,
+    image_renderer::ImageRenderer,
+    Renderer,
+};
 
 pub struct ImguiRenderer<'ui> {
     pub ui: &'ui Ui<'ui>,
     pub gl_ctx: &'ui Facade,
     pub textures: &'ui mut Textures<Texture2d>,
-    draw_list: IndexMap<(DrawListPoint1, DrawListPoint2), (DrawListColor, DrawListFill)>,
+    pub texture_id: Option<ImTexture>,
+    img: ImageRenderer,
+    pub art_w: f32,
+    pub art_h: f32,
 }
 
 impl<'ui> Renderer for ImguiRenderer<'ui> {
@@ -57,12 +58,15 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         // self.draw_list
         //     .insert((canonicalize(p0), canonicalize(p1)), (color, filled));
 
-            let draw_list = self.ui.get_window_draw_list();
-            draw_list
-                .add_rect(p0, p1, color)
-                .filled(filled)
-                .build();
+        let draw_list = self.ui.get_window_draw_list();
+        draw_list
+            .add_rect(p0, p1, color)
+            .filled(filled)
+            .build();
+    }
 
+    fn pixel(&mut self, x: f32, y: f32, color: [f32; 4], filled: bool) {
+        self.img.pixel(x, y, color, filled);
     }
 
     fn line(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4]) {
@@ -96,43 +100,39 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
     }
 
     fn render(&mut self) {
-        let imgui_draw_list = self.ui.get_window_draw_list();
-        for ((p0, p1), (color, filled)) in self.draw_list.iter() {
-            imgui_draw_list
-                .add_rect(uncanonicalize(p0), uncanonicalize(p1), *color)
-                .filled(*filled)
-                .build();
-        }
+        self.img.render();
+        let img = self.img.img();
+
+        let data = img.raw_pixels();
+        let image = RawImage2d {
+            data: Cow::Borrowed(&*data),
+            width: self.art_w as u32,
+            height: self.art_h as u32,
+            format: ClientFormat::U8U8U8U8,
+        };
+        let gl_texture = Texture2d::new(self.gl_ctx, image).unwrap();
+        let texture_id = self.textures.insert(gl_texture);
+        drop(data);
+
+        self.texture_id = Some(texture_id);
+
     }
 
     fn reset(&mut self) {
-        self.draw_list.clear();
+        self.img.reset();
     }
 }
 
 impl<'ui> ImguiRenderer<'ui> {
-    pub fn new(ui: &'ui Ui, gl_ctx: &'ui Facade, textures: &'ui mut Textures<Texture2d>) -> Self {
-        let draw_list = IndexMap::new();
+    pub fn new(ui: &'ui Ui, gl_ctx: &'ui Facade, textures: &'ui mut Textures<Texture2d>, art_w: f32, art_h: f32) -> Self {
         Self {
+            art_w,
+            art_h,
             ui,
             gl_ctx,
             textures,
-            draw_list,
+            img: ImageRenderer::new(art_w, art_h),
+            texture_id: None,
         }
     }
-}
-
-#[inline(always)]
-fn canonicalize(p: [f32; 2]) -> [u32; 2] {
-    unsafe {
-        [
-            ::std::mem::transmute::<f32, u32>(p[0]),
-            ::std::mem::transmute::<f32, u32>(p[1]),
-        ]
-    }
-}
-
-#[inline(always)]
-fn uncanonicalize(p: &[u32; 2]) -> [f32; 2] {
-    [f32::from_bits(p[0]), f32::from_bits(p[1])]
 }

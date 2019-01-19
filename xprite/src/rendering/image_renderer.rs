@@ -34,7 +34,11 @@ impl Renderer for ImageRenderer {
     }
 
     fn rect(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4], filled: bool) {
-        self.draw_list.push(pixel!(p0[0], p0[1], color.into()));
+        ()
+    }
+
+    fn pixel(&mut self, x: f32, y: f32, color: [f32; 4], filled: bool) {
+        self.draw_list.push(pixel!(y, x, color.into()));
     }
 
     fn line(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4]) {}
@@ -51,7 +55,7 @@ impl Renderer for ImageRenderer {
             if !oob(point.x, point.y, self.w, self.h) {
                 let x = point.x as u32;
                 let y = point.y as u32;
-                self.image.put_pixel(y, x, color);
+                self.image.put_pixel(x, y, color);
             }
         }
     }
