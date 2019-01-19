@@ -23,12 +23,10 @@ pub struct Xprite {
     pub cursor: Pixels,
     pub last_mouse_pos: Vec2f,
 
-    #[cfg(feature = "dyon-scripting")]
-    #[serde(skip_serializing, skip_deserializing)]
-    pub scripting: Rc<RefCell<DyonRuntime>>,
-
     #[serde(skip_serializing, skip_deserializing)]
     pub log: Arc<Mutex<String>>,
+
+    pub redraw: bool,
 }
 
 impl Xprite {
@@ -42,48 +40,31 @@ impl Xprite {
         let im_buf = Pixels::new();
         let bz_buf = Vec::new();
         let log = Arc::new(Mutex::new(String::new()));
+        let redraw = true;
 
-        #[cfg(feature = "dyon-scripting")]
-        {
-            use crate::scripting::dyon::DyonRuntime;
-            let scripting = Rc::new(RefCell::new(DyonRuntime::new()));
-            Xprite {
-                scripting,
-                last_mouse_pos: Vec2f { x:0., y:0. },
-                history,
-                im_buf,
-                bz_buf,
-                canvas,
-                selected_color,
-                cursor,
-                toolbox,
-                log,
-                palette_man,
-            }
-        }
-        #[cfg(not(feature = "dyon-scripting"))]
-        {
-            Xprite {
-                last_mouse_pos: Vec2f { x:0., y:0. },
-                history,
-                im_buf,
-                bz_buf,
-                canvas,
-                selected_color,
-                cursor,
-                toolbox,
-                log,
-                palette_man,
-            }
+        Xprite {
+            last_mouse_pos: Vec2f { x:0., y:0. },
+            history,
+            im_buf,
+            bz_buf,
+            canvas,
+            selected_color,
+            cursor,
+            toolbox,
+            log,
+            palette_man,
+            redraw,
         }
     }
 
     pub fn undo(&mut self) {
         self.history.undo();
+        self.redraw = true;
     }
 
     pub fn redo(&mut self) {
         self.history.redo();
+        self.redraw = true;
     }
 
     pub fn update_mouse_pos(&mut self, x: f32, y: f32) {
@@ -98,7 +79,7 @@ impl Xprite {
 
     /// add pixel to temp im_buf
     pub fn add_pixel(&mut self, pixel: Pixel) {
-        self.pixels_mut().push(pixel);
+        self.pixels_mut().push(pixel)
     }
 
     /// remove pixels from temp im_buf
@@ -138,11 +119,13 @@ impl Xprite {
     }
 
     pub fn draw(&mut self) -> Result<(), String> {
-        self.toolbox.tool().borrow_mut().draw(self)
+        self.redraw = self.toolbox.tool().borrow_mut().draw(self)?;
+        Ok(())
     }
 
     pub fn update(&mut self) -> Result<(), String> {
-        self.toolbox.tool().borrow_mut().update(self)
+        self.redraw = self.toolbox.tool().borrow_mut().update(self)?;
+        Ok(())
     }
 
     pub fn color(&self) -> Color {
@@ -160,16 +143,6 @@ impl Xprite {
 
     pub fn set_cursor(&mut self, pos: &Pixels) {
         self.cursor = pos.clone();
-    }
-}
-
-impl Xprite {
-    #[cfg(feature = "dyon-scripting")]
-    pub fn execute_dyon_script(&mut self, path: &str) -> Result<(), String> {
-        let s = Rc::clone(&self.scripting);
-        let mut scripting = s.borrow_mut();
-        scripting.fname = Some(path.to_owned());
-        scripting.execute(self)
     }
 }
 
@@ -213,28 +186,16 @@ impl Xprite {
     pub fn render(&self, rdr: &mut Renderer) {
         rdr.reset();
         self.canvas.draw_canvas(rdr);
+
         macro_rules! draw_buf {
             ($buffer: expr) => {
                 for p in $buffer.iter() {
                     let Vec2f {x, y} = p.point;
-                    self.canvas.draw_pixel(rdr, x, y, p.color.into(), true);
+                    self.canvas.draw_pixel_rect(rdr, x, y, p.color.into(), true);
                 }
             }
         }
-
-        for layer in self.history.top().iter_layers() {
-            // draw layers
-            if !layer.visible {
-                continue;
-            } // skip invisible layers
-            draw_buf!(&layer.content);
-        }
-        draw_buf!(&self.pixels()); // draw current_buffer
         draw_buf!(&self.cursor); // draw cursor
-        // if true {
-        // } else {
-        //     self.canvas.draw_pixels_simplified(rdr, &buf);
-        // }
 
         self.canvas.draw_grid(rdr);
 
@@ -276,6 +237,7 @@ impl Xprite {
         rdr.image
     }
 
+    #[deprecated]
     pub fn img_hash(&mut self) -> u64 {
         let mut s = DefaultHasher::new();
         let top = self.history.top();
@@ -298,10 +260,9 @@ impl Xprite {
         // draw current layer pixels
         for &Pixel { point, color } in self.pixels().iter() {
             let Vec2f { x, y } = point;
-            rdr.pixel(y, x, color.into(), true);
+            rdr.pixel(x, y, color.into(), true);
         }
 
-        rdr.render();
         Ok(())
     }
 
@@ -316,7 +277,6 @@ impl Xprite {
             }
             layer.draw(rdr);
         }
-        rdr.render();
         Ok(())
     }
 }

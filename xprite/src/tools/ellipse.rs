@@ -57,21 +57,14 @@ impl Ellipse {
         }
     }
 
-    fn finalize_ellipse(&mut self, xpr: &Xprite) -> Result<(), String> {
-        if let Ok(mut pixs) = self.get_ellipse() {
-            pixs.set_color(xpr.color());
-            self.buffer = Some(pixs);
-        }
-        Ok(())
+    fn finalize_ellipse(&mut self, xpr: &Xprite) -> Result<bool, String> {
+        let mut pixs = self.get_ellipse()?;
+        if pixs.is_empty() { return Ok(false); }
+        pixs.set_color(xpr.color());
+        self.buffer = Some(pixs);
+        Ok(true)
     }
 
-    fn draw_ellipse(&self, xpr: &mut Xprite) -> Result<(), String> {
-        if let Ok(mut pixs) = self.get_ellipse() {
-            pixs.set_color(xpr.color());
-            xpr.add_pixels(&pixs);
-        }
-        Ok(())
-    }
 }
 
 impl Tool for Ellipse {
@@ -109,19 +102,28 @@ impl Tool for Ellipse {
         Ok(())
     }
 
-    fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         if let Some(pixs) = &self.buffer {
             xpr.history.enter()?;
             xpr.current_layer_mut().unwrap().content.extend(&pixs);
+            self.buffer = None;
+            Ok(true)
+        } else {
+            Ok(false)
         }
-        self.buffer = None;
-        Ok(())
     }
-    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        self.draw_ellipse(xpr).unwrap();
         self.set_cursor(xpr);
-        Ok(())
+        let mut pixs = self.get_ellipse()?;
+        if pixs.is_empty() {
+            Ok(false)
+        } else {
+            pixs.set_color(xpr.color());
+            xpr.add_pixels(&pixs);
+            Ok(true)
+        }
     }
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {

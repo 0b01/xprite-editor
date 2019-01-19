@@ -6,3 +6,7 @@ members = [
     "libtexsyn",
     # "rectdecomp",
 ]
+
+
+[profile.release]
+debug = true

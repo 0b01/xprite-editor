@@ -41,12 +41,12 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         ui.set_cursor_screen_pos([origin.x, origin.y]);
                         rdr.render();
 
-                        if let Some(tex_id) = &rdr.texture_id {
-                            ui.image(*tex_id, [
-                                rdr.art_w * state.xpr.canvas.scale,
-                                rdr.art_h * state.xpr.canvas.scale,
-                            ]).build();
-                        }
+                        state.redraw_pixels(rdr).unwrap();
+
+                        ui.image(ImTexture::from(state.preview_texture.unwrap()), [
+                            rdr.art_w * state.xpr.canvas.scale,
+                            rdr.art_h * state.xpr.canvas.scale,
+                        ]).build();
                     });
             });
 

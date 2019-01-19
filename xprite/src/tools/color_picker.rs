@@ -52,19 +52,18 @@ impl Tool for ColorPicker {
         Ok(())
     }
 
-    fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         if let Some(col) = self.col {
             xpr.set_color(&col);
         }
         self.col = None;
-        Ok(())
+        Ok(false)
     }
 
-    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
         let _ = self.set_cursor(xpr);
-        // noop
-        Ok(())
+        Ok(false)
     }
 
     fn set(&mut self, _xpr: &Xprite, option: &str, _value: &str) -> Result<(), String> {

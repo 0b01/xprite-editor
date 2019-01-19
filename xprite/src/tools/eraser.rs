@@ -116,34 +116,35 @@ impl Tool for Eraser {
         Ok(())
     }
 
-    fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         if let Some(pixs) = &self.update_buffer {
             xpr.history.enter()?;
-            {
-                let layer = &mut xpr.current_layer_mut().unwrap();
-                layer.content.sub_(&pixs);
-                layer.visible = true;
-            }
+            let layer = &mut xpr.current_layer_mut().unwrap();
+            layer.content.sub_(&pixs);
+            layer.visible = true;
+            self.update_buffer = None;
+            Ok(true)
+        } else {
+            Ok(false)
         }
-        self.update_buffer = None;
-        Ok(())
     }
 
-    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
         self.set_cursor(xpr);
 
         let layer = xpr.current_layer_mut().unwrap();
         if !self.draw_buffer.is_empty() {
-            layer.visible = false;
             // set current layer to invisible
+            layer.visible = false;
             let content = layer.content.clone(); // HACK: doesn't borrowck
             xpr.add_pixels(&content);
             xpr.remove_pixels(&self.draw_buffer);
+            Ok(true)
         } else {
             layer.visible = true;
+            Ok(false)
         }
-        Ok(())
     }
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {

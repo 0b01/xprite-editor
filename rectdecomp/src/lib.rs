@@ -53,7 +53,7 @@ fn get_diagonals<T: Copy+Sub + PartialEq + Ord>(
   }
   concave.sort_by(|a,b| {
     if a.borrow().point[direction] != b.borrow().point[direction] {
-      return ::std::cmp::Ordering::Greater;
+      return std::cmp::Ordering::Greater;
     }
     return a.borrow().point[direction^1].cmp(&b.borrow().point[direction^1])
   });

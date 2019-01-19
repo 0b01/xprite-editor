@@ -69,14 +69,6 @@ impl Texture {
         Ok(img::DynamicImage::ImageRgb8(res))
     }
 
-    fn draw_line(&self, xpr: &mut Xprite) -> Result<(), String> {
-        let pixs = get_rect(self.start_pos, self.cursor_pos, false);
-        if let Ok(mut pixs) = pixs {
-            pixs.set_color(xpr.color());
-            xpr.add_pixels(&pixs);
-        }
-        Ok(())
-    }
 }
 
 impl Tool for Texture {
@@ -118,11 +110,16 @@ impl Tool for Texture {
         Ok(())
     }
 
-    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        self.draw_line(xpr)?;
         self.set_cursor(xpr);
-        Ok(())
+        if let Ok(mut pixs) = get_rect(self.start_pos, self.cursor_pos, false) {
+            pixs.set_color(xpr.color());
+            xpr.add_pixels(&pixs);
+            Ok(true)
+        } else {
+            Ok(false)
+        }
     }
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {

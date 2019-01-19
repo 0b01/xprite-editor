@@ -3,6 +3,7 @@
 #![feature(vec_remove_item)]
 #![feature(specialization)]
 
+extern crate fnv;
 extern crate ase;
 extern crate hex;
 extern crate image as img;
@@ -12,9 +13,6 @@ extern crate serde_derive;
 #[macro_use]
 extern crate log;
 
-#[cfg(feature = "dyon-scripting")]
-#[macro_use]
-extern crate dyon;
 #[cfg(feature = "python-scripting")]
 #[macro_use]
 extern crate pyo3;

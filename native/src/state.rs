@@ -18,7 +18,7 @@ pub struct State<'a> {
 
     pub cols_per_row: i32,
 
-    pub preview_texture: Option<(u64 /* hash */, usize /* texture_id */)>,
+    pub preview_texture: Option<usize>,
 }
 
 impl<'a> State<'a> {
@@ -35,6 +35,24 @@ impl<'a> State<'a> {
             palette_idx: 0,
             cols_per_row: 8,
         }
+    }
+
+    pub fn update_preview(&mut self, rdr: &mut Renderer) {
+        let mut img_rdr = ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
+        self.xpr.preview(&mut img_rdr).unwrap();
+        img_rdr.render();
+        let img = img_rdr.img();
+        self.preview_texture = Some(rdr.add_img(img.to_owned(), image::RGBA(0)));
+    }
+
+    pub fn redraw_pixels(&mut self, rdr: &mut Renderer) -> Result<(), String> {
+        dbg!(self.xpr.redraw);
+        if self.xpr.redraw || self.preview_texture.is_none() {
+            dbg!("redrawing");
+            self.update_preview(rdr);
+            self.xpr.redraw = false;
+        }
+        Ok(())
     }
 
     pub fn toggle_hotkeys(&mut self) {

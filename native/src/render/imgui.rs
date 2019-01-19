@@ -17,8 +17,6 @@ pub struct ImguiRenderer<'ui> {
     pub ui: &'ui Ui<'ui>,
     pub gl_ctx: &'ui Facade,
     pub textures: &'ui mut Textures<Texture2d>,
-    pub texture_id: Option<ImTexture>,
-    img: ImageRenderer,
     pub art_w: f32,
     pub art_h: f32,
 }
@@ -66,7 +64,7 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
     }
 
     fn pixel(&mut self, x: f32, y: f32, color: [f32; 4], filled: bool) {
-        self.img.pixel(x, y, color, filled);
+        ()
     }
 
     fn line(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4]) {
@@ -100,26 +98,10 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
     }
 
     fn render(&mut self) {
-        self.img.render();
-        let img = self.img.img();
-
-        let data = img.raw_pixels();
-        let image = RawImage2d {
-            data: Cow::Borrowed(&*data),
-            width: self.art_w as u32,
-            height: self.art_h as u32,
-            format: ClientFormat::U8U8U8U8,
-        };
-        let gl_texture = Texture2d::new(self.gl_ctx, image).unwrap();
-        let texture_id = self.textures.insert(gl_texture);
-        drop(data);
-
-        self.texture_id = Some(texture_id);
-
+        ()
     }
 
     fn reset(&mut self) {
-        self.img.reset();
     }
 }
 
@@ -131,8 +113,6 @@ impl<'ui> ImguiRenderer<'ui> {
             ui,
             gl_ctx,
             textures,
-            img: ImageRenderer::new(art_w, art_h),
-            texture_id: None,
         }
     }
 }

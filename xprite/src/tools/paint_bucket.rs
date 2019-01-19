@@ -44,7 +44,8 @@ impl Default for PaintBucketMode {
 pub struct PaintBucket {
     cursor: Option<Pixels>,
     is_mouse_down: bool,
-    buffer: Option<Pixels>,
+    update_buffer: Option<Pixels>,
+    draw_buffer: Option<Pixels>,
     pub mode: PaintBucketMode,
 }
 
@@ -53,8 +54,9 @@ impl PaintBucket {
         PaintBucket {
             cursor: None,
             is_mouse_down: false,
-            buffer: None,
+            update_buffer: None,
             mode: PaintBucketMode::Fill,
+            draw_buffer: None,
         }
     }
 
@@ -102,21 +104,7 @@ impl Tool for PaintBucket {
         if oob(point.x, point.y, w, h) {
             return Ok(());
         }
-        let bg_color = xpr.current_layer().unwrap().get_color(point);
-        match self.mode {
-            PaintBucketMode::Fill => {
-                self.buffer = Some(self.floodfill(xpr, point, bg_color)?);
-            }
-            PaintBucketMode::Outline => {
-                let buffer = self.floodfill(xpr, point, bg_color)?;
-                let perim = {
-                    let w = xpr.canvas.art_w;
-                    let h = xpr.canvas.art_h;
-                    algorithms::perimeter::find_perimeter(w as usize, h as usize, &buffer)
-                };
-                self.buffer = Some(perim);
-            }
-        }
+        std::mem::swap(&mut self.update_buffer, &mut self.draw_buffer);
 
         Ok(())
     }
@@ -125,22 +113,28 @@ impl Tool for PaintBucket {
         self.is_mouse_down = true;
         let point = xpr.canvas.shrink_size(p);
         let bg_color = xpr.current_layer().unwrap().get_color(point);
-        let buffer = self.floodfill(xpr, point, bg_color)?;
-        let mut perim = {
-            let w = xpr.canvas.art_w;
-            let h = xpr.canvas.art_h;
-            algorithms::perimeter::find_perimeter(w as usize, h as usize, &buffer)
+
+        let ff = self.floodfill(xpr, point, bg_color)?;
+        self.draw_buffer = match self.mode {
+            PaintBucketMode::Fill => {
+                Some(ff)
+            }
+            PaintBucketMode::Outline => {
+                let perim = {
+                    let w = xpr.canvas.art_w;
+                    let h = xpr.canvas.art_h;
+                    algorithms::perimeter::find_perimeter(w as usize, h as usize, &ff)
+                };
+                Some(perim)
+            }
         };
-        perim.push(Pixel {
-            point,
-            color: xpr.color(),
-        });
-        self.cursor = Some(perim);
+
+        self.cursor = Some(pixels!(Pixel { point, color: xpr.color() }));
         Ok(())
     }
 
-    fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
-        if let Some(pixs) = &self.buffer {
+    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
+        if let Some(pixs) = &self.update_buffer {
             xpr.history.enter()?;
             xpr.history
                 .top_mut()
@@ -148,14 +142,23 @@ impl Tool for PaintBucket {
                 .unwrap()
                 .content
                 .extend(&pixs);
+            self.update_buffer = None;
+            Ok(true)
+        } else {
+            Ok(false)
         }
-        self.buffer = None;
-        Ok(())
     }
-    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
         self.set_cursor(xpr);
-        Ok(())
+        if let Some(pixs) = &self.draw_buffer {
+            // pixs.set_color(xpr.color());
+            xpr.add_pixels(&pixs);
+            Ok(true)
+        } else {
+            Ok(false)
+        }
     }
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {

@@ -82,7 +82,7 @@ impl ImageRenderer {
 
 pub fn save_img(path: &str, im: &DynamicImage) {
     info!("writing file to {}", path);
-    // let mut f = ::std::fs::File::create(path).unwrap();
+    // let mut f = std::fs::File::create(path).unwrap();
     im.save(path).unwrap();
 }
 
@@ -95,6 +95,6 @@ mod tests {
         rdr.rect([0., 0.], [0., 0.], [1., 0., 0., 1.], true);
         let path = "test.png";
         save_img(path, rdr.img());
-        ::std::fs::remove_file(path).unwrap();
+        std::fs::remove_file(path).unwrap();
     }
 }

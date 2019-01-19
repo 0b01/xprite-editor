@@ -65,13 +65,6 @@ impl Rect {
         Ok(())
     }
 
-    fn draw_rect(&self, xpr: &mut Xprite) -> Result<(), String> {
-        if let Ok(mut pixs) = self.get_rect() {
-            pixs.set_color(xpr.color());
-            xpr.add_pixels(&pixs);
-        }
-        Ok(())
-    }
 }
 
 impl Tool for Rect {
@@ -109,19 +102,26 @@ impl Tool for Rect {
         Ok(())
     }
 
-    fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         if let Some(pixs) = &self.buffer {
             xpr.history.enter()?;
             xpr.current_layer_mut().unwrap().content.extend(&pixs);
+            self.buffer = None;
+            Ok(true)
+        } else {
+            Ok(false)
         }
-        self.buffer = None;
-        Ok(())
     }
-    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        self.draw_rect(xpr).unwrap();
         self.set_cursor(xpr);
-        Ok(())
+        if let Ok(mut pixs) = self.get_rect() {
+            pixs.set_color(xpr.color());
+            xpr.add_pixels(&pixs);
+            Ok(true)
+        } else {
+            Ok(false)
+        }
     }
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {

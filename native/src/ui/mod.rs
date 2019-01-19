@@ -20,6 +20,7 @@ use xprite::rendering::Renderer;
 /// 3. update by calling draw method which takes in a renderer
 pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
     state.xpr.draw().unwrap();
+    state.redraw_pixels(rdr).unwrap();
     state.xpr.update().unwrap();
     self::menu::draw_menu(rdr, state, ui);
     self::toolbar::draw_toolbar(state, ui);

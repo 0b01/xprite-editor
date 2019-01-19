@@ -41,13 +41,6 @@ impl Line {
         Ok(())
     }
 
-    fn draw_line(&self, xpr: &mut Xprite) -> Result<(), String> {
-        if let Some(mut pixs) = self.get_line() {
-            pixs.set_color(xpr.color());
-            xpr.add_pixels(&pixs);
-        }
-        Ok(())
-    }
 }
 
 impl Tool for Line {
@@ -85,20 +78,28 @@ impl Tool for Line {
         Ok(())
     }
 
-    fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         if let Some(pixs) = &self.buffer {
             xpr.history.enter()?;
             xpr.current_layer_mut().unwrap().content.extend(&pixs);
+            self.buffer = None;
+            Ok(true)
+        } else {
+            Ok(false)
         }
-        self.buffer = None;
-        Ok(())
     }
 
-    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        self.draw_line(xpr).unwrap();
         self.set_cursor(xpr);
-        Ok(())
+
+        if let Some(mut pixs) = self.get_line() {
+            pixs.set_color(xpr.color());
+            xpr.add_pixels(&pixs);
+            Ok(true)
+        } else {
+            Ok(false)
+        }
     }
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {

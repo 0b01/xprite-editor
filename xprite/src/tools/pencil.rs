@@ -221,23 +221,29 @@ impl Tool for Pencil {
         self.cursor.clone()
     }
 
-    fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         if let Some(pixs) = &self.update_buffer {
             xpr.history.enter()?;
             xpr.current_layer_mut()
                 .ok_or_else(|| "Layer doesn't exist.".to_owned())?
                 .content
                 .extend(pixs);
+            self.update_buffer = None;
+            Ok(true)
+        } else {
+            Ok(false)
         }
-        self.update_buffer = None;
-        Ok(())
     }
 
-    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
         self.set_cursor(xpr);
-        xpr.add_pixels(&self.draw_buffer.with_color(xpr.color()));
-        Ok(())
+        if !self.draw_buffer.is_empty() {
+            xpr.add_pixels(&self.draw_buffer.with_color(xpr.color()));
+            Ok(true)
+        } else {
+            Ok(false)
+        }
     }
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
@@ -267,11 +273,13 @@ impl Tool for Pencil {
                     self.shift = true;
                     if let Some(pixs) = self.draw_line() {
                         self.draw_buffer = pixs;
+                        xpr.redraw = true;
                     }
                 }
                 "false" => {
                     self.shift = false;
                     self.draw_buffer.clear();
+                    xpr.redraw = true;
                 }
                 _ => error!("malformed value: {}", value),
             }

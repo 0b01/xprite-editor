@@ -8,7 +8,7 @@ extern crate log;
 #[cfg(feature = "cairo-renderer")]
 extern crate cairo;
 extern crate clap;
-#[macro_use] extern crate glium;
+extern crate glium;
 extern crate imgui;
 extern crate imgui_glium_renderer;
 extern crate imgui_winit_support;
@@ -40,28 +40,9 @@ fn main() -> Result<(), String> {
                 .help("Run python script"),
         );
     }
-    if cfg!(feature = "dyon-scripting") {
-        t = t.subcommand(
-            SubCommand::with_name("dyon")
-                .about("run dyon script")
-                .version("1.0")
-                .arg(
-                    Arg::with_name("INPUT")
-                        .help("INPUT.dyon script")
-                        .required(true)
-                        .index(1),
-                ),
-        );
-    }
     let matches = t.get_matches();
 
-    if let Some(matches) = matches.subcommand_matches("dyon") {
-        #[cfg(feature = "dyon-scripting")]
-        {
-            let inp_file = matches.value_of("INPUT").unwrap();
-            run_dyon_script(inp_file)?;
-        }
-    } else if let Some(inp_file) = matches.value_of("INPUT") {
+    if let Some(inp_file) = matches.value_of("INPUT") {
         #[cfg(feature = "python-scripting")]
         {
             run_python_script(inp_file)?;
@@ -79,15 +60,6 @@ fn run_python_script(fname: &str) -> Result<(), String> {
     let xpr = xprite::scripting::python::python(fname)?;
     println!("Finished {}", fname);
     let mut state = State::new(xpr);
-    state.save_png("1.png");
-    Ok(())
-}
-
-#[cfg(feature = "dyon-scripting")]
-fn run_dyon_script(fname: &str) -> Result<(), String> {
-    let xpr = Xprite::new(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    let mut state = State::new(xpr);
-    state.xpr.execute_dyon_script(fname)?;
     state.save_png("1.png");
     Ok(())
 }

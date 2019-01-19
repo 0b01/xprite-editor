@@ -130,16 +130,15 @@ impl Canvas {
         }
     }
 
-    pub fn draw_pixel(&self, rdr: &mut Renderer, x: f32, y: f32, color: [f32; 4], filled: bool) {
+    pub fn draw_pixel_rect(&self, rdr: &mut Renderer, x: f32, y: f32, color: [f32; 4], filled: bool) {
         let o = self.origin();
         if oob(x, y, self.art_w, self.art_h) {
             return;
         }
-        // screen coords
-        // let p0 = [o.x + self.scale * x, o.y + self.scale * y];
-        // let p1 = [o.x + self.scale * (x + 1.), o.y + self.scale * (y + 1.)];
+        let p0 = [o.x + self.scale * x, o.y + self.scale * y];
+        let p1 = [o.x + self.scale * (x + 1.), o.y + self.scale * (y + 1.)];
 
-        rdr.pixel(x, y, color, filled);
+        rdr.rect(p0, p1, color, filled);
     }
 
     pub fn origin(&self) -> Vec2f {

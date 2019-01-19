@@ -10,6 +10,7 @@ use std::fmt::{Debug, Error, Formatter};
 use std::hash::{Hash, Hasher};
 use std::ops::{Index, Sub};
 use std::f32;
+use fnv::FnvBuildHasher;
 
 #[cfg_attr(feature = "python-scripting", pyclass)]
 #[derive(Copy, Clone, Eq, PartialOrd, Serialize, Deserialize, Default)]
@@ -86,7 +87,7 @@ macro_rules! pixels {
 }
 
 #[derive(Clone, Eq, Serialize, Deserialize, Default)]
-pub struct Pixels(pub IndexSet<Pixel>);
+pub struct Pixels(pub IndexSet<Pixel, FnvBuildHasher>);
 
 impl Hash for Pixels {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -105,11 +106,11 @@ impl PartialEq for Pixels {
 
 impl Pixels {
     pub fn new() -> Self {
-        Pixels(IndexSet::with_capacity(800))
+        Pixels(IndexSet::with_hasher(Default::default()))
     }
 
     pub fn from_slice(slice: &[Pixel]) -> Self {
-        let mut set = IndexSet::new();
+        let mut set = IndexSet::with_hasher(Default::default());
         for p in slice.iter() {
             if set.contains(p) {
                 continue;
@@ -135,9 +136,7 @@ impl Pixels {
     }
 
     pub fn push(&mut self, px: Pixel) {
-        if !self.0.contains(&px) {
-            self.0.insert(px);
-        }
+        self.0.replace(px);
     }
 
     pub fn contains(&mut self, px: &Pixel) -> bool {

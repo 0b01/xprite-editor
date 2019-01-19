@@ -314,7 +314,7 @@ impl Tool for Vector {
         Ok(())
     }
 
-    fn draw(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
         self.set_cursor(xpr);
 
@@ -344,23 +344,24 @@ impl Tool for Vector {
             }
         }
 
-
         let pixs = self.brush.follow_stroke(&ret).unwrap();
         xpr.add_pixels(&pixs);
 
-        Ok(())
+        Ok(true)
     }
 
-    fn update(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         if let Some(pixs) = &self.update_buffer {
             xpr.history.enter()?;
             xpr.current_layer_mut()
                 .ok_or_else(|| "Layer doesn't exist.".to_owned())?
                 .content
                 .extend(pixs);
+            self.update_buffer = None;
+            Ok(true)
+        } else {
+            Ok(false)
         }
-        self.update_buffer = None;
-        Ok(())
     }
 
     fn set(&mut self, xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {

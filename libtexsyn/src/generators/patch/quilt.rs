@@ -297,7 +297,7 @@ impl Quilter {
         let (w, h) = self.source.dimensions();
         let (max_x, max_y) = (w - self.params.patch_size, h - self.params.patch_size);
         let candidates_scores = Mutex::new(vec![]);
-        let current_best = Mutex::new(::std::f64::INFINITY);
+        let current_best = Mutex::new(std::f64::INFINITY);
         let mut rng = thread_rng();
         if let Some(chance) = self.params.selection_chance {
             let mut scores = candidates_scores.lock().unwrap();
