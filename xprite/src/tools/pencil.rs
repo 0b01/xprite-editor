@@ -58,6 +58,7 @@ pub struct Pencil {
     moved: bool,
     draw_buffer: Pixels,
     update_buffer: Option<Pixels>,
+    redraw: bool,
 }
 
 impl Default for Pencil {
@@ -73,6 +74,7 @@ impl Pencil {
         let brush_type = BrushType::Pixel;
         let brush = Brush::pixel();
         let current_polyline = Polyline::new();
+        let redraw = true;
 
         Self {
             is_mouse_down,
@@ -87,6 +89,7 @@ impl Pencil {
             moved: false,
             draw_buffer: Pixels::new(),
             update_buffer: None,
+            redraw,
         }
     }
 
@@ -155,6 +158,7 @@ impl Tool for Pencil {
         if self.shift {
             if let Some(pixs) = self.draw_line() {
                 self.draw_buffer = pixs;
+                self.redraw = true;
                 return Ok(());
             }
         }
@@ -168,6 +172,7 @@ impl Tool for Pencil {
 
         let stroke = self.draw_stroke(xpr)?;
         self.draw_buffer = stroke;
+        self.redraw = true;
 
         Ok(())
     }
@@ -183,6 +188,7 @@ impl Tool for Pencil {
         if let Some(pixels) = pixels {
             if button == InputItem::Left {
                 self.draw_buffer.extend(&pixels);
+                self.redraw = true
             } else {
                 // xpr.remove_pixels(&pixels);
             }
@@ -212,6 +218,7 @@ impl Tool for Pencil {
         self.current_polyline.clear();
         self.is_mouse_down = None;
         self.draw_buffer.clear();
+        self.redraw = false;
         self.moved = false;
 
         Ok(())
@@ -238,8 +245,9 @@ impl Tool for Pencil {
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
         self.set_cursor(xpr);
-        if !self.draw_buffer.is_empty() {
+        if self.redraw {
             xpr.add_pixels(&self.draw_buffer.with_color(xpr.color()));
+            self.redraw = false;
             Ok(true)
         } else {
             Ok(false)
@@ -273,13 +281,13 @@ impl Tool for Pencil {
                     self.shift = true;
                     if let Some(pixs) = self.draw_line() {
                         self.draw_buffer = pixs;
-                        xpr.redraw = true;
                     }
+                    self.redraw = true;
                 }
                 "false" => {
                     self.shift = false;
                     self.draw_buffer.clear();
-                    xpr.redraw = true;
+                    self.redraw = true;
                 }
                 _ => error!("malformed value: {}", value),
             }

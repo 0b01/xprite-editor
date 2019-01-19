@@ -47,6 +47,8 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                             rdr.art_w * state.xpr.canvas.scale,
                             rdr.art_h * state.xpr.canvas.scale,
                         ]).build();
+
+                        state.xpr.render_cursor(rdr);
                     });
             });
 

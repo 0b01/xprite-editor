@@ -13,20 +13,26 @@ git submodule update --init --recursive
 ## Bugs and Improvements
 
 * [ ] Marquee
+* [ ] Fix eraser !moved
+* [ ] Partial sorting curves
+* [ ] Pixel perfect line(read TC Inglis thesis)
+* [ ] Line modes(perfect span, predictable, continuous, bresenham)
+* [ ] Curves(increment modes: fibonacci, odd, even)
 * [ ] Fix ellipse( i.center stroke; ii. filled )
 * [ ] Dynamic brush size
 * [ ] Tabs
 * [ ] Preview bounding box
 * [x] Connected component algorithm
-* [ ] Fix web target
 * [ ] Fix zoom
-* [ ] save/load .aseprite
+* [ ] Save/load .aseprite
+* [ ] Fix web target
+* [ ] Output 2x size
 
 ## Done
 
-* [ ] Stroke caching
+* [x] Stroke caching
 * [ ] Output svg
-* [ ] ImageImguiRenderer (based on cairo_imgui)
+* [x] ImageImguiRenderer(integrated to imgui)
 * [x] Change ImDrawIdx to u32
 * [x] Floodfill crashing when index is negative
 * [x] Simplify drawlist

@@ -163,6 +163,7 @@ impl Xprite {
     pub fn toggle_layer_visibility(&mut self, group: usize, layer: usize) -> Result<(), String> {
         self.history.enter()?;
         self.history.top_mut().toggle_layer_visibility(group, layer);
+        self.redraw = true;
         Ok(())
     }
 
@@ -182,20 +183,19 @@ impl Xprite {
 }
 
 impl Xprite {
+
+    pub fn render_cursor(&self, rdr: &mut Renderer) {
+        for p in self.cursor.iter() {
+            let Vec2f {x, y} = p.point;
+            self.canvas.draw_pixel_rect(rdr, x, y, p.color.into(), true);
+        }
+    }
+
     /// render to canvas
     pub fn render(&self, rdr: &mut Renderer) {
         rdr.reset();
         self.canvas.draw_canvas(rdr);
 
-        macro_rules! draw_buf {
-            ($buffer: expr) => {
-                for p in $buffer.iter() {
-                    let Vec2f {x, y} = p.point;
-                    self.canvas.draw_pixel_rect(rdr, x, y, p.color.into(), true);
-                }
-            }
-        }
-        draw_buf!(&self.cursor); // draw cursor
 
         self.canvas.draw_grid(rdr);
 

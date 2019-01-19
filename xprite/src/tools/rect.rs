@@ -112,6 +112,7 @@ impl Tool for Rect {
             Ok(false)
         }
     }
+
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
         self.set_cursor(xpr);

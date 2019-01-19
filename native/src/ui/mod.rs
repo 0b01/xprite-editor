@@ -12,7 +12,6 @@ pub mod tools;
 
 use crate::prelude::*;
 use crate::render::imgui::ImguiRenderer;
-use xprite::rendering::Renderer;
 
 /// steps:
 /// 1. get dimensions
