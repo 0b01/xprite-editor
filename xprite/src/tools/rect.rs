@@ -46,7 +46,7 @@ impl Rect {
             let begin_pos = if self.symmetric {
                 let x = start.point.x - (end.point.x - start.point.x);
                 let y = start.point.y - (end.point.y - start.point.y);
-                Some(pixel! {x, y, Color::red()})
+                Some(pixel_xy! {x, y, Color::red()})
             } else {
                 self.start_pos
             };

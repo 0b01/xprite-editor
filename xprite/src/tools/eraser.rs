@@ -40,7 +40,8 @@ impl Eraser {
     }
 
     fn erase_stroke(&self, xpr: &Xprite) -> Result<Pixels, String> {
-        let line_pixs = self.current_polyline.connect_with_line(&xpr)?;
+        let mut line_pixs = self.current_polyline.connect_with_line(&xpr)?;
+        line_pixs.push(self.cursor_pos.unwrap());
         let brushstroke = self.brush.follow_stroke(&line_pixs).unwrap();
         Ok(brushstroke)
     }
@@ -55,7 +56,8 @@ impl Eraser {
 impl Tool for Eraser {
     fn cursor(&self) -> Option<Pixels> {
         let p = self.cursor_pos?;
-        Some(pixels!(p))
+        let brush = self.brush.follow_stroke(&pixels!(p))?;
+        Some(brush)
     }
 
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {

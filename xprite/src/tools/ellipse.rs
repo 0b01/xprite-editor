@@ -46,7 +46,7 @@ impl Ellipse {
             let begin_pos = if self.symmetric {
                 let x = start.point.x - (end.point.x - start.point.x);
                 let y = start.point.y - (end.point.y - start.point.y);
-                Some(pixel! {x, y, Color::red()})
+                Some(pixel_xy! {x, y, Color::red()})
             } else {
                 self.start_pos
             };
@@ -58,11 +58,14 @@ impl Ellipse {
     }
 
     fn finalize_ellipse(&mut self, xpr: &Xprite) -> Result<bool, String> {
-        let mut pixs = self.get_ellipse()?;
-        if pixs.is_empty() { return Ok(false); }
-        pixs.set_color(xpr.color());
-        self.buffer = Some(pixs);
-        Ok(true)
+        if let Ok(mut pixs) = self.get_ellipse() {
+            if pixs.is_empty() { return Ok(false); }
+            pixs.set_color(xpr.color());
+            self.buffer = Some(pixs);
+            Ok(true)
+        } else {
+            Ok(false)
+        }
     }
 
 }
@@ -116,13 +119,12 @@ impl Tool for Ellipse {
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
         self.set_cursor(xpr);
-        let mut pixs = self.get_ellipse()?;
-        if pixs.is_empty() {
-            Ok(false)
-        } else {
+        if let Ok(mut pixs) = self.get_ellipse() {
             pixs.set_color(xpr.color());
             xpr.add_pixels(&pixs);
             Ok(true)
+        } else {
+            Ok(false)
         }
     }
 

@@ -13,16 +13,13 @@ git submodule update --init --recursive
 ## Bugs and Improvements
 
 * [ ] Marquee
-* [ ] Fix eraser !moved
 * [ ] Partial sorting curves
 * [ ] Pixel perfect line(read TC Inglis thesis)
 * [ ] Line modes(perfect span, predictable, continuous, bresenham)
 * [ ] Curves(increment modes: fibonacci, odd, even)
-* [ ] Fix ellipse( i.center stroke; ii. filled )
-* [ ] Dynamic brush size
+* [ ] Set brush size
 * [ ] Tabs
 * [ ] Preview bounding box
-* [x] Connected component algorithm
 * [ ] Fix zoom
 * [ ] Save/load .aseprite
 * [ ] Fix web target
@@ -30,7 +27,10 @@ git submodule update --init --recursive
 
 ## Done
 
+* [x] Fix ellipse( i.center stroke; ii. filled )
+* [x] Connected component algorithm
 * [x] Stroke caching
+* [x] Fix eraser !moved
 * [ ] Output svg
 * [x] ImageImguiRenderer(integrated to imgui)
 * [x] Change ImDrawIdx to u32
@@ -64,7 +64,7 @@ git submodule update --init --recursive
 * [x] Eraser
 * [x] Shapes - Rect
 * [x] Shapes - Circle
-* [ ] Vector tools
+* [x] Vector tools
 * [ ] Select/Marquee
 * [ ] Pattern Brush
 * [ ] Texture Synthesis

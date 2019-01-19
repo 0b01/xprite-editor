@@ -108,9 +108,12 @@ impl Pencil {
 
 
     fn finalize_continuous_line(&mut self, xpr: &Xprite, start:Option<Vec2f>, stop:Option<Vec2f> ) -> Result<(), String> {
-        let mut buf = continuous_line(start.unwrap(), stop.unwrap());
-        buf.set_color(xpr.color());
-        self.update_buffer = Some(buf);
+        if let (Some(start), Some(stop)) = (start, stop) {
+            let buf = continuous_line(start, stop);
+            let mut buf = self.brush.follow_stroke(&buf).unwrap();
+            buf.set_color(xpr.color());
+            self.update_buffer = Some(buf);
+        }
         Ok(())
     }
 
@@ -144,7 +147,9 @@ impl Pencil {
     }
 
     fn draw_line(&self) -> Option<Pixels> {
-        Some(continuous_line(self.last_mouse_down_or_up?, self.cursor_pos?))
+        let buf = continuous_line(self.last_mouse_down_or_up?, self.cursor_pos?);
+        let buf = self.brush.follow_stroke(&buf)?;
+        Some(buf)
     }
 }
 

@@ -74,6 +74,18 @@ macro_rules! pixel {
     };
 }
 
+macro_rules! pixel_xy {
+    ($x:expr, $y: expr, $k: expr) => {
+        Pixel {
+            point: Vec2f {
+                x: ($x) as f32,
+                y: ($y) as f32,
+            },
+            color: $k,
+        }
+    };
+}
+
 macro_rules! pixels {
     ($($i: expr),*) => {
         {
