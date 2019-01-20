@@ -11,9 +11,4 @@ pub trait Tool {
     }
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String>;
     fn cursor(&self) -> Option<Pixels>;
-    fn set_cursor(&self, xpr: &mut Xprite) -> Option<()> {
-        let cursor = self.cursor()?;
-        xpr.set_cursor(&cursor);
-        Some(())
-    }
 }

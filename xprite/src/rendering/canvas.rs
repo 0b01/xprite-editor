@@ -115,7 +115,37 @@ impl Canvas {
         mouse.x < p0.x + rad && mouse.x > p0.x - rad && mouse.y < p0.y + rad && mouse.y > p0.y - rad
     }
 
-    pub fn draw_pixel_rect(&self, rdr: &mut Renderer, x: f32, y: f32, color: [f32; 4], filled: bool) {
+    pub fn draw_pixel_marqee(&self, rdr: &mut Renderer, p: Vec2f, outline: Outline) {
+        let Vec2f { x, y } = p;
+        let o = self.origin();
+        if oob(x, y, self.art_w, self.art_h) {
+            return;
+        }
+        // top left
+        let p0 = [o.x + self.scale * x, o.y + self.scale * y];
+        // top right
+        let p1 = [o.x + self.scale * (x + 1.), o.y + self.scale * y];
+        let p2 = [o.x + self.scale * (x + 1.), o.y + self.scale * (y + 1.)];
+        let p3 = [o.x + self.scale * x, o.y + self.scale * (y + 1.)];
+
+        if outline.contains(Outline::TOP) {
+            rdr.line(p0,p1, Color::black().into());
+        }
+        if outline.contains(Outline::BOTTOM) {
+            rdr.line(p3,p2, Color::black().into());
+        }
+        if outline.contains(Outline::LEFT) {
+            rdr.line(p0,p3, Color::black().into());
+        }
+        if outline.contains(Outline::RIGHT) {
+            rdr.line(p1,p2, Color::black().into());
+        }
+
+    }
+
+
+    pub fn draw_pixel_rect(&self, rdr: &mut Renderer, p: Vec2f, color: [f32; 4], filled: bool) {
+        let Vec2f { x, y } = p;
         let o = self.origin();
         if oob(x, y, self.art_w, self.art_h) {
             return;

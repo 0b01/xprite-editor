@@ -249,7 +249,9 @@ impl Tool for Pencil {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        self.set_cursor(xpr);
+        if let Some(cursor) = self.cursor() {
+            xpr.set_cursor(&cursor);
+        }
         if self.redraw {
             xpr.add_pixels(&self.draw_buffer.with_color(xpr.color()));
             self.redraw = false;

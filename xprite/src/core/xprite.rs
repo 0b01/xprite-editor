@@ -4,27 +4,23 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::sync::{Arc, Mutex};
 
-#[derive(Serialize, Deserialize, Debug)]
 pub struct Xprite {
     pub history: History,
 
-    #[serde(skip_serializing, skip_deserializing)]
     pub im_buf: Pixels,
-    #[serde(skip_serializing, skip_deserializing)]
     pub bz_buf: Vec<CubicBezierSegment>,
 
     pub canvas: Canvas,
     pub selected_color: Color,
-    #[serde(skip_serializing, skip_deserializing)]
     pub palette_man: PaletteManager,
 
-    #[serde(skip_serializing, skip_deserializing)]
     pub toolbox: Toolbox,
     pub cursor: Pixels,
     pub last_mouse_pos: Vec2f,
 
-    #[serde(skip_serializing, skip_deserializing)]
     pub log: Arc<Mutex<String>>,
+
+    marq_buf: Vec<MarqueePixel>,
 
     pub redraw: bool,
 }
@@ -40,6 +36,7 @@ impl Xprite {
         let im_buf = Pixels::new();
         let bz_buf = Vec::new();
         let log = Arc::new(Mutex::new(String::new()));
+        let marq_buf = vec![];
         let redraw = true;
 
         Xprite {
@@ -53,6 +50,7 @@ impl Xprite {
             toolbox,
             log,
             palette_man,
+            marq_buf,
             redraw,
         }
     }
@@ -139,10 +137,15 @@ impl Xprite {
     pub fn new_frame(&mut self) {
         self.pixels_mut().clear();
         self.bz_buf.clear();
+        self.marq_buf.clear();
     }
 
     pub fn set_cursor(&mut self, pos: &Pixels) {
         self.cursor = pos.clone();
+    }
+
+    pub fn add_marquee(&mut self, marq: &[MarqueePixel]) {
+        self.marq_buf.extend(marq);
     }
 }
 
@@ -186,12 +189,10 @@ impl Xprite {
 
     pub fn render_cursor(&self, rdr: &mut Renderer) {
         for p in self.cursor.iter() {
-            let Vec2f {x, y} = p.point;
-            self.canvas.draw_pixel_rect(rdr, x, y, p.color.into(), true);
+            self.canvas.draw_pixel_rect(rdr, p.point, p.color.into(), true);
         }
     }
 
-    /// render to canvas
     pub fn render_canvas(&self, rdr: &mut Renderer) {
         rdr.reset();
         self.canvas.draw_canvas(rdr);
@@ -216,7 +217,6 @@ impl Xprite {
             self.canvas.draw_circle(rdr, to, 0.3, blue, true);
             self.canvas.draw_line(rdr, from, ctrl1, blue);
             self.canvas.draw_line(rdr, to, ctrl2, blue);
-
             if self.canvas.within_circle(from, self.last_mouse_pos)
                 || self.canvas.within_circle(ctrl1, self.last_mouse_pos)
                 || self.canvas.within_circle(ctrl2, self.last_mouse_pos)
@@ -224,6 +224,12 @@ impl Xprite {
             {
                 rdr.set_mouse_cursor(crate::rendering::MouseCursorType::Hand);
             }
+        }
+    }
+
+    pub fn render_marquee(&self, rdr: &mut Renderer) {
+        for (p, outline) in &self.marq_buf {
+            self.canvas.draw_pixel_marqee(rdr, *p, *outline);
         }
     }
 }

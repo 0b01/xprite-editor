@@ -10,3 +10,4 @@ pub mod input;
 pub mod palette;
 pub mod toolbox;
 pub mod xprite;
+pub mod outline;

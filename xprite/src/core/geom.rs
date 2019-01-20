@@ -1,5 +1,15 @@
 #![allow(clippy::many_single_char_names)]
 
+macro_rules! vec2f {
+    ($y:expr, $x: expr) => {
+        Vec2f {
+            y: ($y) as f32,
+            x: ($x) as f32,
+        }
+    };
+}
+
+
 use crate::prelude::*;
 use std::cmp::Ordering;
 use std::hash::{Hash, Hasher};
@@ -255,15 +265,6 @@ fn droots(p: &[f32]) -> Vec<f32> {
 
 #[cfg(test)]
 mod tests {
-
-    macro_rules! vec2f {
-        ($y:expr, $x: expr) => {
-            Vec2f {
-                y: ($y) as f32,
-                x: ($x) as f32,
-            }
-        };
-    }
 
     #[test]
     fn test_extrema() {

@@ -118,7 +118,9 @@ impl Tool for Ellipse {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        self.set_cursor(xpr);
+        if let Some(cursor) = self.cursor() {
+            xpr.set_cursor(&cursor);
+        }
         if let Ok(mut pixs) = self.get_ellipse() {
             pixs.set_color(xpr.color());
             xpr.add_pixels(&pixs);

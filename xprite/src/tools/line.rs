@@ -91,7 +91,9 @@ impl Tool for Line {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        self.set_cursor(xpr);
+        if let Some(cursor) = self.cursor() {
+            xpr.set_cursor(&cursor);
+        }
 
         if let Some(mut pixs) = self.get_line() {
             pixs.set_color(xpr.color());

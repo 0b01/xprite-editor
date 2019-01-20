@@ -10,6 +10,7 @@ pub use crate::core::{
     pixels::{Pixel, Pixels},
     toolbox::Toolbox,
     xprite::Xprite,
+    outline::{MarqueePixel, Outline},
 };
 pub use crate::rendering::{
     canvas::Canvas,

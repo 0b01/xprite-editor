@@ -315,7 +315,9 @@ impl Tool for Vector {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        self.set_cursor(xpr);
+        if let Some(cursor) = self.cursor() {
+            xpr.set_cursor(&cursor);
+        }
 
         let mut ret = Pixels::new();
         match self.mode {

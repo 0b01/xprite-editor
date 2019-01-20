@@ -133,7 +133,9 @@ impl Tool for Eraser {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        self.set_cursor(xpr);
+        if let Some(cursor) = self.cursor() {
+            xpr.set_cursor(&cursor);
+        }
 
         let layer = xpr.current_layer_mut().unwrap();
         if !self.draw_buffer.is_empty() {

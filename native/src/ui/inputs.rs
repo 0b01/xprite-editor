@@ -212,8 +212,8 @@ pub fn execute(bind: Bind, state: &mut State, _ui: &Ui) -> Result<(), String> {
             state.show_console = !state.show_console;
         }
 
-        LoadXPR => state.load_xpr("1.xpr"),
-        SaveXPR => state.save_xpr("1.xpr"),
+        // LoadXPR => state.load_xpr("1.xpr"),
+        // SaveXPR => state.save_xpr("1.xpr"),
         LoadPNG => state.load_png("1.png"),
         SavePNG => state.save_png("1.png"),
 

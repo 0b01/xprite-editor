@@ -9,14 +9,14 @@ pub fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 .shortcut(im_str!("Ctrl+O"))
                 .build()
             {
-                state.load_xpr("1.xpr");
+                // state.load_xpr("1.xpr");
             }
             if ui
                 .menu_item(im_str!("Save"))
                 .shortcut(im_str!("Ctrl+S"))
                 .build()
             {
-                state.save_xpr("1.xpr");
+                // state.save_xpr("1.xpr");
             }
             if ui.menu_item(im_str!("Settings")).build() {
                 state.show_settings = true;

@@ -1,4 +1,4 @@
-use crate::algorithms::rect::*;
+use crate::core::outline::outline_rect;
 use crate::tools::*;
 
 #[derive(Clone, Default, Debug)]
@@ -17,11 +17,7 @@ impl Marquee {
         }
     }
 
-    pub fn finalize(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
-        self.unknown(xpr)
-    }
-
-    pub fn get_dims(&self) -> Option<(f32, f32, (f32, f32))> {
+    fn get_dims(&self) -> Option<(f32, f32, (f32, f32))> {
         let x0 = self.start_pos?.point.x;
         let y0 = self.start_pos?.point.y;
         let x1 = self.cursor_pos?.point.x;
@@ -31,17 +27,6 @@ impl Marquee {
             (y1 - y0).abs(),
             (f32::min(x0, x1), f32::min(y0, y1)),
         ))
-    }
-
-    fn unknown(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
-        let mut pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
-        xpr.history.enter()?;
-        pixs.set_color(xpr.color());
-        let content = &mut xpr.current_layer_mut().unwrap().content;
-        let _intersection = content.intersection(&pixs);
-
-        // Ok(img::DynamicImage::ImageRgb8(res))
-        unimplemented!()
     }
 
 }
@@ -66,7 +51,6 @@ impl Tool for Marquee {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor_pos = Some(Pixel { point, color });
-        // self.unknown(xpr)?;
 
         self.is_mouse_down = None;
         // self.start_pos = None;
@@ -86,14 +70,11 @@ impl Tool for Marquee {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        self.set_cursor(xpr);
-        if let Ok(mut pixs) = get_rect(self.start_pos, self.cursor_pos, false) {
-            pixs.set_color(xpr.color());
-            xpr.add_pixels(&pixs);
-            Ok(true)
-        } else {
-            Ok(false)
+        if let Some(cursor) = self.cursor() { xpr.set_cursor(&cursor); }
+        if let Ok(marq) = outline_rect(self.start_pos, self.cursor_pos) {
+            xpr.add_marquee(&marq);
         }
+        Ok(false)
     }
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {

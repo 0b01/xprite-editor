@@ -112,7 +112,9 @@ impl Tool for Texture {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        self.set_cursor(xpr);
+        if let Some(cursor) = self.cursor() {
+            xpr.set_cursor(&cursor);
+        }
         if let Ok(mut pixs) = get_rect(self.start_pos, self.cursor_pos, false) {
             pixs.set_color(xpr.color());
             xpr.add_pixels(&pixs);
