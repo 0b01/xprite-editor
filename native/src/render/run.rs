@@ -17,7 +17,7 @@ use crate::ui::inputs::KeyCode;
 struct MouseState {
     pos: (i32, i32),
     pressed: (bool, bool, bool),
-    wheel: f32,
+    wheel: f64,
 }
 
 fn set_style(imgui: &mut ImGui) {
@@ -232,7 +232,7 @@ where
                         delta: MouseScrollDelta::LineDelta(_, y),
                         phase: TouchPhase::Moved,
                         ..
-                    } => mouse_state.wheel = y,
+                    } => mouse_state.wheel = y.into(),
                     MouseWheel {
                         delta: MouseScrollDelta::PixelDelta(pos),
                         phase: TouchPhase::Moved,
@@ -243,7 +243,7 @@ where
                         mouse_state.wheel = pos
                             .to_physical(window.get_hidpi_factor())
                             .to_logical(hidpi_factor)
-                            .y as f32;
+                            .y.into();
                     }
                     ReceivedCharacter(c) => imgui.add_input_character(c),
                     _ => (),

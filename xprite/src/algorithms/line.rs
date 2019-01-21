@@ -1,6 +1,6 @@
 use crate::prelude::*;
-use std::f32;
-use std::f32::consts::PI;
+use std::f64;
+use std::f64::consts::PI;
 
 pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
     let mut ret = Pixels::new();
@@ -13,7 +13,7 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
     let dx = x1 - x0;
     let dy = y1 - y0;
 
-    let theta = f32::atan2(dy, dx);
+    let theta = f64::atan2(dy, dx);
 
     if !is_45 {
         let dir = ((theta / (2. * PI / 12.)).round() + 12.) % 12.;
@@ -23,78 +23,78 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
         match dir as i32 {
             0 => {
                 for i in 0..dx {
-                    ret.push(pixel!(y0, x0 + i as f32, Color::red()))
+                    ret.push(pixel!(y0, x0 + i as f64, Color::red()))
                 }
             }
             1 => {
-                let dx = (dx as f32 * 1.1).ceil() as i32;
+                let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(y0 + i as f32 / 2., x0 + i as f32, Color::red()));
-                    ret.push(pixel!(y0 + i as f32 / 2., x0 + 1. + i as f32, Color::red()));
+                    ret.push(pixel!(y0 + i as f64 / 2., x0 + i as f64, Color::red()));
+                    ret.push(pixel!(y0 + i as f64 / 2., x0 + 1. + i as f64, Color::red()));
                 }
             }
             2 => {
-                let dy = (dy as f32 * 1.1).ceil() as i32;
+                let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(y0 + i as f32, x0 + i as f32 / 2., Color::red()));
-                    ret.push(pixel!(y0 + 1. + i as f32, x0 + i as f32 / 2., Color::red()));
+                    ret.push(pixel!(y0 + i as f64, x0 + i as f64 / 2., Color::red()));
+                    ret.push(pixel!(y0 + 1. + i as f64, x0 + i as f64 / 2., Color::red()));
                 }
             }
             3 => {
                 for i in 0..dy {
-                    ret.push(pixel!(y0 + i as f32, x0, Color::red()))
+                    ret.push(pixel!(y0 + i as f64, x0, Color::red()))
                 }
             }
             4 => {
-                let dy = (dy as f32 * 1.1).ceil() as i32;
+                let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(y0 + i as f32, x0 - i as f32 / 2., Color::red()));
-                    ret.push(pixel!(y0 + 1. + i as f32, x0 - i as f32 / 2., Color::red()));
+                    ret.push(pixel!(y0 + i as f64, x0 - i as f64 / 2., Color::red()));
+                    ret.push(pixel!(y0 + 1. + i as f64, x0 - i as f64 / 2., Color::red()));
                 }
             }
             5 => {
-                let dx = (dx as f32 * 1.1).ceil() as i32;
+                let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(y0 + i as f32 / 2., x0 - i as f32, Color::red()));
-                    ret.push(pixel!(y0 + i as f32 / 2., x0 - 1. - i as f32, Color::red()));
+                    ret.push(pixel!(y0 + i as f64 / 2., x0 - i as f64, Color::red()));
+                    ret.push(pixel!(y0 + i as f64 / 2., x0 - 1. - i as f64, Color::red()));
                 }
             }
             6 => {
                 for i in 0..dx {
-                    ret.push(pixel!(x0 - i as f32, y0, Color::red()))
+                    ret.push(pixel!(x0 - i as f64, y0, Color::red()))
                 }
             }
             7 => {
-                let dx = (dx as f32 * 1.1).ceil() as i32;
+                let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(y0 - i as f32 / 2., x0 - i as f32, Color::red()));
-                    ret.push(pixel!(y0 - i as f32 / 2., x0 - 1. - i as f32, Color::red()));
+                    ret.push(pixel!(y0 - i as f64 / 2., x0 - i as f64, Color::red()));
+                    ret.push(pixel!(y0 - i as f64 / 2., x0 - 1. - i as f64, Color::red()));
                 }
             }
             8 => {
-                let dy = (dy as f32 * 1.1).ceil() as i32;
+                let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(y0 - i as f32, x0 - i as f32 / 2., Color::red()));
-                    ret.push(pixel!(y0 - 1. - i as f32, x0 - i as f32 / 2., Color::red()));
+                    ret.push(pixel!(y0 - i as f64, x0 - i as f64 / 2., Color::red()));
+                    ret.push(pixel!(y0 - 1. - i as f64, x0 - i as f64 / 2., Color::red()));
                 }
             }
             9 => {
                 for i in 0..dy {
-                    ret.push(pixel!(y0 - i as f32, x0, Color::red()))
+                    ret.push(pixel!(y0 - i as f64, x0, Color::red()))
                 }
             }
             10 => {
-                let dy = (dy as f32 * 1.1).ceil() as i32;
+                let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(y0 - i as f32, x0 + i as f32 / 2., Color::red()));
-                    ret.push(pixel!(y0 - 1. - i as f32, x0 + i as f32 / 2., Color::red()));
+                    ret.push(pixel!(y0 - i as f64, x0 + i as f64 / 2., Color::red()));
+                    ret.push(pixel!(y0 - 1. - i as f64, x0 + i as f64 / 2., Color::red()));
                 }
             }
             11 => {
-                let dx = (dx as f32 * 1.1).ceil() as i32;
+                let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(y0 - i as f32 / 2., x0 + i as f32, Color::red()));
-                    ret.push(pixel!(y0 - i as f32 / 2., x0 + 1. + i as f32, Color::red()));
+                    ret.push(pixel!(y0 - i as f64 / 2., x0 + i as f64, Color::red()));
+                    ret.push(pixel!(y0 - i as f64 / 2., x0 + 1. + i as f64, Color::red()));
                 }
             }
             _ => (),
@@ -107,42 +107,42 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
         match dir as i32 {
             0 => {
                 for i in 0..dx {
-                    ret.push(pixel!(y0, x0 + i as f32, Color::red()))
+                    ret.push(pixel!(y0, x0 + i as f64, Color::red()))
                 }
             }
             1 => {
                 for i in 0..dy {
-                    ret.push(pixel!(y0 + i as f32, x0 + i as f32, Color::red()))
+                    ret.push(pixel!(y0 + i as f64, x0 + i as f64, Color::red()))
                 }
             }
             2 => {
                 for i in 0..dy {
-                    ret.push(pixel!(y0 + i as f32, x0, Color::red()))
+                    ret.push(pixel!(y0 + i as f64, x0, Color::red()))
                 }
             }
             3 => {
                 for i in 0..dy {
-                    ret.push(pixel!(y0 + i as f32, x0 - i as f32, Color::red()))
+                    ret.push(pixel!(y0 + i as f64, x0 - i as f64, Color::red()))
                 }
             }
             4 => {
                 for i in 0..dx {
-                    ret.push(pixel!(y0, x0 - i as f32, Color::red()))
+                    ret.push(pixel!(y0, x0 - i as f64, Color::red()))
                 }
             }
             5 => {
                 for i in 0..dx {
-                    ret.push(pixel!(y0 - i as f32, x0 - i as f32, Color::red()))
+                    ret.push(pixel!(y0 - i as f64, x0 - i as f64, Color::red()))
                 }
             }
             6 => {
                 for i in 0..dy {
-                    ret.push(pixel!(y0 - i as f32, x0, Color::red()))
+                    ret.push(pixel!(y0 - i as f64, x0, Color::red()))
                 }
             }
             7 => {
                 for i in 0..dx {
-                    ret.push(pixel!(y0 - i as f32, x0 + i as f32, Color::red()))
+                    ret.push(pixel!(y0 - i as f64, x0 + i as f64, Color::red()))
                 }
             }
             _ => error!("impossible"),

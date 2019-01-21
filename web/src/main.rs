@@ -104,10 +104,10 @@ fn main() {
             .try_into()
             .unwrap();
         let rect = canvas.get_bounding_client_rect();
-        let x = event.client_x() as f32 - rect.get_x() as f32;
-        let y = event.client_y() as f32 - rect.get_y() as f32;
-        let w = rect.get_width() as f32;
-        let h = rect.get_height() as f32;
+        let x = event.client_x() as f64 - rect.get_x() as f64;
+        let y = event.client_y() as f64 - rect.get_y() as f64;
+        let w = rect.get_width() as f64;
+        let h = rect.get_height() as f64;
         if oob(x, y, w, h) {
             return;
         }
@@ -131,8 +131,8 @@ fn main() {
         let rect = canvas.get_bounding_client_rect();
         xpr_.borrow_mut()
             .event(&InputEvent::MouseMove {
-                x: event.client_x() as f32 - rect.get_x() as f32,
-                y: event.client_y() as f32 - rect.get_y() as f32,
+                x: event.client_x() as f64 - rect.get_x() as f64,
+                y: event.client_y() as f64 - rect.get_y() as f64,
             })
             .unwrap();
     });
@@ -151,10 +151,10 @@ fn main() {
             stdweb::web::event::MouseButton::Right => InputItem::Right,
             _ => unimplemented!(),
         };
-        let x = event.client_x() as f32 - rect.get_x() as f32;
-        let y = event.client_y() as f32 - rect.get_y() as f32;
-        let w = rect.get_width() as f32;
-        let h = rect.get_height() as f32;
+        let x = event.client_x() as f64 - rect.get_x() as f64;
+        let y = event.client_y() as f64 - rect.get_y() as f64;
+        let w = rect.get_width() as f64;
+        let h = rect.get_height() as f64;
         if oob(x, y, w, h) {
             return;
         }
@@ -182,8 +182,8 @@ fn init_js_bindings(xpr: &Rc<RefCell<Xprite>>) {
             .content
             .push(Pixel {
                 point: Vec2f {
-                    x: x as f32,
-                    y: y as f32,
+                    x: x as f64,
+                    y: y as f64,
                 },
                 color: Color::red(),
             })

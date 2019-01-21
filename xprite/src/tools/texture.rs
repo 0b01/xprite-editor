@@ -31,7 +31,7 @@ impl Texture {
         self.quilt_img(xpr)
     }
 
-    pub fn get_dims(&self) -> Option<(f32, f32, (f32, f32))> {
+    pub fn get_dims(&self) -> Option<(f64, f64, (f64, f64))> {
         let x0 = self.start_pos?.point.x;
         let y0 = self.start_pos?.point.y;
         let x1 = self.cursor_pos?.point.x;
@@ -39,7 +39,7 @@ impl Texture {
         Some((
             (x1 - x0).abs(),
             (y1 - y0).abs(),
-            (f32::min(x0, x1), f32::min(y0, y1)),
+            (f64::min(x0, x1), f64::min(y0, y1)),
         ))
     }
 

@@ -26,7 +26,7 @@ pub struct Xprite {
 }
 
 impl Xprite {
-    pub fn new(art_w:f32, art_h: f32) -> Xprite {
+    pub fn new(art_w:f64, art_h: f64) -> Xprite {
         let palette_man = PaletteManager::new().expect("Cannot initialize palettes");
         let selected_color = Color { r: 0, g: 0, b: 0, a: 255 };
         let history = History::new();
@@ -65,7 +65,7 @@ impl Xprite {
         self.redraw = true;
     }
 
-    pub fn update_mouse_pos(&mut self, x: f32, y: f32) {
+    pub fn update_mouse_pos(&mut self, x: f64, y: f64) {
         self.last_mouse_pos.x = x;
         self.last_mouse_pos.y = y;
     }

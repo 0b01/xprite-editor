@@ -84,11 +84,11 @@ fn algo_ellipse(x1:i32, y1: i32, x2: i32, y2: i32) -> Pixels {
     rx = (x1 - x2).abs();
     ry = (y1 - y2).abs();
 
-    if rx == 1 { pixel_perfect_line(Vec2f{x:x2 as f32, y:y1 as f32}, Vec2f{x:x2 as f32, y:y2 as f32}); rx-=1; }
-    if rx == 0 { pixel_perfect_line(Vec2f{x:x1 as f32, y:y1 as f32}, Vec2f{x:x1 as f32, y:y2 as f32}); return ret; }
+    if rx == 1 { pixel_perfect_line(Vec2f{x:x2 as f64, y:y1 as f64}, Vec2f{x:x2 as f64, y:y2 as f64}); rx-=1; }
+    if rx == 0 { pixel_perfect_line(Vec2f{x:x1 as f64, y:y1 as f64}, Vec2f{x:x1 as f64, y:y2 as f64}); return ret; }
 
-    if ry == 1 { pixel_perfect_line(Vec2f{x:x1 as f32, y:y2 as f32}, Vec2f{x:x2 as f32, y:y2 as f32}); ry-=1; }
-    if ry == 0 { pixel_perfect_line(Vec2f{x:x1 as f32, y:y1 as f32}, Vec2f{x:x2 as f32, y:y1 as f32}); return ret; }
+    if ry == 1 { pixel_perfect_line(Vec2f{x:x1 as f64, y:y2 as f64}, Vec2f{x:x2 as f64, y:y2 as f64}); ry-=1; }
+    if ry == 0 { pixel_perfect_line(Vec2f{x:x1 as f64, y:y1 as f64}, Vec2f{x:x2 as f64, y:y1 as f64}); return ret; }
 
     rx /= 2;
     ry /= 2;

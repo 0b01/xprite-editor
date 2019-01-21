@@ -3,8 +3,17 @@
 macro_rules! vec2f {
     ($y:expr, $x: expr) => {
         Vec2f {
-            y: ($y) as f32,
-            x: ($x) as f32,
+            y: ($y) as f64,
+            x: ($x) as f64,
+        }
+    };
+}
+
+macro_rules! vec2f_xy {
+    ($x:expr, $y: expr) => {
+        Vec2f {
+            x: ($x) as f64,
+            y: ($y) as f64,
         }
     };
 }
@@ -13,55 +22,102 @@ macro_rules! vec2f {
 use crate::prelude::*;
 use std::cmp::Ordering;
 use std::hash::{Hash, Hasher};
-use std::ops::{Sub, Add, AddAssign, SubAssign};
+use std::ops::{Sub, Add, AddAssign, SubAssign, Mul, MulAssign, Div, DivAssign, Neg};
 
-impl Sub for Vec2f {
+impl Vec2f {
+    pub fn mag(&self) -> f64 {
+        (self.x * self.x + self.y * self.y).sqrt()
+    }
+}
+
+impl Neg for Vec2f {
     type Output = Vec2f;
-    fn sub(self, other: Vec2f) -> Vec2f {
-        Vec2f {
-            x: self.x - other.x,
-            y: self.y - other.y,
-        }
+
+    fn neg(self) -> Vec2f {
+        Vec2f {x: -self.x, y: -self.y}
     }
 }
 
 impl Add for Vec2f {
     type Output = Vec2f;
-    fn add(self, other: Vec2f) -> Vec2f {
-        Vec2f {
-            x: self.x + other.x,
-            y: self.y + other.y,
-        }
+
+    fn add(self, rhs: Vec2f) -> Vec2f {
+        Vec2f {x: self.x + rhs.x, y: self.y + rhs.y}
     }
 }
 
 impl AddAssign for Vec2f {
-    fn add_assign(&mut self, other: Vec2f) {
-        *self = Vec2f {
-            x: self.x + other.x,
-            y: self.y + other.y,
-        };
+    fn add_assign(&mut self, rhs: Vec2f) -> () {
+        *self = *self + rhs;
+    }
+}
+
+impl Sub for Vec2f {
+    type Output = Vec2f;
+
+    fn sub(self, rhs: Vec2f) -> Vec2f {
+        self + (-rhs)
     }
 }
 
 impl SubAssign for Vec2f {
-    fn sub_assign(&mut self, other: Vec2f) {
-        *self = Vec2f {
-            x: self.x - other.x,
-            y: self.y - other.y,
-        };
+    fn sub_assign(&mut self, rhs: Vec2f) -> () {
+        *self = *self - rhs;
     }
 }
 
+impl Div for Vec2f {
+    type Output = Vec2f;
+
+    fn div(self, rhs: Vec2f) -> Vec2f {
+        Vec2f{ x: self.x / rhs.x, y: self.y / rhs.y}
+    }
+}
+
+impl Div<f64> for Vec2f {
+    type Output = Vec2f;
+
+    fn div(self, rhs: f64) -> Vec2f {
+        Vec2f{ x: self.x / rhs, y: self.y / rhs}
+    }
+}
+
+impl DivAssign for Vec2f {
+    fn div_assign(&mut self, rhs: Vec2f) -> () {
+        *self = *self / rhs;
+    }
+}
+
+impl Mul for Vec2f {
+    type Output = Vec2f;
+
+    fn mul(self, rhs: Vec2f) -> Vec2f {
+        Vec2f {x: self.x * rhs.x, y: self.y * rhs.y}
+    }
+}
+
+impl Mul<f64> for Vec2f {
+    type Output = Vec2f;
+
+    fn mul(self, rhs: f64) -> Vec2f {
+        Vec2f {x: self.x * rhs, y: self.y * rhs}
+    }
+}
+
+impl MulAssign for Vec2f {
+    fn mul_assign(&mut self, rhs: Vec2f) -> () {
+        *self = *self * rhs;
+    }
+}
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Rect(pub Vec2f, pub Vec2f);
 
 impl Rect {
-    pub fn w(&self) -> f32 {
+    pub fn w(&self) -> f64 {
         (self.1.x - self.0.x).abs()
     }
-    pub fn h(&self) -> f32 {
+    pub fn h(&self) -> f64 {
         (self.1.y - self.0.y).abs()
     }
 }
@@ -70,8 +126,8 @@ impl Rect {
 #[cfg_attr(feature = "python-scripting", pyclass)]
 #[derive(Debug, Copy, Clone, PartialOrd, Serialize, Deserialize, Default)]
 pub struct Vec2f {
-    pub x: f32,
-    pub y: f32,
+    pub x: f64,
+    pub y: f64,
 }
 
 #[cfg(feature = "python-scripting")]
@@ -107,7 +163,7 @@ impl Hash for Vec2f {
     }
 }
 
-impl From<Vec2f> for [f32; 2] {
+impl From<Vec2f> for [f64; 2] {
     fn from(p: Vec2f) -> Self {
         [p.x, p.y]
     }
@@ -122,7 +178,7 @@ pub struct CubicBezierSegment {
 }
 
 impl CubicBezierSegment {
-    pub fn sample(&self, t: f32) -> Vec2f {
+    pub fn sample(&self, t: f64) -> Vec2f {
         let t2 = t * t;
         let t3 = t2 * t;
         let one_t = 1. - t;
@@ -153,7 +209,7 @@ impl CubicBezierSegment {
             let mut monotone_seg = Pixels::new();
             let mut t = *start;
             let n_steps = 1000;
-            let step = (stop - start) / n_steps as f32;
+            let step = (stop - start) / n_steps as f64;
             for _ in 0..n_steps {
                 let point = self.sample(t);
                 let Vec2f { x, y } = Canvas::snap(point);
@@ -175,7 +231,7 @@ impl CubicBezierSegment {
         Some(pixs)
     }
 
-    pub fn extrema(&self) -> Vec<f32> {
+    pub fn extrema(&self) -> Vec<f64> {
         // https://github.com/Pomax/bezierjs/blob/gh-pages/lib/bezier.js#L470
 
         let dims = vec![0, 1];
@@ -195,19 +251,19 @@ impl CubicBezierSegment {
                     point.y
                 }
             };
-            let p: Vec<f32> = dpoints[0].iter().map(mfn).collect();
+            let p: Vec<f64> = dpoints[0].iter().map(mfn).collect();
             result[dim] = droots(&p);
-            let p: Vec<f32> = dpoints[1].iter().map(mfn).collect();
+            let p: Vec<f64> = dpoints[1].iter().map(mfn).collect();
             result[dim].extend(droots(&p));
             result[dim] = result[dim]
                 .iter()
                 .filter(|&t| *t >= 0. && *t <= 1.)
                 .cloned()
                 .collect();
-            result[dim].sort_by(|a: &f32, b: &f32| a.partial_cmp(b).unwrap());
+            result[dim].sort_by(|a: &f64, b: &f64| a.partial_cmp(b).unwrap());
             roots.extend(&result[dim]);
         }
-        roots.sort_by(|a: &f32, b| a.partial_cmp(b).unwrap());
+        roots.sort_by(|a: &f64, b| a.partial_cmp(b).unwrap());
         return roots;
     }
 }
@@ -222,8 +278,8 @@ fn derive(points: Vec<Vec2f>) -> Vec<Vec<Vec2f>> {
         let mut list = vec![];
         for j in 0..c {
             let dpt = Vec2f {
-                x: c as f32 * (p[j + 1].x - p[j].x),
-                y: c as f32 * (p[j + 1].y - p[j].y),
+                x: c as f64 * (p[j + 1].x - p[j].x),
+                y: c as f64 * (p[j + 1].y - p[j].y),
             };
             list.push(dpt);
         }
@@ -235,7 +291,7 @@ fn derive(points: Vec<Vec2f>) -> Vec<Vec<Vec2f>> {
     dpoints
 }
 
-fn droots(p: &[f32]) -> Vec<f32> {
+fn droots(p: &[f64]) -> Vec<f64> {
     if p.len() == 3 {
         let a = p[0];
         let b = p[1];

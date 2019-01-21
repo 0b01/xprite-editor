@@ -38,14 +38,14 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         state.xpr.render_canvas(rdr);
                         super::inputs::bind_input(state, ui);
                         let origin = state.xpr.canvas.origin();
-                        ui.set_cursor_screen_pos([origin.x, origin.y]);
+                        ui.set_cursor_screen_pos([origin.x as f32, origin.y as f32]);
                         rdr.render();
 
                         state.redraw_pixels(rdr).unwrap();
 
                         ui.image(ImTexture::from(state.preview_texture.unwrap()), [
-                            rdr.art_w * state.xpr.canvas.scale,
-                            rdr.art_h * state.xpr.canvas.scale,
+                            (rdr.art_w * state.xpr.canvas.scale) as f32,
+                            (rdr.art_h * state.xpr.canvas.scale) as f32,
                         ]).build();
 
                         state.xpr.render_cursor(rdr);
@@ -73,10 +73,10 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
 fn update_viewport(state: &mut State, ui: &Ui) {
     let cvs = &mut state.xpr.canvas;
     let win_pos = ui.get_cursor_screen_pos();
-    cvs.update_pos(win_pos.0, win_pos.1);
+    cvs.update_pos(win_pos.0.into(), win_pos.1.into());
 
     let canvas_sz = ui.get_window_size();
-    cvs.update_sz(canvas_sz.0, canvas_sz.1);
+    cvs.update_sz(canvas_sz.0.into(), canvas_sz.1.into());
 
     if !cvs.initialized {
         cvs.scale = cvs.canvas_w / cvs.art_w / CANVAS_INIT_SCALE;

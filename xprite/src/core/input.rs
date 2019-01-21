@@ -100,9 +100,9 @@ impl InputItem {
 
 #[derive(Debug)]
 pub enum InputEvent {
-    MouseMove { x: f32, y: f32 },
-    MouseDown { x: f32, y: f32, button: InputItem },
-    MouseUp { x: f32, y: f32, button: InputItem },
+    MouseMove { x: f64, y: f64 },
+    MouseDown { x: f64, y: f64, button: InputItem },
+    MouseUp { x: f64, y: f64, button: InputItem },
     KeyUp { key: InputItem },
     KeyDown { key: InputItem },
 }

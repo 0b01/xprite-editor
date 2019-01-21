@@ -41,7 +41,7 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
         "script execution failed".to_owned()
     })?;
 
-    let width: f32 = locals
+    let width: f64 = locals
         .get_item("WIDTH")
         .ok_or_else(|| "WIDTH is undefined".to_owned())?
         .extract()
@@ -49,7 +49,7 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
             e.print(py);
             "Cannot extract WIDTH".to_owned()
         })?;
-    let height: f32 = locals
+    let height: f64 = locals
         .get_item("HEIGHT")
         .ok_or_else(|| "HEIGHT is undefined".to_owned())?
         .extract()

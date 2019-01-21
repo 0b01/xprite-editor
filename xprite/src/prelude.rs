@@ -40,7 +40,7 @@ pub const BLACK: [f32; 4] = [0., 0., 0., 1.];
 pub const LIGHT_GREY: [f32; 4] = [0.8, 0.8, 0.8, 1.];
 
 /// out of bounds checking
-pub fn oob(x: f32, y: f32, w: f32, h: f32) -> bool {
+pub fn oob(x: f64, y: f64, w: f64, h: f64) -> bool {
     if x < 0. || x >= w {
         return true;
     }

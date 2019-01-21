@@ -48,7 +48,7 @@ impl From<(i32, i32, i32, i32)> for Color {
     }
 }
 
-/// [f32;4] = [0.,0.,0.,0.9];
+/// [f64;4] = [0.,0.,0.,0.9];
 impl From<Color> for [f32; 4] {
     fn from(c: Color) -> Self {
         [
@@ -60,7 +60,7 @@ impl From<Color> for [f32; 4] {
     }
 }
 
-/// [f32;4] = [0.,0.,0.,0.9];
+/// [f64;4] = [0.,0.,0.,0.9];
 impl From<[f32; 4]> for Color {
     fn from(c: [f32; 4]) -> Self {
         Color {

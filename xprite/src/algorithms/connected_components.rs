@@ -22,13 +22,13 @@ pub fn connected_components(pixs: &Pixels, w: usize, h: usize) -> Vec<Pixels> {
                 (None, None) => (),
             };
             neighbors.clear(); // Checking only 4 neighbors
-            if x < w as f32 - 1. {
+            if x < w as f64 - 1. {
                 neighbors.push((x + 1., y))
             };
             if x > 0. {
                 neighbors.push((x - 1., y))
             };
-            if y < h as f32 - 1. {
+            if y < h as f64 - 1. {
                 neighbors.push((x, y + 1.))
             };
             if y > 0. {

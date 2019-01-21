@@ -4,44 +4,44 @@ use img::GenericImage;
 use img::{DynamicImage, Rgba};
 
 pub struct ImageRenderer {
-    w: f32,
-    h: f32,
+    w: f64,
+    h: f64,
     pub image: image::DynamicImage,
     draw_list: Pixels,
 }
 
 #[allow(unused)]
 impl Renderer for ImageRenderer {
-    fn width(&self) -> f32 {
+    fn width(&self) -> f64 {
         self.w
     }
 
-    fn height(&self) -> f32 {
+    fn height(&self) -> f64 {
         self.h
     }
 
-    fn circ(&mut self, p0: [f32; 2], r: f32, color: [f32; 4], filled: bool) {}
+    fn circ(&mut self, p0: [f64; 2], r: f64, color: [f32;4], filled: bool) {}
 
     fn bezier(
         &mut self,
-        p0: [f32; 2],
-        cp1: [f32; 2],
-        cp2: [f32; 2],
-        p1: [f32; 2],
-        color: [f32; 4],
-        thickness: f32,
+        p0: [f64; 2],
+        cp1: [f64; 2],
+        cp2: [f64; 2],
+        p1: [f64; 2],
+        color: [f32;4],
+        thickness: f64,
     ) {
     }
 
-    fn rect(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4], filled: bool) {
+    fn rect(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32;4], filled: bool) {
         ()
     }
 
-    fn pixel(&mut self, x: f32, y: f32, color: [f32; 4], filled: bool) {
+    fn pixel(&mut self, x: f64, y: f64, color: [f32;4], filled: bool) {
         self.draw_list.push(pixel!(y, x, color.into()));
     }
 
-    fn line(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4]) {}
+    fn line(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32;4]) {}
 
     fn set_mouse_cursor(&mut self, cursor_type: MouseCursorType) {}
 
@@ -62,7 +62,7 @@ impl Renderer for ImageRenderer {
 }
 
 impl ImageRenderer {
-    pub fn new(art_w: f32, art_h: f32) -> Self {
+    pub fn new(art_w: f64, art_h: f64) -> Self {
         let w = art_w;
         let h = art_h;
         let image = DynamicImage::new_rgba8(w as u32, h as u32);

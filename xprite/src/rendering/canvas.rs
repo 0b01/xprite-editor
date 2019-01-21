@@ -3,8 +3,8 @@ use crate::rendering::Renderer;
 
 #[derive(Clone, Copy, Serialize, Deserialize, Debug)]
 pub struct Scroll {
-    pub x: f32,
-    pub y: f32,
+    pub x: f64,
+    pub y: f64,
 }
 
 impl Default for Scroll {
@@ -15,13 +15,13 @@ impl Default for Scroll {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Canvas {
-    pub scale: f32,
-    pub win_x: f32,
-    pub win_y: f32,
-    pub canvas_w: f32,
-    pub canvas_h: f32,
-    pub art_w: f32,
-    pub art_h: f32,
+    pub scale: f64,
+    pub win_x: f64,
+    pub win_y: f64,
+    pub canvas_w: f64,
+    pub canvas_h: f64,
+    pub art_w: f64,
+    pub art_h: f64,
     pub scroll: Scroll,
     pub show_grid: bool,
     pub initialized: bool,
@@ -50,19 +50,19 @@ impl Default for Canvas {
 }
 
 impl Canvas {
-    pub fn new(art_w: f32, art_h: f32) -> Self {
+    pub fn new(art_w: f64, art_h: f64) -> Self {
         let mut ret = Self::default();
         ret.art_w = art_w;
         ret.art_h = art_h;
         ret
     }
 
-    pub fn update_pos(&mut self, win_x: f32, win_y: f32) {
+    pub fn update_pos(&mut self, win_x: f64, win_y: f64) {
         self.win_x = win_x;
         self.win_y = win_y;
     }
 
-    pub fn update_sz(&mut self, canvas_w: f32, canvas_h: f32) {
+    pub fn update_sz(&mut self, canvas_w: f64, canvas_h: f64) {
         self.canvas_w = canvas_w;
         self.canvas_h = canvas_h;
     }
@@ -71,7 +71,7 @@ impl Canvas {
         &self,
         rdr: &mut Renderer,
         p0: Vec2f,
-        radius: f32,
+        radius: f64,
         color: [f32; 4],
         filled: bool,
     ) {
@@ -88,7 +88,7 @@ impl Canvas {
         ctrl2: Vec2f,
         to: Vec2f,
         c: [f32; 4],
-        thickness: f32,
+        thickness: f64,
     ) {
         let p0 = self.to_cli(from).into();
         let p1 = self.to_cli(to).into();

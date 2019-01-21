@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use std::f32;
+use std::f64;
 use std::rc::Rc;
 
 pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
@@ -15,10 +15,10 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     if ui
         .drag_int(im_str!("Overlap"), &mut texture.overlap)
         .min(2)
-        .max(f32::min(x, y) as i32 - 1)
+        .max(f64::min(x, y) as i32 - 1)
         .build()
     {
-        if texture.blocksize < texture.overlap * 2 && texture.overlap * 2 < f32::min(x, y) as i32 {
+        if texture.blocksize < texture.overlap * 2 && texture.overlap * 2 < f64::min(x, y) as i32 {
             texture.blocksize = texture.overlap * 2;
         } else {
             texture.blocksize = -1;
@@ -26,7 +26,7 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     }
     ui.drag_int(im_str!("Block Size"), &mut texture.blocksize)
         .min(minimum_blocksize)
-        .max(f32::min(x, y) as i32 - 1)
+        .max(f64::min(x, y) as i32 - 1)
         .build();
 
     if ui.button(im_str!("Quilt!"), (100., 20.)) {

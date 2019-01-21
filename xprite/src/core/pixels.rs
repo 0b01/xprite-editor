@@ -9,7 +9,7 @@ use std::cmp::Ordering;
 use std::fmt::{Debug, Error, Formatter};
 use std::hash::{Hash, Hasher};
 use std::ops::{Index, Sub};
-use std::f32;
+use std::f64;
 use fnv::FnvBuildHasher;
 
 #[cfg_attr(feature = "python-scripting", pyclass)]
@@ -66,8 +66,8 @@ macro_rules! pixel {
     ($y:expr, $x: expr, $k: expr) => {
         Pixel {
             point: Vec2f {
-                y: ($y) as f32,
-                x: ($x) as f32,
+                y: ($y) as f64,
+                x: ($x) as f64,
             },
             color: $k,
         }
@@ -78,8 +78,8 @@ macro_rules! pixel_xy {
     ($x:expr, $y: expr, $k: expr) => {
         Pixel {
             point: Vec2f {
-                x: ($x) as f32,
-                y: ($y) as f32,
+                x: ($x) as f64,
+                y: ($y) as f64,
             },
             color: $k,
         }
@@ -195,10 +195,10 @@ impl Pixels {
     }
 
     pub fn bounding_rect(&self) -> Rect {
-        let mut min_x = f32::MAX;
-        let mut max_x = f32::MIN;
-        let mut min_y = f32::MAX;
-        let mut max_y = f32::MIN;
+        let mut min_x = f64::MAX;
+        let mut max_x = f64::MIN;
+        let mut min_y = f64::MAX;
+        let mut max_y = f64::MIN;
         for Pixel{point: Vec2f{x, y}, ..} in self.iter() {
             min_x = min_x.min(*x);
             max_x = max_x.max(*x);
@@ -293,7 +293,7 @@ impl Pixels {
         for p in self.0.iter() {
             let Pixel { point, .. } = p;
             let Vec2f { x, y } = point;
-            if oob(*x, *y, w as f32, h as f32) {
+            if oob(*x, *y, w as f64, h as f64) {
                 continue;
             }
             arr[*y as usize][*x as usize] = Some(*p);
@@ -326,14 +326,14 @@ impl Pixels {
         self.0.is_empty()
     }
 
-    pub fn as_image(&self, w: f32, h: f32, origin: (f32, f32)) -> img::DynamicImage {
+    pub fn as_image(&self, w: f64, h: f64, origin: (f64, f64)) -> img::DynamicImage {
         let mut rdr = ImageRenderer::new(w, h);
         for pix in &self.0 {
             let Pixel {
                 point: Vec2f { x, y },
                 color,
             } = pix;
-            if oob(*x - origin.0, *y - origin.1, w as f32, h as f32) {
+            if oob(*x - origin.0, *y - origin.1, w as f64, h as f64) {
                 continue;
             }
             rdr.rect(

@@ -98,7 +98,7 @@ impl Vector {
     }
 
     fn draw_continuous(&self) -> Result<(Path, Pixels), String> {
-        let simple = self.current_polyline.reumann_witkam(self.tolerence);
+        let simple = self.current_polyline.reumann_witkam(self.tolerence as f64);
         if let Ok(simple) = simple {
             let path = simple.interp();
             let mut buf = path.rasterize(self.mono_sort).unwrap();
@@ -296,7 +296,7 @@ impl Tool for Vector {
         }
         self.recording = false;
 
-        let simple = self.current_polyline.reumann_witkam(self.tolerence);
+        let simple = self.current_polyline.reumann_witkam(self.tolerence as f64);
         if let Ok(simple) = simple {
             let path = simple.interp();
             self.curves.extend(path.segments);

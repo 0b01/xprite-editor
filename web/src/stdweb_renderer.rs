@@ -19,15 +19,15 @@ impl Renderer for StdwebRenderer {
             .clear_rect(0., 0., self.width() as f64, self.height() as f64);
     }
 
-    fn width(&self) -> f32 {
-        self.canvas.width() as f32
+    fn width(&self) -> f64 {
+        self.canvas.width() as f64
     }
 
-    fn height(&self) -> f32 {
-        self.canvas.height() as f32
+    fn height(&self) -> f64 {
+        self.canvas.height() as f64
     }
 
-    fn rect(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4], filled: bool) {
+    fn rect(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32; 4], filled: bool) {
         let a = f64::from(p0[0]);
         let b = f64::from(p0[1]);
         let c = f64::from(p1[0]) - a;
@@ -63,11 +63,11 @@ impl Renderer for StdwebRenderer {
         }
     }
 
-    fn pixel(&mut self, x: f32, y: f32, color: [f32; 4], filled: bool) {
+    fn pixel(&mut self, x: f64, y: f64, color: [f32; 4], filled: bool) {
         ()
     }
 
-    fn circ(&mut self, p0: [f32; 2], r: f32, color: [f32; 4], filled: bool) {
+    fn circ(&mut self, p0: [f64; 2], r: f64, color: [f32; 4], filled: bool) {
         let x = f64::from(p0[0]);
         let y = f64::from(p0[1]);
         if filled {
@@ -88,7 +88,7 @@ impl Renderer for StdwebRenderer {
         }
     }
 
-    fn line(&mut self, p0: [f32; 2], p1: [f32; 2], color: [f32; 4]) {
+    fn line(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32; 4]) {
         self.ctx.set_fill_style_color(&format!(
             "rgba({},{},{},{})",
             color[0] * 255.,
@@ -104,12 +104,12 @@ impl Renderer for StdwebRenderer {
 
     fn bezier(
         &mut self,
-        p0: [f32; 2],
-        cp1: [f32; 2],
-        cp2: [f32; 2],
-        p1: [f32; 2],
+        p0: [f64; 2],
+        cp1: [f64; 2],
+        cp2: [f64; 2],
+        p1: [f64; 2],
         color: [f32; 4],
-        thickness: f32,
+        thickness: f64,
     ) {
         self.ctx.set_fill_style_color(&format!(
             "rgba({},{},{},{})",

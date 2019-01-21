@@ -67,11 +67,13 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     use self::InputEvent::*;
     use self::InputItem::*;
 
-    let wheel_delta = ui.imgui().mouse_wheel();
+    let wheel_delta = ui.imgui().mouse_wheel() as f64;
     let (x, y) = ui.imgui().mouse_pos();
+    let x = x.into();
+    let y = y.into();
 
     if (state.xpr.last_mouse_pos.x != x || state.xpr.last_mouse_pos.y != y) && !state.inputs.space {
-        handle_error!(state.xpr.mouse_move(&MouseMove { x, y }));
+        handle_error!(state.xpr.mouse_move(&MouseMove { x: x.into(), y: y.into() }));
     }
 
     let left = ui.imgui().is_mouse_down(ImMouseButton::Left);
@@ -91,8 +93,8 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         // set cursor
         ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Hand);
         let d = ui.imgui().mouse_delta();
-        state.xpr.canvas.scroll.x += d.0;
-        state.xpr.canvas.scroll.y += d.1;
+        state.xpr.canvas.scroll.x += d.0 as f64;
+        state.xpr.canvas.scroll.y += d.1 as f64;
     }
 
     if using_window {
@@ -109,12 +111,16 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     if state.inputs.debounce(InputItem::Left, left) && using_window && !state.inputs.space {
         if left {
             trace!("mouse left down");
-            handle_error!(state.xpr.event(&MouseDown { x, y, button: Left }));
+            handle_error!(state.xpr.event(&MouseDown {
+                x: x.into(),
+                y: y.into(),
+                button: Left
+            }));
         } else {
             trace!("mouse left up");
             handle_error!(state.xpr.event(&MouseUp {
-                x,
-                y,
+                x: x.into(),
+                y: y.into(),
                 button: Right
             }));
         }
@@ -125,15 +131,15 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         if right {
             let (x, y) = ui.imgui().mouse_pos();
             handle_error!(state.xpr.event(&MouseDown {
-                x,
-                y,
+                x: x.into(),
+                y: y.into(),
                 button: Right
             }));
         } else {
             trace!("mouse right up");
             handle_error!(state.xpr.event(&MouseUp {
-                x,
-                y,
+                x: x.into(),
+                y: y.into(),
                 button: Right
             }));
         }
@@ -198,7 +204,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     //     }
     // }
 
-    state.xpr.update_mouse_pos(x, y);
+    state.xpr.update_mouse_pos(x.into(), y.into());
 }
 
 pub fn execute(bind: Bind, state: &mut State, _ui: &Ui) -> Result<(), String> {

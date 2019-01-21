@@ -73,7 +73,7 @@ impl<'a> State<'a> {
         info!("loading png file {}", png_path);
         let img = xprite::image::open(png_path).unwrap();
         let (w, h) = img.dimensions();
-        let mut xpr = Xprite::new(w as f32, h as f32);
+        let mut xpr = Xprite::new(w as f64, h as f64);
         xpr.current_layer_mut().unwrap().content = img.into();
         self.xpr = xpr;
     }

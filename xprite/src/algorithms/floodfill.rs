@@ -4,8 +4,8 @@ use crate::prelude::*;
 /// converts pixels into a grid of size (w, h)
 /// The operation starts at origin
 pub fn floodfill(
-    w: f32,
-    h: f32,
+    w: f64,
+    h: f64,
     pix: &Pixels,
     origin: Vec2f,
     bg_col: Option<Color>,

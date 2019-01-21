@@ -21,13 +21,14 @@ git submodule update --init --recursive
 * [ ] Preview bounding box
 * [ ] Fix zoom
 * [ ] Save/load .aseprite
-* [ ] Fix web target
 * [ ] Output 2x size
 
 ## Done
 
 * [ ] Tabs
 * [ ] Output svg
+* [ ] Fix web target
+* [ ] rect decomp (for efficient render)
 * [x] Fix ellipse( i.center stroke; ii. filled )
 * [x] Connected component algorithm
 * [x] Stroke caching
@@ -37,10 +38,6 @@ git submodule update --init --recursive
 * [x] Floodfill crashing when index is negative
 * [x] Simplify drawlist
 * [x] Ignore canvas OOB
-
-## Didn't work
-
-* [ ] rect decomp (for efficient render)
 
 ## Milestones
 
@@ -66,11 +63,12 @@ git submodule update --init --recursive
 * [x] Shapes - Circle
 * [x] Vector tools
 * [ ] Select/Marquee
+* [ ] Copy paste
+* [ ] Layer grouping
+
+1. Others
 * [ ] Pattern Brush
 * [ ] Texture Synthesis
-
-1. Layers
-* [ ] Layer grouping
 
 1. Animation support
 * [ ] Celluloid

@@ -70,7 +70,7 @@ pub fn sort_path(input: &Pixels) -> Result<Pixels, String> {
         if pi.x == p0.x || pi.y == p0.y {
             d = (
                 d.0 + (pi_.x - p0_.x) as u32,
-                d.1 + (dir as f32 * (pi_.y - p0_.y)) as u32, // BUG:
+                d.1 + (dir as f64 * (pi_.y - p0_.y)) as u32, // BUG:
             );
         } else {
             // console!(log, format!("{:?}", d));
@@ -79,12 +79,12 @@ pub fn sort_path(input: &Pixels) -> Result<Pixels, String> {
                 d.0 -= 1;
                 d.1 -= 1;
             }
-            segs.push((d, d.1 as f32 / d.0 as f32));
+            segs.push((d, d.1 as f64 / d.0 as f64));
             d = (1, 1);
         }
         p0 = *pi;
     }
-    segs.push((d, d.1 as f32 / d.0 as f32));
+    segs.push((d, d.1 as f64 / d.0 as f64));
 
     // sort by slope
     segs.sort_by(|a, b| {

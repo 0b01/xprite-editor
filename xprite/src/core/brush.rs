@@ -27,8 +27,8 @@ impl Default for BrushType {
 #[derive(Debug, Clone)]
 pub struct Brush {
     pub shape: PixelOffsets,
-    pub bb: (f32, f32),
-    pub offset: (f32, f32),
+    pub bb: (f64, f64),
+    pub offset: (f64, f64),
 }
 
 impl Default for Brush {

@@ -87,14 +87,14 @@ mod tests {
 
         let outline = find_outline(3, 3, &pixs);
         let outline_result = vec![
-            (vec2f!(0, 0), Outline::TOP | Outline::LEFT),
-            (vec2f!(1, 0), Outline::TOP),
-            (vec2f!(2, 0), Outline::TOP | Outline::RIGHT),
-            (vec2f!(0, 1), Outline::LEFT),
-            (vec2f!(2, 1), Outline::RIGHT),
-            (vec2f!(0, 2), Outline::BOTTOM | Outline::LEFT),
-            (vec2f!(1, 2), Outline::BOTTOM),
-            (vec2f!(2, 2), Outline::BOTTOM | Outline::RIGHT),
+            (vec2f_xy!(0, 0), Outline::TOP | Outline::LEFT),
+            (vec2f_xy!(1, 0), Outline::TOP),
+            (vec2f_xy!(2, 0), Outline::TOP | Outline::RIGHT),
+            (vec2f_xy!(0, 1), Outline::LEFT),
+            (vec2f_xy!(2, 1), Outline::RIGHT),
+            (vec2f_xy!(0, 2), Outline::BOTTOM | Outline::LEFT),
+            (vec2f_xy!(1, 2), Outline::BOTTOM),
+            (vec2f_xy!(2, 2), Outline::BOTTOM | Outline::RIGHT),
         ];
         assert_eq!(outline_result, outline);
     }

@@ -1,6 +1,6 @@
 use crate::prelude::*;
 use std::cmp::{max, min};
-use std::f32;
+use std::f64;
 
 fn convert(p1: Vec2f, p2: Vec2f, p3: Vec2f, p4: Vec2f) -> CubicBezierSegment {
     let t = 0.5;
@@ -18,7 +18,7 @@ fn convert(p1: Vec2f, p2: Vec2f, p3: Vec2f, p4: Vec2f) -> CubicBezierSegment {
     }
 }
 
-fn line_slope(p0: Vec2f, p1: Vec2f) -> f32 {
+fn line_slope(p0: Vec2f, p1: Vec2f) -> f64 {
     if p1.x == p0.x {
         0.
     } else {
@@ -26,7 +26,7 @@ fn line_slope(p0: Vec2f, p1: Vec2f) -> f32 {
     }
 }
 
-fn line_finite_diff(points: &[Vec2f]) -> Vec<f32> {
+fn line_finite_diff(points: &[Vec2f]) -> Vec<f64> {
     let mut m = Vec::new();
     let mut p0 = points[0];
     let mut p1 = points[1];
@@ -150,7 +150,7 @@ impl Path {
     }
 
     // Generates tangents for a cardinal spline.
-    pub fn d3_svg_line_cardinal_tangents(points: &[Vec2f], tension: f32) -> Vec<Vec2f> {
+    pub fn d3_svg_line_cardinal_tangents(points: &[Vec2f], tension: f64) -> Vec<Vec2f> {
         let mut tangents = Vec::new();
 
         let a = (1. - tension) / 2.;
