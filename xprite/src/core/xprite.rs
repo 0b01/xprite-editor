@@ -235,6 +235,13 @@ impl Xprite {
 }
 
 impl Xprite {
+
+    pub fn as_img(&mut self) -> Result<img::DynamicImage, String> {
+        let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
+        self.export(&mut rdr)?;
+        Ok(rdr.to_img())
+    }
+
     pub fn layer_as_im(&mut self) -> img::DynamicImage {
         let layer = self.history.top_mut().selected_layer().unwrap();
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
@@ -285,6 +292,7 @@ impl Xprite {
         }
         Ok(())
     }
+
 }
 
 /// handle events

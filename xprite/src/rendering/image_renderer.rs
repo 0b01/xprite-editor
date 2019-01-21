@@ -75,9 +75,14 @@ impl ImageRenderer {
         }
     }
 
-    pub fn img(&self) -> &DynamicImage {
+    pub fn as_img(&self) -> &DynamicImage {
         &self.image
     }
+
+    pub fn to_img(self) -> DynamicImage {
+        self.image
+    }
+
 }
 
 pub fn save_img(path: &str, im: &DynamicImage) {
@@ -94,7 +99,7 @@ mod tests {
         let mut rdr = ImageRenderer::new(10., 10.);
         rdr.rect([0., 0.], [0., 0.], [1., 0., 0., 1.], true);
         let path = "test.png";
-        save_img(path, rdr.img());
+        save_img(path, rdr.as_img());
         std::fs::remove_file(path).unwrap();
     }
 }

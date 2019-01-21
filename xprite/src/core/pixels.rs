@@ -329,16 +329,13 @@ impl Pixels {
     pub fn as_image(&self, w: f64, h: f64, origin: (f64, f64)) -> img::DynamicImage {
         let mut rdr = ImageRenderer::new(w, h);
         for pix in &self.0 {
-            let Pixel {
-                point: Vec2f { x, y },
-                color,
-            } = pix;
+            let Pixel { point: Vec2f { x, y }, color } = pix;
             if oob(*x - origin.0, *y - origin.1, w as f64, h as f64) {
                 continue;
             }
-            rdr.rect(
-                [*x - origin.0, *y - origin.1],
-                [0., 0.],
+            rdr.pixel(
+                *x - origin.0,
+                *y - origin.1,
                 (*color).into(),
                 true,
             );
@@ -481,5 +478,21 @@ mod tests {
                 y: 1.0
             }
         ), bb);
+    }
+
+    #[test]
+    fn test_as_image() {
+        use super::*;
+        let pixs = pixels!(
+            pixel!(0.,0., Color::red()),
+            pixel!(1.,1., Color::red())
+        );
+        let img = pixs.as_image(3., 3., (0.,0.,));
+        assert_eq!(img.raw_pixels(), vec![
+            255, 0, 0, 255, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0,
+            0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+        ]);
     }
 }

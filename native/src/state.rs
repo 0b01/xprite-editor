@@ -39,7 +39,7 @@ impl<'a> State<'a> {
         let mut img_rdr = ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
         self.xpr.preview(&mut img_rdr).unwrap();
         img_rdr.render();
-        let img = img_rdr.img();
+        let img = img_rdr.as_img();
         if let Some(id) = self.preview_texture {
             rdr.replace_img(img.to_owned(), image::RGBA(0), id);
         } else {
@@ -64,7 +64,7 @@ impl<'a> State<'a> {
         let mut rdr = ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
         self.xpr.export(&mut rdr).unwrap();
         rdr.render();
-        let im = rdr.img();
+        let im = rdr.as_img();
         info!("writing file to {}", img_path);
         im.save(img_path).unwrap();
     }
