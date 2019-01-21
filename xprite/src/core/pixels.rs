@@ -62,6 +62,7 @@ impl Debug for Pixel {
     }
 }
 
+#[macro_export]
 macro_rules! pixel {
     ($y:expr, $x: expr, $k: expr) => {
         Pixel {
@@ -74,6 +75,7 @@ macro_rules! pixel {
     };
 }
 
+#[macro_export]
 macro_rules! pixel_xy {
     ($x:expr, $y: expr, $k: expr) => {
         Pixel {
@@ -86,6 +88,7 @@ macro_rules! pixel_xy {
     };
 }
 
+#[macro_export]
 macro_rules! pixels {
     ($($i: expr),*) => {
         {

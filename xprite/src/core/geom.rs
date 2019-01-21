@@ -1,5 +1,6 @@
 #![allow(clippy::many_single_char_names)]
 
+#[macro_export]
 macro_rules! vec2f {
     ($y:expr, $x: expr) => {
         Vec2f {
@@ -9,6 +10,7 @@ macro_rules! vec2f {
     };
 }
 
+#[macro_export]
 macro_rules! vec2f_xy {
     ($x:expr, $y: expr) => {
         Vec2f {
