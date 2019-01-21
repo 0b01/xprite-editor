@@ -95,6 +95,16 @@ impl Color {
         Ok(Self::new(r, g, b))
     }
 
+
+    pub fn white() -> Color {
+        Color {
+            r: 255,
+            g: 255,
+            b: 255,
+            a: 255,
+        }
+    }
+
     pub fn red() -> Color {
         Color {
             r: 255,

@@ -62,7 +62,7 @@ fn bresenham_ellipse_step(rx: i32, ry: i32, x:&mut i32, y:&mut i32) {
 /// for Allegro 4.x.
 ///
 /// Adapted for ASEPRITE by David A. Capello.
-fn algo_ellipse(x1:i32, y1: i32, x2: i32, y2: i32) -> Pixels {
+pub fn algo_ellipse(x1:i32, y1: i32, x2: i32, y2: i32) -> Pixels {
     let mut ret = Pixels::new();
 
     let mx;
@@ -139,7 +139,7 @@ fn algo_ellipse(x1:i32, y1: i32, x2: i32, y2: i32) -> Pixels {
     ret
 }
 
-fn algo_ellipsefill(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
+pub fn algo_ellipsefill(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
     let mut ret = Pixels::new();
     let mx;
     let my;

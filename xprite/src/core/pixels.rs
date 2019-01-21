@@ -38,6 +38,29 @@ impl Pixel {
     }
 }
 
+impl Pixel {
+    pub fn as_channel_r(&self) -> Pixel {
+        let mut ret = *self;
+        ret.color.g = 0;
+        ret.color.b = 0;
+        ret
+    }
+
+    pub fn as_channel_g(&self) -> Pixel {
+        let mut ret = *self;
+        ret.color.r = 0;
+        ret.color.b = 0;
+        ret
+    }
+
+    pub fn as_channel_b(&self) -> Pixel {
+        let mut ret = *self;
+        ret.color.r = 0;
+        ret.color.g = 0;
+        ret
+    }
+}
+
 impl Hash for Pixel {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.point.hash(state)
@@ -212,6 +235,18 @@ impl Pixels {
             Vec2f {x: min_x, y: min_y},
             Vec2f {x: max_x, y: max_y},
         )
+    }
+
+    pub fn separate_rgb(&self) -> [Pixels; 3] {
+        let mut r = Pixels::new();
+        let mut g = Pixels::new();
+        let mut b = Pixels::new();
+        for p in self.iter() {
+            r.push(p.as_channel_r());
+            g.push(p.as_channel_g());
+            b.push(p.as_channel_b());
+        }
+        [r, g, b]
     }
 
     #[deprecated]
@@ -496,6 +531,18 @@ mod tests {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0,
             0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0
+        ]);
+    }
+
+    #[test]
+    fn test_separate_rgb() {
+        use super::*;
+        let pixs = pixels!(pixel!(0, 0, Color::white()));
+        let ret = pixs.separate_rgb();
+        assert_eq!(ret, [
+            pixels!(pixel!(0, 0, Color::red())),
+            pixels!(pixel!(0, 0, Color::green())),
+            pixels!(pixel!(0, 0, Color::blue())),
         ]);
     }
 }
