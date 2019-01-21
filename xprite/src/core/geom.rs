@@ -27,9 +27,15 @@ use std::hash::{Hash, Hasher};
 use std::ops::{Sub, Add, AddAssign, SubAssign, Mul, MulAssign, Div, DivAssign, Neg};
 
 impl Vec2f {
+
     pub fn mag(&self) -> f64 {
         (self.x * self.x + self.y * self.y).sqrt()
     }
+
+    pub fn clear(&mut self) {
+        *self = Default::default();
+    }
+
 }
 
 impl Neg for Vec2f {
@@ -233,6 +239,17 @@ impl CubicBezierSegment {
         Some(pixs)
     }
 
+    pub fn arc_len(&self, steps: usize) -> f64 {
+        let mut acc = 0.;
+        let mut prev = self.sample(0.);
+        for i in 1..steps {
+            let p = self.sample(i as f64 / steps as f64);
+            acc += (p - prev).mag();
+            prev = p;
+        }
+        acc
+    }
+
     pub fn extrema(&self) -> Vec<f64> {
         // https://github.com/Pomax/bezierjs/blob/gh-pages/lib/bezier.js#L470
 
@@ -337,5 +354,21 @@ mod tests {
 
         let ex = seg.extrema();
         assert_eq!(vec![0.29352384841237594, 0.39285714285714285, 0.76,], ex);
+    }
+
+    #[test]
+    fn test_arc_len() {
+        use super::*;
+
+        let seg = CubicBezierSegment {
+            from: vec2f!(100., 25.),
+            ctrl1: vec2f!(10., 90.),
+            ctrl2: vec2f!(110., 100.),
+            to: vec2f!(150., 195.),
+        };
+
+        let ret = seg.arc_len(10);
+        dbg!(ret);
+
     }
 }

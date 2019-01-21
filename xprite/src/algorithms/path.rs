@@ -118,7 +118,7 @@ impl Path {
 
     /// from d3:
     ///     https://github.com/d3/d3/blob/a40a611d6b9fc4ff3815ca830d86b6c00d130995/src/svg/line.js#L377
-    pub fn d3_svg_line_monotone(points: &[Vec2f]) -> Vec<Vec2f> {
+    fn d3_svg_line_monotone(points: &[Vec2f]) -> Vec<Vec2f> {
         let mut tangents = Vec::new();
 
         let mut m = line_finite_diff(&points);
@@ -150,7 +150,7 @@ impl Path {
     }
 
     // Generates tangents for a cardinal spline.
-    pub fn d3_svg_line_cardinal_tangents(points: &[Vec2f], tension: f64) -> Vec<Vec2f> {
+    fn d3_svg_line_cardinal_tangents(points: &[Vec2f], tension: f64) -> Vec<Vec2f> {
         let mut tangents = Vec::new();
 
         let a = (1. - tension) / 2.;
@@ -191,7 +191,7 @@ impl Path {
 
     #[allow(unused)]
     /// found on pomax's website (catmull-rom)
-    pub fn cubic(polyline: &Polyline) -> Self {
+    fn cubic(polyline: &Polyline) -> Self {
         let mut segments = Vec::new();
 
         let mut first = 0;
@@ -242,6 +242,36 @@ impl Path {
         }
         ret.pixel_perfect();
         Some(ret)
+    }
+
+    pub fn equidistant_points(&self, n: usize) -> Vec<Vec2f> {
+        let mut total = 0.;
+        for seg in &self.segments {
+            total += seg.arc_len(10);
+        }
+        let threshold = total / n as f64;
+        self.segment_len(threshold)
+    }
+
+    pub fn segment_len(&self, threshold: f64) -> Vec<Vec2f> {
+        let mut ret = vec![];
+        let mut n = 0;
+        let mut i = 0.;
+        let mut prev = self.segments[n].sample(i);
+        let mut acc = 0.;
+        loop {
+            i += 0.1;
+            if i > 1. { i = 0.; n += 1; }
+            if n == self.segments.len() { break; }
+            let curr = self.segments[n].sample(i);
+            acc += (curr - prev).mag();
+            if acc > threshold {
+                ret.push(curr);
+                acc = 0.;
+            }
+            prev = curr;
+        }
+        ret
     }
 }
 
