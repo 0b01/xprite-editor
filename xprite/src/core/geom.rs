@@ -36,6 +36,12 @@ impl Vec2f {
         *self = Default::default();
     }
 
+    pub fn floor(&self) -> Self {
+        let x = self.x.floor();
+        let y = self.y.floor();
+        Vec2f { x, y }
+    }
+
 }
 
 impl Neg for Vec2f {

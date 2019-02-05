@@ -16,7 +16,10 @@ pub struct State<'a> {
 
     pub cols_per_row: i32,
 
-    pub preview_texture: Option<usize>,
+    pub show_open_file: bool,
+    pub open_file_name: ImString,
+
+    pub texture: Option<usize>,
 }
 
 impl<'a> State<'a> {
@@ -28,10 +31,12 @@ impl<'a> State<'a> {
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
             script_fname: None,
-            preview_texture: None,
+            texture: None,
             palette_color_name: None,
             palette_idx: 0,
             cols_per_row: 8,
+            show_open_file: false,
+            open_file_name: ImString::new("./1.png"),
         }
     }
 
@@ -40,15 +45,17 @@ impl<'a> State<'a> {
         self.xpr.preview(&mut img_rdr).unwrap();
         img_rdr.render();
         let img = img_rdr.as_img();
-        if let Some(id) = self.preview_texture {
+        if let Some(id) = self.texture {
             rdr.replace_img(img.to_owned(), image::RGBA(0), id);
         } else {
-            self.preview_texture = Some(rdr.add_img(img.to_owned(), image::RGBA(0)));
+            self.texture = Some(rdr.add_img(img.to_owned(), image::RGBA(0)));
         }
     }
 
+    /// checks if texture needs to be updated.
+    /// redraw texture
     pub fn redraw_pixels(&mut self, rdr: &mut ImguiRenderer) -> Result<(), String> {
-        if self.xpr.redraw || self.preview_texture.is_none() {
+        if self.xpr.redraw || self.texture.is_none() {
             self.update_preview(rdr);
             self.xpr.redraw = false;
         }
@@ -75,7 +82,7 @@ impl<'a> State<'a> {
         let (w, h) = img.dimensions();
         let mut xpr = Xprite::new(w as f64, h as f64);
         xpr.current_layer_mut().unwrap().content = img.into();
-        self.xpr = xpr;
+        self.xpr = xpr; // TODO: create a new tab for file
     }
 
     // pub fn save_xpr(&mut self, file_path: &str) {

@@ -40,7 +40,9 @@ impl Eraser {
     }
 
     fn erase_stroke(&self, xpr: &Xprite) -> Result<Pixels, String> {
-        let mut line_pixs = self.current_polyline.connect_with_line(&xpr)?;
+        let mut line_pixs = self.current_polyline
+            .to_pixel_coords(xpr)?
+            .connect_with_line()?;
         line_pixs.push(self.cursor_pos.unwrap());
         let brushstroke = self.brush.follow_stroke(&line_pixs).unwrap();
         Ok(brushstroke)

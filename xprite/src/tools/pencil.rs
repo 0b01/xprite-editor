@@ -94,7 +94,9 @@ impl Pencil {
     }
 
     pub fn draw_stroke(&self, xpr: &Xprite) -> Result<Pixels, String> {
-        let mut line_pixs = self.current_polyline.connect_with_line(&xpr)?;
+        let mut line_pixs = self.current_polyline
+            .to_pixel_coords(xpr)?
+            .connect_with_line()?;
         let pixs = if self.mode == PencilMode::Raw {
             line_pixs
         } else {
@@ -126,14 +128,18 @@ impl Pencil {
                 if !self.moved {
                     self.cursor.clone().unwrap()
                 } else {
-                    let mut points = self.current_polyline.connect_with_line(xpr)?;
+                    let mut points = self.current_polyline
+                        .to_pixel_coords(xpr)?
+                        .connect_with_line()?;
                     points.pixel_perfect();
                     let path = self.brush.follow_stroke(&points).unwrap();
                     path
                 }
             }
             SortedMonotonic => {
-                let mut points = self.current_polyline.connect_with_line(xpr)?;
+                let mut points = self.current_polyline
+                    .to_pixel_coords(xpr)?
+                    .connect_with_line()?;
                 points.pixel_perfect();
                 points.monotonic_sort();
                 let path = self.brush.follow_stroke(&points).unwrap();

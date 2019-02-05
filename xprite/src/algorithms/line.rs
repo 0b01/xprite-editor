@@ -201,9 +201,10 @@ pub fn pixel_perfect_line(start: Vec2f, stop: Vec2f) -> Pixels {
     ret
 }
 
+/// input must be snapped to grid
 pub fn continuous_line(start: Vec2f, stop: Vec2f) -> Pixels {
-    let Vec2f { x: mut x0, y: mut y0 } = start;
-    let Vec2f { x: x1, y: y1 } = stop;
+    let Vec2f { x: mut x0, y: mut y0 } = start.floor();
+    let Vec2f { x: x1, y: y1 } = stop.floor();
 
     let dx = (x1-x0).abs();
     let sx = (x1-x0).signum();

@@ -244,23 +244,28 @@ impl Path {
         Some(ret)
     }
 
-    pub fn equidistant_points(&self, n: usize) -> Vec<Vec2f> {
+    pub fn arc_len(&self) -> f64 {
         let mut total = 0.;
         for seg in &self.segments {
             total += seg.arc_len(10);
         }
+        total
+    }
+    pub fn equidistant_points(&self, n: usize) -> Vec<Vec2f> {
+        let total = self.arc_len();
         let threshold = total / n as f64;
-        self.segment_len(threshold)
+        self.segment_every_len(threshold)
     }
 
-    pub fn segment_len(&self, threshold: f64) -> Vec<Vec2f> {
+    pub fn segment_every_len(&self, threshold: f64) -> Vec<Vec2f> {
         let mut ret = vec![];
+        if self.segments.is_empty() { return ret; }
         let mut n = 0;
         let mut i = 0.;
         let mut prev = self.segments[n].sample(i);
         let mut acc = 0.;
         loop {
-            i += 0.1;
+            i += 0.01;
             if i > 1. { i = 0.; n += 1; }
             if n == self.segments.len() { break; }
             let curr = self.segments[n].sample(i);

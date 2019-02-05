@@ -16,7 +16,7 @@ impl PaletteManager {
         let mut palettes = IndexMap::new();
         palettes.insert("pico8".to_owned(), pico8());
 
-        if cfg!(wasm32) {
+        if cfg!(not(wasm32)) {
             let dir = "config/palettes";
             let mut entries: Vec<_> = fs::read_dir(dir)?.map(|r| r.unwrap()).collect();
             entries.sort_by(|dir1, dir2| {

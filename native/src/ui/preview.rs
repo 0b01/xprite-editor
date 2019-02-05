@@ -13,7 +13,7 @@ pub fn draw_preview(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
             state.redraw_pixels(rdr).unwrap();
 
             ui.image(
-                ImTexture::from(state.preview_texture.unwrap()),
+                ImTexture::from(state.texture.unwrap()),
                 [state.xpr.canvas.art_w as f32 * 1., state.xpr.canvas.art_h as f32 * 1.],
             )
             .build();

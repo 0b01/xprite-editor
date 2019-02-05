@@ -220,7 +220,11 @@ pub fn execute(bind: Bind, state: &mut State, _ui: &Ui) -> Result<(), String> {
 
         // LoadXPR => state.load_xpr("1.xpr"),
         // SaveXPR => state.save_xpr("1.xpr"),
-        LoadPNG => state.load_png("1.png"),
+        LoadPNG => {
+            state.toggle_hotkeys();
+            state.show_open_file = true;
+            // state.load_png("1.png");
+        }
         SavePNG => state.save_png("1.png"),
 
         RunScript => {

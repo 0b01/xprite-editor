@@ -310,7 +310,7 @@ impl From<img::DynamicImage> for Pixels {
     fn from(im: img::DynamicImage) -> Pixels {
         let mut pixs = Pixels::new();
         for p in im.pixels() {
-            pixs.push(pixel!(p.0, p.1, p.2.into()))
+            pixs.push(pixel_xy!(p.0, p.1, p.2.into()))
         }
         pixs
     }

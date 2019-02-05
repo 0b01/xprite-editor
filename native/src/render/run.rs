@@ -245,7 +245,7 @@ where
                             .to_logical(hidpi_factor)
                             .y.into();
                     }
-                    ReceivedCharacter(c) => imgui.add_input_character(c),
+                    // ReceivedCharacter(c) => imgui.add_input_character(c),
                     _ => (),
                 }
             }

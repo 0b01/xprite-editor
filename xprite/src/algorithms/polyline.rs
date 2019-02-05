@@ -66,12 +66,19 @@ impl Polyline {
         Path::from_polyline(self)
     }
 
-    pub fn connect_with_line(&self, xpr: &Xprite) -> Result<Pixels, String> {
+    pub fn to_pixel_coords(&self, xpr: &Xprite) -> Result<Self, String> {
+        let mut ret = Polyline::new();
+        for pos in &self.pos {
+            ret.push(xpr.canvas.shrink_size(*pos));
+        }
+        Ok(ret)
+    }
+
+    pub fn connect_with_line(&self) -> Result<Pixels, String> {
+        if self.pos.is_empty() { return Err("Polyline is empty".to_owned()) }
         let mut ret = Pixels::new();
         for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
-            let p0 = xpr.canvas.shrink_size(*p0);
-            let p1 = xpr.canvas.shrink_size(*p1);
-            let seg = continuous_line(p0, p1);
+            let seg = continuous_line(*p0, *p1);
             ret.extend(&seg);
         }
         Ok(ret)

@@ -34,6 +34,13 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                     .show_scrollbar(false)
                     .movable(false)
                     .build(|| {
+
+
+                        // diable cursor
+                        if ui.is_window_hovered() {
+                            ui.imgui().set_mouse_cursor(ImGuiMouseCursor::None);
+                        }
+
                         update_viewport(state, ui);
                         state.xpr.render_canvas(rdr);
                         super::inputs::bind_input(state, ui);
@@ -43,7 +50,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
 
                         state.redraw_pixels(rdr).unwrap();
 
-                        ui.image(ImTexture::from(state.preview_texture.unwrap()), [
+                        ui.image(ImTexture::from(state.texture.unwrap()), [
                             (rdr.art_w * state.xpr.canvas.scale) as f32,
                             (rdr.art_h * state.xpr.canvas.scale) as f32,
                         ]).build();

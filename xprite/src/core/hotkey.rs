@@ -112,6 +112,10 @@ impl HotkeyController {
                 Action::T(false, false, false, true),
                 Bind::PushTool(ToolType::Texture),
             );
+            binds.insert(
+                Action::M(false, false, false, true),
+                Bind::PushTool(ToolType::Marquee),
+            );
 
             // alt
             binds.insert(

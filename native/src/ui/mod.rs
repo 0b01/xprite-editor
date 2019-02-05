@@ -1,4 +1,5 @@
 pub mod canvas;
+pub mod file_manager;
 pub mod console;
 pub mod inputs;
 pub mod layers;
@@ -16,11 +17,13 @@ use crate::render::imgui::ImguiRenderer;
 /// steps:
 /// 1. get dimensions
 /// 2. handle mouse and keyboard input, change state
-/// 3. update by calling draw method which takes in a renderer
+/// 3. update by calling draw method
 pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
     state.xpr.draw().unwrap();
     state.redraw_pixels(rdr).unwrap();
     state.xpr.update().unwrap();
+
+    self::file_manager::draw_file_manager(rdr, state, ui);
     self::menu::draw_menu(rdr, state, ui);
     self::toolbar::draw_toolbar(state, ui);
     self::canvas::draw_canvas(rdr, state, ui);

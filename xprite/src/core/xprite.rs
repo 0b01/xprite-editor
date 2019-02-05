@@ -23,6 +23,7 @@ pub struct Xprite {
     marq_buf: Vec<MarqueePixel>,
 
     pub redraw: bool,
+
 }
 
 impl Xprite {
@@ -190,6 +191,7 @@ impl Xprite {
     pub fn render_cursor(&self, rdr: &mut Renderer) {
         for p in self.cursor.iter() {
             self.canvas.draw_pixel_rect(rdr, p.point, p.color.into(), true);
+            self.canvas.draw_pixel_rect(rdr, p.point, Color::red().into(), false);
         }
     }
 

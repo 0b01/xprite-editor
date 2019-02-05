@@ -4,6 +4,7 @@ members = [
     "web",
     "native",
     "libtexsyn",
+    "imgui-rs/imgui-glium-examples",
     # "rectdecomp",
 ]
 

@@ -80,6 +80,7 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
     fn set_mouse_cursor(&mut self, cursor_type: MouseCursorType) {
         let c = match cursor_type {
             MouseCursorType::Hand => ImGuiMouseCursor::Hand,
+            MouseCursorType::None => ImGuiMouseCursor::None,
         };
         self.ui.imgui().set_mouse_cursor(c);
     }
