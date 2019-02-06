@@ -17,15 +17,26 @@ impl PaletteManager {
         palettes.insert("pico8".to_owned(), pico8());
 
         if cfg!(not(wasm32)) {
-            let dir = "config/palettes";
-            let mut entries: Vec<_> = fs::read_dir(dir)?.map(|r| r.unwrap()).collect();
+            let dir = "/home/g/Desktop/xprite/config/palettes";
+            let mut entries: Vec<_> = fs::read_dir(dir)?
+                .map(|r| r.unwrap())
+                .collect();
             entries.sort_by(|dir1, dir2| {
-                natord::compare(dir1.path().to_str().unwrap(), dir2.path().to_str().unwrap())
+                natord::compare(
+                    dir1.path().to_str().unwrap(),
+                    dir2.path().to_str().unwrap()
+                )
             });
             for entry in &entries {
                 let path = entry.path();
-                let palname = path.file_stem().unwrap().to_str().unwrap().to_owned();
-                let pal = match path.extension().unwrap().to_str().unwrap() {
+                let palname = path
+                    .file_stem().unwrap()
+                    .to_str().unwrap()
+                    .to_owned();
+                let pal = match path
+                    .extension().unwrap()
+                    .to_str().unwrap()
+                {
                     "hex" => get_palette_hex(&path)?,
                     "png" => get_palette_png(&path)?,
                     _ => continue,

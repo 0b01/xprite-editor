@@ -28,7 +28,8 @@ pub struct Xprite {
 
 impl Xprite {
     pub fn new(art_w:f64, art_h: f64) -> Xprite {
-        let palette_man = PaletteManager::new().expect("Cannot initialize palettes");
+        let palette_man = PaletteManager::new()
+            .expect("Cannot initialize palettes");
         let selected_color = Color { r: 0, g: 0, b: 0, a: 255 };
         let history = History::new();
         let cursor = Pixels::new();
@@ -295,6 +296,45 @@ impl Xprite {
         Ok(())
     }
 
+    pub fn as_ase(&self) -> ase::Aseprite {
+        let header = ase::Header::new(
+            self.canvas.art_w as u16,
+            self.canvas.art_h as u16
+        );
+
+        let mut frame = ase::Frame::new();
+        for (i, layer) in self.history.top().iter_layers().enumerate() {
+            frame
+                .add_chunk(ase::Chunk::new(
+                    ase::ChunkData::LayerChunk(
+                        ase::chunk::LayerChunk::new(layer.name.as_str(), layer.visible)
+                    )
+                ));
+            if !layer.content.is_empty() {
+                frame
+                    .add_chunk(ase::Chunk::new(
+                        ase::ChunkData::CelChunk({
+                            let Rect(
+                                Vec2f{x:x0,y:y0},
+                                Vec2f{x:x1,y:y1}
+                            ) = layer.content.bounding_rect();
+                            let w = x1 - x0 + 1.;
+                            let h = y1 - y0 + 1.;
+                            let pixels: ase::Pixels = layer.content.clone().into();
+                            ase::chunk::CelChunk::new(
+                                i as u16,
+                                x0 as i16,
+                                y0 as i16,
+                                w as u16, h as u16,
+                                pixels,
+                            )
+                        })
+                    ));
+            }
+        }
+
+        ase::Aseprite::new(header, vec![frame])
+    }
 }
 
 /// handle events
@@ -345,4 +385,29 @@ impl Xprite {
         }
         Ok(())
     }
+}
+
+
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn test_as_ase() {
+        use super::*;
+
+        use std::fs::File;
+        let mut xpr = Xprite::new(100., 100.);
+        xpr.current_layer_mut().unwrap()
+            .content
+            .extend(&pixels!(
+                pixel!(0, 0, Color::red()),
+                pixel!(0, 1, Color::red())
+            ));
+        let aseprite = xpr.as_ase();
+        let mut f = File::create("test.ase").unwrap();
+        aseprite.write(&mut f).unwrap();
+
+        std::fs::remove_file("test.ase").unwrap();
+    }
+
 }

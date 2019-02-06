@@ -316,6 +316,26 @@ impl From<img::DynamicImage> for Pixels {
     }
 }
 
+impl From<Pixels> for ase::Pixels {
+    fn from(pixs: Pixels) -> ase::Pixels {
+        let Rect(
+            Vec2f{x:x0,y:y0},
+            Vec2f{x:x1,y:y1}
+        ) = pixs.bounding_rect();
+        let w = x1 - x0 + 1.;
+        let h = y1 - y0 + 1.;
+        let contiguous: Vec<_> = pixs.as_mat(w as usize, h as usize)
+            .into_iter()
+            .flatten()
+            .map(|op| match op {
+                Some(Pixel{color: c,..}) => c.into(),
+                None => Default::default(),
+            })
+            .collect();
+        ase::Pixels::RGBA(contiguous)
+    }
+}
+
 impl Pixels {
     pub fn as_bool_mat(&self, w: usize, h: usize) -> Vec<Vec<bool>> {
         let mut arr = vec![vec![false; w]; h];
