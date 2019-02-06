@@ -259,15 +259,22 @@ impl Path {
 
     pub fn segment_every_len(&self, threshold: f64) -> Vec<Vec2f> {
         let mut ret = vec![];
-        if self.segments.is_empty() { return ret; }
+        if self.segments.is_empty() {
+            return ret;
+        }
         let mut n = 0;
         let mut i = 0.;
         let mut prev = self.segments[n].sample(i);
         let mut acc = 0.;
         loop {
             i += 0.01;
-            if i > 1. { i = 0.; n += 1; }
-            if n == self.segments.len() { break; }
+            if i > 1. {
+                i = 0.;
+                n += 1;
+            }
+            if n == self.segments.len() {
+                break;
+            }
             let curr = self.segments[n].sample(i);
             acc += (curr - prev).mag();
             if acc > threshold {

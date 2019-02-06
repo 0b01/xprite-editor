@@ -8,8 +8,7 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         .resizable(false)
         .movable(true)
         .build(|| {
-
-            let close = |state:&mut State| {
+            let close = |state: &mut State| {
                 state.toggle_hotkeys();
                 ui.close_current_popup();
                 state.show_open_file = false;
@@ -43,8 +42,6 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                     close(state);
                 }
             });
-
-
         });
     if state.show_open_file {
         ui.open_popup(im_str!("Open file"))

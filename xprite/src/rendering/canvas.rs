@@ -110,7 +110,10 @@ impl Canvas {
         let radius = 2.;
         let Vec2f { x, y } = point;
         let o = self.origin();
-        let p0 = Vec2f {x: o.x + self.scale * x, y: o.y + self.scale * y};
+        let p0 = Vec2f {
+            x: o.x + self.scale * x,
+            y: o.y + self.scale * y,
+        };
         let rad = self.scale * radius;
 
         mouse.x < p0.x + rad && mouse.x > p0.x - rad && mouse.y < p0.y + rad && mouse.y > p0.y - rad
@@ -130,20 +133,18 @@ impl Canvas {
         let p3 = [o.x + self.scale * x, o.y + self.scale * (y + 1.)];
 
         if outline.contains(Outline::TOP) {
-            rdr.line(p0,p1, Color::black().into());
+            rdr.line(p0, p1, Color::black().into());
         }
         if outline.contains(Outline::BOTTOM) {
-            rdr.line(p3,p2, Color::black().into());
+            rdr.line(p3, p2, Color::black().into());
         }
         if outline.contains(Outline::LEFT) {
-            rdr.line(p0,p3, Color::black().into());
+            rdr.line(p0, p3, Color::black().into());
         }
         if outline.contains(Outline::RIGHT) {
-            rdr.line(p1,p2, Color::black().into());
+            rdr.line(p1, p2, Color::black().into());
         }
-
     }
-
 
     pub fn draw_pixel_rect(&self, rdr: &mut Renderer, p: Vec2f, color: [f32; 4], filled: bool) {
         let Vec2f { x, y } = p;
@@ -158,7 +159,10 @@ impl Canvas {
     }
 
     pub fn origin(&self) -> Vec2f {
-        Vec2f { x: self.win_x + self.scroll.x, y: self.win_y + self.scroll.y }
+        Vec2f {
+            x: self.win_x + self.scroll.x,
+            y: self.win_y + self.scroll.y,
+        }
     }
 
     pub fn draw_canvas(&self, rdr: &mut Renderer) {

@@ -3,14 +3,14 @@ use crate::algorithms::{
     pixel_perfect::pixel_perfect, sorter::sort_path,
 };
 use crate::prelude::*;
+use fnv::FnvBuildHasher;
 use img::GenericImageView;
 use indexmap::{set::Iter, IndexSet};
 use std::cmp::Ordering;
+use std::f64;
 use std::fmt::{Debug, Error, Formatter};
 use std::hash::{Hash, Hasher};
 use std::ops::{Index, Sub};
-use std::f64;
-use fnv::FnvBuildHasher;
 
 #[cfg_attr(feature = "python-scripting", pyclass)]
 #[derive(Copy, Clone, Eq, PartialOrd, Default)]
@@ -198,7 +198,7 @@ impl Pixels {
     #[allow(mutable_transmutes)]
     pub fn set_color(&mut self, color: Color) {
         for pix in self.0.iter() {
-            unsafe{
+            unsafe {
                 let mut p = ::std::mem::transmute::<&Pixel, &mut Pixel>(pix);
                 p.color = color;
             }
@@ -231,16 +231,17 @@ impl Pixels {
         let mut max_x = f64::MIN;
         let mut min_y = f64::MAX;
         let mut max_y = f64::MIN;
-        for Pixel{point: Vec2f{x, y}, ..} in self.iter() {
+        for Pixel {
+            point: Vec2f { x, y },
+            ..
+        } in self.iter()
+        {
             min_x = min_x.min(*x);
             max_x = max_x.max(*x);
             min_y = min_y.min(*y);
             max_y = max_y.max(*y);
         }
-        Rect(
-            Vec2f {x: min_x, y: min_y},
-            Vec2f {x: max_x, y: max_y},
-        )
+        Rect(Vec2f { x: min_x, y: min_y }, Vec2f { x: max_x, y: max_y })
     }
 
     pub fn separate_rgb(&self) -> [Pixels; 3] {
@@ -325,11 +326,12 @@ impl From<img::DynamicImage> for Pixels {
 impl From<Pixels> for ase::Pixels {
     fn from(pixs: Pixels) -> ase::Pixels {
         let bb = pixs.bounding_rect();
-        let contiguous: Vec<_> = pixs.as_mat_bb(bb)
+        let contiguous: Vec<_> = pixs
+            .as_mat_bb(bb)
             .into_iter()
             .flatten()
             .map(|op| match op {
-                Some(Pixel{color: c,..}) => c.into(),
+                Some(Pixel { color: c, .. }) => c.into(),
                 None => Default::default(),
             })
             .collect();
@@ -386,16 +388,14 @@ impl Pixels {
     pub fn as_image(&self, w: f64, h: f64, origin: (f64, f64)) -> img::DynamicImage {
         let mut rdr = ImageRenderer::new(w, h);
         for pix in &self.0 {
-            let Pixel { point: Vec2f { x, y }, color } = pix;
+            let Pixel {
+                point: Vec2f { x, y },
+                color,
+            } = pix;
             if oob(*x - origin.0, *y - origin.1, w as f64, h as f64) {
                 continue;
             }
-            rdr.pixel(
-                *x - origin.0,
-                *y - origin.1,
-                (*color).into(),
-                true,
-            );
+            rdr.pixel(*x - origin.0, *y - origin.1, (*color).into(), true);
         }
         rdr.render();
         rdr.image
@@ -512,20 +512,15 @@ mod tests {
     #[test]
     fn test_as_mat_bb() {
         use super::*;
-        let pixs = pixels!(
-            pixel!(0,1,Color::red()),
-            pixel!(0,2,Color::red())
-        );
+        let pixs = pixels!(pixel!(0, 1, Color::red()), pixel!(0, 2, Color::red()));
         let bb = pixs.bounding_rect();
         let ret = pixs.as_mat_bb(bb);
 
         assert_eq!(
-            vec![
-                vec![
-                    Some(pixel!(0,0,Color::red())),
-                    Some(pixel!(0,1,Color::red())),
-                ]
-            ],
+            vec![vec![
+                Some(pixel!(0, 0, Color::red())),
+                Some(pixel!(0, 1, Color::red())),
+            ]],
             ret
         );
     }
@@ -546,32 +541,21 @@ mod tests {
         );
 
         let bb = pixs.bounding_rect();
-        assert_eq!(Rect(
-            Vec2f {
-                x: 0.0,
-                y: 0.0
-            },
-            Vec2f {
-                x: 2.0,
-                y: 1.0
-            }
-        ), bb);
+        assert_eq!(Rect(Vec2f { x: 0.0, y: 0.0 }, Vec2f { x: 2.0, y: 1.0 }), bb);
     }
 
     #[test]
     fn test_as_image() {
         use super::*;
-        let pixs = pixels!(
-            pixel!(0.,0., Color::red()),
-            pixel!(1.,1., Color::red())
+        let pixs = pixels!(pixel!(0., 0., Color::red()), pixel!(1., 1., Color::red()));
+        let img = pixs.as_image(3., 3., (0., 0.));
+        assert_eq!(
+            img.raw_pixels(),
+            vec![
+                255, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 255, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ]
         );
-        let img = pixs.as_image(3., 3., (0.,0.,));
-        assert_eq!(img.raw_pixels(), vec![
-            255, 0, 0, 255, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0,
-            0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0
-        ]);
     }
 
     #[test]
@@ -579,10 +563,13 @@ mod tests {
         use super::*;
         let pixs = pixels!(pixel!(0, 0, Color::white()));
         let ret = pixs.separate_rgb();
-        assert_eq!(ret, [
-            pixels!(pixel!(0, 0, Color::red())),
-            pixels!(pixel!(0, 0, Color::green())),
-            pixels!(pixel!(0, 0, Color::blue())),
-        ]);
+        assert_eq!(
+            ret,
+            [
+                pixels!(pixel!(0, 0, Color::red())),
+                pixels!(pixel!(0, 0, Color::green())),
+                pixels!(pixel!(0, 0, Color::blue())),
+            ]
+        );
     }
 }

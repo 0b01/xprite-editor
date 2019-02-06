@@ -1,5 +1,5 @@
+use crate::core::outline::{MarqueePixel, Outline};
 use crate::prelude::*;
-use crate::core::outline::{Outline, MarqueePixel};
 
 pub fn find_perimeter(w: usize, h: usize, pixs: &Pixels) -> Pixels {
     let mut ret = Pixels::new();
@@ -48,7 +48,7 @@ pub fn find_outline(w: usize, h: usize, pixs: &Pixels) -> Vec<MarqueePixel> {
                     if x < w - 1 && canvas[y][x + 1].is_some() {
                         outline ^= Outline::RIGHT;
                     }
-                    ret.push(( canvas[y][x].unwrap().point, outline));
+                    ret.push((canvas[y][x].unwrap().point, outline));
                 }
             }
         }

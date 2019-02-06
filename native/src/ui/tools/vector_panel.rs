@@ -4,19 +4,19 @@ use xprite::tools::vector;
 pub fn draw(state: &mut State, ui: &Ui) {
     ui.drag_float(
         im_str!("tolerence"),
-        &mut state.xpr.toolbox.vector.borrow_mut().tolerence
+        &mut state.xpr.toolbox.vector.borrow_mut().tolerence,
     )
-        .min(1.)
-        .max(50.)
-        .speed(0.1)
-        .build();
+    .min(1.)
+    .max(50.)
+    .speed(0.1)
+    .build();
     ui.checkbox(
         im_str!("Draw Bezier"),
-        &mut state.xpr.toolbox.vector.borrow_mut().draw_bezier
+        &mut state.xpr.toolbox.vector.borrow_mut().draw_bezier,
     );
     ui.checkbox(
         im_str!("Monotonic sort"),
-        &mut state.xpr.toolbox.vector.borrow_mut().mono_sort
+        &mut state.xpr.toolbox.vector.borrow_mut().mono_sort,
     );
 
     draw_brush(state, ui);

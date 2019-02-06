@@ -21,15 +21,18 @@ pub struct Xprite {
 
     pub log: Arc<Mutex<String>>,
 
-
     pub redraw: bool,
 }
 
 impl Default for Xprite {
     fn default() -> Self {
-        let palette_man = PaletteManager::new()
-            .expect("Cannot initialize palettes");
-        let selected_color = Color { r: 0, g: 0, b: 0, a: 255 };
+        let palette_man = PaletteManager::new().expect("Cannot initialize palettes");
+        let selected_color = Color {
+            r: 0,
+            g: 0,
+            b: 0,
+            a: 255,
+        };
         Self {
             palette_man,
             selected_color,
@@ -48,7 +51,7 @@ impl Default for Xprite {
 }
 
 impl Xprite {
-    pub fn new(art_w:f64, art_h: f64) -> Xprite {
+    pub fn new(art_w: f64, art_h: f64) -> Xprite {
         let canvas = Canvas::new(art_w, art_h);
         Xprite {
             canvas,
@@ -187,11 +190,12 @@ impl Xprite {
 }
 
 impl Xprite {
-
     pub fn render_cursor(&self, rdr: &mut Renderer) {
         for p in self.cursor.iter() {
-            self.canvas.draw_pixel_rect(rdr, p.point, p.color.into(), true);
-            self.canvas.draw_pixel_rect(rdr, p.point, Color::red().into(), false);
+            self.canvas
+                .draw_pixel_rect(rdr, p.point, p.color.into(), true);
+            self.canvas
+                .draw_pixel_rect(rdr, p.point, Color::red().into(), false);
         }
     }
 
@@ -237,7 +241,6 @@ impl Xprite {
 }
 
 impl Xprite {
-
     pub fn as_img(&mut self) -> Result<img::DynamicImage, String> {
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         self.export(&mut rdr)?;
@@ -299,65 +302,49 @@ impl Xprite {
 /// aseprite file format converter
 impl Xprite {
     pub fn as_ase(&self) -> ase::Aseprite {
-        let header = ase::Header::new(
-            self.canvas.art_w as u16,
-            self.canvas.art_h as u16
-        );
+        let header = ase::Header::new(self.canvas.art_w as u16, self.canvas.art_h as u16);
         let mut frame = ase::Frame::new();
         for (i, layer) in self.history.top().iter_layers().enumerate() {
-            frame
-                .add_chunk(ase::Chunk::new(
-                    ase::ChunkData::LayerChunk(
-                        ase::chunk::LayerChunk::new(layer.name.as_str(), layer.visible)
-                    )
-                ));
+            frame.add_chunk(ase::Chunk::new(ase::ChunkData::LayerChunk(
+                ase::chunk::LayerChunk::new(layer.name.as_str(), layer.visible),
+            )));
             if !layer.content.is_empty() {
-                frame
-                    .add_chunk(ase::Chunk::new(
-                        ase::ChunkData::CelChunk({
-                            let Rect(
-                                Vec2f{x:x0,y:y0},
-                                Vec2f{x:x1,y:y1}
-                            ) = layer.content.bounding_rect();
-                            let w = x1 - x0 + 1.;
-                            let h = y1 - y0 + 1.;
-                            let pixels: ase::Pixels = layer.content
-                                .clone()
-                                .into();
-                            ase::chunk::CelChunk::new(
-                                i as u16,
-                                x0 as i16,
-                                y0 as i16,
-                                w as u16, h as u16,
-                                pixels,
-                            )
-                        })
-                    ));
+                frame.add_chunk(ase::Chunk::new(ase::ChunkData::CelChunk({
+                    let Rect(Vec2f { x: x0, y: y0 }, Vec2f { x: x1, y: y1 }) =
+                        layer.content.bounding_rect();
+                    let w = x1 - x0 + 1.;
+                    let h = y1 - y0 + 1.;
+                    let pixels: ase::Pixels = layer.content.clone().into();
+                    ase::chunk::CelChunk::new(
+                        i as u16, x0 as i16, y0 as i16, w as u16, h as u16, pixels,
+                    )
+                })));
             }
         }
         ase::Aseprite::new(header, vec![frame])
     }
 
     pub fn from_ase(aseprite: &ase::Aseprite) -> Self {
-        let ase::Aseprite {header, frames} = aseprite;
-        let ase::Header {pixel_width, pixel_height, ..} = &header;
-        let canvas = Canvas::new(
-            *pixel_width as f64,
-            *pixel_height as f64
-        );
+        let ase::Aseprite { header, frames } = aseprite;
+        let ase::Header {
+            pixel_width,
+            pixel_height,
+            ..
+        } = &header;
+        let canvas = Canvas::new(*pixel_width as f64, *pixel_height as f64);
         let mut history = History::empty();
         let frame = &frames[0];
-        let ase::Frame {chunks,..} = frame;
-        for ase::Chunk{chunk_data, ..} in chunks {
+        let ase::Frame { chunks, .. } = frame;
+        for ase::Chunk { chunk_data, .. } in chunks {
             match chunk_data {
-                ase::ChunkData::LayerChunk(ase::chunk::LayerChunk{
+                ase::ChunkData::LayerChunk(ase::chunk::LayerChunk {
                     flags,
                     layer_type,
                     layer_child_level,
                     blend_mode,
                     opacity,
-                    layer_name, }) => {
-
+                    layer_name,
+                }) => {
                     if *layer_type == ase::chunk::LayerType::Normal {
                         // image layer
                         history.top_mut().add_layer(Some(layer_name));
@@ -365,14 +352,14 @@ impl Xprite {
                         // group layer
                         history.top_mut().add_group(Some(layer_name));
                     }
-                },
-                ase::ChunkData::CelChunk(ase::chunk::CelChunk{
-                        layer_index,
-                        x_position,
-                        y_position,
-                        opacity_level,
-                        cel,
-                    }) => {
+                }
+                ase::ChunkData::CelChunk(ase::chunk::CelChunk {
+                    layer_index,
+                    x_position,
+                    y_position,
+                    opacity_level,
+                    cel,
+                }) => {
                     let pixs = cel.pixels(&header.color_depth);
                     dbg!(pixs);
                 }
@@ -438,7 +425,6 @@ impl Xprite {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
 
@@ -448,12 +434,10 @@ mod tests {
 
         use std::fs::File;
         let mut xpr = Xprite::new(100., 100.);
-        xpr.current_layer_mut().unwrap()
-            .content
-            .extend(&pixels!(
-                pixel!(0, 0, Color::red()),
-                pixel!(0, 1, Color::red())
-            ));
+        xpr.current_layer_mut().unwrap().content.extend(&pixels!(
+            pixel!(0, 0, Color::red()),
+            pixel!(0, 1, Color::red())
+        ));
         let aseprite = xpr.as_ase();
         let mut f = File::create("test.ase").unwrap();
         aseprite.write(&mut f).unwrap();

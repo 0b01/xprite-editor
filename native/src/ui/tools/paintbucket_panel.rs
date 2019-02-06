@@ -16,6 +16,4 @@ pub fn draw(state: &mut State, ui: &Ui) {
             }
         }
     });
-
-
 }

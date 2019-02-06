@@ -3,14 +3,14 @@ pub use crate::algorithms::{path::Path, polyline::Polyline};
 pub use crate::core::{
     brush::{Brush, BrushType},
     color::Color,
-    geom::{CubicBezierSegment, Vec2f, Rect},
+    geom::{CubicBezierSegment, Rect, Vec2f},
     history::History,
     input::{InputEvent, InputItem, InputState},
+    outline::{MarqueePixel, Outline},
     palette::PaletteManager,
     pixels::{Pixel, Pixels},
     toolbox::Toolbox,
     xprite::Xprite,
-    outline::{MarqueePixel, Outline},
 };
 pub use crate::rendering::{
     canvas::Canvas,

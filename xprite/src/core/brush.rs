@@ -22,8 +22,6 @@ impl Default for BrushType {
     }
 }
 
-
-
 #[derive(Debug, Clone)]
 pub struct Brush {
     pub shape: PixelOffsets,

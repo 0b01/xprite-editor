@@ -1,5 +1,5 @@
-use crate::prelude::*;
 use crate::algorithms::line::pixel_perfect_line;
+use crate::prelude::*;
 use std::i32;
 
 pub fn get_ellipse(
@@ -27,29 +27,35 @@ pub fn get_ellipse(
 }
 
 fn bresenham_ellipse_error(rx: i32, ry: i32, x: i32, y: i32) -> i32 {
-    x*x*ry*ry + y*y*rx*rx - rx*rx*ry*ry
+    x * x * ry * ry + y * y * rx * rx - rx * rx * ry * ry
 }
 
 // Move to next pixel to draw, according to Bresenham's algorithm
-fn bresenham_ellipse_step(rx: i32, ry: i32, x:&mut i32, y:&mut i32) {
+fn bresenham_ellipse_step(rx: i32, ry: i32, x: &mut i32, y: &mut i32) {
     // Move towards the skinnier pole. Having 2 cases isn't needed, but it ensures
     // swapping rx and ry is the same as rotating 90 degrees.
     if rx > ry {
-        let ex = bresenham_ellipse_error(rx, ry, *x, *y-1);
-        let ey = bresenham_ellipse_error(rx, ry, *x+1, *y);
-        let exy = bresenham_ellipse_error(rx, ry, *x+1, *y-1);
-        if ex + exy < 0 { *x += 1; }
-        if ey + exy > 0 { *y -= 1; }
-    }
-    else {
-        let ex = bresenham_ellipse_error(rx, ry, *x, *y+1);
-        let ey = bresenham_ellipse_error(rx, ry, *x-1, *y);
-        let exy = bresenham_ellipse_error(rx, ry, *x-1, *y+1);
-        if ex + exy > 0 { *x -= 1; }
-        if ey + exy < 0 { *y += 1; }
+        let ex = bresenham_ellipse_error(rx, ry, *x, *y - 1);
+        let ey = bresenham_ellipse_error(rx, ry, *x + 1, *y);
+        let exy = bresenham_ellipse_error(rx, ry, *x + 1, *y - 1);
+        if ex + exy < 0 {
+            *x += 1;
+        }
+        if ey + exy > 0 {
+            *y -= 1;
+        }
+    } else {
+        let ex = bresenham_ellipse_error(rx, ry, *x, *y + 1);
+        let ey = bresenham_ellipse_error(rx, ry, *x - 1, *y);
+        let exy = bresenham_ellipse_error(rx, ry, *x - 1, *y + 1);
+        if ex + exy > 0 {
+            *x -= 1;
+        }
+        if ey + exy < 0 {
+            *y += 1;
+        }
     }
 }
-
 
 /// Helper function for the ellipse drawing routines. Calculates the
 /// points of an ellipse which fits onto the rectangle specified by x1,
@@ -62,7 +68,7 @@ fn bresenham_ellipse_step(rx: i32, ry: i32, x:&mut i32, y:&mut i32) {
 /// for Allegro 4.x.
 ///
 /// Adapted for ASEPRITE by David A. Capello.
-pub fn algo_ellipse(x1:i32, y1: i32, x2: i32, y2: i32) -> Pixels {
+pub fn algo_ellipse(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
     let mut ret = Pixels::new();
 
     let mx;
@@ -73,7 +79,7 @@ pub fn algo_ellipse(x1:i32, y1: i32, x2: i32, y2: i32) -> Pixels {
     let mut y;
 
     /* Cheap hack to get elllipses with integer diameter, by just offsetting
-    * some quadrants by one pixel. */
+     * some quadrants by one pixel. */
     let mx2;
     let my2;
 
@@ -84,11 +90,59 @@ pub fn algo_ellipse(x1:i32, y1: i32, x2: i32, y2: i32) -> Pixels {
     rx = (x1 - x2).abs();
     ry = (y1 - y2).abs();
 
-    if rx == 1 { pixel_perfect_line(Vec2f{x:x2 as f64, y:y1 as f64}, Vec2f{x:x2 as f64, y:y2 as f64}); rx-=1; }
-    if rx == 0 { pixel_perfect_line(Vec2f{x:x1 as f64, y:y1 as f64}, Vec2f{x:x1 as f64, y:y2 as f64}); return ret; }
+    if rx == 1 {
+        pixel_perfect_line(
+            Vec2f {
+                x: x2 as f64,
+                y: y1 as f64,
+            },
+            Vec2f {
+                x: x2 as f64,
+                y: y2 as f64,
+            },
+        );
+        rx -= 1;
+    }
+    if rx == 0 {
+        pixel_perfect_line(
+            Vec2f {
+                x: x1 as f64,
+                y: y1 as f64,
+            },
+            Vec2f {
+                x: x1 as f64,
+                y: y2 as f64,
+            },
+        );
+        return ret;
+    }
 
-    if ry == 1 { pixel_perfect_line(Vec2f{x:x1 as f64, y:y2 as f64}, Vec2f{x:x2 as f64, y:y2 as f64}); ry-=1; }
-    if ry == 0 { pixel_perfect_line(Vec2f{x:x1 as f64, y:y1 as f64}, Vec2f{x:x2 as f64, y:y1 as f64}); return ret; }
+    if ry == 1 {
+        pixel_perfect_line(
+            Vec2f {
+                x: x1 as f64,
+                y: y2 as f64,
+            },
+            Vec2f {
+                x: x2 as f64,
+                y: y2 as f64,
+            },
+        );
+        ry -= 1;
+    }
+    if ry == 0 {
+        pixel_perfect_line(
+            Vec2f {
+                x: x1 as f64,
+                y: y1 as f64,
+            },
+            Vec2f {
+                x: x2 as f64,
+                y: y1 as f64,
+            },
+        );
+        return ret;
+    }
 
     rx /= 2;
     ry /= 2;
@@ -119,15 +173,20 @@ pub fn algo_ellipse(x1:i32, y1: i32, x2: i32, y2: i32) -> Pixels {
         y = 0;
     }
 
-
     loop {
         /* Step to the next pixel to draw. */
         bresenham_ellipse_step(rx, ry, &mut x, &mut y);
 
         /* Edge conditions */
-        if y == 0 && x < rx {y+=1;} // don't move to horizontal radius except at pole
-        if x == 0 && y < ry {x+=1;} // don't move to vertical radius except at pole
-        if y <= 0 || x <= 0 {break;} // stop before pole, since it's already drawn
+        if y == 0 && x < rx {
+            y += 1;
+        } // don't move to horizontal radius except at pole
+        if x == 0 && y < ry {
+            x += 1;
+        } // don't move to vertical radius except at pole
+        if y <= 0 || x <= 0 {
+            break;
+        } // stop before pole, since it's already drawn
 
         /* Process pixel */
         ret.push(pixel_xy!(mx2 + x, my - y, Color::red()));
@@ -149,7 +208,7 @@ pub fn algo_ellipsefill(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
     let mut y;
 
     /* Cheap hack to get elllipses with integer diameter, by just offsetting
-    * some quadrants by one pixel. */
+     * some quadrants by one pixel. */
     let mx2;
     let my2;
 
@@ -166,11 +225,31 @@ pub fn algo_ellipsefill(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
     rx = (x1 - x2).abs();
     ry = (y1 - y2).abs();
 
-    if rx == 1 { let mut c = y1; while c<=y2 { hline(x2, c, x2); rx -= 1; c +=1;} }
-    if rx == 0 { let mut c = y1; while c<=y2 { hline(x1, c, x1); c+=1; } return ret; }
+    if rx == 1 {
+        let mut c = y1;
+        while c <= y2 {
+            hline(x2, c, x2);
+            rx -= 1;
+            c += 1;
+        }
+    }
+    if rx == 0 {
+        let mut c = y1;
+        while c <= y2 {
+            hline(x1, c, x1);
+            c += 1;
+        }
+        return ret;
+    }
 
-    if ry == 1 { hline(x1, y2, x2); ry-=1; }
-    if ry == 0 { hline(x1, y1, x2); return ret; }
+    if ry == 1 {
+        hline(x1, y2, x2);
+        ry -= 1;
+    }
+    if ry == 0 {
+        hline(x1, y1, x2);
+        return ret;
+    }
 
     rx /= 2;
     ry /= 2;
@@ -181,7 +260,9 @@ pub fn algo_ellipsefill(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
 
     /* Draw the equator (possibly width 2) */
     hline(mx - rx, my, mx2 + rx);
-    if my != my2 { hline(mx - rx, my2, mx2 + rx); }
+    if my != my2 {
+        hline(mx - rx, my2, mx2 + rx);
+    }
 
     /* Initialize drawing position at a pole. */
     // Start at the fatter pole
@@ -193,15 +274,20 @@ pub fn algo_ellipsefill(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
         y = 0;
     }
 
-
     loop {
         /* Step to the next pixel to draw. */
         bresenham_ellipse_step(rx, ry, &mut x, &mut y);
 
         /* Edge conditions */
-        if y == 0 && x < rx {y+=1;} // don't move to horizontal radius except at pole
-        if x == 0 && y < ry {x+=1;} // don't move to vertical radius except at pole
-        if y <= 0 || x <= 0 {break;} // stop before pole, since it's already drawn
+        if y == 0 && x < rx {
+            y += 1;
+        } // don't move to horizontal radius except at pole
+        if x == 0 && y < ry {
+            x += 1;
+        } // don't move to vertical radius except at pole
+        if y <= 0 || x <= 0 {
+            break;
+        } // stop before pole, since it's already drawn
 
         /* Draw the north and south 'lines of latitude' */
         hline(mx - x, my - y, mx2 + x);

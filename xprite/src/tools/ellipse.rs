@@ -59,7 +59,9 @@ impl Ellipse {
 
     fn finalize_ellipse(&mut self, xpr: &Xprite) -> Result<bool, String> {
         if let Ok(mut pixs) = self.get_ellipse() {
-            if pixs.is_empty() { return Ok(false); }
+            if pixs.is_empty() {
+                return Ok(false);
+            }
             pixs.set_color(xpr.color());
             self.buffer = Some(pixs);
             Ok(true)
@@ -67,7 +69,6 @@ impl Ellipse {
             Ok(false)
         }
     }
-
 }
 
 impl Tool for Ellipse {

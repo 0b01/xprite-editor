@@ -7,7 +7,7 @@ use glium::{
 use imgui::*;
 use std::borrow::Cow;
 use std::f64;
-use xprite::rendering::{ MouseCursorType, Renderer };
+use xprite::rendering::{MouseCursorType, Renderer};
 
 pub struct ImguiRenderer<'ui> {
     pub ui: &'ui Ui<'ui>,
@@ -29,7 +29,10 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
     fn circ(&mut self, p0: [f64; 2], r: f64, color: [f32; 4], filled: bool) {
         let draw_list = self.ui.get_window_draw_list();
         let p0 = [p0[0] as f32, p0[1] as f32];
-        draw_list.add_circle(p0, r as f32, color).filled(filled).build();
+        draw_list
+            .add_circle(p0, r as f32, color)
+            .filled(filled)
+            .build();
     }
 
     fn bezier(
@@ -60,10 +63,7 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         let draw_list = self.ui.get_window_draw_list();
         let p0 = [p0[0] as f32, p0[1] as f32];
         let p1 = [p1[0] as f32, p1[1] as f32];
-        draw_list
-            .add_rect(p0, p1, color)
-            .filled(filled)
-            .build();
+        draw_list.add_rect(p0, p1, color).filled(filled).build();
     }
 
     fn pixel(&mut self, _x: f64, _y: f64, _color: [f32; 4], _filled: bool) {
@@ -94,12 +94,17 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         ()
     }
 
-    fn reset(&mut self) {
-    }
+    fn reset(&mut self) {}
 }
 
 impl<'ui> ImguiRenderer<'ui> {
-    pub fn new(ui: &'ui Ui, gl_ctx: &'ui Facade, textures: &'ui mut Textures<Texture2d>, art_w: f64, art_h: f64) -> Self {
+    pub fn new(
+        ui: &'ui Ui,
+        gl_ctx: &'ui Facade,
+        textures: &'ui mut Textures<Texture2d>,
+        art_w: f64,
+        art_h: f64,
+    ) -> Self {
         Self {
             art_w,
             art_h,
@@ -109,12 +114,18 @@ impl<'ui> ImguiRenderer<'ui> {
         }
     }
 
-    pub fn replace_img(&mut self, img: image::DynamicImage, format: image::ColorType, texture_id: usize) {
+    pub fn replace_img(
+        &mut self,
+        img: image::DynamicImage,
+        format: image::ColorType,
+        texture_id: usize,
+    ) {
         let gl_texture = self.to_gl_texture(img, format);
-        self.textures.replace(ImTexture::from(texture_id), gl_texture);
+        self.textures
+            .replace(ImTexture::from(texture_id), gl_texture);
     }
 
-    fn to_gl_texture(&self, img: image::DynamicImage, format: image::ColorType,) -> Texture2d {
+    fn to_gl_texture(&self, img: image::DynamicImage, format: image::ColorType) -> Texture2d {
         let format = match format {
             image::ColorType::RGBA(_) => ClientFormat::U8U8U8U8,
             image::ColorType::RGB(_) => ClientFormat::U8U8U8,

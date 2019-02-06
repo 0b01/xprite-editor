@@ -2,9 +2,7 @@ use crate::prelude::*;
 use hex;
 
 #[cfg_attr(feature = "python-scripting", pyclass)]
-#[derive(
-    Debug, Hash, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Default,
-)]
+#[derive(Debug, Hash, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Default)]
 pub struct Color {
     pub r: u8,
     pub g: u8,
@@ -47,7 +45,6 @@ impl From<Color> for (i32, i32, i32, i32) {
         (c.r as i32, c.g as i32, c.b as i32, c.a as i32)
     }
 }
-
 
 impl From<(i32, i32, i32, i32)> for Color {
     fn from(c: (i32, i32, i32, i32)) -> Self {
@@ -106,7 +103,6 @@ impl Color {
         let b = hex::decode(&col[4..])?[0];
         Ok(Self::new(r, g, b))
     }
-
 
     pub fn white() -> Color {
         Color {

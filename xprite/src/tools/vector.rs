@@ -7,7 +7,7 @@ enum AnchorType {
     From,
     To,
     Ctrl1,
-    Ctrl2
+    Ctrl2,
 }
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
@@ -24,10 +24,7 @@ impl VectorMode {
         }
     }
 
-    pub const VARIANTS: [VectorMode; 2] = [
-        VectorMode::Continuous,
-        VectorMode::Curvature,
-    ];
+    pub const VARIANTS: [VectorMode; 2] = [VectorMode::Continuous, VectorMode::Curvature];
 }
 
 impl FromStr for VectorMode {
@@ -93,7 +90,7 @@ impl Vector {
             brush,
             brush_type,
             recording: true,
-            .. Default::default()
+            ..Default::default()
         }
     }
 
@@ -109,21 +106,35 @@ impl Vector {
         }
     }
 
-
     fn get_draw_curvature(&self) -> Option<CubicBezierSegment> {
         match (self.start_pos, self.end_pos, self.ctrl1_pos, self.ctrl2_pos) {
             (None, ..) => None,
-            (Some(from), None, ..) => Some( {
+            (Some(from), None, ..) => Some({
                 let to = self.cursor_pos?;
-                CubicBezierSegment{from, to, ctrl1: from, ctrl2: to }
+                CubicBezierSegment {
+                    from,
+                    to,
+                    ctrl1: from,
+                    ctrl2: to,
+                }
             }),
-            (Some(from), Some(to), None, ..) => Some( {
+            (Some(from), Some(to), None, ..) => Some({
                 let ctrl1 = self.cursor_pos?;
-                CubicBezierSegment{from, to, ctrl1, ctrl2: to }
+                CubicBezierSegment {
+                    from,
+                    to,
+                    ctrl1,
+                    ctrl2: to,
+                }
             }),
-            (Some(from), Some(to), Some(ctrl1), None) => Some( {
+            (Some(from), Some(to), Some(ctrl1), None) => Some({
                 let ctrl2 = self.cursor_pos?;
-                CubicBezierSegment{from, to, ctrl1, ctrl2}
+                CubicBezierSegment {
+                    from,
+                    to,
+                    ctrl1,
+                    ctrl2,
+                }
             }),
             (Some(_), Some(_), Some(_), Some(_)) => self.finalize_curvature(),
         }
@@ -134,7 +145,12 @@ impl Vector {
         let to = self.end_pos?;
         let ctrl1 = self.ctrl1_pos.unwrap_or(from);
         let ctrl2 = self.ctrl2_pos.unwrap_or(to);
-        Some(CubicBezierSegment { from, to, ctrl1, ctrl2 })
+        Some(CubicBezierSegment {
+            from,
+            to,
+            ctrl1,
+            ctrl2,
+        })
     }
 
     fn reset_curvature(&mut self) -> Result<(), String> {
@@ -151,10 +167,8 @@ impl Vector {
             let mut ret = Pixels::new();
             for curve in &self.curves {
                 if let Some(ras) = curve.rasterize(self.mono_sort) {
-                    let mut pixs = self.brush
-                        .follow_stroke(&ras).unwrap();
-                    let pixs = pixs
-                        .with_color(xpr.color());
+                    let mut pixs = self.brush.follow_stroke(&ras).unwrap();
+                    let pixs = pixs.with_color(xpr.color());
                     ret.extend(&pixs);
                 }
             }
@@ -167,15 +181,20 @@ impl Vector {
 
     fn get_anchor(&self, xpr: &Xprite, p: Vec2f) -> Option<(usize, AnchorType)> {
         for (i, curve) in self.curves.iter().enumerate() {
-            let &CubicBezierSegment {from, to, ctrl1, ctrl2} = curve;
+            let &CubicBezierSegment {
+                from,
+                to,
+                ctrl1,
+                ctrl2,
+            } = curve;
             if xpr.canvas.within_circle(from, p) {
-                return Some((i, AnchorType::From))
+                return Some((i, AnchorType::From));
             } else if xpr.canvas.within_circle(ctrl1, p) {
-                return Some((i, AnchorType::Ctrl1))
+                return Some((i, AnchorType::Ctrl1));
             } else if xpr.canvas.within_circle(ctrl2, p) {
-                return Some((i, AnchorType::Ctrl2))
+                return Some((i, AnchorType::Ctrl2));
             } else if xpr.canvas.within_circle(to, p) {
-                return Some((i, AnchorType::To))
+                return Some((i, AnchorType::To));
             }
         }
         None
@@ -213,12 +232,16 @@ impl Vector {
 impl Tool for Vector {
     fn cursor(&self) -> Option<Pixels> {
         let point = self.cursor_pos?;
-        Some(pixels!(Pixel{point, color: Color::red()}))
+        Some(pixels!(Pixel {
+            point,
+            color: Color::red()
+        }))
     }
 
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // update cursor pos
-        let pixels = self.brush
+        let pixels = self
+            .brush
             .to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         let point = xpr.canvas.shrink_size(p);
         self.cursor_pos = Some(point);
@@ -235,7 +258,9 @@ impl Tool for Vector {
         let p = xpr.canvas.shrink_size_no_floor(p);
         match self.mode {
             VectorMode::Continuous => {
-                if self.recording { self.current_polyline.push(p); }
+                if self.recording {
+                    self.current_polyline.push(p);
+                }
             }
             VectorMode::Curvature => {
                 // noop
@@ -323,13 +348,17 @@ impl Tool for Vector {
         match self.mode {
             VectorMode::Continuous => {
                 if let Ok((path, buf)) = self.draw_continuous() {
-                    if self.draw_bezier { xpr.bz_buf.extend(path.segments); }
+                    if self.draw_bezier {
+                        xpr.bz_buf.extend(path.segments);
+                    }
                     ret.extend(&buf);
                 }
             }
             VectorMode::Curvature => {
                 if let Some(c) = self.get_draw_curvature() {
-                    if self.draw_bezier { xpr.bz_buf.push(c.clone()); }
+                    if self.draw_bezier {
+                        xpr.bz_buf.push(c.clone());
+                    }
                     if let Some(ras) = c.rasterize(self.mono_sort) {
                         ret.extend(&ras);
                     }
@@ -339,7 +368,9 @@ impl Tool for Vector {
 
         // rasterize curves buffer
         for curve in &self.curves {
-            if self.draw_bezier { xpr.bz_buf.push(curve.clone()); }
+            if self.draw_bezier {
+                xpr.bz_buf.push(curve.clone());
+            }
             if let Some(ras) = curve.rasterize(self.mono_sort) {
                 ret.extend(&ras);
             }

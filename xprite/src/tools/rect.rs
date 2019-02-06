@@ -64,7 +64,6 @@ impl Rect {
         }
         Ok(())
     }
-
 }
 
 impl Tool for Rect {

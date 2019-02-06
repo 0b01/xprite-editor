@@ -68,7 +68,6 @@ impl Texture {
         let res = quilter.quilt_image()?;
         Ok(img::DynamicImage::ImageRgb8(res))
     }
-
 }
 
 impl Tool for Texture {

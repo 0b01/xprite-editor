@@ -28,7 +28,6 @@ impl Marquee {
             (f64::min(x0, x1), f64::min(y0, y1)),
         ))
     }
-
 }
 
 impl Tool for Marquee {
@@ -70,7 +69,9 @@ impl Tool for Marquee {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        if let Some(cursor) = self.cursor() { xpr.set_cursor(&cursor); }
+        if let Some(cursor) = self.cursor() {
+            xpr.set_cursor(&cursor);
+        }
         if let Ok(marq) = outline_rect(self.start_pos, self.cursor_pos) {
             xpr.add_marquee(&marq);
         }

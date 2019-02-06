@@ -1,9 +1,9 @@
 use crate::prelude::*;
+use crate::render::imgui::ImguiRenderer;
 use std::borrow::Cow;
+use std::fs::File;
 use xprite::image::GenericImageView;
 use xprite::rendering::image_renderer::ImageRenderer;
-use crate::render::imgui::ImguiRenderer;
-use std::fs::File;
 
 pub struct State<'a> {
     pub xpr: Xprite,

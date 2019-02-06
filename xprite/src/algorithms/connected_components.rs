@@ -41,7 +41,10 @@ pub fn connected_components(pixs: &Pixels, w: usize, h: usize) -> Vec<Pixels> {
                 stack.push(Vec2f { x: nx, y: ny });
                 visited[ny as usize][nx as usize] = true;
             }
-            cc.push(Pixel { point, color: Color::red() });
+            cc.push(Pixel {
+                point,
+                color: Color::red(),
+            });
             visited[y as usize][x as usize] = true;
         }
         cc
@@ -49,7 +52,11 @@ pub fn connected_components(pixs: &Pixels, w: usize, h: usize) -> Vec<Pixels> {
 
     while let Some(p) = get_first_true(&canvas) {
         let connected = ff(&canvas, p.point, Some(p.color));
-        for &Pixel {point: Vec2f {x, y}, ..} in connected.iter() {
+        for &Pixel {
+            point: Vec2f { x, y },
+            ..
+        } in connected.iter()
+        {
             canvas[y as usize][x as usize] = None;
         }
         ret.push(connected);
@@ -134,7 +141,6 @@ mod tests {
                 pixels![pixel!(1., 1., Color::red()), pixel!(2., 1., Color::red())]
             ]
         );
-
     }
 
     #[test]
@@ -155,9 +161,7 @@ mod tests {
                 1,
                 1
             ),
-            vec![pixels![
-                pixel!(0., 0., Color::red())
-            ]]
+            vec![pixels![pixel!(0., 0., Color::red())]]
         );
     }
 

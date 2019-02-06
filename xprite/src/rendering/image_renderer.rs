@@ -20,7 +20,7 @@ impl Renderer for ImageRenderer {
         self.h
     }
 
-    fn circ(&mut self, p0: [f64; 2], r: f64, color: [f32;4], filled: bool) {}
+    fn circ(&mut self, p0: [f64; 2], r: f64, color: [f32; 4], filled: bool) {}
 
     fn bezier(
         &mut self,
@@ -28,20 +28,20 @@ impl Renderer for ImageRenderer {
         cp1: [f64; 2],
         cp2: [f64; 2],
         p1: [f64; 2],
-        color: [f32;4],
+        color: [f32; 4],
         thickness: f64,
     ) {
     }
 
-    fn rect(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32;4], filled: bool) {
+    fn rect(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32; 4], filled: bool) {
         ()
     }
 
-    fn pixel(&mut self, x: f64, y: f64, color: [f32;4], filled: bool) {
+    fn pixel(&mut self, x: f64, y: f64, color: [f32; 4], filled: bool) {
         self.draw_list.push(pixel!(y, x, color.into()));
     }
 
-    fn line(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32;4]) {}
+    fn line(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32; 4]) {}
 
     fn set_mouse_cursor(&mut self, cursor_type: MouseCursorType) {}
 
@@ -82,7 +82,6 @@ impl ImageRenderer {
     pub fn to_img(self) -> DynamicImage {
         self.image
     }
-
 }
 
 pub fn save_img(path: &str, im: &DynamicImage) {

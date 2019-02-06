@@ -1,5 +1,5 @@
-use crate::prelude::*;
 use crate::algorithms::line::continuous_line;
+use crate::prelude::*;
 
 use std::str::FromStr;
 
@@ -94,7 +94,8 @@ impl Pencil {
     }
 
     pub fn draw_stroke(&self, xpr: &Xprite) -> Result<Pixels, String> {
-        let mut line_pixs = self.current_polyline
+        let mut line_pixs = self
+            .current_polyline
             .to_pixel_coords(xpr)?
             .connect_with_line()?;
         let pixs = if self.mode == PencilMode::Raw {
@@ -108,8 +109,12 @@ impl Pencil {
         Ok(pixs)
     }
 
-
-    fn finalize_continuous_line(&mut self, xpr: &Xprite, start:Option<Vec2f>, stop:Option<Vec2f> ) -> Result<(), String> {
+    fn finalize_continuous_line(
+        &mut self,
+        xpr: &Xprite,
+        start: Option<Vec2f>,
+        stop: Option<Vec2f>,
+    ) -> Result<(), String> {
         if let (Some(start), Some(stop)) = (start, stop) {
             let buf = continuous_line(start, stop);
             let mut buf = self.brush.follow_stroke(&buf).unwrap();
@@ -128,7 +133,8 @@ impl Pencil {
                 if !self.moved {
                     self.cursor.clone().unwrap()
                 } else {
-                    let mut points = self.current_polyline
+                    let mut points = self
+                        .current_polyline
                         .to_pixel_coords(xpr)?
                         .connect_with_line()?;
                     points.pixel_perfect();
@@ -137,7 +143,8 @@ impl Pencil {
                 }
             }
             SortedMonotonic => {
-                let mut points = self.current_polyline
+                let mut points = self
+                    .current_polyline
                     .to_pixel_coords(xpr)?
                     .connect_with_line()?;
                 points.pixel_perfect();
@@ -303,7 +310,7 @@ impl Tool for Pencil {
                     self.redraw = true;
                 }
                 _ => error!("malformed value: {}", value),
-            }
+            },
             _ => (),
         }
         Ok(())

@@ -75,7 +75,9 @@ impl Polyline {
     }
 
     pub fn connect_with_line(&self) -> Result<Pixels, String> {
-        if self.pos.is_empty() { return Err("Polyline is empty".to_owned()) }
+        if self.pos.is_empty() {
+            return Err("Polyline is empty".to_owned());
+        }
         let mut ret = Pixels::new();
         for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
             let seg = continuous_line(*p0, *p1);

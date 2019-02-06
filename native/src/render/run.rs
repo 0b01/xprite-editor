@@ -11,7 +11,6 @@ use glium::glutin;
 use glium::{Display, Surface};
 use imgui_glium_renderer::Renderer;
 
-
 use crate::ui::inputs::KeyCode;
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 struct MouseState {
@@ -32,7 +31,6 @@ fn set_style(imgui: &mut ImGui) {
     style.window_border_size = 1.;
     style.anti_aliased_lines = false;
     style.anti_aliased_fill = false;
-
 
     let vals = ImGuiCol::VARIANTS;
     macro_rules! find {
@@ -243,7 +241,8 @@ where
                         mouse_state.wheel = pos
                             .to_physical(window.get_hidpi_factor())
                             .to_logical(hidpi_factor)
-                            .y.into();
+                            .y
+                            .into();
                     }
                     // ReceivedCharacter(c) => imgui.add_input_character(c),
                     _ => (),

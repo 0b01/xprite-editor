@@ -16,19 +16,23 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             if ui.button(im_str!("+Layer"), (60., 20.)) {
                 state.xpr.history.top_mut().add_layer(None);
             }
-            if ui.is_item_hovered() { ui.tooltip_text("Add layer under selected group"); }
+            if ui.is_item_hovered() {
+                ui.tooltip_text("Add layer under selected group");
+            }
             ui.same_line(70.);
             if ui.button(im_str!("+Group"), (60., 20.)) {
                 state.xpr.history.top_mut().add_group(None);
             }
-            if ui.is_item_hovered() { ui.tooltip_text("Add group"); }
+            if ui.is_item_hovered() {
+                ui.tooltip_text("Add group");
+            }
 
             let ngroups: Vec<_> = {
                 let top = state.xpr.history.top_mut();
                 if top.selected_layer_mut().is_none() {
                     return;
                 }
-                top.groups.iter().map(|i|i.1.len()).collect()
+                top.groups.iter().map(|i| i.1.len()).collect()
             };
 
             for (group_id, group_len) in ngroups.into_iter().enumerate() {
@@ -36,17 +40,17 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                     macro_rules! group {
                         () => {
                             state.xpr.history.top_mut().groups[group_id]
-                        }
+                        };
                     };
 
                     ui.tree_node(im_str!("{}", &group!().0))
                         .default_open(true)
                         .open_on_double_click(false)
-                        .build(||{
+                        .build(|| {
                             if (ui.is_item_hovered()
-                            && ui.imgui().is_mouse_clicked(ImMouseButton::Right))
-                            ||  ( state.rename_group.is_some()
-                               && state.rename_group.unwrap() == group_id)
+                                && ui.imgui().is_mouse_clicked(ImMouseButton::Right))
+                                || (state.rename_group.is_some()
+                                    && state.rename_group.unwrap() == group_id)
                             {
                                 info!("clicked group");
                                 // change selected group
@@ -55,10 +59,14 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                             }
                             ui.popup(im_str!("contextmenu_group##{}", group_id), || {
                                 if state.rename_group.is_some() {
-                                    let name = state.xpr
-                                        .history.top()
-                                        .selected_group().unwrap()
-                                        .0.to_owned();
+                                    let name = state
+                                        .xpr
+                                        .history
+                                        .top()
+                                        .selected_group()
+                                        .unwrap()
+                                        .0
+                                        .to_owned();
                                     let mut im = ImString::with_capacity(100);
                                     im.push_str(&name);
                                     ui.with_item_width(100., || {
@@ -71,9 +79,12 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                             let im: &str = &im.as_ref();
                                             info!("renaming: {}", im);
                                             // state.xpr.rename_layer(&im).unwrap();
-                                            state.xpr
-                                                .history.top_mut()
-                                                .selected_group_mut().unwrap()
+                                            state
+                                                .xpr
+                                                .history
+                                                .top_mut()
+                                                .selected_group_mut()
+                                                .unwrap()
                                                 .0 = im.to_owned();
                                             state.rename_group = None;
                                             state.toggle_hotkeys();
@@ -104,10 +115,12 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                     macro_rules! layer {
                                         () => {
                                             group!().1[i]
-                                        }
+                                        };
                                     }
 
-                                    if i >= group!().1.len() { return; }
+                                    if i >= group!().1.len() {
+                                        return;
+                                    }
                                     if ui.checkbox(im_str!(""), &mut layer!().visible) {
                                         // undo imgui checkbox mutation
                                         layer!().visible = !layer!().visible;
@@ -125,7 +138,9 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                         top.selected == i && top.sel_group == group_id
                                     };
 
-                                    if i >= group!().1.len() { return; }
+                                    if i >= group!().1.len() {
+                                        return;
+                                    }
                                     let name = layer!().name.as_str();
                                     if ui.selectable(
                                         im_str!("{}", name),
@@ -137,9 +152,9 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                     }
 
                                     if (ui.is_item_hovered()
-                                    && ui.imgui().is_mouse_clicked(ImMouseButton::Right))
-                                    ||  ( state.rename_layer.is_some()
-                                       && state.rename_layer.unwrap() == (group_id, i))
+                                        && ui.imgui().is_mouse_clicked(ImMouseButton::Right))
+                                        || (state.rename_layer.is_some()
+                                            && state.rename_layer.unwrap() == (group_id, i))
                                     {
                                         state.xpr.switch_layer(group_id, i);
                                         ui.open_popup(im_str!("contextmenu_layer"));
@@ -147,7 +162,9 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
 
                                     ui.popup(im_str!("contextmenu_layer"), || {
                                         if state.rename_layer.is_some() {
-                                            let name = { state.xpr.current_layer().unwrap().name.to_owned() };
+                                            let name = {
+                                                state.xpr.current_layer().unwrap().name.to_owned()
+                                            };
                                             let mut im = ImString::with_capacity(100);
                                             im.push_str(&name);
                                             ui.with_item_width(100., || {
@@ -181,9 +198,7 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                         }
                                     });
                                 });
-
                             }
-
                         });
                 });
             }

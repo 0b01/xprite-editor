@@ -1,7 +1,7 @@
 use crate::prelude::*;
+use crate::render::imgui::ImguiRenderer;
 use imgui::ImGuiWindowFlags;
 use xprite::rendering::Renderer;
-use crate::render::imgui::ImguiRenderer;
 
 pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
@@ -34,8 +34,6 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                     .show_scrollbar(false)
                     .movable(false)
                     .build(|| {
-
-
                         // diable cursor
                         if ui.is_window_hovered() {
                             ui.imgui().set_mouse_cursor(ImGuiMouseCursor::None);
@@ -50,16 +48,19 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
 
                         state.redraw_pixels(rdr).unwrap();
 
-                        ui.image(ImTexture::from(state.texture.unwrap()), [
-                            (rdr.art_w * state.xpr.canvas.scale) as f32,
-                            (rdr.art_h * state.xpr.canvas.scale) as f32,
-                        ]).build();
+                        ui.image(
+                            ImTexture::from(state.texture.unwrap()),
+                            [
+                                (rdr.art_w * state.xpr.canvas.scale) as f32,
+                                (rdr.art_h * state.xpr.canvas.scale) as f32,
+                            ],
+                        )
+                        .build();
                         draw_cursor_cross(ui);
 
                         state.xpr.render_cursor(rdr);
                         state.xpr.render_bezier(rdr);
                         state.xpr.render_marquee(rdr);
-
                     });
             });
 
@@ -103,8 +104,8 @@ fn draw_cursor_cross(ui: &Ui) {
     let origin = [x, y];
     let down = [x, y + 10.];
     let up = [x, y - 10.];
-    let right = [x+10., y];
-    let left = [x-10., y];
+    let right = [x + 10., y];
+    let left = [x - 10., y];
 
     let color: [f32; 4] = Color::black().into();
     draw_list.add_line(origin, up, color).build();

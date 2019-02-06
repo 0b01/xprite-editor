@@ -7,7 +7,7 @@ pub mod color;
 pub mod history;
 pub mod hotkey;
 pub mod input;
+pub mod outline;
 pub mod palette;
 pub mod toolbox;
 pub mod xprite;
-pub mod outline;

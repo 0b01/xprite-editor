@@ -1,6 +1,6 @@
 pub mod canvas;
-pub mod file_manager;
 pub mod console;
+pub mod file_manager;
 pub mod inputs;
 pub mod layers;
 pub mod menu;

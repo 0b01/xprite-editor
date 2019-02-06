@@ -9,7 +9,7 @@ use stdweb::web::{document, CanvasRenderingContext2d};
 pub struct StdwebRenderer {
     pub canvas: CanvasElement,
     pub ctx: CanvasRenderingContext2d,
-    pub last: Option<[f32;4]>,
+    pub last: Option<[f32; 4]>,
 }
 
 #[allow(unused)]
@@ -142,6 +142,10 @@ impl StdwebRenderer {
             .unwrap();
 
         let ctx: CanvasRenderingContext2d = canvas.get_context().unwrap();
-        Self { canvas, ctx, last: None }
+        Self {
+            canvas,
+            ctx,
+            last: None,
+        }
     }
 }

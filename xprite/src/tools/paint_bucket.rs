@@ -16,10 +16,7 @@ impl PaintBucketMode {
         }
     }
 
-    pub const VARIANTS: [PaintBucketMode; 2] = [
-        PaintBucketMode::Fill,
-        PaintBucketMode::Outline,
-    ];
+    pub const VARIANTS: [PaintBucketMode; 2] = [PaintBucketMode::Fill, PaintBucketMode::Outline];
 }
 
 impl FromStr for PaintBucketMode {
@@ -38,7 +35,6 @@ impl Default for PaintBucketMode {
         PaintBucketMode::Fill
     }
 }
-
 
 #[derive(Clone, Debug, Default)]
 pub struct PaintBucket {
@@ -116,9 +112,7 @@ impl Tool for PaintBucket {
 
         let ff = self.floodfill(xpr, point, bg_color)?;
         self.draw_buffer = match self.mode {
-            PaintBucketMode::Fill => {
-                Some(ff)
-            }
+            PaintBucketMode::Fill => Some(ff),
             PaintBucketMode::Outline => {
                 let perim = {
                     let w = xpr.canvas.art_w;
@@ -129,7 +123,10 @@ impl Tool for PaintBucket {
             }
         };
 
-        self.cursor = Some(pixels!(Pixel { point, color: xpr.color() }));
+        self.cursor = Some(pixels!(Pixel {
+            point,
+            color: xpr.color()
+        }));
         Ok(())
     }
 

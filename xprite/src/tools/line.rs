@@ -40,7 +40,6 @@ impl Line {
         }
         Ok(())
     }
-
 }
 
 impl Tool for Line {

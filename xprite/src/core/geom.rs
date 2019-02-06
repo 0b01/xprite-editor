@@ -20,14 +20,12 @@ macro_rules! vec2f_xy {
     };
 }
 
-
 use crate::prelude::*;
 use std::cmp::Ordering;
 use std::hash::{Hash, Hasher};
-use std::ops::{Sub, Add, AddAssign, SubAssign, Mul, MulAssign, Div, DivAssign, Neg};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 impl Vec2f {
-
     pub fn mag(&self) -> f64 {
         (self.x * self.x + self.y * self.y).sqrt()
     }
@@ -41,14 +39,16 @@ impl Vec2f {
         let y = self.y.floor();
         Vec2f { x, y }
     }
-
 }
 
 impl Neg for Vec2f {
     type Output = Vec2f;
 
     fn neg(self) -> Vec2f {
-        Vec2f {x: -self.x, y: -self.y}
+        Vec2f {
+            x: -self.x,
+            y: -self.y,
+        }
     }
 }
 
@@ -56,7 +56,10 @@ impl Add for Vec2f {
     type Output = Vec2f;
 
     fn add(self, rhs: Vec2f) -> Vec2f {
-        Vec2f {x: self.x + rhs.x, y: self.y + rhs.y}
+        Vec2f {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+        }
     }
 }
 
@@ -84,7 +87,10 @@ impl Div for Vec2f {
     type Output = Vec2f;
 
     fn div(self, rhs: Vec2f) -> Vec2f {
-        Vec2f{ x: self.x / rhs.x, y: self.y / rhs.y}
+        Vec2f {
+            x: self.x / rhs.x,
+            y: self.y / rhs.y,
+        }
     }
 }
 
@@ -92,7 +98,10 @@ impl Div<f64> for Vec2f {
     type Output = Vec2f;
 
     fn div(self, rhs: f64) -> Vec2f {
-        Vec2f{ x: self.x / rhs, y: self.y / rhs}
+        Vec2f {
+            x: self.x / rhs,
+            y: self.y / rhs,
+        }
     }
 }
 
@@ -106,7 +115,10 @@ impl Mul for Vec2f {
     type Output = Vec2f;
 
     fn mul(self, rhs: Vec2f) -> Vec2f {
-        Vec2f {x: self.x * rhs.x, y: self.y * rhs.y}
+        Vec2f {
+            x: self.x * rhs.x,
+            y: self.y * rhs.y,
+        }
     }
 }
 
@@ -114,7 +126,10 @@ impl Mul<f64> for Vec2f {
     type Output = Vec2f;
 
     fn mul(self, rhs: f64) -> Vec2f {
-        Vec2f {x: self.x * rhs, y: self.y * rhs}
+        Vec2f {
+            x: self.x * rhs,
+            y: self.y * rhs,
+        }
     }
 }
 
@@ -375,6 +390,5 @@ mod tests {
 
         let ret = seg.arc_len(10);
         dbg!(ret);
-
     }
 }
