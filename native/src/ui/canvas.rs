@@ -54,10 +54,12 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                             (rdr.art_w * state.xpr.canvas.scale) as f32,
                             (rdr.art_h * state.xpr.canvas.scale) as f32,
                         ]).build();
+                        draw_cursor_cross(ui);
 
                         state.xpr.render_cursor(rdr);
                         state.xpr.render_bezier(rdr);
                         state.xpr.render_marquee(rdr);
+
                     });
             });
 
@@ -92,4 +94,21 @@ fn update_viewport(state: &mut State, ui: &Ui) {
     }
 
     state.xpr.canvas.initialized = true;
+}
+
+fn draw_cursor_cross(ui: &Ui) {
+    let draw_list = ui.get_window_draw_list();
+    let (x, y) = ui.imgui().mouse_pos();
+
+    let origin = [x, y];
+    let down = [x, y + 10.];
+    let up = [x, y - 10.];
+    let right = [x+10., y];
+    let left = [x-10., y];
+
+    let color: [f32; 4] = Color::black().into();
+    draw_list.add_line(origin, up, color).build();
+    draw_list.add_line(origin, down, color).build();
+    draw_list.add_line(origin, left, color).build();
+    draw_list.add_line(origin, right, color).build();
 }
