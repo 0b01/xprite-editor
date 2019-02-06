@@ -51,10 +51,11 @@ impl Default for Canvas {
 
 impl Canvas {
     pub fn new(art_w: f64, art_h: f64) -> Self {
-        let mut ret = Self::default();
-        ret.art_w = art_w;
-        ret.art_h = art_h;
-        ret
+        Self {
+            art_w,
+            art_h,
+            ..Default::default()
+        }
     }
 
     pub fn update_pos(&mut self, win_x: f64, win_y: f64) {

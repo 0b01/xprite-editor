@@ -15,7 +15,12 @@ impl Default for Layers {
 
 impl Layers {
     pub fn new() -> Self {
-        let groups = vec![("Group 1".to_owned(), vec![Layer::new("Layer 0".to_owned())])];
+        let groups = vec![
+            (
+                "Group 1".to_owned(),
+                vec![Layer::new("Layer 0".to_owned())]
+            )
+        ];
         let selected = 0;
         let sel_group = 0;
         Self {
@@ -24,6 +29,23 @@ impl Layers {
             sel_group,
         }
     }
+
+    pub fn empty() -> Self {
+        let groups = vec![
+            (
+                "Group 1".to_owned(),
+                vec![]
+            )
+        ];
+        let selected = 0;
+        let sel_group = 0;
+        Self {
+            groups,
+            selected,
+            sel_group,
+        }
+    }
+
 
     pub fn selected_layer(&self) -> Option<&Layer> {
         let gp = self.selected_group()?;

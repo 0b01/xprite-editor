@@ -124,7 +124,7 @@ macro_rules! pixels {
     };
 }
 
-#[derive(Clone, Eq, Default)]
+#[derive(Clone, Eq)]
 pub struct Pixels(pub IndexSet<Pixel, FnvBuildHasher>);
 
 impl Hash for Pixels {
@@ -139,6 +139,12 @@ impl Hash for Pixels {
 impl PartialEq for Pixels {
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0
+    }
+}
+
+impl Default for Pixels {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -318,13 +324,8 @@ impl From<img::DynamicImage> for Pixels {
 
 impl From<Pixels> for ase::Pixels {
     fn from(pixs: Pixels) -> ase::Pixels {
-        let Rect(
-            Vec2f{x:x0,y:y0},
-            Vec2f{x:x1,y:y1}
-        ) = pixs.bounding_rect();
-        let w = x1 - x0 + 1.;
-        let h = y1 - y0 + 1.;
-        let contiguous: Vec<_> = pixs.as_mat(w as usize, h as usize)
+        let bb = pixs.bounding_rect();
+        let contiguous: Vec<_> = pixs.as_mat_bb(bb)
             .into_iter()
             .flatten()
             .map(|op| match op {
@@ -359,22 +360,20 @@ impl Pixels {
         arr
     }
 
-
-    // // TODO:
-    // pub fn as_mat(&self, bb: Rect) -> Vec<Vec<Option<Pixel>>> {
-    //     let w = bb.w();
-    //     let h = bb.h();
-    //     let mut arr = vec![vec![None; w as usize]; h as usize];
-    //     for p in self.0.iter() {
-    //         let Pixel { point, .. } = p;
-    //         let Vec2f { x, y } = point;
-    //         if oob(*x, *y, w, h) {
-    //             continue;
-    //         }
-    //         arr[(*y - bb.0.y) as usize][(*x - bb.0.x) as usize] = Some(*p);
-    //     }
-    //     arr
-    // }
+    /// shift all pixels in the matrix in accordance to bounding box
+    pub fn as_mat_bb(&self, bb: Rect) -> Vec<Vec<Option<Pixel>>> {
+        let w = bb.w();
+        let h = bb.h();
+        let mut arr = vec![vec![None; w as usize]; h as usize];
+        for p in self.0.iter() {
+            let Pixel { point, color } = p;
+            let Vec2f { x, y } = point;
+            let y_ = (*y - bb.0.y) as usize;
+            let x_ = (*x - bb.0.x) as usize;
+            arr[y_][x_] = Some(pixel!(y_, x_, *color));
+        }
+        arr
+    }
 
     pub fn len(&self) -> usize {
         self.0.len()
@@ -507,6 +506,27 @@ mod tests {
         assert_eq!(
             strips,
             vec![(0, (0, 3), Color::red()), (1, (0, 2), Color::red()),]
+        );
+    }
+
+    #[test]
+    fn test_as_mat_bb() {
+        use super::*;
+        let pixs = pixels!(
+            pixel!(0,1,Color::red()),
+            pixel!(0,2,Color::red())
+        );
+        let bb = pixs.bounding_rect();
+        let ret = pixs.as_mat_bb(bb);
+
+        assert_eq!(
+            vec![
+                vec![
+                    Some(pixel!(0,0,Color::red())),
+                    Some(pixel!(0,1,Color::red())),
+                ]
+            ],
+            ret
         );
     }
 

@@ -129,10 +129,10 @@ pub struct Rect(pub Vec2f, pub Vec2f);
 
 impl Rect {
     pub fn w(&self) -> f64 {
-        (self.1.x - self.0.x).abs()
+        (self.1.x - self.0.x + 1.).abs()
     }
     pub fn h(&self) -> f64 {
-        (self.1.y - self.0.y).abs()
+        (self.1.y - self.0.y + 1.).abs()
     }
 }
 

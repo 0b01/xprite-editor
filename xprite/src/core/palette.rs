@@ -6,7 +6,7 @@ use std::{fs, io, path};
 
 type PaletteGroup = IndexMap<String, Color>;
 
-#[derive(Default, Debug)]
+#[derive(Debug)]
 pub struct PaletteManager {
     pub palettes: IndexMap<String, PaletteGroup>,
 }

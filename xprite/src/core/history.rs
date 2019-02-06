@@ -1,14 +1,26 @@
 use crate::prelude::*;
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct History {
     stack: Vec<Layers>,
     redos: Vec<Layers>,
 }
 
+impl Default for History {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl History {
     pub fn new() -> Self {
         let stack = vec![Layers::new()];
+        let redos = vec![];
+        History { stack, redos }
+    }
+
+    pub fn empty() -> Self {
+        let stack = vec![Layers::empty()];
         let redos = vec![];
         History { stack, redos }
     }

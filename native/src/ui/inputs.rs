@@ -219,7 +219,7 @@ pub fn execute(bind: Bind, state: &mut State, _ui: &Ui) -> Result<(), String> {
         }
 
         // LoadXPR => state.load_xpr("1.xpr"),
-        // SaveXPR => state.save_xpr("1.xpr"),
+        SaveASE => state.save_ase("1.ase"),
         LoadPNG => {
             state.toggle_hotkeys();
             state.show_open_file = true;

@@ -3,6 +3,7 @@ use std::borrow::Cow;
 use xprite::image::GenericImageView;
 use xprite::rendering::image_renderer::ImageRenderer;
 use crate::render::imgui::ImguiRenderer;
+use std::fs::File;
 
 pub struct State<'a> {
     pub xpr: Xprite,
@@ -85,13 +86,12 @@ impl<'a> State<'a> {
         self.xpr = xpr; // TODO: create a new tab for file
     }
 
-    // pub fn save_xpr(&mut self, file_path: &str) {
-    //     info!("saving xpr file to {}", file_path);
-    //     let encoded: Vec<u8> = serialize(&self.xpr).unwrap();
-    //     let f = File::create(file_path).unwrap();
-    //     let mut wtr = BufWriter::new(f);
-    //     wtr.write_all(&encoded).unwrap();
-    // }
+    pub fn save_ase(&mut self, file_path: &str) {
+        info!("saving ase file to {}", file_path);
+        let mut f = File::create(file_path).unwrap();
+        let aseprite = self.xpr.as_ase();
+        aseprite.write(&mut f).unwrap();
+    }
 
     // pub fn load_xpr(&mut self, file_path: &str) {
     //     info!("loading xpr file {}", file_path);

@@ -9,7 +9,7 @@ pub enum Bind {
     PopTool,
     ToggleConsole,
     RunScript,
-    // SaveXPR,
+    SaveASE,
     // LoadXPR,
     SavePNG,
     LoadPNG,
@@ -128,7 +128,7 @@ impl HotkeyController {
             // ctrl-s
             binds.insert(Action::S(true, false, false, true), Bind::SavePNG);
             binds.insert(Action::O(true, false, false, true), Bind::LoadPNG);
-            // binds.insert(Action::S(true, true, false, true), Bind::SaveXPR);
+            binds.insert(Action::S(true, true, false, true), Bind::SaveASE);
             // binds.insert(Action::O(true, true, false, true), Bind::LoadXPR);
         }
 

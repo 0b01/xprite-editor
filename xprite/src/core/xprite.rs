@@ -9,6 +9,7 @@ pub struct Xprite {
 
     pub im_buf: Pixels,
     pub bz_buf: Vec<CubicBezierSegment>,
+    marq_buf: Vec<MarqueePixel>,
 
     pub canvas: Canvas,
     pub selected_color: Color,
@@ -20,40 +21,38 @@ pub struct Xprite {
 
     pub log: Arc<Mutex<String>>,
 
-    marq_buf: Vec<MarqueePixel>,
 
     pub redraw: bool,
+}
 
+impl Default for Xprite {
+    fn default() -> Self {
+        let palette_man = PaletteManager::new()
+            .expect("Cannot initialize palettes");
+        let selected_color = Color { r: 0, g: 0, b: 0, a: 255 };
+        Self {
+            palette_man,
+            selected_color,
+            history: Default::default(),
+            im_buf: Default::default(),
+            bz_buf: Default::default(),
+            marq_buf: Default::default(),
+            canvas: Default::default(),
+            toolbox: Default::default(),
+            cursor: Default::default(),
+            last_mouse_pos: Default::default(),
+            log: Arc::new(Mutex::new(String::new())),
+            redraw: true,
+        }
+    }
 }
 
 impl Xprite {
     pub fn new(art_w:f64, art_h: f64) -> Xprite {
-        let palette_man = PaletteManager::new()
-            .expect("Cannot initialize palettes");
-        let selected_color = Color { r: 0, g: 0, b: 0, a: 255 };
-        let history = History::new();
-        let cursor = Pixels::new();
-        let toolbox = Toolbox::new();
         let canvas = Canvas::new(art_w, art_h);
-        let im_buf = Pixels::new();
-        let bz_buf = Vec::new();
-        let log = Arc::new(Mutex::new(String::new()));
-        let marq_buf = vec![];
-        let redraw = true;
-
         Xprite {
-            last_mouse_pos: Vec2f { x:0., y:0. },
-            history,
-            im_buf,
-            bz_buf,
             canvas,
-            selected_color,
-            cursor,
-            toolbox,
-            log,
-            palette_man,
-            marq_buf,
-            redraw,
+            ..Default::default()
         }
     }
 
@@ -295,13 +294,14 @@ impl Xprite {
         }
         Ok(())
     }
+}
+impl Xprite {
 
     pub fn as_ase(&self) -> ase::Aseprite {
         let header = ase::Header::new(
             self.canvas.art_w as u16,
             self.canvas.art_h as u16
         );
-
         let mut frame = ase::Frame::new();
         for (i, layer) in self.history.top().iter_layers().enumerate() {
             frame
@@ -320,7 +320,9 @@ impl Xprite {
                             ) = layer.content.bounding_rect();
                             let w = x1 - x0 + 1.;
                             let h = y1 - y0 + 1.;
-                            let pixels: ase::Pixels = layer.content.clone().into();
+                            let pixels: ase::Pixels = layer.content
+                                .clone()
+                                .into();
                             ase::chunk::CelChunk::new(
                                 i as u16,
                                 x0 as i16,
@@ -332,8 +334,51 @@ impl Xprite {
                     ));
             }
         }
-
         ase::Aseprite::new(header, vec![frame])
+    }
+
+    pub fn from_ase(aseprite: &ase::Aseprite) -> Self {
+        let ase::Aseprite {header, frames} = aseprite;
+        let ase::Header {pixel_width, pixel_height, ..} = &header;
+        let canvas = Canvas::new(
+            *pixel_width as f64,
+            *pixel_height as f64
+        );
+        let mut history = History::empty();
+
+        let frame = &frames[0];
+        let ase::Frame {chunks,..} = frame;
+        for ase::Chunk{chunk_data, ..} in chunks {
+            match chunk_data {
+                ase::ChunkData::LayerChunk(ase::chunk::LayerChunk{
+                    flags,
+                    layer_type,
+                    layer_child_level,
+                    blend_mode,
+                    opacity,
+                    layer_name, }) => {
+                    dbg!(layer_name);
+                },
+                ase::ChunkData::CelChunk(ase::chunk::CelChunk{
+                        layer_index,
+                        x_position,
+                        y_position,
+                        opacity_level,
+                        cel,
+                    }) => {
+                    let pixs = cel.pixels(&header.color_depth);
+                    dbg!(pixs);
+                }
+                _ => (),
+            };
+        }
+        history.top_mut().add_layer(Some(""));
+
+        Self {
+            canvas,
+            history,
+            ..Default::default()
+        }
     }
 }
 
@@ -406,8 +451,17 @@ mod tests {
         let aseprite = xpr.as_ase();
         let mut f = File::create("test.ase").unwrap();
         aseprite.write(&mut f).unwrap();
-
         std::fs::remove_file("test.ase").unwrap();
     }
 
+    #[test]
+    fn test_from_ase() {
+        use super::*;
+        use std::fs::File;
+        let fname = "../ase-rs/sample_aseprite_files/simple.aseprite";
+        let mut f = File::open(fname).unwrap();
+        let mut aseprite = ase::Aseprite::from_read(&mut f).unwrap();
+        let xpr = Xprite::from_ase(&mut aseprite);
+        // dbg!(xpr);
+    }
 }
