@@ -6,7 +6,7 @@
 #[macro_use]
 extern crate bitflags;
 extern crate fnv;
-extern crate ase;
+pub extern crate ase;
 extern crate hex;
 extern crate image as img;
 #[macro_use]

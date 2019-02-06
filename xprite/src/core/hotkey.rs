@@ -10,7 +10,7 @@ pub enum Bind {
     ToggleConsole,
     RunScript,
     SaveASE,
-    // LoadXPR,
+    LoadASE,
     SavePNG,
     LoadPNG,
     Unmapped,
@@ -129,7 +129,7 @@ impl HotkeyController {
             binds.insert(Action::S(true, false, false, true), Bind::SavePNG);
             binds.insert(Action::O(true, false, false, true), Bind::LoadPNG);
             binds.insert(Action::S(true, true, false, true), Bind::SaveASE);
-            // binds.insert(Action::O(true, true, false, true), Bind::LoadXPR);
+            binds.insert(Action::O(true, true, false, true), Bind::LoadASE);
         }
 
         Self {

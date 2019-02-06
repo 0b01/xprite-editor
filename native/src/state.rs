@@ -20,6 +20,9 @@ pub struct State<'a> {
     pub show_open_file: bool,
     pub open_file_name: ImString,
 
+    pub rename_layer: Option<(usize, usize)>,
+    pub rename_group: Option<usize>,
+
     pub texture: Option<usize>,
 }
 
@@ -38,6 +41,8 @@ impl<'a> State<'a> {
             cols_per_row: 8,
             show_open_file: false,
             open_file_name: ImString::new("./1.png"),
+            rename_layer: None,
+            rename_group: None,
         }
     }
 
@@ -93,15 +98,10 @@ impl<'a> State<'a> {
         aseprite.write(&mut f).unwrap();
     }
 
-    // pub fn load_xpr(&mut self, file_path: &str) {
-    //     info!("loading xpr file {}", file_path);
-    //     let f = File::open(file_path).unwrap();
-    //     let mut reader = BufReader::new(f);
-
-    //     let mut encoded = Vec::new();
-    //     reader.read_to_end(&mut encoded).unwrap();
-
-    //     let xpr: Xprite = deserialize(&encoded).unwrap();
-    //     self.xpr = xpr;
-    // }
+    pub fn load_ase(&mut self, file_path: &str) {
+        info!("loading ase file {}", file_path);
+        let mut f = File::open(file_path).unwrap();
+        let ase = xprite::ase::Aseprite::from_read(&mut f).unwrap();
+        self.xpr = Xprite::from_ase(&ase);
+    }
 }

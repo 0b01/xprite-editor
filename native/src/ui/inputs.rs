@@ -218,7 +218,7 @@ pub fn execute(bind: Bind, state: &mut State, _ui: &Ui) -> Result<(), String> {
             state.show_console = !state.show_console;
         }
 
-        // LoadXPR => state.load_xpr("1.xpr"),
+        LoadASE => state.load_ase("1.ase"),
         SaveASE => state.save_ase("1.ase"),
         LoadPNG => {
             state.toggle_hotkeys();

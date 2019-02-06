@@ -295,8 +295,9 @@ impl Xprite {
         Ok(())
     }
 }
-impl Xprite {
 
+/// aseprite file format converter
+impl Xprite {
     pub fn as_ase(&self) -> ase::Aseprite {
         let header = ase::Header::new(
             self.canvas.art_w as u16,
@@ -345,7 +346,6 @@ impl Xprite {
             *pixel_height as f64
         );
         let mut history = History::empty();
-
         let frame = &frames[0];
         let ase::Frame {chunks,..} = frame;
         for ase::Chunk{chunk_data, ..} in chunks {
@@ -357,7 +357,14 @@ impl Xprite {
                     blend_mode,
                     opacity,
                     layer_name, }) => {
-                    dbg!(layer_name);
+
+                    if *layer_type == ase::chunk::LayerType::Normal {
+                        // image layer
+                        history.top_mut().add_layer(Some(layer_name));
+                    } else {
+                        // group layer
+                        history.top_mut().add_group(Some(layer_name));
+                    }
                 },
                 ase::ChunkData::CelChunk(ase::chunk::CelChunk{
                         layer_index,
@@ -373,7 +380,6 @@ impl Xprite {
             };
         }
         history.top_mut().add_layer(Some(""));
-
         Self {
             canvas,
             history,
