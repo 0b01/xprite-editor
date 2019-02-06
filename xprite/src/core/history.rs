@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Default)]
 pub struct History {
     stack: Vec<Layers>,
     redos: Vec<Layers>,

@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
 
-#[derive(Clone, Copy, Serialize, Deserialize, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Scroll {
     pub x: f64,
     pub y: f64,
@@ -13,7 +13,7 @@ impl Default for Scroll {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug)]
 pub struct Canvas {
     pub scale: f64,
     pub win_x: f64,

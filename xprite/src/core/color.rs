@@ -3,7 +3,7 @@ use hex;
 
 #[cfg_attr(feature = "python-scripting", pyclass)]
 #[derive(
-    Debug, Hash, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize, Default,
+    Debug, Hash, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Default,
 )]
 pub struct Color {
     pub r: u8,

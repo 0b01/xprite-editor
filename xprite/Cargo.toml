@@ -12,10 +12,6 @@ libtexsyn = { path = "../libtexsyn" }
 chrono = "0.4"
 image = "0.20.1"
 pyo3 = { version = "0.5.2", optional = true }
-# saving/loading
-bincode = "1.0.1"
-serde_derive = "1.0.82"
-serde = "1.0.82"
 hex = "0.3.2"
 natord = "1.0.9"
 fnv = "1.0.6"

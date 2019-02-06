@@ -124,7 +124,7 @@ impl MulAssign for Vec2f {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Serialize, Deserialize, Default)]
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Default)]
 pub struct Rect(pub Vec2f, pub Vec2f);
 
 impl Rect {
@@ -138,7 +138,7 @@ impl Rect {
 
 /// represents a 2D vector
 #[cfg_attr(feature = "python-scripting", pyclass)]
-#[derive(Debug, Copy, Clone, PartialOrd, Serialize, Deserialize, Default)]
+#[derive(Debug, Copy, Clone, PartialOrd, Default)]
 pub struct Vec2f {
     pub x: f64,
     pub y: f64,
@@ -183,7 +183,7 @@ impl From<Vec2f> for [f64; 2] {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct CubicBezierSegment {
     pub from: Vec2f,
     pub ctrl1: Vec2f,

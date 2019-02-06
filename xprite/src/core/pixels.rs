@@ -13,7 +13,7 @@ use std::f64;
 use fnv::FnvBuildHasher;
 
 #[cfg_attr(feature = "python-scripting", pyclass)]
-#[derive(Copy, Clone, Eq, PartialOrd, Serialize, Deserialize, Default)]
+#[derive(Copy, Clone, Eq, PartialOrd, Default)]
 pub struct Pixel {
     pub point: Vec2f,
     pub color: Color,
@@ -124,7 +124,7 @@ macro_rules! pixels {
     };
 }
 
-#[derive(Clone, Eq, Serialize, Deserialize, Default)]
+#[derive(Clone, Eq, Default)]
 pub struct Pixels(pub IndexSet<Pixel, FnvBuildHasher>);
 
 impl Hash for Pixels {

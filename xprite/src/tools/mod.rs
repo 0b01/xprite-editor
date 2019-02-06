@@ -16,7 +16,7 @@ pub mod traits;
 pub use self::traits::Tool;
 use std::str::FromStr;
 
-#[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Copy, Debug)]
 pub enum ToolType {
     Pencil,
     Line,
