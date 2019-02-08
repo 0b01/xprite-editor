@@ -56,11 +56,12 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                             ],
                         )
                         .build();
-                        draw_cursor_cross(ui);
 
                         state.xpr.render_cursor(rdr);
                         state.xpr.render_bezier(rdr);
                         state.xpr.render_marquee(rdr);
+
+                        draw_cursor_cross(ui);
                     });
             });
 

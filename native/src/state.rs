@@ -5,10 +5,25 @@ use std::fs::File;
 use xprite::image::GenericImageView;
 use xprite::rendering::image_renderer::ImageRenderer;
 
+pub struct FilePopupState {
+    pub show_file_popup: bool,
+    pub open_file_name: ImString,
+    pub show_file_is_save: bool,
+}
+
+impl Default for FilePopupState {
+    fn default() -> Self {
+        Self {
+            show_file_popup: false,
+            show_file_is_save: true,
+            open_file_name: ImString::new("./sample_files/1.ase"),
+        }
+    }
+}
+
 pub struct State<'a> {
     pub xpr: Xprite,
 
-    pub show_settings: bool,
     pub show_console: bool,
     pub hotkeys: HotkeyController,
     pub inputs: InputState,
@@ -17,10 +32,7 @@ pub struct State<'a> {
     pub palette_idx: i32,
 
     pub cols_per_row: i32,
-
-    pub show_file_popup: bool,
-    pub open_file_name: ImString,
-    pub show_file_is_save: bool,
+    pub file_popup: FilePopupState,
 
     pub rename_layer: Option<(usize, usize)>,
     pub rename_group: Option<usize>,
@@ -28,11 +40,9 @@ pub struct State<'a> {
     pub texture: Option<usize>,
 }
 
-impl<'a> State<'a> {
-    pub fn new(xpr: Xprite) -> State<'a> {
-        State {
-            xpr,
-            show_settings: false,
+impl<'a> Default for State<'a> {
+    fn default() -> Self {
+        Self {
             show_console: false,
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
@@ -41,11 +51,19 @@ impl<'a> State<'a> {
             palette_color_name: None,
             palette_idx: 0,
             cols_per_row: 8,
-            show_file_popup: false,
-            show_file_is_save: true,
-            open_file_name: ImString::new("./sample_files/1.ase"),
             rename_layer: None,
             rename_group: None,
+            file_popup: Default::default(),
+            xpr: Default::default(),
+        }
+    }
+}
+
+impl<'a> State<'a> {
+    pub fn new(xpr: Xprite) -> State<'a> {
+        State {
+            xpr,
+            ..Default::default()
         }
     }
 
@@ -107,5 +125,34 @@ impl<'a> State<'a> {
         let ase = xprite::ase::Aseprite::from_read(&mut f).unwrap();
         self.xpr = Xprite::from_ase(&ase);
         dbg!(&self.xpr.canvas);
+    }
+
+    pub fn execute(&mut self, bind: Bind) -> Result<(), String> {
+        use self::Bind::*;
+        match bind {
+            Redo => self.xpr.redo(),
+            Undo => self.xpr.undo(),
+            PushTool(tool) => self.xpr.change_tool(tool)?,
+            PopTool => self.xpr.toolbox.pop_tool(),
+            ToggleConsole => {
+                self.show_console = !self.show_console;
+            }
+            Load => {
+                self.toggle_hotkeys();
+                self.file_popup.show_file_popup = true;
+                self.file_popup.show_file_is_save = false;
+            }
+            Save => {
+                self.toggle_hotkeys();
+                self.file_popup.show_file_popup = true;
+                self.file_popup.show_file_is_save = true;
+            }
+
+            RunScript => {
+                unimplemented!();
+            }
+            Unmapped => (),
+        }
+        Ok(())
     }
 }

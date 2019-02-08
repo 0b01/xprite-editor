@@ -30,6 +30,7 @@ pub enum ToolType {
     Ellipse,
     FilledEllipse,
     Marquee,
+    Settings,
 }
 
 impl Default for ToolType {
@@ -65,6 +66,7 @@ impl ToolType {
             ToolType::FilledEllipse => "FilledEllipse",
             ToolType::Texture => "Texture",
             ToolType::Marquee => "Marquee",
+            _ => "Settings",
         }
     }
 }
@@ -85,6 +87,7 @@ impl FromStr for ToolType {
             "FilledEllipse" => Ok(ToolType::FilledEllipse),
             "Texture" => Ok(ToolType::Texture),
             "Marquee" => Ok(ToolType::Marquee),
+            "Settings" => Ok(ToolType::Settings),
             _ => Err(()),
         }
     }

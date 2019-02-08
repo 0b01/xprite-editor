@@ -6,7 +6,6 @@ pub mod layers;
 pub mod menu;
 pub mod palette;
 pub mod preview;
-pub mod settings;
 pub mod tool_panel;
 pub mod toolbar;
 pub mod tools;
@@ -27,7 +26,6 @@ pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
     self::menu::draw_menu(rdr, state, ui);
     self::toolbar::draw_toolbar(state, ui);
     self::canvas::draw_canvas(rdr, state, ui);
-    self::settings::draw_settings(rdr, state, ui);
     self::tool_panel::draw_tool_panel(rdr, state, ui);
     self::palette::draw_palette(rdr, state, ui);
     self::palette::draw_color_picker(rdr, state, ui);

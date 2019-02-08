@@ -2,13 +2,13 @@ use crate::prelude::*;
 use xprite::rendering::Renderer;
 
 pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
-    let window_title = im_str!("{}", if state.show_file_is_save {
+    let window_title = im_str!("{}", if state.file_popup.show_file_is_save {
         "Save file"
     } else {
         "Open file"
     });
 
-    if state.show_file_popup {
+    if state.file_popup.show_file_popup {
         ui.open_popup(window_title);
     }
 
@@ -21,14 +21,14 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             let close = |state: &mut State| {
                 state.toggle_hotkeys();
                 ui.close_current_popup();
-                state.show_file_popup = false;
+                state.file_popup.show_file_popup = false;
             };
 
             let open = get_callback();
 
             ui.with_item_width(400., || {
                 if ui
-                    .input_text(im_str!(""), &mut state.open_file_name)
+                    .input_text(im_str!(""), &mut state.file_popup.open_file_name)
                     .auto_select_all(true)
                     .enter_returns_true(true)
                     .build()
@@ -54,7 +54,7 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
 
 fn get_callback() -> impl Fn(&mut State) {
     |state: &mut State| {
-        let fname: &str = state.open_file_name.as_ref();
+        let fname: &str = state.file_popup.open_file_name.as_ref();
         info!("opening: {}", fname);
         if fname.ends_with(".ase") || fname.ends_with(".aseprite") {
             state.load_ase(&fname.to_owned());

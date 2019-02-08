@@ -157,7 +157,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
                             state.inputs.alt,
                             true,
                         ));
-                        execute(bind, state, ui)
+                        state.execute(bind)
                     });
                 } else {
                     handle_error!(state.xpr.event(&KeyUp { key: $key_upper }));
@@ -168,7 +168,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
                             state.inputs.alt,
                             false,
                         ));
-                        execute(bind, state, ui)
+                        state.execute(bind)
                     });
                 }
             }
@@ -205,33 +205,4 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     // }
 
     state.xpr.update_mouse_pos(x.into(), y.into());
-}
-
-pub fn execute(bind: Bind, state: &mut State, _ui: &Ui) -> Result<(), String> {
-    use self::Bind::*;
-    match bind {
-        Redo => state.xpr.redo(),
-        Undo => state.xpr.undo(),
-        PushTool(tool) => state.xpr.change_tool(tool)?,
-        PopTool => state.xpr.toolbox.pop_tool(),
-        ToggleConsole => {
-            state.show_console = !state.show_console;
-        }
-        LoadPNG | LoadASE => {
-            state.toggle_hotkeys();
-            state.show_file_popup = true;
-            state.show_file_is_save = false;
-        }
-        SaveASE | SavePNG => {
-            state.toggle_hotkeys();
-            state.show_file_popup = true;
-            state.show_file_is_save = true;
-        }
-
-        RunScript => {
-            unimplemented!();
-        }
-        Unmapped => (),
-    }
-    Ok(())
 }

@@ -22,6 +22,7 @@ git submodule update --init --recursive
 * [ ] Fix zoom
 * [ ] Save/load .aseprite
 * [ ] Output 2x size
+* [ ] Preview window bounding box, modes(fill, 1x, 2x)
 
 ## Done
 

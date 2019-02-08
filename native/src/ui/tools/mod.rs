@@ -10,6 +10,7 @@ pub mod pencil_panel;
 pub mod rect_panel;
 pub mod texture_panel;
 pub mod vector_panel;
+pub mod settings_panel;
 
 pub fn draw(selected: ToolType, rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     match selected {
@@ -23,5 +24,6 @@ pub fn draw(selected: ToolType, rdr: &mut Renderer, state: &mut State, ui: &Ui) 
         ToolType::Ellipse | ToolType::FilledEllipse => ellipse_panel::draw(state, ui),
         ToolType::Texture => texture_panel::draw(rdr, state, ui),
         ToolType::Marquee => marquee_panel::draw(rdr, state, ui),
+        ToolType::Settings => settings_panel::draw(rdr, state, ui),
     }
 }
