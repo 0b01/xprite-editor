@@ -402,6 +402,25 @@ impl Pixels {
     }
 }
 
+impl Pixels {
+    pub fn from_ase_pixels(ase_pixs: &ase::Pixels, bb: Rect) -> Self {
+        let x0 = bb.0.x as usize;
+        let y0 = bb.0.y as usize;
+        let w = bb.w() as usize;
+        let mut pixs = Pixels::new();
+        if let ase::Pixels::RGBA(vec) = ase_pixs {
+            for (i, color) in vec.iter().enumerate() {
+                if color.a == 0 { continue } // skip transparent pixels
+                let nth_row = i % w;
+                let nth_col = i / w;
+                pixs.push(pixel!(y0 + nth_row, x0 + nth_col, (*color).into()));
+            }
+        }
+
+        pixs
+    }
+}
+
 mod tests {
 
     #[test]

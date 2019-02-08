@@ -40,6 +40,17 @@ impl From<Color> for ase::RGBA256 {
     }
 }
 
+impl From<ase::RGBA256> for Color {
+    fn from(c: ase::RGBA256) -> Self {
+        Self {
+            r: c.r,
+            g: c.g,
+            b: c.b,
+            a: c.a,
+        }
+    }
+}
+
 impl From<Color> for (i32, i32, i32, i32) {
     fn from(c: Color) -> Self {
         (c.r as i32, c.g as i32, c.b as i32, c.a as i32)

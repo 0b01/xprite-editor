@@ -217,14 +217,16 @@ pub fn execute(bind: Bind, state: &mut State, _ui: &Ui) -> Result<(), String> {
         ToggleConsole => {
             state.show_console = !state.show_console;
         }
-
-        LoadASE => state.load_ase("1.ase"),
-        SaveASE => state.save_ase("1.ase"),
-        LoadPNG => {
+        LoadPNG | LoadASE => {
             state.toggle_hotkeys();
-            state.show_open_file_dialog = true;
+            state.show_file_popup = true;
+            state.show_file_is_save = false;
         }
-        SavePNG => state.save_png("1.png"),
+        SaveASE | SavePNG => {
+            state.toggle_hotkeys();
+            state.show_file_popup = true;
+            state.show_file_is_save = true;
+        }
 
         RunScript => {
             unimplemented!();

@@ -2,7 +2,17 @@ use crate::prelude::*;
 use xprite::rendering::Renderer;
 
 pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
-    ui.popup_modal(im_str!("Open file"))
+    let window_title = im_str!("{}", if state.show_file_is_save {
+        "Save file"
+    } else {
+        "Open file"
+    });
+
+    if state.show_file_popup {
+        ui.open_popup(window_title);
+    }
+
+    ui.popup_modal(window_title)
         .inputs(true)
         .collapsible(true)
         .resizable(false)
@@ -11,7 +21,7 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             let close = |state: &mut State| {
                 state.toggle_hotkeys();
                 ui.close_current_popup();
-                state.show_open_file_dialog = false;
+                state.show_file_popup = false;
             };
 
             let open = get_callback();
@@ -39,9 +49,7 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 }
             });
         });
-    if state.show_open_file_dialog {
-        ui.open_popup(im_str!("Open file"))
-    }
+
 }
 
 fn get_callback() -> impl Fn(&mut State) {

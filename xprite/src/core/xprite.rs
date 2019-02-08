@@ -338,6 +338,7 @@ impl Xprite {
             f64::from(*height_in_pixels)
         );
         let mut history = History::empty();
+
         let frame = &frames[0];
         let ase::Frame { chunks, .. } = frame;
         for ase::Chunk { chunk_data, .. } in chunks {
@@ -365,13 +366,25 @@ impl Xprite {
                     opacity_level,
                     cel,
                 }) => {
-                    let pixs = cel.pixels(&header.color_depth);
-                    dbg!(layer_index);
+                    let ase_pixs = cel.pixels(&header.color_depth).unwrap();
+                    let x = f64::from(*x_position);
+                    let y = f64::from(*y_position);
+                    let x_ = x + f64::from(cel.w().unwrap());
+                    let y_ = y + f64::from(cel.h().unwrap());
+                    let bb = Rect (
+                        Vec2f {x, y},
+                        Vec2f {x: x_, y: y_},
+                    );
+                    let pixs = Pixels::from_ase_pixels(&ase_pixs, bb);
+                    let layer = &mut history.top_mut().groups[0].1[usize::from(*layer_index)];
+                    layer.content.extend(&pixs);
+
                     // dbg!(pixs);
                 }
                 _ => (),
             };
         }
+
         let mut xpr = Self {
             canvas,
             history,

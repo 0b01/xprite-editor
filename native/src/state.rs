@@ -18,8 +18,9 @@ pub struct State<'a> {
 
     pub cols_per_row: i32,
 
-    pub show_open_file_dialog: bool,
+    pub show_file_popup: bool,
     pub open_file_name: ImString,
+    pub show_file_is_save: bool,
 
     pub rename_layer: Option<(usize, usize)>,
     pub rename_group: Option<usize>,
@@ -40,8 +41,9 @@ impl<'a> State<'a> {
             palette_color_name: None,
             palette_idx: 0,
             cols_per_row: 8,
-            show_open_file_dialog: false,
-            open_file_name: ImString::new("./1.png"),
+            show_file_popup: false,
+            show_file_is_save: true,
+            open_file_name: ImString::new("./sample_files/1.ase"),
             rename_layer: None,
             rename_group: None,
         }
