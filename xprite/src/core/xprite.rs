@@ -4,6 +4,7 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::sync::{Arc, Mutex};
 
+#[derive(Debug)]
 pub struct Xprite {
     pub history: History,
 
@@ -326,12 +327,16 @@ impl Xprite {
 
     pub fn from_ase(aseprite: &ase::Aseprite) -> Self {
         let ase::Aseprite { header, frames } = aseprite;
+        dbg!(&header);
         let ase::Header {
-            pixel_width,
-            pixel_height,
+            width_in_pixels,
+            height_in_pixels,
             ..
         } = &header;
-        let canvas = Canvas::new(*pixel_width as f64, *pixel_height as f64);
+        let canvas = Canvas::new(
+            f64::from(*width_in_pixels),
+            f64::from(*height_in_pixels)
+        );
         let mut history = History::empty();
         let frame = &frames[0];
         let ase::Frame { chunks, .. } = frame;
@@ -361,17 +366,19 @@ impl Xprite {
                     cel,
                 }) => {
                     let pixs = cel.pixels(&header.color_depth);
-                    dbg!(pixs);
+                    dbg!(layer_index);
+                    // dbg!(pixs);
                 }
                 _ => (),
             };
         }
-        history.top_mut().add_layer(Some(""));
-        Self {
+        let mut xpr = Self {
             canvas,
             history,
             ..Default::default()
-        }
+        };
+        xpr.switch_layer(0, 0);
+        xpr
     }
 }
 

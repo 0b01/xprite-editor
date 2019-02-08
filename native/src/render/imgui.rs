@@ -13,8 +13,6 @@ pub struct ImguiRenderer<'ui> {
     pub ui: &'ui Ui<'ui>,
     pub gl_ctx: &'ui Facade,
     pub textures: &'ui mut Textures<Texture2d>,
-    pub art_w: f64,
-    pub art_h: f64,
 }
 
 impl<'ui> Renderer for ImguiRenderer<'ui> {
@@ -102,12 +100,8 @@ impl<'ui> ImguiRenderer<'ui> {
         ui: &'ui Ui,
         gl_ctx: &'ui Facade,
         textures: &'ui mut Textures<Texture2d>,
-        art_w: f64,
-        art_h: f64,
     ) -> Self {
         Self {
-            art_w,
-            art_h,
             ui,
             gl_ctx,
             textures,

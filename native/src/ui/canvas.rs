@@ -51,8 +51,8 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         ui.image(
                             ImTexture::from(state.texture.unwrap()),
                             [
-                                (rdr.art_w * state.xpr.canvas.scale) as f32,
-                                (rdr.art_h * state.xpr.canvas.scale) as f32,
+                                (state.xpr.canvas.art_w * state.xpr.canvas.scale) as f32,
+                                (state.xpr.canvas.art_h * state.xpr.canvas.scale) as f32,
                             ],
                         )
                         .build();

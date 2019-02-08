@@ -7,6 +7,7 @@ use xprite::rendering::image_renderer::ImageRenderer;
 
 pub struct State<'a> {
     pub xpr: Xprite,
+
     pub show_settings: bool,
     pub show_console: bool,
     pub hotkeys: HotkeyController,
@@ -17,7 +18,7 @@ pub struct State<'a> {
 
     pub cols_per_row: i32,
 
-    pub show_open_file: bool,
+    pub show_open_file_dialog: bool,
     pub open_file_name: ImString,
 
     pub rename_layer: Option<(usize, usize)>,
@@ -39,7 +40,7 @@ impl<'a> State<'a> {
             palette_color_name: None,
             palette_idx: 0,
             cols_per_row: 8,
-            show_open_file: false,
+            show_open_file_dialog: false,
             open_file_name: ImString::new("./1.png"),
             rename_layer: None,
             rename_group: None,
@@ -103,5 +104,6 @@ impl<'a> State<'a> {
         let mut f = File::open(file_path).unwrap();
         let ase = xprite::ase::Aseprite::from_read(&mut f).unwrap();
         self.xpr = Xprite::from_ase(&ase);
+        dbg!(&self.xpr.canvas);
     }
 }

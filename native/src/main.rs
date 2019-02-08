@@ -73,7 +73,7 @@ fn run_ui() {
     let mut state = State::new(xpr);
 
     render::run("Xprite".to_owned(), BGCOLOR, |ui, gl_ctx, textures| {
-        let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures, art_w, art_h);
+        let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures);
         // let mut rdr = ImguiCairoRenderer::new(&ui, gl_ctx, textures, &state);
         ui::draw(&mut rdr, &mut state, ui)
     });

@@ -73,10 +73,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     let y = y.into();
 
     if (state.xpr.last_mouse_pos.x != x || state.xpr.last_mouse_pos.y != y) && !state.inputs.space {
-        handle_error!(state.xpr.mouse_move(&MouseMove {
-            x: x.into(),
-            y: y.into()
-        }));
+        handle_error!(state.xpr.mouse_move(&MouseMove { x: x.into(), y: y.into() }));
     }
 
     let left = ui.imgui().is_mouse_down(ImMouseButton::Left);
@@ -225,8 +222,7 @@ pub fn execute(bind: Bind, state: &mut State, _ui: &Ui) -> Result<(), String> {
         SaveASE => state.save_ase("1.ase"),
         LoadPNG => {
             state.toggle_hotkeys();
-            state.show_open_file = true;
-            // state.load_png("1.png");
+            state.show_open_file_dialog = true;
         }
         SavePNG => state.save_png("1.png"),
 

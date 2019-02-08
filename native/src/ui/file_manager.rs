@@ -11,14 +11,10 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             let close = |state: &mut State| {
                 state.toggle_hotkeys();
                 ui.close_current_popup();
-                state.show_open_file = false;
+                state.show_open_file_dialog = false;
             };
 
-            let open = |state: &mut State| {
-                let fname: &str = state.open_file_name.as_ref();
-                info!("opening: {}", fname);
-                state.load_png(&fname.to_owned());
-            };
+            let open = get_callback();
 
             ui.with_item_width(400., || {
                 if ui
@@ -43,7 +39,19 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 }
             });
         });
-    if state.show_open_file {
+    if state.show_open_file_dialog {
         ui.open_popup(im_str!("Open file"))
+    }
+}
+
+fn get_callback() -> impl Fn(&mut State) {
+    |state: &mut State| {
+        let fname: &str = state.open_file_name.as_ref();
+        info!("opening: {}", fname);
+        if fname.ends_with(".ase") || fname.ends_with(".aseprite") {
+            state.load_ase(&fname.to_owned());
+        } else if fname.ends_with(".png") {
+            state.load_png(&fname.to_owned());
+        }
     }
 }
