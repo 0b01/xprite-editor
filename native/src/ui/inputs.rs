@@ -98,7 +98,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     if using_window {
-        state.xpr.canvas.scale += wheel_delta
+        state.xpr.canvas.update_zoom(wheel_delta, (x,y))
     }
     if state.xpr.canvas.scale > 100. {
         state.xpr.canvas.scale = 100.;

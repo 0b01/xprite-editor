@@ -63,11 +63,13 @@ fn get_callback() -> impl Fn(&mut State) {
             } else {
                 state.load_ase(&fname.to_owned());
             }
-        } else if fname.ends_with(".png") {
+        } else if fname.ends_with(".png")
+               || fname.ends_with(".jpg")
+               || fname.ends_with(".jpeg") {
             if save {
-                state.save_png(&fname.to_owned());
+                state.save_img(&fname.to_owned());
             } else {
-                state.load_png(&fname.to_owned());
+                state.load_img(&fname.to_owned());
             }
         } else {
             info!("unimplemented file format {}", &fname);

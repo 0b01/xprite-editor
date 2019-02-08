@@ -18,8 +18,8 @@ git submodule update --init --recursive
 * [ ] Line modes(perfect span, predictable, continuous, bresenham)
 * [ ] Curves(increment modes: fibonacci, odd, even)
 * [ ] Set brush size
+* [ ] Replace pyo3 with RustPython
 * [ ] Preview bounding box
-* [ ] Fix zoom
 * [ ] Save/load .aseprite
 * [ ] Output 2x size
 * [ ] Preview window bounding box, modes(fill, 1x, 2x)
@@ -30,6 +30,7 @@ git submodule update --init --recursive
 * [ ] Output svg
 * [ ] Fix web target
 * [ ] rect decomp (for efficient render)
+* [x] Fix zoom
 * [x] Fix ellipse( i.center stroke; ii. filled )
 * [x] Connected component algorithm
 * [x] Stroke caching

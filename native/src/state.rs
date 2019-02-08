@@ -106,7 +106,7 @@ impl<'a> State<'a> {
         self.hotkeys.toggle();
     }
 
-    pub fn save_png(&mut self, img_path: &str) {
+    pub fn save_img(&mut self, img_path: &str) {
         let mut rdr = ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
         self.xpr.export(&mut rdr).unwrap();
         rdr.render();
@@ -115,7 +115,7 @@ impl<'a> State<'a> {
         im.save(img_path).unwrap();
     }
 
-    pub fn load_png(&mut self, png_path: &str) {
+    pub fn load_img(&mut self, png_path: &str) {
         info!("loading png file {}", png_path);
         let img = xprite::image::open(png_path).unwrap();
         let (w, h) = img.dimensions();
@@ -136,7 +136,6 @@ impl<'a> State<'a> {
         let mut f = File::open(file_path).unwrap();
         let ase = xprite::ase::Aseprite::from_read(&mut f).unwrap();
         self.xpr = Xprite::from_ase(&ase);
-        dbg!(&self.xpr.canvas);
     }
 
     pub fn execute(&mut self, bind: Bind) -> Result<(), String> {

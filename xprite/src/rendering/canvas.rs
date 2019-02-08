@@ -210,6 +210,22 @@ impl Canvas {
         rdr.line(p0, p1, c);
     }
 
+    pub fn update_zoom(&mut self, wheel_delta: f64, (cursor_x, cursor_y): (f64, f64)) {
+        if wheel_delta == 0. { return; }
+        let mut new_scale = wheel_delta + self.scale;
+        if new_scale < 0.33 {
+            new_scale = 0.33;
+        } else if new_scale > 10. {
+            new_scale = 10.;
+        }
+        let ratio_x = (cursor_x - self.win_x - self.scroll.x) / (self.scale * self.art_w);
+        let ratio_y = (cursor_y - self.win_y - self.scroll.y) / (self.scale * self.art_h);
+
+        self.scroll.x = cursor_x - ratio_x * (new_scale * self.art_w) - self.win_x;
+        self.scroll.y = cursor_y - ratio_y * (new_scale * self.art_h) - self.win_y;
+        self.scale = new_scale;
+    }
+
     /// convert screen pos to pixel location
     pub fn shrink_size_no_floor(&self, p: Vec2f) -> Vec2f {
         let Vec2f { x: cli_x, y: cli_y } = p;
@@ -227,6 +243,7 @@ impl Canvas {
         let y = ((cli_y - o.y) / self.scale).floor();
         Vec2f { x, y }
     }
+
     /// snap point to grid
     pub fn snap(p: Vec2f) -> Vec2f {
         let Vec2f { x: cli_x, y: cli_y } = p;

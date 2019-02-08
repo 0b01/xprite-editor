@@ -39,5 +39,9 @@ pub fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 state.xpr.redo();
             }
         });
+
+        if cfg!(debug_assertions) {
+            ui.text(im_str!("FPS: {:.2}", ui.framerate()));
+        }
     })
 }
