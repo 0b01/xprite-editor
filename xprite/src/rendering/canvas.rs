@@ -119,7 +119,8 @@ impl Canvas {
         mouse.x < p0.x + rad && mouse.x > p0.x - rad && mouse.y < p0.y + rad && mouse.y > p0.y - rad
     }
 
-    pub fn draw_pixel_marqee(&self, rdr: &mut Renderer, p: Vec2f, outline: Outline) {
+    /// draw an outlined pixel
+    pub fn draw_pixel_marqee(&self, rdr: &mut Renderer, p: Vec2f, outline: Outline, ith: usize) {
         let Vec2f { x, y } = p;
         let o = self.origin();
         if oob(x, y, self.art_w, self.art_h) {
@@ -132,20 +133,32 @@ impl Canvas {
         let p2 = [o.x + self.scale * (x + 1.), o.y + self.scale * (y + 1.)];
         let p3 = [o.x + self.scale * x, o.y + self.scale * (y + 1.)];
 
+        let t = rdr.time() % 1.;
+        let color = if (t < 0.25                && ith % 4 == 0)
+        || (t > 0.25 && t < 0.50    && ith % 4 == 1)
+        || (t > 0.50 && t < 0.75    && ith % 4 == 2)
+        || (t > 0.75                && ith % 4 == 3)
+        {
+            Color::white().into()
+        } else {
+            Color::black().into()
+        };
+
         if outline.contains(Outline::TOP) {
-            rdr.line(p0, p1, Color::black().into());
+            rdr.line(p0, p1, color);
         }
         if outline.contains(Outline::BOTTOM) {
-            rdr.line(p3, p2, Color::black().into());
+            rdr.line(p3, p2, color);
         }
         if outline.contains(Outline::LEFT) {
-            rdr.line(p0, p3, Color::black().into());
+            rdr.line(p0, p3, color);
         }
         if outline.contains(Outline::RIGHT) {
-            rdr.line(p1, p2, Color::black().into());
+            rdr.line(p1, p2, color);
         }
     }
 
+    /// draw a rectangular pixel using draw list(as opposed to rendering to texture)
     pub fn draw_pixel_rect(&self, rdr: &mut Renderer, p: Vec2f, color: [f32; 4], filled: bool) {
         let Vec2f { x, y } = p;
         let o = self.origin();
@@ -163,16 +176,6 @@ impl Canvas {
             x: self.win_x + self.scroll.x,
             y: self.win_y + self.scroll.y,
         }
-    }
-
-    pub fn draw_canvas(&self, rdr: &mut Renderer) {
-        let o = self.origin();
-        rdr.rect(
-            [o.x, o.y],
-            [o.x + self.art_w * self.scale, o.y + self.art_h * self.scale],
-            LIGHT_GREY,
-            true,
-        );
     }
 
     pub fn draw_grid(&self, rdr: &mut Renderer) {

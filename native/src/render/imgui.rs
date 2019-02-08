@@ -16,6 +16,11 @@ pub struct ImguiRenderer<'ui> {
 }
 
 impl<'ui> Renderer for ImguiRenderer<'ui> {
+
+    fn time(&self) -> f32 {
+        ( self.ui.imgui().get_frame_count() % 60 ) as f32 / 60.
+    }
+
     fn width(&self) -> f64 {
         self.ui.get_window_size().0 as f64
     }

@@ -1,7 +1,9 @@
 use crate::prelude::*;
 
 pub fn draw(state: &mut State, ui: &Ui) {
-    ui.tree_node(im_str!("Brush")).build(|| {
+    ui.tree_node(im_str!("Brush"))
+        .default_open(true)
+    .build(|| {
         let brushes = BrushType::VARIANTS;
         for (_index, brush) in brushes.iter().enumerate() {
             let is_sel = &state.xpr.toolbox.eraser.borrow().brush_type == brush;

@@ -37,10 +37,14 @@ pub fn outline_rect(
 
     for i in (x1 + 1)..x2 {
         ret.push((vec2f! {y1, i}, Outline::TOP));
-        ret.push((vec2f! {y2-1, i}, Outline::BOTTOM));
     }
     for j in y1..y2 {
         ret.push((vec2f! {j, x1}, Outline::LEFT));
+    }
+    for i in (x1 + 1)..x2 {
+        ret.push((vec2f! {y2-1, i}, Outline::BOTTOM));
+    }
+    for j in y1..y2 {
         ret.push((vec2f! {j, x2-1}, Outline::RIGHT));
     }
     Ok(ret)

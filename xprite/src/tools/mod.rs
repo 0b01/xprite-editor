@@ -10,6 +10,7 @@ pub mod pencil;
 pub mod rect;
 pub mod texture;
 pub mod vector;
+pub mod symmetry;
 
 pub mod traits;
 
@@ -31,6 +32,7 @@ pub enum ToolType {
     FilledEllipse,
     Marquee,
     Settings,
+    Symmetry,
 }
 
 impl Default for ToolType {
@@ -66,7 +68,8 @@ impl ToolType {
             ToolType::FilledEllipse => "FilledEllipse",
             ToolType::Texture => "Texture",
             ToolType::Marquee => "Marquee",
-            _ => "Settings",
+            ToolType::Settings => "Settings",
+            ToolType::Symmetry => "Symmetry",
         }
     }
 }
@@ -88,6 +91,7 @@ impl FromStr for ToolType {
             "Texture" => Ok(ToolType::Texture),
             "Marquee" => Ok(ToolType::Marquee),
             "Settings" => Ok(ToolType::Settings),
+            "Symmetry" => Ok(ToolType::Symmetry),
             _ => Err(()),
         }
     }

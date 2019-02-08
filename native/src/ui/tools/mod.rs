@@ -11,6 +11,8 @@ pub mod rect_panel;
 pub mod texture_panel;
 pub mod vector_panel;
 pub mod settings_panel;
+pub mod symmetry_panel;
+
 
 pub fn draw(selected: ToolType, rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     match selected {
@@ -25,5 +27,6 @@ pub fn draw(selected: ToolType, rdr: &mut Renderer, state: &mut State, ui: &Ui) 
         ToolType::Texture => texture_panel::draw(rdr, state, ui),
         ToolType::Marquee => marquee_panel::draw(rdr, state, ui),
         ToolType::Settings => settings_panel::draw(rdr, state, ui),
+        ToolType::Symmetry => symmetry_panel::draw(rdr, state, ui),
     }
 }

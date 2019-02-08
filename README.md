@@ -16,20 +16,23 @@ git submodule update --init --recursive
 * [ ] Partial sorting curves
 * [ ] Pixel perfect line(read TC Inglis thesis)
 * [ ] Line modes(perfect span, predictable, continuous, bresenham)
-* [ ] Curves(increment modes: fibonacci, odd, even)
 * [ ] Set brush size
 * [ ] Replace pyo3 with RustPython
 * [ ] Preview bounding box
-* [ ] Save/load .aseprite
-* [ ] Output 2x size
+* [ ] Export with profile: (Output {fname}.1x.png, 2x, 3x, ase)
 * [ ] Preview window bounding box, modes(fill, 1x, 2x)
+* [ ] Curves(increment modes: fibonacci, odd, even)
 
-## Done
+## WONTFIX
 
 * [ ] Tabs
 * [ ] Output svg
 * [ ] Fix web target
 * [ ] rect decomp (for efficient render)
+
+## Done
+
+* [x] Save/load .aseprite
 * [x] Fix zoom
 * [x] Fix ellipse( i.center stroke; ii. filled )
 * [x] Connected component algorithm

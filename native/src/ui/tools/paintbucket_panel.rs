@@ -2,7 +2,9 @@ use crate::prelude::*;
 use xprite::tools::paint_bucket;
 
 pub fn draw(state: &mut State, ui: &Ui) {
-    ui.tree_node(im_str!("Mode")).build(|| {
+    ui.tree_node(im_str!("Mode"))
+      .default_open(true)
+    .build(|| {
         let modes = paint_bucket::PaintBucketMode::VARIANTS;
         for (_index, mode) in modes.iter().enumerate() {
             let is_sel = &state.xpr.toolbox.paint_bucket.borrow().mode == mode;

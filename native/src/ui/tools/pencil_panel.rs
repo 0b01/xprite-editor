@@ -2,7 +2,9 @@ use crate::prelude::*;
 use xprite::tools::pencil;
 
 pub fn draw(state: &mut State, ui: &Ui) {
-    ui.tree_node(im_str!("Mode")).build(|| {
+    ui.tree_node(im_str!("Mode"))
+        .default_open(true)
+    .build(|| {
         let modes = pencil::PencilMode::VARIANTS;
         for (_index, mode) in modes.iter().enumerate() {
             let is_sel = &state.xpr.toolbox.pencil.borrow().mode == mode;
@@ -17,7 +19,9 @@ pub fn draw(state: &mut State, ui: &Ui) {
         }
     });
 
-    ui.tree_node(im_str!("Brush")).build(|| {
+    ui.tree_node(im_str!("Brush"))
+        .default_open(true)
+    .build(|| {
         let brushes = BrushType::VARIANTS;
         for (_index, brush) in brushes.iter().enumerate() {
             let is_sel = &state.xpr.toolbox.pencil.borrow().brush_type == brush;

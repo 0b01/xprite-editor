@@ -24,7 +24,9 @@ pub fn draw(state: &mut State, ui: &Ui) {
 }
 
 fn draw_brush(state: &mut State, ui: &Ui) {
-    ui.tree_node(im_str!("Brush")).build(|| {
+    ui.tree_node(im_str!("Brush"))
+        .default_open(true)
+    .build(|| {
         let brushes = BrushType::VARIANTS;
         for (_index, brush) in brushes.iter().enumerate() {
             let is_sel = &state.xpr.toolbox.vector.borrow().brush_type == brush;
@@ -41,7 +43,9 @@ fn draw_brush(state: &mut State, ui: &Ui) {
 }
 
 fn draw_mode(state: &mut State, ui: &Ui) {
-    ui.tree_node(im_str!("Mode")).build(|| {
+    ui.tree_node(im_str!("Mode"))
+        .default_open(true)
+    .build(|| {
         let modes = vector::VectorMode::VARIANTS;
         for (_index, mode) in modes.iter().enumerate() {
             let is_sel = &state.xpr.toolbox.vector.borrow().mode == mode;

@@ -102,15 +102,29 @@ fn draw_cursor_cross(ui: &Ui) {
     let draw_list = ui.get_window_draw_list();
     let (x, y) = ui.imgui().mouse_pos();
 
+    let l = 5.;
     let origin = [x, y];
-    let down = [x, y + 10.];
-    let up = [x, y - 10.];
-    let right = [x + 10., y];
-    let left = [x - 10., y];
 
-    let color: [f32; 4] = Color::black().into();
-    draw_list.add_line(origin, up, color).build();
-    draw_list.add_line(origin, down, color).build();
-    draw_list.add_line(origin, left, color).build();
-    draw_list.add_line(origin, right, color).build();
+    let down1 = [x, y + l];
+    let up1 = [x, y - l];
+    let right1 = [x + l, y];
+    let left1 = [x - l, y];
+
+    let down2 = [x, y + 2. * l];
+    let up2 = [x, y - 2. * l];
+    let right2 = [x + 2. * l, y];
+    let left2 = [x - 2. * l, y];
+
+    let color1: [f32; 4] = Color::black().into();
+    let color2: [f32; 4] = Color::white().into();
+
+    draw_list.add_line(origin, up1, color1).build();
+    draw_list.add_line(origin, down1, color1).build();
+    draw_list.add_line(origin, left1, color1).build();
+    draw_list.add_line(origin, right1, color1).build();
+
+    draw_list.add_line(up1, up2, color2).build();
+    draw_list.add_line(down1, down2, color2).build();
+    draw_list.add_line(left1, left2, color2).build();
+    draw_list.add_line(right1, right2, color2).build();
 }

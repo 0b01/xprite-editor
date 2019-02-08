@@ -9,17 +9,17 @@ pub fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 .shortcut(im_str!("Ctrl+O"))
                 .build()
             {
-                state.execute(Bind::Load);
+                state.execute(Bind::Load).unwrap();
             }
             if ui
                 .menu_item(im_str!("Save"))
                 .shortcut(im_str!("Ctrl+S"))
                 .build()
             {
-                state.execute(Bind::Save);
+                state.execute(Bind::Save).unwrap();
             }
             if ui.menu_item(im_str!("Settings")).build() {
-                state.execute(Bind::PushTool(ToolType::Settings));
+                state.execute(Bind::PushTool(ToolType::Settings)).unwrap();
             }
         });
 
@@ -38,6 +38,14 @@ pub fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             {
                 state.xpr.redo();
             }
+
+            if ui
+                .menu_item(im_str!("Symmetry"))
+                .build()
+            {
+                state.execute(Bind::PushTool(ToolType::Symmetry)).unwrap();
+            }
+
         });
 
         if cfg!(debug_assertions) {

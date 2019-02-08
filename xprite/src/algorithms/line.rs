@@ -61,7 +61,7 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
             }
             6 => {
                 for i in 0..dx {
-                    ret.push(pixel!(x0 - i as f64, y0, Color::red()))
+                    ret.push(pixel!(y0, x0 - i as f64, Color::red()))
                 }
             }
             7 => {

@@ -82,6 +82,16 @@ impl ImageRenderer {
     pub fn to_img(self) -> DynamicImage {
         self.image
     }
+
+    pub fn fill_canvas(&mut self) {
+        use img::Pixel;
+        let color = Rgba::from_channels(200, 200, 200, 255);
+
+        for (_i, p) in self.image.as_mut_rgba8().unwrap().pixels_mut().enumerate() {
+            *p = color;
+        }
+
+    }
 }
 
 pub fn save_img(path: &str, im: &DynamicImage) {

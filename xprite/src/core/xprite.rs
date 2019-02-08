@@ -202,7 +202,7 @@ impl Xprite {
 
     pub fn render_canvas(&self, rdr: &mut Renderer) {
         rdr.reset();
-        self.canvas.draw_canvas(rdr);
+        // self.canvas.draw_canvas(rdr);
         self.canvas.draw_grid(rdr);
     }
 
@@ -235,8 +235,8 @@ impl Xprite {
     }
 
     pub fn render_marquee(&self, rdr: &mut Renderer) {
-        for (p, outline) in &self.marq_buf {
-            self.canvas.draw_pixel_marqee(rdr, *p, *outline);
+        for (ith, (p, outline)) in self.marq_buf.iter().enumerate() {
+            self.canvas.draw_pixel_marqee(rdr, *p, *outline, ith);
         }
     }
 }
