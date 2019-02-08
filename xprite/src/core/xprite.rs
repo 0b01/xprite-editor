@@ -327,7 +327,6 @@ impl Xprite {
 
     pub fn from_ase(aseprite: &ase::Aseprite) -> Self {
         let ase::Aseprite { header, frames } = aseprite;
-        dbg!(&header);
         let ase::Header {
             width_in_pixels,
             height_in_pixels,
@@ -369,11 +368,11 @@ impl Xprite {
                     let ase_pixs = cel.pixels(&header.color_depth).unwrap();
                     let x = f64::from(*x_position);
                     let y = f64::from(*y_position);
-                    let x_ = x + f64::from(cel.w().unwrap());
-                    let y_ = y + f64::from(cel.h().unwrap());
+                    let x_ = x + f64::from(cel.w().unwrap() - 1); // TODO: FIXME: off by 1 error from Pixels::bounding_box
+                    let y_ = y + f64::from(cel.h().unwrap() - 1);
                     let bb = Rect (
                         Vec2f {x, y},
-                        Vec2f {x: x_, y: y_},
+                        Vec2f { x: x_, y: y_},
                     );
                     let pixs = Pixels::from_ase_pixels(&ase_pixs, bb);
                     let layer = &mut history.top_mut().groups[0].1[usize::from(*layer_index)];
@@ -451,7 +450,6 @@ mod tests {
     #[test]
     fn test_as_ase() {
         use super::*;
-
         use std::fs::File;
         let mut xpr = Xprite::new(100., 100.);
         xpr.current_layer_mut().unwrap().content.extend(&pixels!(
@@ -465,13 +463,31 @@ mod tests {
     }
 
     #[test]
+    fn test_as_ase2() {
+        use super::*;
+        use std::fs::File;
+        let mut xpr = Xprite::new(100., 100.);
+        xpr.current_layer_mut().unwrap().content.extend(&pixels!(
+            pixel!(1, 1, Color::red()),
+            pixel!(1, 2, Color::red())
+        ));
+        let aseprite = xpr.as_ase();
+        let mut f = File::create("test2.ase").unwrap();
+        aseprite.write(&mut f).unwrap();
+        std::fs::remove_file("test2.ase").unwrap();
+    }
+
+
+    #[test]
     fn test_from_ase() {
         use super::*;
         use std::fs::File;
         let fname = "../ase-rs/sample_aseprite_files/simple.aseprite";
         let mut f = File::open(fname).unwrap();
         let mut aseprite = ase::Aseprite::from_read(&mut f).unwrap();
-        let xpr = Xprite::from_ase(&mut aseprite);
+        let _ = Xprite::from_ase(&mut aseprite);
+        // dbg!(&xpr.history.top().groups[0].1[0]);
         // dbg!(xpr);
     }
+
 }

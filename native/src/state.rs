@@ -20,19 +20,31 @@ impl Default for FilePopupState {
         }
     }
 }
+pub struct PaletteWindow<'a> {
+    pub palette_color_name: Option<Cow<'a, str>>,
+    pub palette_idx: i32,
+}
+
+impl<'a> Default for PaletteWindow<'a> {
+    fn default() -> Self {
+        Self {
+            palette_color_name: None,
+            palette_idx: 0,
+        }
+    }
+}
 
 pub struct State<'a> {
     pub xpr: Xprite,
+    pub file_popup: FilePopupState,
+    pub inputs: InputState,
+    pub hotkeys: HotkeyController,
+    pub palette_window: PaletteWindow<'a>,
 
     pub show_console: bool,
-    pub hotkeys: HotkeyController,
-    pub inputs: InputState,
     pub script_fname: Option<String>,
-    pub palette_color_name: Option<Cow<'a, str>>,
-    pub palette_idx: i32,
 
     pub cols_per_row: i32,
-    pub file_popup: FilePopupState,
 
     pub rename_layer: Option<(usize, usize)>,
     pub rename_group: Option<usize>,
@@ -43,18 +55,18 @@ pub struct State<'a> {
 impl<'a> Default for State<'a> {
     fn default() -> Self {
         Self {
-            show_console: false,
+            file_popup: Default::default(),
+            xpr: Default::default(),
+            palette_window: Default::default(),
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
+
+            show_console: false,
             script_fname: None,
             texture: None,
-            palette_color_name: None,
-            palette_idx: 0,
             cols_per_row: 8,
             rename_layer: None,
             rename_group: None,
-            file_popup: Default::default(),
-            xpr: Default::default(),
         }
     }
 }

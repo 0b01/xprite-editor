@@ -63,6 +63,7 @@ git submodule update --init --recursive
 * [x] Shapes - Rect
 * [x] Shapes - Circle
 * [x] Vector tools
+* [ ] Symmetry
 * [ ] Select/Marquee
 * [ ] Copy paste
 * [ ] Layer grouping

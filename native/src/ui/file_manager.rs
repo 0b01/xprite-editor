@@ -56,10 +56,21 @@ fn get_callback() -> impl Fn(&mut State) {
     |state: &mut State| {
         let fname: &str = state.file_popup.open_file_name.as_ref();
         info!("opening: {}", fname);
+        let save = state.file_popup.show_file_is_save;
         if fname.ends_with(".ase") || fname.ends_with(".aseprite") {
-            state.load_ase(&fname.to_owned());
+            if save {
+                state.save_ase(&fname.to_owned());
+            } else {
+                state.load_ase(&fname.to_owned());
+            }
         } else if fname.ends_with(".png") {
-            state.load_png(&fname.to_owned());
+            if save {
+                state.save_png(&fname.to_owned());
+            } else {
+                state.load_png(&fname.to_owned());
+            }
+        } else {
+            info!("unimplemented file format {}", &fname);
         }
     }
 }

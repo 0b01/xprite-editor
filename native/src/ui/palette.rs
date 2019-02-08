@@ -81,10 +81,11 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         .map(ImString::new)
         .collect();
     let refs: Vec<_> = items.iter().map(|s| s.as_ref()).collect();
-    ui.combo(im_str!("Palette"), &mut state.palette_idx, &refs[..], -1);
+    ui.combo(im_str!("Palette"), &mut state.palette_window.palette_idx, &refs[..], -1);
     ui.text(im_str!(
         "Color: {}",
         state
+            .palette_window
             .palette_color_name
             .as_ref()
             .unwrap_or(&Cow::Borrowed("None"))
@@ -107,7 +108,7 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         .xpr
         .palette_man
         .palettes
-        .get_index_mut(state.palette_idx as usize)
+        .get_index_mut(state.palette_window.palette_idx as usize)
         .unwrap()
         .1;
     let colors = pal.iter_mut().enumerate();
@@ -135,7 +136,7 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         let id = im_str!("MyColor##{}", i);
         let b = ui.color_edit(id, &mut sel).flags(misc_flags).alpha(false);
         if ui.is_item_hovered() {
-            state.palette_color_name = Some(Cow::Owned(col_name.to_owned()));
+            state.palette_window.palette_color_name = Some(Cow::Owned(col_name.to_owned()));
             ui.tooltip(|| {
                 ui.text(col_name.to_owned());
             });
@@ -150,7 +151,7 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             .xpr
             .palette_man
             .palettes
-            .get_index_mut(state.palette_idx as usize)
+            .get_index_mut(state.palette_window.palette_idx as usize)
             .unwrap()
             .1;
         pal.insert(format!("my_color##{}", pal.len()), Color::black());

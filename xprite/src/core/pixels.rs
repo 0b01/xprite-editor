@@ -410,13 +410,11 @@ impl Pixels {
         let w = bb.h() as usize;
         let mut pixs = Pixels::new();
         if let ase::Pixels::RGBA(vec) = ase_pixs {
-            dbg!((w, h));
             assert_eq!(vec.len(), w * h);
             for (i, color) in vec.iter().enumerate() {
                 if color.a == 0 { continue } // skip transparent pixels
                 let nth_row = i / w;
                 let nth_col = i % w;
-                dbg!((nth_row, nth_col));
                 pixs.push(pixel!(y0 + nth_row, x0 + nth_col, (*color).into()));
             }
         }
