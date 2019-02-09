@@ -12,13 +12,15 @@ git submodule update --init --recursive
 
 ## Bugs and Improvements
 
-* [ ] Marquee
-* [ ] Partial sorting curves
-* [ ] put info in panel (radius, aspect ratio, etc.)
-* [ ] Pixel perfect line(read TC Inglis thesis)
+* [ ] Symmetry tool
+* [ ] Marquee tool
+* [ ] show selected color in palette
+* [ ] Export with profile: (Output {fname}.1x.png, 2x, 3x, ase)
+
+## Backburner
+* [ ] Partial sorting curves(read TC Inglis thesis)
 * [ ] Line modes(perfect span, predictable, continuous, bresenham)
 * [ ] Replace pyo3 with RustPython
-* [ ] Export with profile: (Output {fname}.1x.png, 2x, 3x, ase)
 * [ ] Curves(increment modes: fibonacci, odd, even)
 
 ## WONTFIX
@@ -31,6 +33,7 @@ git submodule update --init --recursive
 
 ## Done
 
+* [x] put info in panel (radius, aspect ratio, etc.)
 * [x] Preview window preserve aspect ratio, modes(fill, 1x, 2x)
 * [x] Set brush size
 * [x] Save/load .aseprite

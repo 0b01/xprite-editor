@@ -8,6 +8,7 @@ pub fn draw_palette(rdr: &Renderer, state: &mut State, ui: &Ui) {
     let colors = vec![(ImGuiCol::WindowBg, BLACK)];
     ui.with_color_vars(&colors, || {
         ui.window(im_str!("Palette"))
+            .no_bring_to_front_on_focus(true)
             .position((0., TOOLBOX_H), ImGuiCond::Always)
             .size(
                 (LEFT_SIDE_WIDTH, sz.1 as f32 - TOOLBOX_H - COLOR_PICKER_H),
@@ -36,6 +37,7 @@ pub fn draw_color_picker(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
 
     ui.window(im_str!("Color Picker"))
+        .no_bring_to_front_on_focus(true)
         .position((0., sz.1 as f32 - COLOR_PICKER_H), ImGuiCond::Always)
         .size((LEFT_SIDE_WIDTH, COLOR_PICKER_H), ImGuiCond::Always)
         .movable(false)

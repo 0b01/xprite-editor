@@ -4,6 +4,7 @@ use crate::prelude::*;
 
 pub fn draw_toolbar(state: &mut State, ui: &Ui) {
     ui.window(im_str!("toolbox"))
+        .no_bring_to_front_on_focus(true)
         .position((0., 20.), ImGuiCond::Appearing)
         .size((LEFT_SIDE_WIDTH, 200.), ImGuiCond::Appearing)
         .movable(false)

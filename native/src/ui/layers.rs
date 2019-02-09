@@ -4,6 +4,7 @@ use xprite::rendering::Renderer;
 pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
     ui.window(im_str!("Layers"))
+        .no_bring_to_front_on_focus(true)
         .position(
             (sz.0 as f32 - RIGHT_SIDE_WIDTH, (sz.1 / 2.) as f32 + 20.),
             ImGuiCond::Always,

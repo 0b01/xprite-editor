@@ -6,6 +6,7 @@ use xprite::rendering::Renderer;
 pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
     ui.window(im_str!("canvas"))
+        .no_bring_to_front_on_focus(true)
         .position((LEFT_SIDE_WIDTH, 20.0), ImGuiCond::Always)
         .size(
             (
