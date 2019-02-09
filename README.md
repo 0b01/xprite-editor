@@ -12,6 +12,7 @@ git submodule update --init --recursive
 
 ## Bugs and Improvements
 
+* [ ] huge refactor to eliminate copying pixels
 * [ ] Symmetry tool
 * [ ] Marquee tool
 * [ ] show selected color in palette

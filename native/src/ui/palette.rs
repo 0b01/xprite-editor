@@ -115,12 +115,23 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         .1;
     let colors = pal.iter_mut().enumerate();
     for (i, (col_name, col)) in colors {
+        let is_sel = col == &state.xpr.selected_color;
         let x = MARGIN + BLOCK_SZ * ((i % state.cols_per_row as usize) as f32);
         let y = PALETTE_BEGIN_Y + BLOCK_SZ * ((i / state.cols_per_row as usize) as f32);
 
         ui.set_cursor_screen_pos((x, y));
         if ui.invisible_button(im_str!("colorcell##{}", i), (BLOCK_SZ, BLOCK_SZ)) {
             state.xpr.selected_color = *col;
+        }
+
+        // if the color block is selected
+        if is_sel {
+            let draw_list = ui.get_window_draw_list();
+            draw_list.add_rect(
+                (x-MARGIN/4., y-MARGIN/4.),
+                (x + BLOCK_SZ - MARGIN/4., y + BLOCK_SZ-MARGIN/4.),
+                LIGHT_GREY
+            ).filled(true).build();
         }
 
         ui.set_cursor_screen_pos((x, y));
