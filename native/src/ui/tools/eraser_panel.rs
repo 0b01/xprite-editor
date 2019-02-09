@@ -1,20 +1,11 @@
 use crate::prelude::*;
+use super::pencil_panel::{draw_brush_tree};
 
 pub fn draw(state: &mut State, ui: &Ui) {
-    ui.tree_node(im_str!("Brush"))
-        .default_open(true)
-    .build(|| {
-        let brushes = BrushType::VARIANTS;
-        for (_index, brush) in brushes.iter().enumerate() {
-            let is_sel = &state.xpr.toolbox.eraser.borrow().brush_type == brush;
-            if ui.selectable(
-                im_str!("{}", brush.as_str()),
-                is_sel,
-                ImGuiSelectableFlags::empty(),
-                (0., 0.),
-            ) {
-                state.xpr.set_option("brush", brush.as_str()).unwrap();
-            }
-        }
-    });
+    // ui.tree_node(im_str!("Eraser"))
+    //     .default_open(true)
+    // .build(|| {
+    // });
+    let current_brush = state.xpr.toolbox.eraser.borrow().brush_type;
+    draw_brush_tree(state, ui, current_brush);
 }

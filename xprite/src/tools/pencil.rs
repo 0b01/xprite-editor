@@ -283,6 +283,7 @@ impl Tool for Pencil {
         }
     }
 
+    // TODO: dedupe brush instantiation code(pencil, eraser)
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "mode" => {

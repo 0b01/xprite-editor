@@ -166,7 +166,21 @@ impl Tool for Eraser {
                     self.brush = Brush::pixel();
                     self.brush_type = BrushType::Pixel;
                 }
-                _ => error!("malformed value: {}", value),
+                _ => {
+                    if value.starts_with("o") {
+                        let size = value[1..].parse::<i32>().unwrap();
+                        self.brush = Brush::circle(size);
+                        self.brush_type = BrushType::Circle;
+                    } else if value.starts_with("s") {
+                        let size = value[1..].parse::<i32>().unwrap();
+                        self.brush = Brush::square(size);
+                        self.brush_type = BrushType::Square;
+                    } else if value.starts_with("/") {
+                        let params: Vec<f64> = value[1..].split(",").map(|i|i.parse().unwrap()).collect();
+                        self.brush = Brush::line(params[0] as i32, params[1]);
+                        self.brush_type = BrushType::Line;
+                    }
+                }
             },
             _ => (),
         }
