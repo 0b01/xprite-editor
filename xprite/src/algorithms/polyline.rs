@@ -75,15 +75,18 @@ impl Polyline {
     }
 
     pub fn connect_with_line(&self) -> Result<Pixels, String> {
-        if self.pos.is_empty() {
-            return Err("Polyline is empty".to_owned());
+        match self.pos.len() {
+            0 => Err("Polyline is empty".to_owned()),
+            1 => Ok(pixels!(pixel!(self.pos[0], Color::red()))),
+            _ => {
+                let mut ret = Pixels::new();
+                for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
+                    let seg = continuous_line(*p0, *p1);
+                    ret.extend(&seg);
+                }
+                Ok(ret)
+            }
         }
-        let mut ret = Pixels::new();
-        for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
-            let seg = continuous_line(*p0, *p1);
-            ret.extend(&seg);
-        }
-        Ok(ret)
     }
 }
 

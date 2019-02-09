@@ -5,6 +5,18 @@ use std::fs::File;
 use xprite::image::GenericImageView;
 use xprite::rendering::image_renderer::ImageRenderer;
 
+pub struct BrushState {
+    pub sz: [i32; 2],
+}
+
+impl Default for BrushState {
+    fn default() -> Self {
+        Self {
+            sz: [1, 0],
+        }
+    }
+}
+
 pub struct FilePopupState {
     pub show_file_popup: bool,
     pub open_file_name: ImString,
@@ -20,12 +32,13 @@ impl Default for FilePopupState {
         }
     }
 }
-pub struct PaletteWindow<'a> {
+
+pub struct PaletteWindowState<'a> {
     pub palette_color_name: Option<Cow<'a, str>>,
     pub palette_idx: i32,
 }
 
-impl<'a> Default for PaletteWindow<'a> {
+impl<'a> Default for PaletteWindowState<'a> {
     fn default() -> Self {
         Self {
             palette_color_name: None,
@@ -39,7 +52,7 @@ pub struct State<'a> {
     pub file_popup: FilePopupState,
     pub inputs: InputState,
     pub hotkeys: HotkeyController,
-    pub palette_window: PaletteWindow<'a>,
+    pub palette_window: PaletteWindowState<'a>,
 
     pub show_console: bool,
     pub script_fname: Option<String>,
@@ -48,7 +61,7 @@ pub struct State<'a> {
 
     pub rename_layer: Option<(usize, usize)>,
     pub rename_group: Option<usize>,
-    pub brush_sz: i32,
+    pub brush: BrushState,
 
     pub texture: Option<usize>,
 }
@@ -62,7 +75,7 @@ impl<'a> Default for State<'a> {
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
 
-            brush_sz: 1,
+            brush: Default::default(),
             show_console: false,
             script_fname: None,
             texture: None,

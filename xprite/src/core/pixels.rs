@@ -1,6 +1,6 @@
 use crate::algorithms::{
     connected_components::connected_components, perimeter::find_perimeter,
-    pixel_perfect::pixel_perfect, sorter::sort_path,
+    pixel_perfect::{pixel_perfect, pixel_antiperfect}, sorter::sort_path,
 };
 use crate::prelude::*;
 use fnv::FnvBuildHasher;
@@ -96,6 +96,14 @@ macro_rules! pixel {
             color: $k,
         }
     };
+
+    ($vec2f: expr, $k: expr) => {
+        Pixel {
+            point: $vec2f,
+            color: $k,
+        }
+    };
+
 }
 
 #[macro_export]
@@ -212,6 +220,10 @@ impl Pixels {
 
     pub fn pixel_perfect(&mut self) {
         *self = pixel_perfect(self);
+    }
+
+    pub fn pixel_antiperfect(&mut self) {
+        *self = pixel_antiperfect(self);
     }
 
     pub fn monotonic_sort(&mut self) {

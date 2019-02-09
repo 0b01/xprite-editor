@@ -9,6 +9,8 @@ pub enum PencilMode {
     Raw,
     /// pixel perfect - nothing else
     PixelPerfect,
+    /// pixel perfect - nothing else
+    PixelAntiPerfect,
     /// sort each monotonic segment
     SortedMonotonic,
 }
@@ -18,13 +20,15 @@ impl PencilMode {
         match self {
             PencilMode::Raw => "Raw",
             PencilMode::PixelPerfect => "Pixel Perfect",
+            PencilMode::PixelAntiPerfect => "Pixel Anti-Perfect",
             PencilMode::SortedMonotonic => "Sorted Monotonic",
         }
     }
 
-    pub const VARIANTS: [PencilMode; 3] = [
+    pub const VARIANTS: [PencilMode; 4] = [
         PencilMode::Raw,
         PencilMode::PixelPerfect,
+        PencilMode::PixelAntiPerfect,
         PencilMode::SortedMonotonic,
     ];
 }
@@ -34,9 +38,10 @@ impl FromStr for PencilMode {
     fn from_str(string: &str) -> Result<Self, ()> {
         match string {
             "Raw" => Ok(PencilMode::Raw),
+            "Pixel Anti-Perfect" => Ok(PencilMode::PixelAntiPerfect),
             "Pixel Perfect" => Ok(PencilMode::PixelPerfect),
             "Sorted Monotonic" => Ok(PencilMode::SortedMonotonic),
-            _ => Err(()),
+            _ => panic!("impossible"),
         }
     }
 }
@@ -128,7 +133,7 @@ impl Pencil {
         use self::PencilMode::*;
         let mut buf = match self.mode {
             Raw => self.draw_stroke(xpr)?,
-            PixelPerfect => {
+            PixelPerfect | PixelAntiPerfect => {
                 // if mousedown w/o move
                 if !self.moved {
                     self.cursor.clone().unwrap()
@@ -137,7 +142,11 @@ impl Pencil {
                         .current_polyline
                         .to_pixel_coords(xpr)?
                         .connect_with_line()?;
-                    points.pixel_perfect();
+                        if self.mode == PencilMode::PixelPerfect
+                            {points.pixel_perfect();}
+                        else
+                            {points.pixel_antiperfect();}
+
                     let path = self.brush.follow_stroke(&points).unwrap();
                     path
                 }
@@ -148,7 +157,7 @@ impl Pencil {
                     .to_pixel_coords(xpr)?
                     .connect_with_line()?;
                 points.pixel_perfect();
-                points.monotonic_sort();
+                if points.len() > 1 { points.monotonic_sort(); }
                 let path = self.brush.follow_stroke(&points).unwrap();
                 path
             }
@@ -277,11 +286,8 @@ impl Tool for Pencil {
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "mode" => {
-                use self::PencilMode::*;
                 match PencilMode::from_str(value) {
-                    Ok(Raw) => self.mode = Raw,
-                    Ok(SortedMonotonic) => self.mode = SortedMonotonic,
-                    Ok(PixelPerfect) => self.mode = PixelPerfect,
+                    Ok(mode) => self.mode = mode,
                     _ => (),
                 };
             }
@@ -301,8 +307,12 @@ impl Tool for Pencil {
                         self.brush_type = BrushType::Circle;
                     } else if value.starts_with("s") {
                         let size = value[1..].parse::<i32>().unwrap();
-                        self.brush = Brush::square(size, 0.);
+                        self.brush = Brush::square(size);
                         self.brush_type = BrushType::Square;
+                    } else if value.starts_with("/") {
+                        let params: Vec<f64> = value[1..].split(",").map(|i|i.parse().unwrap()).collect();
+                        self.brush = Brush::line(params[0] as i32, params[1]);
+                        self.brush_type = BrushType::Line;
                     }
                 }
             },
