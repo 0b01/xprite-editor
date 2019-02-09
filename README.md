@@ -14,6 +14,7 @@ git submodule update --init --recursive
 
 * [ ] Marquee
 * [ ] Partial sorting curves
+* [ ] put info in panel (radius, aspect ratio, etc.)
 * [ ] Pixel perfect line(read TC Inglis thesis)
 * [ ] Line modes(perfect span, predictable, continuous, bresenham)
 * [x] Set brush size

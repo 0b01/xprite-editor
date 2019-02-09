@@ -255,4 +255,17 @@ impl Canvas {
             y: cli_y.floor(),
         }
     }
+
+    pub fn get_aspect_ratio(&self) -> f64 {
+        self.art_w / self.art_h
+    }
+
+    /// returns a fraction for simplified aspect ratio
+    pub fn get_aspect_ratio_human(&self) -> (u32, u32) {
+        let w = self.art_w as u32;
+        let h = self.art_h as u32;
+        // TODO:
+        (w, h)
+    }
+
 }

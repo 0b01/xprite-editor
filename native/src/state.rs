@@ -5,6 +5,57 @@ use std::fs::File;
 use xprite::image::GenericImageView;
 use xprite::rendering::image_renderer::ImageRenderer;
 
+use std::str::FromStr;
+
+#[derive(Clone, Copy, PartialEq)]
+pub enum PreviewWindowMode {
+    Fill,
+    OneX,
+    TwoX,
+}
+
+impl PreviewWindowMode {
+    pub fn as_str(&self) -> &str {
+        match self {
+            PreviewWindowMode::Fill => "Fill",
+            PreviewWindowMode::OneX => "1x",
+            PreviewWindowMode::TwoX => "2x",
+        }
+    }
+
+    pub const VARIANTS: [PreviewWindowMode; 3] = [
+        PreviewWindowMode::Fill,
+        PreviewWindowMode::OneX,
+        PreviewWindowMode::TwoX,
+    ];
+}
+
+impl FromStr for PreviewWindowMode {
+    type Err = ();
+    fn from_str(string: &str) -> Result<Self, ()> {
+        match string {
+            "Fill" => Ok(PreviewWindowMode::Fill),
+            "1x" => Ok(PreviewWindowMode::OneX),
+            "2x" => Ok(PreviewWindowMode::TwoX),
+            _ => panic!("impossible"),
+        }
+    }
+}
+
+
+pub struct PreviewWindowState {
+    pub mode: PreviewWindowMode,
+}
+
+impl Default for PreviewWindowState {
+    fn default() -> Self {
+        Self {
+            mode: PreviewWindowMode::Fill,
+        }
+    }
+}
+
+
 pub struct BrushState {
     pub sz: [i32; 2],
 }
@@ -53,6 +104,7 @@ pub struct State<'a> {
     pub inputs: InputState,
     pub hotkeys: HotkeyController,
     pub palette_window: PaletteWindowState<'a>,
+    pub preview_window_state: PreviewWindowState,
 
     pub show_console: bool,
     pub script_fname: Option<String>,
@@ -74,6 +126,7 @@ impl<'a> Default for State<'a> {
             palette_window: Default::default(),
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
+            preview_window_state: Default::default(),
 
             brush: Default::default(),
             show_console: false,
