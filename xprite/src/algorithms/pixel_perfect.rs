@@ -76,7 +76,6 @@ mod tests {
         assert_eq!(pixel_antiperfect(&pixels!(
             pixel!(0., 0., Color::red()),
             pixel!(1., 1., Color::red())
-            pixel!(1., 2., Color::red())
         )), pixels!(
             pixel!(0., 0., Color::red()),
             pixel!(0., 1., Color::red()),

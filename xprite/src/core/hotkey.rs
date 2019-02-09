@@ -107,6 +107,10 @@ impl HotkeyController {
                 Bind::PushTool(ToolType::Rect),
             );
             binds.insert(
+                Action::U(false, false, false, true),
+                Bind::PushTool(ToolType::Ellipse),
+            );
+            binds.insert(
                 Action::T(false, false, false, true),
                 Bind::PushTool(ToolType::Texture),
             );
