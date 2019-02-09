@@ -8,3 +8,4 @@ pub mod pixel_perfect;
 pub mod polyline;
 pub mod rect;
 pub mod sorter;
+pub mod polygon;

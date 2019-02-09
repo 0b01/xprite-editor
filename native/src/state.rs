@@ -48,6 +48,7 @@ pub struct State<'a> {
 
     pub rename_layer: Option<(usize, usize)>,
     pub rename_group: Option<usize>,
+    pub brush_sz: i32,
 
     pub texture: Option<usize>,
 }
@@ -61,6 +62,7 @@ impl<'a> Default for State<'a> {
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
 
+            brush_sz: 1,
             show_console: false,
             script_fname: None,
             texture: None,

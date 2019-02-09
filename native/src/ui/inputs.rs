@@ -67,7 +67,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     use self::InputEvent::*;
     use self::InputItem::*;
 
-    let wheel_delta = ui.imgui().mouse_wheel() as f64;
+    let wheel_delta = ui.imgui().mouse_wheel() as f64 / 5.;
     let (x, y) = ui.imgui().mouse_pos();
     let x = x.into();
     let y = y.into();

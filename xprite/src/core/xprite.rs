@@ -200,7 +200,7 @@ impl Xprite {
         }
     }
 
-    pub fn render_canvas(&self, rdr: &mut Renderer) {
+    pub fn render_canvas_extras(&self, rdr: &mut Renderer) {
         rdr.reset();
         // self.canvas.draw_canvas(rdr);
         self.canvas.draw_grid(rdr);

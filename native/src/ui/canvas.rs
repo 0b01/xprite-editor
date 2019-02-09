@@ -40,7 +40,6 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         }
 
                         update_viewport(state, ui);
-                        state.xpr.render_canvas(rdr);
                         super::inputs::bind_input(state, ui);
                         let origin = state.xpr.canvas.origin();
                         ui.set_cursor_screen_pos([origin.x as f32, origin.y as f32]);
@@ -60,6 +59,8 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         state.xpr.render_cursor(rdr);
                         state.xpr.render_bezier(rdr);
                         state.xpr.render_marquee(rdr);
+
+                        state.xpr.render_canvas_extras(rdr);
 
                         draw_cursor_cross(ui);
                     });

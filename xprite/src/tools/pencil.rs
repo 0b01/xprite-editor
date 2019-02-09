@@ -294,7 +294,17 @@ impl Tool for Pencil {
                     self.brush = Brush::pixel();
                     self.brush_type = BrushType::Pixel;
                 }
-                _ => error!("malformed value: {}", value),
+                _ => {
+                    if value.starts_with("o") {
+                        let size = value[1..].parse::<i32>().unwrap();
+                        self.brush = Brush::circle(size);
+                        self.brush_type = BrushType::Circle;
+                    } else if value.starts_with("s") {
+                        let size = value[1..].parse::<i32>().unwrap();
+                        self.brush = Brush::square(size, 0.);
+                        self.brush_type = BrushType::Square;
+                    }
+                }
             },
             "shift" => match value {
                 "true" => {
