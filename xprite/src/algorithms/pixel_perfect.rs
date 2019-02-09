@@ -33,11 +33,14 @@ pub fn pixel_antiperfect(path: &Pixels) -> Pixels {
     let mut ret = Pixels::new();
 
     for (curr, next) in path.iter().zip(path.iter().skip(1)) {
-        dbg!((curr, next));
         if curr.point.x != next.point.x
         && curr.point.y != next.point.y {
             let mut between = curr.clone();
-            between.point.x += 1.;
+            if next.point.x > curr.point.x {
+                between.point.x += 1.;
+            } else {
+                between.point.y += 1.;
+            }
             ret.push(*curr);
             ret.push(between);
             ret.push(*next);
@@ -70,12 +73,11 @@ mod tests {
 
     #[test]
     fn test_antipp() {
-        let path = pixels!(
+        assert_eq!(pixel_antiperfect(&pixels!(
             pixel!(0., 0., Color::red()),
             pixel!(1., 1., Color::red())
-        );
-        let ret = pixel_antiperfect(&path);
-        assert_eq!(ret, pixels!(
+            pixel!(1., 2., Color::red())
+        )), pixels!(
             pixel!(0., 0., Color::red()),
             pixel!(0., 1., Color::red()),
             pixel!(1., 1., Color::red())

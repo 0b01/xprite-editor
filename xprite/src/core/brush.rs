@@ -2,7 +2,7 @@ use crate::prelude::*;
 use std::f64::consts::PI;
 use crate::algorithms::{ellipse, rect, line};
 
-#[derive(PartialEq, Eq, Clone, Debug)]
+#[derive(PartialEq, Eq, Clone, Debug, Copy)]
 pub enum BrushType {
     Pixel,
     Cross,
@@ -104,33 +104,31 @@ impl Brush {
 
     pub fn line(size: i32, angle: f64) -> Self {
         let size = size as f64;
-        let a = PI * angle / 180.;
-        let r = size / 2.;
-        let d = size;
-        let x1 = r + r*(a+PI).cos();
-        let y1 = r - r*(a+PI).sin();
-        let x2 = x1 + d*(a).cos();
-        let y2 = y1 - d*(a).sin();
 
-        let shape = line::continuous_line(
-            vec2f_xy!(x1, y1),
-            vec2f_xy!(x2, y2)
-        );
+        let a = PI * angle / 180.;
+        let r = size as f64 / 2.;
+        let d = size as f64;
+        let x1 = (r + r*(a+PI).cos()) as i32;
+        let y1 = (r - r*(a+PI).sin()) as i32;
+        let x2 = (x1 as f64 + d*(a).cos()) as i32;
+        let y2 = (y1 as f64 - d*(a).sin()) as i32;
+
+
+        let p1 = vec2f_xy!(x1, y1);
+        let p2 = vec2f_xy!(x2, y2);
+        let shape = line::continuous_line(p1, p2);
+
         let bb = {
             let rect = shape.bounding_rect();
             let w = rect.w();
             let h = rect.h();
             (w, h)
         };
-        dbg!(&bb);
-
         let offset = {
             let off_x = bb.0/2.;
             let off_y = bb.1/2.;
             (-off_x.floor(), -off_y.floor())
         };
-
-        dbg!(&offset);
 
         Self {
             shape,

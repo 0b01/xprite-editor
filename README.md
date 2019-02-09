@@ -16,7 +16,7 @@ git submodule update --init --recursive
 * [ ] Partial sorting curves
 * [ ] Pixel perfect line(read TC Inglis thesis)
 * [ ] Line modes(perfect span, predictable, continuous, bresenham)
-* [ ] Set brush size
+* [x] Set brush size
 * [ ] Replace pyo3 with RustPython
 * [ ] Preview bounding box
 * [ ] Export with profile: (Output {fname}.1x.png, 2x, 3x, ase)

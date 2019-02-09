@@ -19,76 +19,74 @@ pub fn draw(state: &mut State, ui: &Ui) {
         }
     });
 
+
+    let setter_fn = |state: &mut State,  brush: BrushType| match brush {
+        BrushType::Pixel | BrushType::Cross => {
+            state.xpr.set_option( "brush", brush.as_str()).unwrap();
+        }
+        BrushType::Circle | BrushType::Square => {
+            state.xpr.set_option(
+                "brush",
+                &format!("{}{}",brush.as_str(), state.brush.sz[0]),
+            ).unwrap();
+        }
+        BrushType::Line => {
+            state.xpr.set_option(
+                "brush",
+                &format!("{}{},{}",brush.as_str(), state.brush.sz[0], state.brush.sz[1]),
+            ).unwrap();
+        }
+    };
+
+    let current_brush = state.xpr.toolbox.pencil.borrow().brush_type;
+
     ui.tree_node(im_str!("Brush"))
         .default_open(true)
     .build(|| {
         let brushes = BrushType::VARIANTS;
         for (_index, brush) in brushes.iter().enumerate() {
-            let is_sel = &state.xpr.toolbox.pencil.borrow().brush_type == brush;
-            match brush {
-                BrushType::Pixel | BrushType::Cross => {
-                    if ui.selectable(
-                        im_str!("{}", brush.as_str()),
-                        is_sel,
-                        ImGuiSelectableFlags::empty(),
-                        (0., 0.),
-                    ) {
-                        state.xpr.set_option(
-                            "brush",
-                            brush.as_str()
-                        ).unwrap();
-                    }
-                }
-
-                BrushType::Circle | BrushType::Square => {
-                    let popup_name = im_str!("brush{}", brush.as_str());
-                    let set_brush = |state: &mut State| {
-                        state.xpr.set_option(
-                            "brush",
-                            &format!("{}{}",brush.as_str(), state.brush.sz[0]),
-                        ).unwrap();
-                    };
-                    if ui.selectable(
-                        im_str!("{}", brush.as_str()),
-                        is_sel,
-                        ImGuiSelectableFlags::empty(),
-                        (0., 0.),
-                    ) {
-                        set_brush(state);
-                        ui.open_popup(popup_name);
-                    }
-
-                    ui.popup(popup_name, ||{
-                        if ui.input_int(im_str!("size"), &mut state.brush.sz[0]).build() {
-                            set_brush(state);
-                        }
-                    });
-                }
-
-                BrushType::Line => {
-                    let popup_name = im_str!("brush{}", brush.as_str());
-                    let set_line = |state: &mut State| {
-                        state.xpr.set_option(
-                            "brush",
-                            &format!("{}{},{}",brush.as_str(), state.brush.sz[0], state.brush.sz[1]),
-                        ).unwrap();
-                    };
-                    if ui.selectable(
-                        im_str!("{}", brush.as_str()),
-                        is_sel,
-                        ImGuiSelectableFlags::empty(),
-                        (0., 0.),
-                    ) {
-                        set_line(state);
-                        ui.open_popup(popup_name);
-                    }
-                    ui.popup(popup_name, ||{
-                        if ui.input_int2(im_str!("size"), &mut state.brush.sz).build() {
-                            set_line(state);
-                        }
-                    });
-                }
+            let is_sel = &current_brush == brush;
+            if ui.selectable(
+                im_str!("{}", brush.as_str()),
+                is_sel,
+                ImGuiSelectableFlags::empty(),
+                (0., 0.),
+            ) {
+                setter_fn(state, *brush);
             }
         }
     });
+
+
+    ui.tree_node(im_str!("Brush"))
+        .default_open(true)
+        .build(|| {
+            if ui.input_int(im_str!("size"), &mut state.brush.sz[0]).build() { setter_fn(state, current_brush); }
+            if ui.input_int(im_str!("angle"), &mut state.brush.sz[1]).build() { setter_fn(state, current_brush); }
+            macro_rules! angle_btn {
+                ($angle: literal) => {
+                    if ui.button(
+                        im_str!("{}", stringify!($angle)),
+                        (0., 0.)
+                    ) {
+                        state.brush.sz[1] = $angle;
+                        setter_fn(state, current_brush);
+                    }
+                }
+            }
+
+            angle_btn!(30);
+            ui.same_line(0.);
+            angle_btn!(45);
+            ui.same_line(0.);
+            angle_btn!(60);
+            ui.same_line(0.);
+            angle_btn!(90);
+            ui.same_line(0.);
+            angle_btn!(120);
+            ui.same_line(0.);
+            angle_btn!(135);
+            ui.same_line(0.);
+
+        });
 }
