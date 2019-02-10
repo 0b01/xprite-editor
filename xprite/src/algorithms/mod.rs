@@ -9,3 +9,4 @@ pub mod polygon;
 pub mod polyline;
 pub mod rect;
 pub mod sorter;
+pub mod autoshade;

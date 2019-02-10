@@ -9,6 +9,7 @@ pub extern crate ase;
 extern crate fnv;
 extern crate hex;
 extern crate image as img;
+extern crate imageproc;
 #[macro_use]
 extern crate log;
 

@@ -5,21 +5,20 @@ use std::rc::Rc;
 pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     let tool = Rc::clone(&state.xpr.toolbox.texture);
     let texture = &mut tool.borrow_mut();
-    let dims = texture.get_dims();
-    if dims.is_none() {
-        return;
-    }
-    let (x, y, _) = dims.unwrap();
+    let bb = texture.get_bb();
+    if bb.is_none() { return; }
+    let bb = bb.unwrap();
+    let (w, h) = (bb.w(), bb.h());
 
     let minimum_blocksize = texture.overlap * 2;
     if ui
         .drag_int(im_str!("Overlap"), &mut texture.overlap)
         .min(2)
-        .max(f64::min(x, y) as i32 - 1)
+        .max(f64::min(w, h) as i32 - 1)
         .build()
     {
         if texture.blocksize < texture.overlap * 2
-            && texture.overlap * 2 < f64::min(x, y) as i32
+            && texture.overlap * 2 < f64::min(w, h) as i32
         {
             texture.blocksize = texture.overlap * 2;
         } else {
@@ -28,7 +27,7 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     }
     ui.drag_int(im_str!("Block Size"), &mut texture.blocksize)
         .min(minimum_blocksize)
-        .max(f64::min(x, y) as i32 - 1)
+        .max(f64::min(w, h) as i32 - 1)
         .build();
 
     if ui.button(im_str!("Quilt!"), (100., 20.)) {

@@ -34,16 +34,10 @@ impl Texture {
         self.quilt_img(xpr)
     }
 
-    pub fn get_dims(&self) -> Option<(f64, f64, (f64, f64))> {
-        let x0 = self.start_pos?.point.x;
-        let y0 = self.start_pos?.point.y;
-        let x1 = self.cursor_pos?.point.x;
-        let y1 = self.cursor_pos?.point.y;
-        Some((
-            (x1 - x0).abs(),
-            (y1 - y0).abs(),
-            (f64::min(x0, x1), f64::min(y0, y1)),
-        ))
+    pub fn get_bb(&self) -> Option<Rect> {
+        let (p0, p1) = (self.start_pos?, self.cursor_pos?);
+        let bb = Rect(p0.point, p1.point);
+        Some(bb)
     }
 
     fn quilt_img(
@@ -55,11 +49,8 @@ impl Texture {
         pixs.set_color(xpr.color());
         let content = &mut xpr.current_layer_mut().unwrap().content;
         let intersection = content.intersection(&pixs);
-        let (w, h, origin) = self
-            .get_dims()
-            .ok_or_else(|| "cannot get dimension".to_owned())?;
-        let img = intersection.as_image(w, h, origin);
-
+        let bb = self.get_bb().unwrap(); // safe to unwrap because of above
+        let img = intersection.as_image(bb);
         let width = xpr.canvas.art_w as u32;
         let height = xpr.canvas.art_h as u32;
         let params = QuilterParams::new(

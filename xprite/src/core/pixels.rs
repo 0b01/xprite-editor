@@ -399,6 +399,17 @@ impl Pixels {
         arr
     }
 
+    pub fn shifted(&self, d: (f64, f64)) -> Pixels {
+        let mut ret = Pixels::new();
+        for i in self.iter() {
+            let mut shifted_i = i.clone();
+            shifted_i.point.x += d.0;
+            shifted_i.point.y += d.1;
+            ret.push(shifted_i);
+        }
+        ret
+    }
+
     pub fn len(&self) -> usize {
         self.0.len()
     }
@@ -407,22 +418,21 @@ impl Pixels {
         self.0.is_empty()
     }
 
-    pub fn as_image(
-        &self,
-        w: f64,
-        h: f64,
-        origin: (f64, f64),
-    ) -> img::DynamicImage {
+    pub fn as_image(&self, bb: Rect) -> img::DynamicImage {
+        let w = bb.w() as f64;
+        let h = bb.h() as f64;
+        let origin = bb.0;
+
         let mut rdr = ImageRenderer::new(w, h);
         for pix in &self.0 {
             let Pixel {
                 point: Vec2f { x, y },
                 color,
             } = pix;
-            if oob(*x - origin.0, *y - origin.1, w as f64, h as f64) {
+            if oob(*x - origin.x, *y - origin.y, w as f64, h as f64) {
                 continue;
             }
-            rdr.pixel(*x - origin.0, *y - origin.1, (*color).into(), true);
+            rdr.pixel(*x - origin.y, *y - origin.y, (*color).into(), true);
         }
         rdr.render();
         rdr.image
@@ -606,7 +616,12 @@ mod tests {
         use super::*;
         let pixs =
             pixels!(pixel!(0., 0., Color::red()), pixel!(1., 1., Color::red()));
-        let img = pixs.as_image(3., 3., (0., 0.));
+        let img = pixs.as_image(
+            Rect(
+                Vec2f{x:0., y: 0.},
+                Vec2f{x:2., y: 2.}
+            )
+        );
         assert_eq!(
             img.raw_pixels(),
             vec![
