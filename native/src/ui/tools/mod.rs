@@ -8,11 +8,10 @@ pub mod marquee_panel;
 pub mod paintbucket_panel;
 pub mod pencil_panel;
 pub mod rect_panel;
-pub mod texture_panel;
-pub mod vector_panel;
 pub mod settings_panel;
 pub mod symmetry_panel;
-
+pub mod texture_panel;
+pub mod vector_panel;
 
 pub fn draw(selected: ToolType, rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     match selected {

@@ -8,9 +8,9 @@ pub mod marquee;
 pub mod paint_bucket;
 pub mod pencil;
 pub mod rect;
+pub mod symmetry;
 pub mod texture;
 pub mod vector;
-pub mod symmetry;
 
 pub mod traits;
 

@@ -1,7 +1,7 @@
 //! This module contains the implementation for the vector tool
 use crate::prelude::*;
-use std::str::FromStr;
 use crate::tools::pencil::get_brush;
+use std::str::FromStr;
 
 #[derive(Debug, Copy, Clone)]
 enum AnchorType {
@@ -377,8 +377,7 @@ impl Tool for Vector {
             }
         }
 
-        let mut pixs = self.brush
-            .follow_stroke(&ret).unwrap();
+        let mut pixs = self.brush.follow_stroke(&ret).unwrap();
         pixs.set_color(xpr.color());
         xpr.add_pixels(&pixs);
 

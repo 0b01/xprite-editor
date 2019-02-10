@@ -41,11 +41,7 @@ pub fn polygon(points: &[Vec2f]) -> Pixels {
         let mut y1: f64;
         let mut y2: f64;
         for i in 0..n {
-            let (ind1, ind2) = if i == 0 {
-                (n - 1, 0)
-            } else {
-                (i - 1, i)
-            };
+            let (ind1, ind2) = if i == 0 { (n - 1, 0) } else { (i - 1, i) };
             y1 = points[ind1].y;
             y2 = points[ind2].y;
             if y1 < y2 {
@@ -61,14 +57,16 @@ pub fn polygon(points: &[Vec2f]) -> Pixels {
             }
 
             /* Do the following math as float intermediately, and round to ensure
-            * that Polygon and FilledPolygon for the same set of points have the
-            * same footprint. */
+             * that Polygon and FilledPolygon for the same set of points have the
+             * same footprint. */
 
             if (y >= y1) && (y < y2) {
-                poly_ints[ints] =  ( ((y - y1) * (x2 - x1)) as f64 / (y2 - y1) as f64 + 0.5 + x1) as i32;
+                poly_ints[ints] =
+                    (((y - y1) * (x2 - x1)) as f64 / (y2 - y1) as f64 + 0.5 + x1) as i32;
                 ints += 1;
             } else if (y == maxy) && (y > y1) && (y <= y2) {
-                poly_ints[ints] = (((y - y1) * (x2 - x1)) as f64 / (y2 - y1) as f64 + 0.5 + x1) as i32;
+                poly_ints[ints] =
+                    (((y - y1) * (x2 - x1)) as f64 / (y2 - y1) as f64 + 0.5 + x1) as i32;
                 ints += 1;
             }
         }
@@ -90,9 +88,9 @@ pub fn polygon(points: &[Vec2f]) -> Pixels {
         let mut i = 0;
         while i < ints {
             /* 2.0.29: back to gdImageLine to prevent segfaults when
-                performing a pattern fill */
+            performing a pattern fill */
             let start = poly_ints[i];
-            let stop = poly_ints[i+1];
+            let stop = poly_ints[i + 1];
             for j in start..=stop {
                 ret.push(pixel!(y, j, Color::red()));
             }
@@ -104,26 +102,32 @@ pub fn polygon(points: &[Vec2f]) -> Pixels {
     ret
 }
 
-
 #[cfg(test)]
 mod tests {
     #[test]
     fn test_polygon_square() {
         use super::*;
-        assert_eq!(polygon(&vec![
-            vec2f!(0, 0),
-            vec2f!(0, 10),
-            vec2f!(10, 10),
-            vec2f!(10, 0),
-            vec2f!(0, 0),
-        ]).len(), 11 * 11);
+        assert_eq!(
+            polygon(&vec![
+                vec2f!(0, 0),
+                vec2f!(0, 10),
+                vec2f!(10, 10),
+                vec2f!(10, 0),
+                vec2f!(0, 0),
+            ])
+            .len(),
+            11 * 11
+        );
 
-        assert_eq!(polygon(&vec![
-            vec2f!(0, 0),
-            vec2f!(0, 2),
-            vec2f!(2, 2),
-            vec2f!(2, 0),
-        ]).len(), 3 * 3);
-
+        assert_eq!(
+            polygon(&vec![
+                vec2f!(0, 0),
+                vec2f!(0, 2),
+                vec2f!(2, 2),
+                vec2f!(2, 0),
+            ])
+            .len(),
+            3 * 3
+        );
     }
 }

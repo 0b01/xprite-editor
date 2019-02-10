@@ -73,7 +73,10 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     let y = y.into();
 
     if (state.xpr.last_mouse_pos.x != x || state.xpr.last_mouse_pos.y != y) && !state.inputs.space {
-        handle_error!(state.xpr.mouse_move(&MouseMove { x: x.into(), y: y.into() }));
+        handle_error!(state.xpr.mouse_move(&MouseMove {
+            x: x.into(),
+            y: y.into()
+        }));
     }
 
     let left = ui.imgui().is_mouse_down(ImMouseButton::Left);
@@ -98,7 +101,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     if using_window {
-        state.xpr.canvas.update_zoom(wheel_delta, (x,y))
+        state.xpr.canvas.update_zoom(wheel_delta, (x, y))
     }
     if state.xpr.canvas.scale > 100. {
         state.xpr.canvas.scale = 100.;

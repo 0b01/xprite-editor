@@ -12,7 +12,6 @@ impl Symmetry {
             is_mouse_down: None,
         }
     }
-
 }
 
 impl Tool for Symmetry {

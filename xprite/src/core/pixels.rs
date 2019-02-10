@@ -1,6 +1,8 @@
 use crate::algorithms::{
-    connected_components::connected_components, perimeter::find_perimeter,
-    pixel_perfect::{pixel_perfect, pixel_antiperfect}, sorter::sort_path,
+    connected_components::connected_components,
+    perimeter::find_perimeter,
+    pixel_perfect::{pixel_antiperfect, pixel_perfect},
+    sorter::sort_path,
 };
 use crate::prelude::*;
 use fnv::FnvBuildHasher;
@@ -103,7 +105,6 @@ macro_rules! pixel {
             color: $k,
         }
     };
-
 }
 
 #[macro_export]
@@ -424,7 +425,9 @@ impl Pixels {
         if let ase::Pixels::RGBA(vec) = ase_pixs {
             assert_eq!(vec.len(), w * h);
             for (i, color) in vec.iter().enumerate() {
-                if color.a == 0 { continue } // skip transparent pixels
+                if color.a == 0 {
+                    continue;
+                } // skip transparent pixels
                 let nth_row = i / w;
                 let nth_col = i % w;
                 pixs.push(pixel!(y0 + nth_row, x0 + nth_col, (*color).into()));

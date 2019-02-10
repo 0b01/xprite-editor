@@ -1,6 +1,6 @@
+use super::pencil_panel::draw_brush_tree;
 use crate::prelude::*;
 use xprite::tools::vector;
-use super::pencil_panel::draw_brush_tree;
 
 pub fn draw(state: &mut State, ui: &Ui) {
     ui.drag_float(
@@ -24,13 +24,10 @@ pub fn draw(state: &mut State, ui: &Ui) {
 
     let current_brush = state.xpr.toolbox.vector.borrow().brush_type;
     draw_brush_tree(state, ui, current_brush);
-
 }
 
 fn draw_mode(state: &mut State, ui: &Ui) {
-    ui.tree_node(im_str!("Mode"))
-        .default_open(true)
-    .build(|| {
+    ui.tree_node(im_str!("Mode")).default_open(true).build(|| {
         let modes = vector::VectorMode::VARIANTS;
         for (_index, mode) in modes.iter().enumerate() {
             let is_sel = &state.xpr.toolbox.vector.borrow().mode == mode;

@@ -5,8 +5,8 @@ use std::rc::Rc;
 
 use crate::tools::{
     color_picker::ColorPicker, ellipse::Ellipse, eraser::Eraser, line::Line, marquee::Marquee,
-    paint_bucket::PaintBucket, pencil::Pencil, rect::Rect, texture::Texture, vector::Vector, Tool,
-    symmetry::Symmetry,
+    paint_bucket::PaintBucket, pencil::Pencil, rect::Rect, symmetry::Symmetry, texture::Texture,
+    vector::Vector, Tool,
 };
 
 #[derive(Default, Debug)]

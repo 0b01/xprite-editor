@@ -11,8 +11,6 @@ pub struct RectInfo {
     pub height: f64,
 }
 
-
-
 #[derive(Clone, Default, Debug)]
 pub struct Rect {
     is_mouse_down: Option<InputItem>,
@@ -50,7 +48,7 @@ impl Rect {
         let bb = Rect(p0, p1);
         let height = bb.h();
         let width = bb.w();
-        let angle = (height/width).atan();
+        let angle = (height / width).atan();
         let aspect_ratio = width / height;
 
         Some(RectInfo {

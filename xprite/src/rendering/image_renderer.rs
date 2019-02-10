@@ -90,7 +90,6 @@ impl ImageRenderer {
         for (_i, p) in self.image.as_mut_rgba8().unwrap().pixels_mut().enumerate() {
             *p = color;
         }
-
     }
 }
 

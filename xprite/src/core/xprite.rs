@@ -334,10 +334,7 @@ impl Xprite {
             height_in_pixels,
             ..
         } = &header;
-        let canvas = Canvas::new(
-            f64::from(*width_in_pixels),
-            f64::from(*height_in_pixels)
-        );
+        let canvas = Canvas::new(f64::from(*width_in_pixels), f64::from(*height_in_pixels));
         let mut history = History::empty();
 
         let frame = &frames[0];
@@ -372,10 +369,7 @@ impl Xprite {
                     let y = f64::from(*y_position);
                     let x_ = x + f64::from(cel.w().unwrap() - 1); // TODO: FIXME: off by 1 error from Pixels::bounding_box
                     let y_ = y + f64::from(cel.h().unwrap() - 1);
-                    let bb = Rect (
-                        Vec2f {x, y},
-                        Vec2f { x: x_, y: y_},
-                    );
+                    let bb = Rect(Vec2f { x, y }, Vec2f { x: x_, y: y_ });
                     let pixs = Pixels::from_ase_pixels(&ase_pixs, bb);
                     let layer = &mut history.top_mut().groups[0].1[usize::from(*layer_index)];
                     layer.content.extend(&pixs);
@@ -478,7 +472,6 @@ mod tests {
         aseprite.write(&mut f).unwrap();
         std::fs::remove_file("test2.ase").unwrap();
     }
-
 
     #[test]
     fn test_from_ase() {

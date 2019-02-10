@@ -142,10 +142,11 @@ impl Pencil {
                         .current_polyline
                         .to_pixel_coords(xpr)?
                         .connect_with_line()?;
-                        if self.mode == PencilMode::PixelPerfect
-                            {points.pixel_perfect();}
-                        else
-                            {points.pixel_antiperfect();}
+                    if self.mode == PencilMode::PixelPerfect {
+                        points.pixel_perfect();
+                    } else {
+                        points.pixel_antiperfect();
+                    }
 
                     let path = self.brush.follow_stroke(&points).unwrap();
                     path
@@ -157,7 +158,9 @@ impl Pencil {
                     .to_pixel_coords(xpr)?
                     .connect_with_line()?;
                 points.pixel_perfect();
-                if points.len() > 1 { points.monotonic_sort(); }
+                if points.len() > 1 {
+                    points.monotonic_sort();
+                }
                 let path = self.brush.follow_stroke(&points).unwrap();
                 path
             }
@@ -320,12 +323,8 @@ impl Tool for Pencil {
 
 pub fn get_brush(value: &str) -> (Brush, BrushType) {
     match value {
-        "+" => {
-            (Brush::cross(), BrushType::Cross)
-        }
-        "." => {
-            (Brush::pixel(), BrushType::Pixel)
-        }
+        "+" => (Brush::cross(), BrushType::Cross),
+        "." => (Brush::pixel(), BrushType::Pixel),
         _ => {
             if value.starts_with("o") {
                 let size = value[1..].parse::<i32>().unwrap();
@@ -334,7 +333,7 @@ pub fn get_brush(value: &str) -> (Brush, BrushType) {
                 let size = value[1..].parse::<i32>().unwrap();
                 (Brush::square(size), BrushType::Square)
             } else if value.starts_with("/") {
-                let params: Vec<f64> = value[1..].split(",").map(|i|i.parse().unwrap()).collect();
+                let params: Vec<f64> = value[1..].split(",").map(|i| i.parse().unwrap()).collect();
                 (Brush::line(params[0] as i32, params[1]), BrushType::Line)
             } else {
                 panic!("Impossible")

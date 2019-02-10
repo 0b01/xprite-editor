@@ -1,7 +1,4 @@
-pub use crate::state::{
-    State,
-    PreviewWindowMode,
-};
+pub use crate::state::{PreviewWindowMode, State};
 pub use imgui::*;
 pub use xprite::core::hotkey::{Action, Bind, HotkeyController};
 pub use xprite::image;

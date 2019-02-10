@@ -61,7 +61,8 @@ impl Tool for ColorPicker {
     }
 
     fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
-        if let Some(temp) = self.temp { // order is important
+        if let Some(temp) = self.temp {
+            // order is important
             xpr.color_picker_color = Some(temp);
         }
         if let Some(col) = self.col {

@@ -134,10 +134,10 @@ impl Canvas {
         let p3 = [o.x + self.scale * x, o.y + self.scale * (y + 1.)];
 
         let t = rdr.time() % 1.;
-        let color = if (t < 0.25                && ith % 4 == 0)
-        || (t > 0.25 && t < 0.50    && ith % 4 == 1)
-        || (t > 0.50 && t < 0.75    && ith % 4 == 2)
-        || (t > 0.75                && ith % 4 == 3)
+        let color = if (t < 0.25 && ith % 4 == 0)
+            || (t > 0.25 && t < 0.50 && ith % 4 == 1)
+            || (t > 0.50 && t < 0.75 && ith % 4 == 2)
+            || (t > 0.75 && ith % 4 == 3)
         {
             Color::white().into()
         } else {
@@ -214,7 +214,9 @@ impl Canvas {
     }
 
     pub fn update_zoom(&mut self, wheel_delta: f64, (cursor_x, cursor_y): (f64, f64)) {
-        if wheel_delta == 0. { return; }
+        if wheel_delta == 0. {
+            return;
+        }
         let mut new_scale = wheel_delta + self.scale;
         if new_scale < 0.33 {
             new_scale = 0.33;
@@ -267,5 +269,4 @@ impl Canvas {
         // TODO:
         (w, h)
     }
-
 }

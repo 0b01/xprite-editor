@@ -25,7 +25,6 @@ pub struct Ellipse {
 }
 
 impl Ellipse {
-
     pub fn new() -> Self {
         Ellipse {
             is_mouse_down: None,
@@ -51,7 +50,7 @@ impl Ellipse {
         let bb = Rect(p0, p1);
         let height = bb.h();
         let width = bb.w();
-        let angle = (height/width).atan();
+        let angle = (height / width).atan();
         let radius_major = f64::max(width, height) / 2.;
         let radius_minor = f64::min(width, height) / 2.;
         let aspect_ratio = width / height;
@@ -204,7 +203,6 @@ impl Tool for Ellipse {
         Ok(())
     }
 }
-
 
 #[cfg(test)]
 mod tests {

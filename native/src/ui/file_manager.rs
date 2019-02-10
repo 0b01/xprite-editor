@@ -2,11 +2,14 @@ use crate::prelude::*;
 use xprite::rendering::Renderer;
 
 pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
-    let window_title = im_str!("{}", if state.file_popup.show_file_is_save {
-        "Save file"
-    } else {
-        "Open file"
-    });
+    let window_title = im_str!(
+        "{}",
+        if state.file_popup.show_file_is_save {
+            "Save file"
+        } else {
+            "Open file"
+        }
+    );
 
     if state.file_popup.show_file_popup {
         ui.open_popup(window_title);
@@ -49,7 +52,6 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 }
             });
         });
-
 }
 
 fn get_callback() -> impl Fn(&mut State) {
@@ -63,9 +65,7 @@ fn get_callback() -> impl Fn(&mut State) {
             } else {
                 state.load_ase(&fname.to_owned());
             }
-        } else if fname.ends_with(".png")
-               || fname.ends_with(".jpg")
-               || fname.ends_with(".jpeg") {
+        } else if fname.ends_with(".png") || fname.ends_with(".jpg") || fname.ends_with(".jpeg") {
             if save {
                 state.save_img(&fname.to_owned());
             } else {

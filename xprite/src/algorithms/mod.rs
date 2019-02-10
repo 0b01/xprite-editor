@@ -5,7 +5,7 @@ pub mod line;
 pub mod path;
 pub mod perimeter;
 pub mod pixel_perfect;
+pub mod polygon;
 pub mod polyline;
 pub mod rect;
 pub mod sorter;
-pub mod polygon;

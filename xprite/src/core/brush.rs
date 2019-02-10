@@ -1,6 +1,6 @@
+use crate::algorithms::{ellipse, line, rect};
 use crate::prelude::*;
 use std::f64::consts::PI;
-use crate::algorithms::{ellipse, rect, line};
 
 #[derive(PartialEq, Eq, Clone, Debug, Copy)]
 pub enum BrushType {
@@ -89,11 +89,13 @@ impl Brush {
     }
 
     pub fn circle(size: i32) -> Self {
-        if size == 1 { return Self::pixel() }
-        if size == 3 { return Self::cross() }
-        let shape = ellipse::algo_ellipsefill(
-            0, 0, size, size-1
-        );
+        if size == 1 {
+            return Self::pixel();
+        }
+        if size == 3 {
+            return Self::cross();
+        }
+        let shape = ellipse::algo_ellipsefill(0, 0, size, size - 1);
         let off = (size / 2) as f64;
         Self {
             shape,
@@ -108,11 +110,10 @@ impl Brush {
         let a = PI * angle / 180.;
         let r = size as f64 / 2.;
         let d = size as f64;
-        let x1 = (r + r*(a+PI).cos()) as i32;
-        let y1 = (r - r*(a+PI).sin()) as i32;
-        let x2 = (x1 as f64 + d*(a).cos()) as i32;
-        let y2 = (y1 as f64 - d*(a).sin()) as i32;
-
+        let x1 = (r + r * (a + PI).cos()) as i32;
+        let y1 = (r - r * (a + PI).sin()) as i32;
+        let x2 = (x1 as f64 + d * (a).cos()) as i32;
+        let y2 = (y1 as f64 - d * (a).sin()) as i32;
 
         let p1 = vec2f_xy!(x1, y1);
         let p2 = vec2f_xy!(x2, y2);
@@ -125,18 +126,12 @@ impl Brush {
             (w, h)
         };
         let offset = {
-            let off_x = bb.0/2.;
-            let off_y = bb.1/2.;
+            let off_x = bb.0 / 2.;
+            let off_y = bb.1 / 2.;
             (-off_x.floor(), -off_y.floor())
         };
 
-        Self {
-            shape,
-            bb,
-            offset,
-        }
-
-
+        Self { shape, bb, offset }
     }
 
     pub fn follow_stroke(&self, stroke: &Pixels) -> Option<Pixels> {
@@ -182,56 +177,62 @@ mod tests {
     #[test]
     fn test_circle_brush4() {
         use super::*;
-        assert_eq!(Brush::circle(4), Brush {
-            shape: pixels!(
-                pixel!(1,0,Color::red()),
-                pixel!(1,1,Color::red()),
-                pixel!(1,2,Color::red()),
-                pixel!(1,3,Color::red()),
-                pixel!(2,0,Color::red()),
-                pixel!(2,1,Color::red()),
-                pixel!(2,2,Color::red()),
-                pixel!(2,3,Color::red()),
-                pixel!(0,1,Color::red()),
-                pixel!(0,2,Color::red()),
-                pixel!(3,1,Color::red()),
-                pixel!(3,2,Color::red())
-            ),
-            bb: (4.0, 4.0),
-            offset: (-2.0, -2.0)
-        });
+        assert_eq!(
+            Brush::circle(4),
+            Brush {
+                shape: pixels!(
+                    pixel!(1, 0, Color::red()),
+                    pixel!(1, 1, Color::red()),
+                    pixel!(1, 2, Color::red()),
+                    pixel!(1, 3, Color::red()),
+                    pixel!(2, 0, Color::red()),
+                    pixel!(2, 1, Color::red()),
+                    pixel!(2, 2, Color::red()),
+                    pixel!(2, 3, Color::red()),
+                    pixel!(0, 1, Color::red()),
+                    pixel!(0, 2, Color::red()),
+                    pixel!(3, 1, Color::red()),
+                    pixel!(3, 2, Color::red())
+                ),
+                bb: (4.0, 4.0),
+                offset: (-2.0, -2.0)
+            }
+        );
     }
-
 
     #[test]
     fn test_square_brush2() {
         use super::*;
         assert_eq!(Brush::square(1), Brush::pixel());
-        assert_eq!(Brush::square(2), Brush {
-            shape: pixels!(
-                pixel!(0,0,Color::red()),
-                pixel!(0,1,Color::red()),
-                pixel!(1,0,Color::red()),
-                pixel!(1,1,Color::red())
-            ),
-            bb: (2.0, 2.0),
-            offset: (-1.0, -1.0)
-        });
+        assert_eq!(
+            Brush::square(2),
+            Brush {
+                shape: pixels!(
+                    pixel!(0, 0, Color::red()),
+                    pixel!(0, 1, Color::red()),
+                    pixel!(1, 0, Color::red()),
+                    pixel!(1, 1, Color::red())
+                ),
+                bb: (2.0, 2.0),
+                offset: (-1.0, -1.0)
+            }
+        );
     }
 
     #[test]
     fn test_line_brush() {
         use super::*;
-        assert_eq!(Brush::line(3, 45.), Brush {
-            shape: pixels!{
-                pixel!(2,0,Color::red()),
-                pixel!(1,1,Color::red()),
-                pixel!(0,2,Color::red())
-            },
-            bb: ( 3.0, 3.0 ),
-            offset: ( -1.0, -1.0 )
-        }
-
+        assert_eq!(
+            Brush::line(3, 45.),
+            Brush {
+                shape: pixels! {
+                    pixel!(2,0,Color::red()),
+                    pixel!(1,1,Color::red()),
+                    pixel!(0,2,Color::red())
+                },
+                bb: (3.0, 3.0),
+                offset: (-1.0, -1.0)
+            }
         );
     }
 }

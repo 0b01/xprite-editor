@@ -16,9 +16,8 @@ pub struct ImguiRenderer<'ui> {
 }
 
 impl<'ui> Renderer for ImguiRenderer<'ui> {
-
     fn time(&self) -> f32 {
-        ( self.ui.imgui().get_frame_count() % 60 ) as f32 / 60.
+        (self.ui.imgui().get_frame_count() % 60) as f32 / 60.
     }
 
     fn width(&self) -> f64 {
@@ -101,11 +100,7 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
 }
 
 impl<'ui> ImguiRenderer<'ui> {
-    pub fn new(
-        ui: &'ui Ui,
-        gl_ctx: &'ui Facade,
-        textures: &'ui mut Textures<Texture2d>,
-    ) -> Self {
+    pub fn new(ui: &'ui Ui, gl_ctx: &'ui Facade, textures: &'ui mut Textures<Texture2d>) -> Self {
         Self {
             ui,
             gl_ctx,

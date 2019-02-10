@@ -4,7 +4,9 @@ pub enum MouseCursorType {
 }
 
 pub trait Renderer {
-    fn time(&self) -> f32 { 0. }
+    fn time(&self) -> f32 {
+        0.
+    }
     fn width(&self) -> f64;
     fn height(&self) -> f64;
     fn rect(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32; 4], filled: bool);

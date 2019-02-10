@@ -58,7 +58,7 @@ pub fn draw_color_picker(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             };
 
             let mut sel: [f32; 4] = {
-                if let Some(col) = &state.xpr.color_picker_color  {
+                if let Some(col) = &state.xpr.color_picker_color {
                     (*col).into()
                 } else {
                     state.xpr.selected_color.into()
@@ -89,7 +89,12 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         .map(ImString::new)
         .collect();
     let refs: Vec<_> = items.iter().map(|s| s.as_ref()).collect();
-    ui.combo(im_str!("Palette"), &mut state.palette_window.palette_idx, &refs[..], -1);
+    ui.combo(
+        im_str!("Palette"),
+        &mut state.palette_window.palette_idx,
+        &refs[..],
+        -1,
+    );
     ui.text(im_str!(
         "Color: {}",
         state
@@ -133,11 +138,14 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         // if the color block is selected
         if is_sel {
             let draw_list = ui.get_window_draw_list();
-            draw_list.add_rect(
-                (x-MARGIN/4., y-MARGIN/4.),
-                (x + BLOCK_SZ - MARGIN/4., y + BLOCK_SZ-MARGIN/4.),
-                LIGHT_GREY
-            ).filled(true).build();
+            draw_list
+                .add_rect(
+                    (x - MARGIN / 4., y - MARGIN / 4.),
+                    (x + BLOCK_SZ - MARGIN / 4., y + BLOCK_SZ - MARGIN / 4.),
+                    LIGHT_GREY,
+                )
+                .filled(true)
+                .build();
         }
 
         ui.set_cursor_screen_pos((x, y));

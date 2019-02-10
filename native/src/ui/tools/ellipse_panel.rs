@@ -12,7 +12,7 @@ pub fn draw(state: &mut State, ui: &Ui) {
                 ui.text(im_str!("Radius(major): {:.2}", info.radius_major));
                 ui.text(im_str!("Radius(major): {:.2}", info.radius_minor));
                 ui.text(im_str!("Aspect ratio: {:.2}", info.aspect_ratio));
-                ui.text(im_str!("Angle: {:.2}", info.angle*2.*PI));
+                ui.text(im_str!("Angle: {:.2}", info.angle * 2. * PI));
                 ui.text(im_str!("p0: {:?}", info.top_left));
                 ui.text(im_str!("p1: {:?}", info.bottom_right));
                 ui.text(im_str!("width: {}", info.width));

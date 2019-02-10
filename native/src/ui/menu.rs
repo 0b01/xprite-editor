@@ -39,13 +39,9 @@ pub fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 state.xpr.redo();
             }
 
-            if ui
-                .menu_item(im_str!("Symmetry"))
-                .build()
-            {
+            if ui.menu_item(im_str!("Symmetry")).build() {
                 state.execute(Bind::PushTool(ToolType::Symmetry)).unwrap();
             }
-
         });
 
         if cfg!(debug_assertions) {
