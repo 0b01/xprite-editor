@@ -203,15 +203,17 @@ impl Xprite {
 
 impl Xprite {
     pub fn render_cursor(&self, rdr: &mut Renderer) {
+        let outline = self.cursor.outline();
         for p in self.cursor.iter() {
-            self.canvas
-                .draw_pixel_rect(rdr, p.point, p.color.into(), true);
             self.canvas.draw_pixel_rect(
                 rdr,
                 p.point,
-                Color::red().into(),
-                false,
+                p.color.into(),
+                true,
             );
+        }
+        for (point, outline) in outline.iter() {
+            self.canvas.draw_pixel_outline(rdr, *point, *outline);
         }
     }
 

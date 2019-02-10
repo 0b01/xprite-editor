@@ -1,6 +1,6 @@
 use crate::algorithms::{
     connected_components::connected_components,
-    perimeter::find_perimeter,
+    perimeter::{find_perimeter, find_outline},
     pixel_perfect::{pixel_antiperfect, pixel_perfect},
     sorter::sort_path,
 };
@@ -237,6 +237,11 @@ impl Pixels {
 
     pub fn perimeter(&self, w: usize, h: usize) -> Pixels {
         find_perimeter(w, h, self)
+    }
+
+    pub fn outline(&self) -> Vec<MarqueePixel> {
+        let bb = self.bounding_rect();
+        find_outline(bb, self)
     }
 
     pub fn bounding_rect(&self) -> Rect {

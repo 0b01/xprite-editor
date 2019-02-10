@@ -22,9 +22,11 @@ pub fn find_perimeter(w: usize, h: usize, pixs: &Pixels) -> Pixels {
     ret
 }
 
-pub fn find_outline(w: usize, h: usize, pixs: &Pixels) -> Vec<MarqueePixel> {
+pub fn find_outline(bb: Rect, pixs: &Pixels) -> Vec<MarqueePixel> {
     let mut ret = vec![];
-    let canvas = pixs.as_mat(w, h);
+    let h = bb.h() as usize;
+    let w = bb.w() as usize;
+    let canvas = pixs.as_mat_bb(bb);
     for y in 0..h {
         for x in 0..w {
             if canvas[y][x].is_some() {
@@ -48,7 +50,10 @@ pub fn find_outline(w: usize, h: usize, pixs: &Pixels) -> Vec<MarqueePixel> {
                     if x < w - 1 && canvas[y][x + 1].is_some() {
                         outline ^= Outline::RIGHT;
                     }
-                    ret.push((canvas[y][x].unwrap().point, outline));
+                    let mut p = canvas[y][x].unwrap().point;
+                    p.x += bb.0.x;
+                    p.y += bb.0.y;
+                    ret.push((p, outline));
                 }
             }
         }
@@ -85,7 +90,8 @@ mod tests {
         let peri = find_perimeter(3, 3, &pixs);
         assert_eq!(result, peri);
 
-        let outline = find_outline(3, 3, &pixs);
+        let bb = pixs.bounding_rect();
+        let outline = find_outline(bb, &pixs);
         let outline_result = vec![
             (vec2f_xy!(0, 0), Outline::TOP | Outline::LEFT),
             (vec2f_xy!(1, 0), Outline::TOP),

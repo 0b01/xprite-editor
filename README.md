@@ -16,7 +16,9 @@ git submodule update --init --recursive
 * [ ] Symmetry tool
 * [ ] Marquee tool
 * [ ] show selected color in palette
-* [ ] Export with profile: (Output {fname}.1x.png, 2x, 3x, ase)
+* [ ] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
+* [ ] Outline in selected area
+* [ ] Autoshade: erode and then color gradient
 
 ## Backburner
 * [ ] Partial sorting curves(read TC Inglis thesis)
