@@ -37,6 +37,7 @@ git submodule update --init --recursive
 
 ## Done
 
+* [x] Add a mode in paintbucket for 8-way connected fill
 * [x] Icon for color picker
 * [x] hover show color in color picker
 * [x] show selected color in palette

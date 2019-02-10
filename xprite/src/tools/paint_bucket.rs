@@ -1,4 +1,5 @@
 use crate::algorithms;
+use crate::algorithms::floodfill::FloodFillDegrees;
 use crate::prelude::*;
 use std::str::FromStr;
 
@@ -44,6 +45,7 @@ pub struct PaintBucket {
     update_buffer: Option<Pixels>,
     draw_buffer: Option<Pixels>,
     pub mode: PaintBucketMode,
+    pub degrees: FloodFillDegrees,
 }
 
 impl PaintBucket {
@@ -54,6 +56,7 @@ impl PaintBucket {
             update_buffer: None,
             mode: PaintBucketMode::Fill,
             draw_buffer: None,
+            degrees: Default::default(),
         }
     }
 
@@ -68,8 +71,14 @@ impl PaintBucket {
         let h = xpr.canvas.art_h;
         let current_layer = xpr.current_layer().unwrap();
         let pixs = &current_layer.content;
-        let buffer =
-            algorithms::floodfill::floodfill(w, h, pixs, p, bg_color, color);
+        let buffer = algorithms::floodfill::floodfill(
+            w, h,
+            pixs,
+            p,
+            bg_color,
+            color,
+            self.degrees,
+        );
         // info!{"{:#?}", buffer};
         Ok(buffer)
     }
@@ -181,6 +190,13 @@ impl Tool for PaintBucket {
                 match PaintBucketMode::from_str(value) {
                     Ok(Fill) => self.mode = Fill,
                     Ok(Outline) => self.mode = Outline,
+                    _ => (),
+                };
+            }
+            "degrees" => {
+                // use self::FloodFillDegrees::*;
+                match FloodFillDegrees::from_str(value) {
+                    Ok(d) => self.degrees = d,
                     _ => (),
                 };
             }
