@@ -36,11 +36,13 @@ pub fn pixel_antiperfect(path: &Pixels) -> Pixels {
         if curr.point.x != next.point.x
         && curr.point.y != next.point.y {
             let mut between = curr.clone();
-            if next.point.x > curr.point.x {
-                between.point.x += 1.;
-            } else {
-                between.point.y += 1.;
-            }
+            match (next.point.x > curr.point.x, next.point.y > curr.point.y) {
+                (true, true) => {between.point.x += 1.;}
+                (true, false) => {between.point.x += 1.;}
+                (false, true) => {between.point.x -= 1.;}
+                (false, false) => {between.point.y -= 1.;}
+            };
+
             ret.push(*curr);
             ret.push(between);
             ret.push(*next);

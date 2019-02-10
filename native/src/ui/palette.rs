@@ -57,7 +57,13 @@ pub fn draw_color_picker(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 f
             };
 
-            let mut sel: [f32; 4] = state.xpr.selected_color.into();
+            let mut sel: [f32; 4] = {
+                if let Some(col) = &state.xpr.color_picker_color  {
+                    (*col).into()
+                } else {
+                    state.xpr.selected_color.into()
+                }
+            };
             let b = ui
                 .color_picker(im_str!("MyColor##4"), &mut sel)
                 .flags(misc_flags)

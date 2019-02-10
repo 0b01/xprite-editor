@@ -3,6 +3,7 @@ use crate::prelude::*;
 #[derive(Clone, Default, Debug)]
 pub struct ColorPicker {
     cursor: Option<Pixels>,
+    temp: Option<Color>,
     col: Option<Color>,
 }
 
@@ -10,8 +11,21 @@ impl ColorPicker {
     pub fn new() -> Self {
         ColorPicker {
             cursor: None,
+            temp: None,
             col: None,
         }
+    }
+
+    fn find_color(&self, xpr: &Xprite, point: Vec2f) -> Option<Color> {
+        let colors: Vec<_> = xpr
+            .history
+            .top()
+            .groups
+            .iter()
+            .map(|group| group.1.iter().map(|layer| layer.get_color(point)))
+            .flatten()
+            .collect();
+        *colors.iter().find(|i| i.is_some())?
     }
 }
 
@@ -24,6 +38,11 @@ impl Tool for ColorPicker {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor = Some(pixels!(Pixel { point, color }));
+        self.temp = if let Some(col) = self.find_color(xpr, point) {
+            Some(col)
+        } else {
+            Some(Color::transparent())
+        };
         Ok(())
     }
 
@@ -33,30 +52,24 @@ impl Tool for ColorPicker {
 
     fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, _button: InputItem) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
-        let colors: Vec<_> = xpr
-            .history
-            .top()
-            .groups
-            .iter()
-            .map(|group| group.1.iter().map(|layer| layer.get_color(point)))
-            .flatten()
-            .collect();
-        let picked = colors.iter().find(|i| i.is_some());
-        match picked {
-            Some(Some(col)) => {
-                self.col = Some(*col);
-            }
-            Some(None) => panic!("impossible"),
-            None => self.col = Some(Color::transparent()),
-        }
+        self.col = if let Some(col) = self.find_color(xpr, point) {
+            Some(col)
+        } else {
+            Some(Color::transparent())
+        };
         Ok(())
     }
 
     fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
+        if let Some(temp) = self.temp { // order is important
+            xpr.color_picker_color = Some(temp);
+        }
         if let Some(col) = self.col {
             xpr.set_color(&col);
+            xpr.color_picker_color = None;
         }
         self.col = None;
+        self.temp = None;
         Ok(false)
     }
 

@@ -100,11 +100,11 @@ impl Toolbox {
             },
             Ellipse => match self.selected {
                 Ellipse => {
-                    self.rect.borrow_mut().filled = true;
+                    self.ellipse.borrow_mut().filled = true;
                     FilledEllipse
                 }
                 FilledEllipse => {
-                    self.rect.borrow_mut().filled = false;
+                    self.ellipse.borrow_mut().filled = false;
                     Ellipse
                 }
                 _ => Ellipse,

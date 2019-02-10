@@ -13,6 +13,7 @@ pub struct Xprite {
     marq_buf: Vec<MarqueePixel>,
 
     pub canvas: Canvas,
+    pub color_picker_color: Option<Color>,
     pub selected_color: Color,
     pub palette_man: PaletteManager,
 
@@ -37,6 +38,7 @@ impl Default for Xprite {
         Self {
             palette_man,
             selected_color,
+            color_picker_color: None,
             history: Default::default(),
             im_buf: Default::default(),
             bz_buf: Default::default(),
