@@ -64,18 +64,18 @@ fn get_callback() -> impl Fn(&mut State) {
         let save = state.file_popup.show_file_is_save;
         if fname.ends_with(".ase") || fname.ends_with(".aseprite") {
             if save {
-                state.save_ase(&fname.to_owned());
+                state.xpr.save_ase(&fname.to_owned());
             } else {
-                state.load_ase(&fname.to_owned());
+                state.xpr = Xprite::load_ase(&fname.to_owned());
             }
         } else if fname.ends_with(".png")
             || fname.ends_with(".jpg")
             || fname.ends_with(".jpeg")
         {
             if save {
-                state.save_img(&fname.to_owned());
+                state.xpr.save_img(&fname.to_owned());
             } else {
-                state.load_img(&fname.to_owned());
+                state.xpr = Xprite::load_img(&fname.to_owned());
             }
         } else {
             info!("unimplemented file format {}", &fname);

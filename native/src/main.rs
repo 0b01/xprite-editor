@@ -60,7 +60,7 @@ fn run_python_script(fname: &str) -> Result<(), String> {
     let xpr = xprite::scripting::python::python(fname)?;
     println!("Finished {}", fname);
     let mut state = State::new(xpr);
-    state.save_img("1.png");
+    state.xpr.save_img("1.png");
     Ok(())
 }
 
@@ -74,7 +74,7 @@ fn run_ui() {
 
     render::run("Xprite".to_owned(), BGCOLOR, |ui, gl_ctx, textures| {
         let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures);
-        // let mut rdr = ImguiCairoRenderer::new(&ui, gl_ctx, textures, &state);
+        state.load_icons(&mut rdr);
         ui::draw(&mut rdr, &mut state, ui)
     });
 }

@@ -4,5 +4,6 @@ pub use xprite::core::hotkey::{Action, Bind, HotkeyController};
 pub use xprite::image;
 pub use xprite::prelude::*;
 pub use xprite::rendering::Renderer;
+pub use xprite::indexmap::{IndexMap, IndexSet};
 
 pub use crate::consts::*;

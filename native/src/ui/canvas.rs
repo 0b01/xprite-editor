@@ -70,7 +70,11 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
 
                         state.xpr.render_canvas_extras(rdr);
 
-                        draw_cursor_cross(ui);
+                        if state.xpr.toolbox.selected == ToolType::ColorPicker {
+                            draw_color_picker(state, ui);
+                        } else {
+                            draw_cursor_cross(ui);
+                        }
                     });
             });
 
@@ -136,4 +140,15 @@ fn draw_cursor_cross(ui: &Ui) {
     draw_list.add_line(down1, down2, color2).build();
     draw_list.add_line(left1, left2, color2).build();
     draw_list.add_line(right1, right2, color2).build();
+}
+
+
+fn draw_color_picker(state: &mut State, ui: &Ui) {
+    let (x, y) = ui.imgui().mouse_pos();
+    ui.set_cursor_screen_pos([x-10.,y-10.]);
+    ui.image(
+        ImTexture::from(state.color_picker_texture.unwrap()),
+        [20., 20.],
+    )
+    .build();
 }

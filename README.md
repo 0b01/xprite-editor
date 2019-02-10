@@ -12,15 +12,16 @@ git submodule update --init --recursive
 
 ## Bugs and Improvements
 
-* [ ] huge refactor to eliminate copying pixels
+* [ ] Performance is bad when drawing with 150x150 brush
+* [ ] huge refactor to eliminate pixels copying
 * [ ] Symmetry tool
 * [ ] Marquee tool
-* [ ] show selected color in palette
 * [ ] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
 * [ ] Outline in selected area
-* [ ] Autoshade: erode and then color gradient
+* [ ] Autoshade: erode and then color with gradient
 
 ## Backburner
+
 * [ ] Partial sorting curves(read TC Inglis thesis)
 * [ ] Line modes(perfect span, predictable, continuous, bresenham)
 * [ ] Replace pyo3 with RustPython
@@ -36,6 +37,9 @@ git submodule update --init --recursive
 
 ## Done
 
+* [x] Icon for color picker
+* [x] hover show color in color picker
+* [x] show selected color in palette
 * [x] put info in panel (radius, aspect ratio, etc.)
 * [x] Preview window preserve aspect ratio, modes(fill, 1x, 2x)
 * [x] Set brush size

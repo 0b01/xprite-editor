@@ -1,8 +1,6 @@
 use crate::prelude::*;
 use crate::render::imgui::ImguiRenderer;
 use std::borrow::Cow;
-use std::fs::File;
-use xprite::image::GenericImageView;
 use xprite::rendering::image_renderer::ImageRenderer;
 
 use std::str::FromStr;
@@ -112,6 +110,7 @@ pub struct State<'a> {
     pub brush: BrushState,
 
     pub texture: Option<usize>,
+    pub color_picker_texture: Option<usize>,
 }
 
 impl<'a> Default for State<'a> {
@@ -131,6 +130,7 @@ impl<'a> Default for State<'a> {
             cols_per_row: 8,
             rename_layer: None,
             rename_group: None,
+            color_picker_texture: None,
         }
     }
 }
@@ -143,18 +143,12 @@ impl<'a> State<'a> {
         }
     }
 
-    pub fn update_preview(&mut self, rdr: &mut ImguiRenderer) {
-        let mut img_rdr =
-            ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
-        img_rdr.fill_canvas();
-        self.xpr.preview(&mut img_rdr).unwrap();
-        img_rdr.render();
-        let img = img_rdr.as_img();
-        if let Some(id) = self.texture {
-            rdr.replace_img(img.to_owned(), image::RGBA(0), id);
-        } else {
-            self.texture = Some(rdr.add_img(img.to_owned(), image::RGBA(0)));
-        }
+    pub fn load_icons(&mut self, rdr: &mut ImguiRenderer) {
+        if self.color_picker_texture.is_some() { return; }
+        let color_picker = include_bytes!("../colorpicker.png");
+        let img = image::load_from_memory(color_picker).unwrap();
+        let texture_id = rdr.add_img(img, image::ColorType::RGBA(0));
+        self.color_picker_texture = Some(texture_id);
     }
 
     /// checks if texture needs to be updated.
@@ -170,42 +164,23 @@ impl<'a> State<'a> {
         Ok(())
     }
 
+    fn update_preview(&mut self, rdr: &mut ImguiRenderer) {
+        let mut img_rdr =
+            ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
+        img_rdr.fill_canvas();
+        self.xpr.preview(&mut img_rdr).unwrap();
+        img_rdr.render();
+        let img = img_rdr.as_img();
+        if let Some(id) = self.texture {
+            rdr.replace_img(img.to_owned(), image::RGBA(0), id);
+        } else {
+            self.texture = Some(rdr.add_img(img.to_owned(), image::RGBA(0)));
+        }
+    }
+
     pub fn toggle_hotkeys(&mut self) {
         debug!("Toggle hotkeys");
         self.hotkeys.toggle();
-    }
-
-    pub fn save_img(&mut self, img_path: &str) {
-        let mut rdr =
-            ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
-        self.xpr.export(&mut rdr).unwrap();
-        rdr.render();
-        let im = rdr.as_img();
-        info!("writing file to {}", img_path);
-        im.save(img_path).unwrap();
-    }
-
-    pub fn load_img(&mut self, png_path: &str) {
-        info!("loading png file {}", png_path);
-        let img = xprite::image::open(png_path).unwrap();
-        let (w, h) = img.dimensions();
-        let mut xpr = Xprite::new(w as f64, h as f64);
-        xpr.current_layer_mut().unwrap().content = img.into();
-        self.xpr = xpr; // TODO: create a new tab for file
-    }
-
-    pub fn save_ase(&mut self, file_path: &str) {
-        info!("saving ase file to {}", file_path);
-        let mut f = File::create(file_path).unwrap();
-        let aseprite = self.xpr.as_ase();
-        aseprite.write(&mut f).unwrap();
-    }
-
-    pub fn load_ase(&mut self, file_path: &str) {
-        info!("loading ase file {}", file_path);
-        let mut f = File::open(file_path).unwrap();
-        let ase = xprite::ase::Aseprite::from_read(&mut f).unwrap();
-        self.xpr = Xprite::from_ase(&ase);
     }
 
     pub fn execute(&mut self, bind: Bind) -> Result<(), String> {
@@ -228,7 +203,6 @@ impl<'a> State<'a> {
                 self.file_popup.show_file_popup = true;
                 self.file_popup.show_file_is_save = true;
             }
-
             RunScript => {
                 unimplemented!();
             }

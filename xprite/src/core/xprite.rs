@@ -470,6 +470,44 @@ impl Xprite {
     }
 }
 
+use std::fs::File;
+use std::io::{Read, Cursor};
+use img::GenericImageView;
+impl Xprite {
+    pub fn save_img(&mut self, img_path: &str) {
+        let mut rdr =
+            ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
+        self.export(&mut rdr).unwrap();
+        rdr.render();
+        let im = rdr.as_img();
+        info!("writing file to {}", img_path);
+        im.save(img_path).unwrap();
+    }
+
+    pub fn load_img(png_path: &str) -> Xprite {
+        info!("loading png file {}", png_path);
+        let img = img::open(png_path).unwrap();
+        let (w, h) = img.dimensions();
+        let mut xpr = Xprite::new(w as f64, h as f64);
+        xpr.current_layer_mut().unwrap().content = img.into();
+        xpr // TODO: create a new tab for file
+    }
+
+    pub fn save_ase(&mut self, file_path: &str) {
+        info!("saving ase file to {}", file_path);
+        let mut f = File::create(file_path).unwrap();
+        let aseprite = self.as_ase();
+        aseprite.write(&mut f).unwrap();
+    }
+
+    pub fn load_ase(file_path: &str) -> Xprite {
+        info!("loading ase file {}", file_path);
+        let mut f = File::open(file_path).unwrap();
+        let ase = ase::Aseprite::from_read(&mut f).unwrap();
+        Xprite::from_ase(&ase)
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
