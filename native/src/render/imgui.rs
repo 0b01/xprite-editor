@@ -58,7 +58,13 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
             .build();
     }
 
-    fn rect(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32; 4], filled: bool) {
+    fn rect(
+        &mut self,
+        p0: [f64; 2],
+        p1: [f64; 2],
+        color: [f32; 4],
+        filled: bool,
+    ) {
         // self.draw_list
         //     .insert((canonicalize(p0), canonicalize(p1)), (color, filled));
 
@@ -87,7 +93,11 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         self.ui.imgui().set_mouse_cursor(c);
     }
 
-    fn add_img(&mut self, img: image::DynamicImage, format: image::ColorType) -> usize {
+    fn add_img(
+        &mut self,
+        img: image::DynamicImage,
+        format: image::ColorType,
+    ) -> usize {
         let gl_texture = self.to_gl_texture(img, format);
         self.textures.insert(gl_texture).id()
     }
@@ -100,7 +110,11 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
 }
 
 impl<'ui> ImguiRenderer<'ui> {
-    pub fn new(ui: &'ui Ui, gl_ctx: &'ui Facade, textures: &'ui mut Textures<Texture2d>) -> Self {
+    pub fn new(
+        ui: &'ui Ui,
+        gl_ctx: &'ui Facade,
+        textures: &'ui mut Textures<Texture2d>,
+    ) -> Self {
         Self {
             ui,
             gl_ctx,
@@ -119,7 +133,11 @@ impl<'ui> ImguiRenderer<'ui> {
             .replace(ImTexture::from(texture_id), gl_texture);
     }
 
-    fn to_gl_texture(&self, img: image::DynamicImage, format: image::ColorType) -> Texture2d {
+    fn to_gl_texture(
+        &self,
+        img: image::DynamicImage,
+        format: image::ColorType,
+    ) -> Texture2d {
         let format = match format {
             image::ColorType::RGBA(_) => ClientFormat::U8U8U8U8,
             image::ColorType::RGB(_) => ClientFormat::U8U8U8,

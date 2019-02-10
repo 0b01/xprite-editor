@@ -116,11 +116,20 @@ impl Canvas {
         };
         let rad = self.scale * radius;
 
-        mouse.x < p0.x + rad && mouse.x > p0.x - rad && mouse.y < p0.y + rad && mouse.y > p0.y - rad
+        mouse.x < p0.x + rad
+            && mouse.x > p0.x - rad
+            && mouse.y < p0.y + rad
+            && mouse.y > p0.y - rad
     }
 
     /// draw an outlined pixel
-    pub fn draw_pixel_marqee(&self, rdr: &mut Renderer, p: Vec2f, outline: Outline, ith: usize) {
+    pub fn draw_pixel_marqee(
+        &self,
+        rdr: &mut Renderer,
+        p: Vec2f,
+        outline: Outline,
+        ith: usize,
+    ) {
         let Vec2f { x, y } = p;
         let o = self.origin();
         if oob(x, y, self.art_w, self.art_h) {
@@ -159,7 +168,13 @@ impl Canvas {
     }
 
     /// draw a rectangular pixel using draw list(as opposed to rendering to texture)
-    pub fn draw_pixel_rect(&self, rdr: &mut Renderer, p: Vec2f, color: [f32; 4], filled: bool) {
+    pub fn draw_pixel_rect(
+        &self,
+        rdr: &mut Renderer,
+        p: Vec2f,
+        color: [f32; 4],
+        filled: bool,
+    ) {
         let Vec2f { x, y } = p;
         let o = self.origin();
         if oob(x, y, self.art_w, self.art_h) {
@@ -206,14 +221,24 @@ impl Canvas {
         }
     }
 
-    pub fn draw_line(&self, rdr: &mut Renderer, p0: Vec2f, p1: Vec2f, c: [f32; 4]) {
+    pub fn draw_line(
+        &self,
+        rdr: &mut Renderer,
+        p0: Vec2f,
+        p1: Vec2f,
+        c: [f32; 4],
+    ) {
         let p0 = self.to_cli(p0).into();
         let p1 = self.to_cli(p1).into();
 
         rdr.line(p0, p1, c);
     }
 
-    pub fn update_zoom(&mut self, wheel_delta: f64, (cursor_x, cursor_y): (f64, f64)) {
+    pub fn update_zoom(
+        &mut self,
+        wheel_delta: f64,
+        (cursor_x, cursor_y): (f64, f64),
+    ) {
         if wheel_delta == 0. {
             return;
         }
@@ -223,11 +248,15 @@ impl Canvas {
         } else if new_scale > 10. {
             new_scale = 10.;
         }
-        let ratio_x = (cursor_x - self.win_x - self.scroll.x) / (self.scale * self.art_w);
-        let ratio_y = (cursor_y - self.win_y - self.scroll.y) / (self.scale * self.art_h);
+        let ratio_x =
+            (cursor_x - self.win_x - self.scroll.x) / (self.scale * self.art_w);
+        let ratio_y =
+            (cursor_y - self.win_y - self.scroll.y) / (self.scale * self.art_h);
 
-        self.scroll.x = cursor_x - ratio_x * (new_scale * self.art_w) - self.win_x;
-        self.scroll.y = cursor_y - ratio_y * (new_scale * self.art_h) - self.win_y;
+        self.scroll.x =
+            cursor_x - ratio_x * (new_scale * self.art_w) - self.win_x;
+        self.scroll.y =
+            cursor_y - ratio_y * (new_scale * self.art_h) - self.win_y;
         self.scale = new_scale;
     }
 

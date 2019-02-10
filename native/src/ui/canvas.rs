@@ -43,7 +43,10 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         update_viewport(state, ui);
                         super::inputs::bind_input(state, ui);
                         let origin = state.xpr.canvas.origin();
-                        ui.set_cursor_screen_pos([origin.x as f32, origin.y as f32]);
+                        ui.set_cursor_screen_pos([
+                            origin.x as f32,
+                            origin.y as f32,
+                        ]);
                         rdr.render();
 
                         state.redraw_pixels(rdr).unwrap();
@@ -51,8 +54,12 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         ui.image(
                             ImTexture::from(state.texture.unwrap()),
                             [
-                                (state.xpr.canvas.art_w * state.xpr.canvas.scale) as f32,
-                                (state.xpr.canvas.art_h * state.xpr.canvas.scale) as f32,
+                                (state.xpr.canvas.art_w
+                                    * state.xpr.canvas.scale)
+                                    as f32,
+                                (state.xpr.canvas.art_h
+                                    * state.xpr.canvas.scale)
+                                    as f32,
                             ],
                         )
                         .build();

@@ -33,7 +33,13 @@ impl Renderer for ImageRenderer {
     ) {
     }
 
-    fn rect(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32; 4], filled: bool) {
+    fn rect(
+        &mut self,
+        p0: [f64; 2],
+        p1: [f64; 2],
+        color: [f32; 4],
+        filled: bool,
+    ) {
         ()
     }
 
@@ -87,7 +93,9 @@ impl ImageRenderer {
         use img::Pixel;
         let color = Rgba::from_channels(200, 200, 200, 255);
 
-        for (_i, p) in self.image.as_mut_rgba8().unwrap().pixels_mut().enumerate() {
+        for (_i, p) in
+            self.image.as_mut_rgba8().unwrap().pixels_mut().enumerate()
+        {
             *p = color;
         }
     }

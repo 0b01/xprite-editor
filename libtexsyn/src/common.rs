@@ -82,8 +82,12 @@ pub struct Rect {
     pub size: (u32, u32),
 }
 
-pub fn blit_rect<I>(bottom: &mut I, top: &I, rect: &Rect, buf_coords: (u32, u32))
-where
+pub fn blit_rect<I>(
+    bottom: &mut I,
+    top: &I,
+    rect: &Rect,
+    buf_coords: (u32, u32),
+) where
     I: GenericImage,
 {
     for x in 0..rect.size.0 {

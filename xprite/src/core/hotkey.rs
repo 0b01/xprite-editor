@@ -124,9 +124,13 @@ impl HotkeyController {
                 Action::Alt(false, false, true, true),
                 Bind::PushTool(ToolType::ColorPicker),
             );
-            binds.insert(Action::Alt(false, false, false, false), Bind::PopTool);
+            binds
+                .insert(Action::Alt(false, false, false, false), Bind::PopTool);
 
-            binds.insert(Action::Return(true, false, false, true), Bind::RunScript);
+            binds.insert(
+                Action::Return(true, false, false, true),
+                Bind::RunScript,
+            );
             // ctrl-s
             binds.insert(Action::S(true, false, false, true), Bind::Save);
             binds.insert(Action::O(true, false, false, true), Bind::Load);

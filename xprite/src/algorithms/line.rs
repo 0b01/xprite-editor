@@ -29,15 +29,31 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
             1 => {
                 let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(y0 + i as f64 / 2., x0 + i as f64, Color::red()));
-                    ret.push(pixel!(y0 + i as f64 / 2., x0 + 1. + i as f64, Color::red()));
+                    ret.push(pixel!(
+                        y0 + i as f64 / 2.,
+                        x0 + i as f64,
+                        Color::red()
+                    ));
+                    ret.push(pixel!(
+                        y0 + i as f64 / 2.,
+                        x0 + 1. + i as f64,
+                        Color::red()
+                    ));
                 }
             }
             2 => {
                 let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(y0 + i as f64, x0 + i as f64 / 2., Color::red()));
-                    ret.push(pixel!(y0 + 1. + i as f64, x0 + i as f64 / 2., Color::red()));
+                    ret.push(pixel!(
+                        y0 + i as f64,
+                        x0 + i as f64 / 2.,
+                        Color::red()
+                    ));
+                    ret.push(pixel!(
+                        y0 + 1. + i as f64,
+                        x0 + i as f64 / 2.,
+                        Color::red()
+                    ));
                 }
             }
             3 => {
@@ -48,15 +64,31 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
             4 => {
                 let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(y0 + i as f64, x0 - i as f64 / 2., Color::red()));
-                    ret.push(pixel!(y0 + 1. + i as f64, x0 - i as f64 / 2., Color::red()));
+                    ret.push(pixel!(
+                        y0 + i as f64,
+                        x0 - i as f64 / 2.,
+                        Color::red()
+                    ));
+                    ret.push(pixel!(
+                        y0 + 1. + i as f64,
+                        x0 - i as f64 / 2.,
+                        Color::red()
+                    ));
                 }
             }
             5 => {
                 let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(y0 + i as f64 / 2., x0 - i as f64, Color::red()));
-                    ret.push(pixel!(y0 + i as f64 / 2., x0 - 1. - i as f64, Color::red()));
+                    ret.push(pixel!(
+                        y0 + i as f64 / 2.,
+                        x0 - i as f64,
+                        Color::red()
+                    ));
+                    ret.push(pixel!(
+                        y0 + i as f64 / 2.,
+                        x0 - 1. - i as f64,
+                        Color::red()
+                    ));
                 }
             }
             6 => {
@@ -67,15 +99,31 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
             7 => {
                 let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(y0 - i as f64 / 2., x0 - i as f64, Color::red()));
-                    ret.push(pixel!(y0 - i as f64 / 2., x0 - 1. - i as f64, Color::red()));
+                    ret.push(pixel!(
+                        y0 - i as f64 / 2.,
+                        x0 - i as f64,
+                        Color::red()
+                    ));
+                    ret.push(pixel!(
+                        y0 - i as f64 / 2.,
+                        x0 - 1. - i as f64,
+                        Color::red()
+                    ));
                 }
             }
             8 => {
                 let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(y0 - i as f64, x0 - i as f64 / 2., Color::red()));
-                    ret.push(pixel!(y0 - 1. - i as f64, x0 - i as f64 / 2., Color::red()));
+                    ret.push(pixel!(
+                        y0 - i as f64,
+                        x0 - i as f64 / 2.,
+                        Color::red()
+                    ));
+                    ret.push(pixel!(
+                        y0 - 1. - i as f64,
+                        x0 - i as f64 / 2.,
+                        Color::red()
+                    ));
                 }
             }
             9 => {
@@ -86,15 +134,31 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
             10 => {
                 let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(y0 - i as f64, x0 + i as f64 / 2., Color::red()));
-                    ret.push(pixel!(y0 - 1. - i as f64, x0 + i as f64 / 2., Color::red()));
+                    ret.push(pixel!(
+                        y0 - i as f64,
+                        x0 + i as f64 / 2.,
+                        Color::red()
+                    ));
+                    ret.push(pixel!(
+                        y0 - 1. - i as f64,
+                        x0 + i as f64 / 2.,
+                        Color::red()
+                    ));
                 }
             }
             11 => {
                 let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(y0 - i as f64 / 2., x0 + i as f64, Color::red()));
-                    ret.push(pixel!(y0 - i as f64 / 2., x0 + 1. + i as f64, Color::red()));
+                    ret.push(pixel!(
+                        y0 - i as f64 / 2.,
+                        x0 + i as f64,
+                        Color::red()
+                    ));
+                    ret.push(pixel!(
+                        y0 - i as f64 / 2.,
+                        x0 + 1. + i as f64,
+                        Color::red()
+                    ));
                 }
             }
             _ => (),

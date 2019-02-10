@@ -144,7 +144,8 @@ impl<'a> State<'a> {
     }
 
     pub fn update_preview(&mut self, rdr: &mut ImguiRenderer) {
-        let mut img_rdr = ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
+        let mut img_rdr =
+            ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
         img_rdr.fill_canvas();
         self.xpr.preview(&mut img_rdr).unwrap();
         img_rdr.render();
@@ -158,7 +159,10 @@ impl<'a> State<'a> {
 
     /// checks if texture needs to be updated.
     /// redraw texture
-    pub fn redraw_pixels(&mut self, rdr: &mut ImguiRenderer) -> Result<(), String> {
+    pub fn redraw_pixels(
+        &mut self,
+        rdr: &mut ImguiRenderer,
+    ) -> Result<(), String> {
         if self.xpr.redraw || self.texture.is_none() {
             self.update_preview(rdr);
             self.xpr.redraw = false;
@@ -172,7 +176,8 @@ impl<'a> State<'a> {
     }
 
     pub fn save_img(&mut self, img_path: &str) {
-        let mut rdr = ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
+        let mut rdr =
+            ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
         self.xpr.export(&mut rdr).unwrap();
         rdr.render();
         let im = rdr.as_img();

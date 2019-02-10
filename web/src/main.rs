@@ -14,7 +14,9 @@ use std::rc::Rc;
 use std::str::FromStr;
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
-use stdweb::web::event::{KeyDownEvent, KeyUpEvent, MouseDownEvent, MouseMoveEvent, MouseUpEvent};
+use stdweb::web::event::{
+    KeyDownEvent, KeyUpEvent, MouseDownEvent, MouseMoveEvent, MouseUpEvent,
+};
 use stdweb::web::html_element::CanvasElement;
 use stdweb::web::{IEventTarget, IHtmlElement};
 use xprite::prelude::*;
@@ -77,8 +79,12 @@ fn main() {
                         xpr_.borrow_mut().redo()
                     }
                 }
-                "Control" => xpr_.borrow_mut().set_option("ctrl", "true").unwrap(),
-                "Shift" => xpr_.borrow_mut().set_option("shift", "true").unwrap(),
+                "Control" => {
+                    xpr_.borrow_mut().set_option("ctrl", "true").unwrap()
+                }
+                "Shift" => {
+                    xpr_.borrow_mut().set_option("shift", "true").unwrap()
+                }
                 _ => (),
             };
         }
@@ -88,8 +94,12 @@ fn main() {
     doc.add_event_listener({
         move |event: KeyUpEvent| {
             match event.key().as_ref() {
-                "Control" => xpr_.borrow_mut().set_option("ctrl", "false").unwrap(),
-                "Shift" => xpr_.borrow_mut().set_option("shift", "false").unwrap(),
+                "Control" => {
+                    xpr_.borrow_mut().set_option("ctrl", "false").unwrap()
+                }
+                "Shift" => {
+                    xpr_.borrow_mut().set_option("shift", "false").unwrap()
+                }
                 _ => (),
             };
         }
@@ -203,13 +213,14 @@ fn init_js_bindings(xpr: &Rc<RefCell<Xprite>>) {
         ()
     };
     let xpr_ = xpr.clone();
-    let fn_set_option_for_tool = move |name: String, opt: String, val: String| {
-        let tool = ToolType::from_str(&name).unwrap();
-        xpr_.borrow_mut()
-            .set_option_for_tool(&tool, &opt, &val)
-            .unwrap();
-        ()
-    };
+    let fn_set_option_for_tool =
+        move |name: String, opt: String, val: String| {
+            let tool = ToolType::from_str(&name).unwrap();
+            xpr_.borrow_mut()
+                .set_option_for_tool(&tool, &opt, &val)
+                .unwrap();
+            ()
+        };
     let xpr_ = xpr.clone();
     let fn_change_tool = move |name: String| {
         let tool = ToolType::from_str(&name).unwrap();

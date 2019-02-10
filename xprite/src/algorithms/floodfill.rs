@@ -84,7 +84,14 @@ mod test {
         let mut pixs = Pixels::new();
         pixs.push(pixel!(0., 0., Color::black()));
         pixs.push(pixel!(0., 1., Color::black()));
-        let to_fill = floodfill(2., 2., &pixs, Vec2f { x: 1., y: 1. }, None, Color::red());
+        let to_fill = floodfill(
+            2.,
+            2.,
+            &pixs,
+            Vec2f { x: 1., y: 1. },
+            None,
+            Color::red(),
+        );
         assert_eq!(
             Pixels::from_slice(&vec![
                 pixel!(1, 1, Color::red()),
@@ -145,7 +152,14 @@ mod test {
         pixs.push(pixel!(2., 1., Color::black()));
         pixs.push(pixel!(2., 2., Color::black()));
 
-        let to_fill = floodfill(4., 3., &pixs, Vec2f { x: 1., y: 1. }, None, Color::blue());
+        let to_fill = floodfill(
+            4.,
+            3.,
+            &pixs,
+            Vec2f { x: 1., y: 1. },
+            None,
+            Color::blue(),
+        );
         assert_eq!(
             Pixels::from_slice(&vec![
                 pixel!(1, 1, Color::blue()),

@@ -117,7 +117,9 @@ impl QuilterParams {
     ) -> Result<QuilterParams, String> {
         // Check that input size and overlap size are non zero
         match size {
-            (0, _) | (_, 0) => return Err("Output size can't be zero".to_owned()),
+            (0, _) | (_, 0) => {
+                return Err("Output size can't be zero".to_owned());
+            }
             _ => (),
         }
         if overlap == 0 {
@@ -125,11 +127,16 @@ impl QuilterParams {
         }
         // Check that the patch size is in a valid range
         if patch_size < (2 * overlap) {
-            return Err("Patch size must be at least twice the overlap area size".to_owned());
+            return Err(
+                "Patch size must be at least twice the overlap area size"
+                    .to_owned(),
+            );
         }
         if let Some(s) = selection_chance {
             if s <= 0. {
-                return Err("Selection chance must be strictly positive".to_owned());
+                return Err(
+                    "Selection chance must be strictly positive".to_owned()
+                );
             }
         }
 
@@ -165,15 +172,22 @@ impl Quilter {
         // Safety checks
         // Check that the image dimensions are at least as large as the patch size
         let (src_width, src_height) = source_size;
-        if self.params.patch_size > src_width || self.params.patch_size > src_height {
-            return Err("Patch size must be smaller than the image smallest dimension".to_owned());
+        if self.params.patch_size > src_width
+            || self.params.patch_size > src_height
+        {
+            return Err(
+                "Patch size must be smaller than the image smallest dimension"
+                    .to_owned(),
+            );
         }
         // Check that the seed patch is within bounds
         if let Some((x_seed, y_seed)) = self.params.seed_coords {
             if (x_seed + self.params.patch_size) > src_width
                 || (y_seed + self.params.patch_size) > src_height
             {
-                return Err("Seed patch coordinates are out of bounds".to_owned());
+                return Err(
+                    "Seed patch coordinates are out of bounds".to_owned()
+                );
             }
         }
         Ok(())
@@ -210,12 +224,14 @@ impl Quilter {
             return Err("selection height is smaller than patch size".to_owned());
         }
         let patch_x_dist = Range::new(0u32, img_width - self.params.patch_size);
-        let patch_y_dist = Range::new(0u32, img_height - self.params.patch_size);
+        let patch_y_dist =
+            Range::new(0u32, img_height - self.params.patch_size);
         blit_rect(
             self.buffer_opt.as_mut().unwrap(),
             &self.source,
             &Rect {
-                coords: if let Some(seed_coordinates) = self.params.seed_coords {
+                coords: if let Some(seed_coordinates) = self.params.seed_coords
+                {
                     seed_coordinates
                 } else {
                     (
@@ -236,7 +252,8 @@ impl Quilter {
                 let area = patch_overlap_area((patch_x, patch_y));
                 let corner = (patch_x * step, patch_y * step);
                 let candidate = self.select_candidate(area, corner);
-                let err_surf = self.patch_error_surface(area, &candidate, corner);
+                let err_surf =
+                    self.patch_error_surface(area, &candidate, corner);
                 self.cut_and_blit_patch(&candidate, corner, &err_surf, area)?;
 
                 // println!("Done patch ({}, {})", patch_x, patch_y);
@@ -251,7 +268,12 @@ impl Quilter {
 
     /// Compute the error between the specified overlap area of the specified
     /// patch and the buffer.
-    fn patch_error(&self, area: OverlapArea, patch: &Patch, buf_coords: (u32, u32)) -> f64 {
+    fn patch_error(
+        &self,
+        area: OverlapArea,
+        patch: &Patch,
+        buf_coords: (u32, u32),
+    ) -> f64 {
         let buffer = self.buffer_opt.as_ref().unwrap();
         match area {
             OverlapArea::Top => patch_rect_error(
@@ -292,10 +314,15 @@ impl Quilter {
 
     /// Find a candidate patch to be quilted at the specified coordinates on
     /// the buffer.
-    fn select_candidate(&self, area: OverlapArea, buf_coords: (u32, u32)) -> Patch {
+    fn select_candidate(
+        &self,
+        area: OverlapArea,
+        buf_coords: (u32, u32),
+    ) -> Patch {
         const TOLERANCE: f64 = 0.1;
         let (w, h) = self.source.dimensions();
-        let (max_x, max_y) = (w - self.params.patch_size, h - self.params.patch_size);
+        let (max_x, max_y) =
+            (w - self.params.patch_size, h - self.params.patch_size);
         let candidates_scores = Mutex::new(vec![]);
         let current_best = Mutex::new(std::f64::INFINITY);
         let mut rng = thread_rng();
@@ -313,7 +340,8 @@ impl Quilter {
                             };
                             let error = self.patch_error(area, &p, buf_coords);
                             if error < *best * (1. + TOLERANCE) {
-                                *best = if error < *best { error } else { *best };
+                                *best =
+                                    if error < *best { error } else { *best };
                                 scores.push((p, error));
                             }
                         }
@@ -361,7 +389,8 @@ impl Quilter {
         patch: &Patch,
         buf_coords: (u32, u32),
     ) -> ErrorSurface {
-        let mut err_surf = ErrorSurface::new(self.params.patch_size, self.params.patch_size);
+        let mut err_surf =
+            ErrorSurface::new(self.params.patch_size, self.params.patch_size);
         let (xs, ys) = buf_coords;
         let (px, py) = patch.coords;
         let dist = self.params.distance_func;
@@ -371,7 +400,10 @@ impl Quilter {
                     for y in 0..self.params.overlap {
                         let err = dist(
                             self.source.get_pixel(px + x, py + y),
-                            self.buffer_opt.as_ref().unwrap().get_pixel(xs + x, ys + x),
+                            self.buffer_opt
+                                .as_ref()
+                                .unwrap()
+                                .get_pixel(xs + x, ys + x),
                         );
                         err_surf.put_pixel(x, y, Luma { data: [err] });
                     }
@@ -382,7 +414,10 @@ impl Quilter {
                     for y in 0..self.params.patch_size {
                         let err = dist(
                             self.source.get_pixel(px + x, py + y),
-                            self.buffer_opt.as_ref().unwrap().get_pixel(xs + x, ys + x),
+                            self.buffer_opt
+                                .as_ref()
+                                .unwrap()
+                                .get_pixel(xs + x, ys + x),
                         );
                         err_surf.put_pixel(x, y, Luma { data: [err] });
                     }
@@ -393,7 +428,10 @@ impl Quilter {
                     for y in 0..self.params.overlap {
                         let err = dist(
                             self.source.get_pixel(px + x, py + y),
-                            self.buffer_opt.as_ref().unwrap().get_pixel(xs + x, ys + x),
+                            self.buffer_opt
+                                .as_ref()
+                                .unwrap()
+                                .get_pixel(xs + x, ys + x),
                         );
                         err_surf.put_pixel(x, y, Luma { data: [err] });
                     }
@@ -402,7 +440,10 @@ impl Quilter {
                     for y in self.params.overlap..self.params.patch_size {
                         let err = dist(
                             self.source.get_pixel(px + x, py + y),
-                            self.buffer_opt.as_ref().unwrap().get_pixel(xs + x, ys + x),
+                            self.buffer_opt
+                                .as_ref()
+                                .unwrap()
+                                .get_pixel(xs + x, ys + x),
                         );
                         err_surf.put_pixel(x, y, Luma { data: [err] });
                     }
@@ -444,7 +485,8 @@ impl Quilter {
                         val = v
                     };
                 }
-                val += OrderedFloat::<f64>::try_from(e.get_pixel(x, y).data[0]).unwrap();
+                val += OrderedFloat::<f64>::try_from(e.get_pixel(x, y).data[0])
+                    .unwrap();
                 cost_map.insert((x, y), val);
                 val
             }
@@ -553,7 +595,8 @@ impl Quilter {
                         val = v
                     };
                 }
-                val += OrderedFloat::<f64>::try_from(e.get_pixel(x, y).data[0]).unwrap();
+                val += OrderedFloat::<f64>::try_from(e.get_pixel(x, y).data[0])
+                    .unwrap();
                 cost_map.insert((x, y), val);
                 val
             }
@@ -648,9 +691,10 @@ impl Quilter {
                         buffer.put_pixel(
                             buf_coords.0 + x,
                             buf_coords.1 + yp,
-                            *self
-                                .source
-                                .get_pixel(patch.coords.0 + x, patch.coords.1 + yp),
+                            *self.source.get_pixel(
+                                patch.coords.0 + x,
+                                patch.coords.1 + yp,
+                            ),
                         );
                     }
                 }
@@ -672,9 +716,10 @@ impl Quilter {
                         buffer.put_pixel(
                             buf_coords.0 + xp,
                             buf_coords.1 + y,
-                            *self
-                                .source
-                                .get_pixel(patch.coords.0 + xp, patch.coords.1 + y),
+                            *self.source.get_pixel(
+                                patch.coords.0 + xp,
+                                patch.coords.1 + y,
+                            ),
                         );
                     }
                 }
@@ -729,7 +774,10 @@ impl Quilter {
                     &self.source,
                     &Rect {
                         coords: (patch.coords.0 + overlap, patch.coords.1),
-                        size: (self.params.patch_size - overlap, self.params.patch_size),
+                        size: (
+                            self.params.patch_size - overlap,
+                            self.params.patch_size,
+                        ),
                     },
                     (buf_coords.0 + overlap, buf_coords.1),
                 );
@@ -743,7 +791,10 @@ impl Quilter {
                     &self.source,
                     &Rect {
                         coords: (patch.coords.0, patch.coords.1 + overlap),
-                        size: (self.params.patch_size, self.params.patch_size - overlap),
+                        size: (
+                            self.params.patch_size,
+                            self.params.patch_size - overlap,
+                        ),
                     },
                     (buf_coords.0, buf_coords.1 + overlap),
                 );
@@ -759,13 +810,21 @@ impl Quilter {
                     .partition(|&(x, _)| x >= overlap);
                 self.cut_and_blit_vertical(patch, buf_coords, vpath);
                 self.cut_and_blit_horizontal(patch, buf_coords, hpath);
-                self.cut_and_blit_corner(patch, buf_coords, hpath_corner, vpath_corner);
+                self.cut_and_blit_corner(
+                    patch,
+                    buf_coords,
+                    hpath_corner,
+                    vpath_corner,
+                );
                 let mut buffer = self.buffer_opt.as_mut().unwrap();
                 blit_rect(
                     buffer,
                     &self.source,
                     &Rect {
-                        coords: (patch.coords.0 + overlap, patch.coords.1 + overlap),
+                        coords: (
+                            patch.coords.0 + overlap,
+                            patch.coords.1 + overlap,
+                        ),
                         size: (
                             self.params.patch_size - overlap,
                             self.params.patch_size - overlap,
@@ -806,7 +865,8 @@ mod tests {
             source.put_pixel(0, y, Rgb { data: [255, 0, 0] });
         }
 
-        let params = QuilterParams::new((100, 100), 5, 1, None, None, l1).unwrap();
+        let params =
+            QuilterParams::new((100, 100), 5, 1, None, None, l1).unwrap();
         let mut quilter = Quilter::new(source, params);
         let patch = Patch {
             coords: (0, 0),
@@ -814,7 +874,8 @@ mod tests {
         };
         quilter.buffer_opt = Some(RgbImage::new(11, 11));
 
-        let err_surf = quilter.patch_error_surface(OverlapArea::Left, &patch, (0, 0));
+        let err_surf =
+            quilter.patch_error_surface(OverlapArea::Left, &patch, (0, 0));
         for y in 0..5 {
             let val = err_surf.get_pixel(0, y).data[0];
             assert!(val == 255.);

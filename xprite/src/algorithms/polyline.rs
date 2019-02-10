@@ -38,7 +38,11 @@ impl Polyline {
         });
 
         for _ in 0..(self.pos.len() - 2) {
-            let dist = point_line_distance(self.pos[third], self.pos[first], self.pos[second]);
+            let dist = point_line_distance(
+                self.pos[third],
+                self.pos[first],
+                self.pos[second],
+            );
 
             if dist <= tol {
                 third = third + 1;
@@ -93,5 +97,7 @@ impl Polyline {
 /// distance from p0 to p1--p2
 pub fn point_line_distance(p0: Vec2f, p1: Vec2f, p2: Vec2f) -> f64 {
     ((p2.x - p1.x) * (p1.y - p0.y) - (p1.x - p0.x) * (p2.y - p1.y)).abs()
-        / ((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y as f64 - p1.y as f64)).sqrt()
+        / ((p2.x - p1.x) * (p2.x - p1.x)
+            + (p2.y - p1.y) * (p2.y as f64 - p1.y as f64))
+            .sqrt()
 }

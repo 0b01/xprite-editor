@@ -16,7 +16,8 @@ impl PaintBucketMode {
         }
     }
 
-    pub const VARIANTS: [PaintBucketMode; 2] = [PaintBucketMode::Fill, PaintBucketMode::Outline];
+    pub const VARIANTS: [PaintBucketMode; 2] =
+        [PaintBucketMode::Fill, PaintBucketMode::Outline];
 }
 
 impl FromStr for PaintBucketMode {
@@ -67,7 +68,8 @@ impl PaintBucket {
         let h = xpr.canvas.art_h;
         let current_layer = xpr.current_layer().unwrap();
         let pixs = &current_layer.content;
-        let buffer = algorithms::floodfill::floodfill(w, h, pixs, p, bg_color, color);
+        let buffer =
+            algorithms::floodfill::floodfill(w, h, pixs, p, bg_color, color);
         // info!{"{:#?}", buffer};
         Ok(buffer)
     }
@@ -105,7 +107,12 @@ impl Tool for PaintBucket {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, _button: InputItem) -> Result<(), String> {
+    fn mouse_down(
+        &mut self,
+        xpr: &Xprite,
+        p: Vec2f,
+        _button: InputItem,
+    ) -> Result<(), String> {
         self.is_mouse_down = true;
         let point = xpr.canvas.shrink_size(p);
         let bg_color = xpr.current_layer().unwrap().get_color(point);
@@ -117,7 +124,9 @@ impl Tool for PaintBucket {
                 let perim = {
                     let w = xpr.canvas.art_w;
                     let h = xpr.canvas.art_h;
-                    algorithms::perimeter::find_perimeter(w as usize, h as usize, &ff)
+                    algorithms::perimeter::find_perimeter(
+                        w as usize, h as usize, &ff,
+                    )
                 };
                 Some(perim)
             }
@@ -160,7 +169,12 @@ impl Tool for PaintBucket {
         }
     }
 
-    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(
+        &mut self,
+        _xpr: &Xprite,
+        option: &str,
+        value: &str,
+    ) -> Result<(), String> {
         match option {
             "mode" => {
                 use self::PaintBucketMode::*;

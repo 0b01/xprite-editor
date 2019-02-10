@@ -18,7 +18,9 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         .max(f64::min(x, y) as i32 - 1)
         .build()
     {
-        if texture.blocksize < texture.overlap * 2 && texture.overlap * 2 < f64::min(x, y) as i32 {
+        if texture.blocksize < texture.overlap * 2
+            && texture.overlap * 2 < f64::min(x, y) as i32
+        {
             texture.blocksize = texture.overlap * 2;
         } else {
             texture.blocksize = -1;

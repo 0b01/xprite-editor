@@ -88,7 +88,10 @@ pub fn set_brush(state: &mut State, brush: BrushType) {
         BrushType::Circle | BrushType::Square => {
             state
                 .xpr
-                .set_option("brush", &format!("{}{}", brush.as_str(), state.brush.sz[0]))
+                .set_option(
+                    "brush",
+                    &format!("{}{}", brush.as_str(), state.brush.sz[0]),
+                )
                 .unwrap();
         }
         BrushType::Line => {

@@ -27,7 +27,13 @@ impl Renderer for StdwebRenderer {
         self.canvas.height() as f64
     }
 
-    fn rect(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32; 4], filled: bool) {
+    fn rect(
+        &mut self,
+        p0: [f64; 2],
+        p1: [f64; 2],
+        color: [f32; 4],
+        filled: bool,
+    ) {
         let a = f64::from(p0[0]);
         let b = f64::from(p0[1]);
         let c = f64::from(p1[0]) - a;

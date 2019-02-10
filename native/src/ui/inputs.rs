@@ -72,7 +72,9 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     let x = x.into();
     let y = y.into();
 
-    if (state.xpr.last_mouse_pos.x != x || state.xpr.last_mouse_pos.y != y) && !state.inputs.space {
+    if (state.xpr.last_mouse_pos.x != x || state.xpr.last_mouse_pos.y != y)
+        && !state.inputs.space
+    {
         handle_error!(state.xpr.mouse_move(&MouseMove {
             x: x.into(),
             y: y.into()
@@ -111,7 +113,10 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     // left
-    if state.inputs.debounce(InputItem::Left, left) && using_window && !state.inputs.space {
+    if state.inputs.debounce(InputItem::Left, left)
+        && using_window
+        && !state.inputs.space
+    {
         if left {
             trace!("mouse left down");
             handle_error!(state.xpr.event(&MouseDown {
@@ -152,7 +157,9 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         ($boolval: expr, $key_upper: ident) => {
             if state.inputs.debounce(InputItem::$key_upper, $boolval) {
                 if $boolval {
-                    handle_error!(state.xpr.event(&KeyDown { key: $key_upper }));
+                    handle_error!(state
+                        .xpr
+                        .event(&KeyDown { key: $key_upper }));
                     handle_error!({
                         let bind = state.hotkeys.lookup(Action::$key_upper(
                             state.inputs.ctrl,
@@ -197,8 +204,9 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     expand_handle_input!(
-        A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Key0, Key1,
-        Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9, Return, Space, Grave
+        A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X,
+        Y, Z, Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9,
+        Return, Space, Grave
     );
 
     // for i in 0..512 {

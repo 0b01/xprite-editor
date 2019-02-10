@@ -28,7 +28,8 @@ pub struct Xprite {
 
 impl Default for Xprite {
     fn default() -> Self {
-        let palette_man = PaletteManager::new().expect("Cannot initialize palettes");
+        let palette_man =
+            PaletteManager::new().expect("Cannot initialize palettes");
         let selected_color = Color {
             r: 0,
             g: 0,
@@ -170,14 +171,22 @@ impl Xprite {
         self.history.top_mut().selected_layer_mut()
     }
 
-    pub fn toggle_layer_visibility(&mut self, group: usize, layer: usize) -> Result<(), String> {
+    pub fn toggle_layer_visibility(
+        &mut self,
+        group: usize,
+        layer: usize,
+    ) -> Result<(), String> {
         self.history.enter()?;
         self.history.top_mut().toggle_layer_visibility(group, layer);
         self.redraw = true;
         Ok(())
     }
 
-    pub fn remove_layer(&mut self, group: usize, old: usize) -> Result<(), String> {
+    pub fn remove_layer(
+        &mut self,
+        group: usize,
+        old: usize,
+    ) -> Result<(), String> {
         self.history.enter()?;
         let layers = self.history.top_mut();
         layers.remove_layer(group, old);
@@ -197,8 +206,12 @@ impl Xprite {
         for p in self.cursor.iter() {
             self.canvas
                 .draw_pixel_rect(rdr, p.point, p.color.into(), true);
-            self.canvas
-                .draw_pixel_rect(rdr, p.point, Color::red().into(), false);
+            self.canvas.draw_pixel_rect(
+                rdr,
+                p.point,
+                Color::red().into(),
+                false,
+            );
         }
     }
 
@@ -216,8 +229,15 @@ impl Xprite {
                 from,
                 to,
             } = seg;
-            self.canvas
-                .draw_bezier(rdr, from, ctrl1, ctrl2, to, Color::grey().into(), 1.);
+            self.canvas.draw_bezier(
+                rdr,
+                from,
+                ctrl1,
+                ctrl2,
+                to,
+                Color::grey().into(),
+                1.,
+            );
             let red = Color::red().into();
             let blue = Color::blue().into();
             self.canvas.draw_circle(rdr, from, 0.3, blue, true);
@@ -305,7 +325,10 @@ impl Xprite {
 /// aseprite file format converter
 impl Xprite {
     pub fn as_ase(&self) -> ase::Aseprite {
-        let header = ase::Header::new(self.canvas.art_w as u16, self.canvas.art_h as u16);
+        let header = ase::Header::new(
+            self.canvas.art_w as u16,
+            self.canvas.art_h as u16,
+        );
         let mut frame = ase::Frame::new();
         for (i, layer) in self.history.top().iter_layers().enumerate() {
             frame.add_chunk(ase::Chunk::new(ase::ChunkData::LayerChunk(
@@ -319,7 +342,8 @@ impl Xprite {
                     let h = y1 - y0 + 1.;
                     let pixels: ase::Pixels = layer.content.clone().into();
                     ase::chunk::CelChunk::new(
-                        i as u16, x0 as i16, y0 as i16, w as u16, h as u16, pixels,
+                        i as u16, x0 as i16, y0 as i16, w as u16, h as u16,
+                        pixels,
                     )
                 })));
             }
@@ -334,7 +358,10 @@ impl Xprite {
             height_in_pixels,
             ..
         } = &header;
-        let canvas = Canvas::new(f64::from(*width_in_pixels), f64::from(*height_in_pixels));
+        let canvas = Canvas::new(
+            f64::from(*width_in_pixels),
+            f64::from(*height_in_pixels),
+        );
         let mut history = History::empty();
 
         let frame = &frames[0];
@@ -371,7 +398,8 @@ impl Xprite {
                     let y_ = y + f64::from(cel.h().unwrap() - 1);
                     let bb = Rect(Vec2f { x, y }, Vec2f { x: x_, y: y_ });
                     let pixs = Pixels::from_ase_pixels(&ase_pixs, bb);
-                    let layer = &mut history.top_mut().groups[0].1[usize::from(*layer_index)];
+                    let layer = &mut history.top_mut().groups[0].1
+                        [usize::from(*layer_index)];
                     layer.content.extend(&pixs);
 
                     // dbg!(pixs);

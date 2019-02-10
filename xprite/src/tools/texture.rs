@@ -27,7 +27,10 @@ impl Texture {
         }
     }
 
-    pub fn finalize(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
+    pub fn finalize(
+        &mut self,
+        xpr: &mut Xprite,
+    ) -> Result<img::DynamicImage, String> {
         self.quilt_img(xpr)
     }
 
@@ -43,7 +46,10 @@ impl Texture {
         ))
     }
 
-    fn quilt_img(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
+    fn quilt_img(
+        &mut self,
+        xpr: &mut Xprite,
+    ) -> Result<img::DynamicImage, String> {
         let mut pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
         xpr.history.enter()?;
         pixs.set_color(xpr.color());
@@ -98,7 +104,12 @@ impl Tool for Texture {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
+    fn mouse_down(
+        &mut self,
+        xpr: &Xprite,
+        p: Vec2f,
+        button: InputItem,
+    ) -> Result<(), String> {
         if InputItem::Left != button {
             return Ok(());
         }
@@ -123,7 +134,12 @@ impl Tool for Texture {
         }
     }
 
-    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(
+        &mut self,
+        _xpr: &Xprite,
+        option: &str,
+        value: &str,
+    ) -> Result<(), String> {
         match option {
             "ctrl" => match value {
                 _ => error!("unimpl for ctrl: {}", value),

@@ -122,7 +122,8 @@ where
 
     imgui.set_font_global_scale((1.0 / hidpi_factor) as f32);
 
-    let mut renderer = Renderer::init(&mut imgui, &display).expect("Failed to initialize renderer");
+    let mut renderer = Renderer::init(&mut imgui, &display)
+        .expect("Failed to initialize renderer");
 
     imgui_winit_support::configure_keys(&mut imgui);
 
@@ -135,7 +136,8 @@ where
             use glium::glutin::ElementState::Pressed;
             use glium::glutin::WindowEvent::*;
             use glium::glutin::{
-                Event, MouseButton, MouseScrollDelta, TouchPhase, WindowEvent::CloseRequested,
+                Event, MouseButton, MouseScrollDelta, TouchPhase,
+                WindowEvent::CloseRequested,
             };
 
             imgui_winit_support::handle_event(
@@ -152,63 +154,171 @@ where
                         use glium::glutin::VirtualKeyCode as Key;
                         let pressed = input.state == Pressed;
                         match input.virtual_keycode {
-                            Some(Key::Tab) => imgui.set_key(KeyCode::Tab as u8, pressed),
-                            Some(Key::Left) => imgui.set_key(KeyCode::Left as u8, pressed),
-                            Some(Key::Right) => imgui.set_key(KeyCode::Right as u8, pressed),
-                            Some(Key::Up) => imgui.set_key(KeyCode::Up as u8, pressed),
-                            Some(Key::Down) => imgui.set_key(KeyCode::Down as u8, pressed),
-                            Some(Key::PageUp) => imgui.set_key(KeyCode::PageUp as u8, pressed),
-                            Some(Key::PageDown) => imgui.set_key(KeyCode::PageDown as u8, pressed),
-                            Some(Key::Home) => imgui.set_key(KeyCode::Home as u8, pressed),
-                            Some(Key::End) => imgui.set_key(KeyCode::End as u8, pressed),
-                            Some(Key::Delete) => imgui.set_key(KeyCode::Delete as u8, pressed),
-                            Some(Key::Back) => imgui.set_key(KeyCode::Back as u8, pressed),
-                            Some(Key::Return) => imgui.set_key(KeyCode::Return as u8, pressed),
-                            Some(Key::Escape) => imgui.set_key(KeyCode::Escape as u8, pressed),
-                            Some(Key::Grave) => imgui.set_key(KeyCode::Grave as u8, pressed),
-                            Some(Key::A) => imgui.set_key(KeyCode::A as u8, pressed),
-                            Some(Key::B) => imgui.set_key(KeyCode::B as u8, pressed),
-                            Some(Key::C) => imgui.set_key(KeyCode::C as u8, pressed),
-                            Some(Key::D) => imgui.set_key(KeyCode::D as u8, pressed),
-                            Some(Key::E) => imgui.set_key(KeyCode::E as u8, pressed),
-                            Some(Key::F) => imgui.set_key(KeyCode::F as u8, pressed),
-                            Some(Key::G) => imgui.set_key(KeyCode::G as u8, pressed),
-                            Some(Key::H) => imgui.set_key(KeyCode::H as u8, pressed),
-                            Some(Key::I) => imgui.set_key(KeyCode::I as u8, pressed),
-                            Some(Key::J) => imgui.set_key(KeyCode::J as u8, pressed),
-                            Some(Key::K) => imgui.set_key(KeyCode::K as u8, pressed),
-                            Some(Key::L) => imgui.set_key(KeyCode::L as u8, pressed),
-                            Some(Key::M) => imgui.set_key(KeyCode::M as u8, pressed),
-                            Some(Key::N) => imgui.set_key(KeyCode::N as u8, pressed),
-                            Some(Key::O) => imgui.set_key(KeyCode::O as u8, pressed),
-                            Some(Key::P) => imgui.set_key(KeyCode::P as u8, pressed),
-                            Some(Key::Q) => imgui.set_key(KeyCode::Q as u8, pressed),
-                            Some(Key::R) => imgui.set_key(KeyCode::R as u8, pressed),
-                            Some(Key::S) => imgui.set_key(KeyCode::S as u8, pressed),
-                            Some(Key::T) => imgui.set_key(KeyCode::T as u8, pressed),
-                            Some(Key::U) => imgui.set_key(KeyCode::U as u8, pressed),
-                            Some(Key::V) => imgui.set_key(KeyCode::V as u8, pressed),
-                            Some(Key::W) => imgui.set_key(KeyCode::W as u8, pressed),
-                            Some(Key::X) => imgui.set_key(KeyCode::X as u8, pressed),
-                            Some(Key::Y) => imgui.set_key(KeyCode::Y as u8, pressed),
-                            Some(Key::Z) => imgui.set_key(KeyCode::Z as u8, pressed),
-                            Some(Key::Key0) => imgui.set_key(KeyCode::Key0 as u8, pressed),
-                            Some(Key::Key1) => imgui.set_key(KeyCode::Key1 as u8, pressed),
-                            Some(Key::Key2) => imgui.set_key(KeyCode::Key2 as u8, pressed),
-                            Some(Key::Key3) => imgui.set_key(KeyCode::Key3 as u8, pressed),
-                            Some(Key::Key4) => imgui.set_key(KeyCode::Key4 as u8, pressed),
-                            Some(Key::Key5) => imgui.set_key(KeyCode::Key5 as u8, pressed),
-                            Some(Key::Key6) => imgui.set_key(KeyCode::Key6 as u8, pressed),
-                            Some(Key::Key7) => imgui.set_key(KeyCode::Key7 as u8, pressed),
-                            Some(Key::Key8) => imgui.set_key(KeyCode::Key8 as u8, pressed),
-                            Some(Key::Key9) => imgui.set_key(KeyCode::Key9 as u8, pressed),
-                            Some(Key::Space) => imgui.set_key(KeyCode::Space as u8, pressed),
+                            Some(Key::Tab) => {
+                                imgui.set_key(KeyCode::Tab as u8, pressed)
+                            }
+                            Some(Key::Left) => {
+                                imgui.set_key(KeyCode::Left as u8, pressed)
+                            }
+                            Some(Key::Right) => {
+                                imgui.set_key(KeyCode::Right as u8, pressed)
+                            }
+                            Some(Key::Up) => {
+                                imgui.set_key(KeyCode::Up as u8, pressed)
+                            }
+                            Some(Key::Down) => {
+                                imgui.set_key(KeyCode::Down as u8, pressed)
+                            }
+                            Some(Key::PageUp) => {
+                                imgui.set_key(KeyCode::PageUp as u8, pressed)
+                            }
+                            Some(Key::PageDown) => {
+                                imgui.set_key(KeyCode::PageDown as u8, pressed)
+                            }
+                            Some(Key::Home) => {
+                                imgui.set_key(KeyCode::Home as u8, pressed)
+                            }
+                            Some(Key::End) => {
+                                imgui.set_key(KeyCode::End as u8, pressed)
+                            }
+                            Some(Key::Delete) => {
+                                imgui.set_key(KeyCode::Delete as u8, pressed)
+                            }
+                            Some(Key::Back) => {
+                                imgui.set_key(KeyCode::Back as u8, pressed)
+                            }
+                            Some(Key::Return) => {
+                                imgui.set_key(KeyCode::Return as u8, pressed)
+                            }
+                            Some(Key::Escape) => {
+                                imgui.set_key(KeyCode::Escape as u8, pressed)
+                            }
+                            Some(Key::Grave) => {
+                                imgui.set_key(KeyCode::Grave as u8, pressed)
+                            }
+                            Some(Key::A) => {
+                                imgui.set_key(KeyCode::A as u8, pressed)
+                            }
+                            Some(Key::B) => {
+                                imgui.set_key(KeyCode::B as u8, pressed)
+                            }
+                            Some(Key::C) => {
+                                imgui.set_key(KeyCode::C as u8, pressed)
+                            }
+                            Some(Key::D) => {
+                                imgui.set_key(KeyCode::D as u8, pressed)
+                            }
+                            Some(Key::E) => {
+                                imgui.set_key(KeyCode::E as u8, pressed)
+                            }
+                            Some(Key::F) => {
+                                imgui.set_key(KeyCode::F as u8, pressed)
+                            }
+                            Some(Key::G) => {
+                                imgui.set_key(KeyCode::G as u8, pressed)
+                            }
+                            Some(Key::H) => {
+                                imgui.set_key(KeyCode::H as u8, pressed)
+                            }
+                            Some(Key::I) => {
+                                imgui.set_key(KeyCode::I as u8, pressed)
+                            }
+                            Some(Key::J) => {
+                                imgui.set_key(KeyCode::J as u8, pressed)
+                            }
+                            Some(Key::K) => {
+                                imgui.set_key(KeyCode::K as u8, pressed)
+                            }
+                            Some(Key::L) => {
+                                imgui.set_key(KeyCode::L as u8, pressed)
+                            }
+                            Some(Key::M) => {
+                                imgui.set_key(KeyCode::M as u8, pressed)
+                            }
+                            Some(Key::N) => {
+                                imgui.set_key(KeyCode::N as u8, pressed)
+                            }
+                            Some(Key::O) => {
+                                imgui.set_key(KeyCode::O as u8, pressed)
+                            }
+                            Some(Key::P) => {
+                                imgui.set_key(KeyCode::P as u8, pressed)
+                            }
+                            Some(Key::Q) => {
+                                imgui.set_key(KeyCode::Q as u8, pressed)
+                            }
+                            Some(Key::R) => {
+                                imgui.set_key(KeyCode::R as u8, pressed)
+                            }
+                            Some(Key::S) => {
+                                imgui.set_key(KeyCode::S as u8, pressed)
+                            }
+                            Some(Key::T) => {
+                                imgui.set_key(KeyCode::T as u8, pressed)
+                            }
+                            Some(Key::U) => {
+                                imgui.set_key(KeyCode::U as u8, pressed)
+                            }
+                            Some(Key::V) => {
+                                imgui.set_key(KeyCode::V as u8, pressed)
+                            }
+                            Some(Key::W) => {
+                                imgui.set_key(KeyCode::W as u8, pressed)
+                            }
+                            Some(Key::X) => {
+                                imgui.set_key(KeyCode::X as u8, pressed)
+                            }
+                            Some(Key::Y) => {
+                                imgui.set_key(KeyCode::Y as u8, pressed)
+                            }
+                            Some(Key::Z) => {
+                                imgui.set_key(KeyCode::Z as u8, pressed)
+                            }
+                            Some(Key::Key0) => {
+                                imgui.set_key(KeyCode::Key0 as u8, pressed)
+                            }
+                            Some(Key::Key1) => {
+                                imgui.set_key(KeyCode::Key1 as u8, pressed)
+                            }
+                            Some(Key::Key2) => {
+                                imgui.set_key(KeyCode::Key2 as u8, pressed)
+                            }
+                            Some(Key::Key3) => {
+                                imgui.set_key(KeyCode::Key3 as u8, pressed)
+                            }
+                            Some(Key::Key4) => {
+                                imgui.set_key(KeyCode::Key4 as u8, pressed)
+                            }
+                            Some(Key::Key5) => {
+                                imgui.set_key(KeyCode::Key5 as u8, pressed)
+                            }
+                            Some(Key::Key6) => {
+                                imgui.set_key(KeyCode::Key6 as u8, pressed)
+                            }
+                            Some(Key::Key7) => {
+                                imgui.set_key(KeyCode::Key7 as u8, pressed)
+                            }
+                            Some(Key::Key8) => {
+                                imgui.set_key(KeyCode::Key8 as u8, pressed)
+                            }
+                            Some(Key::Key9) => {
+                                imgui.set_key(KeyCode::Key9 as u8, pressed)
+                            }
+                            Some(Key::Space) => {
+                                imgui.set_key(KeyCode::Space as u8, pressed)
+                            }
                             Some(Key::LControl) | Some(Key::RControl) => {
                                 imgui.set_key_ctrl(pressed)
                             }
-                            Some(Key::LShift) | Some(Key::RShift) => imgui.set_key_shift(pressed),
-                            Some(Key::LAlt) | Some(Key::RAlt) => imgui.set_key_alt(pressed),
-                            Some(Key::LWin) | Some(Key::RWin) => imgui.set_key_super(pressed),
+                            Some(Key::LShift) | Some(Key::RShift) => {
+                                imgui.set_key_shift(pressed)
+                            }
+                            Some(Key::LAlt) | Some(Key::RAlt) => {
+                                imgui.set_key_alt(pressed)
+                            }
+                            Some(Key::LWin) | Some(Key::RWin) => {
+                                imgui.set_key_super(pressed)
+                            }
                             _ => {}
                         }
                     }
@@ -221,9 +331,15 @@ where
                             .into();
                     }
                     MouseInput { state, button, .. } => match button {
-                        MouseButton::Left => mouse_state.pressed.0 = state == Pressed,
-                        MouseButton::Right => mouse_state.pressed.1 = state == Pressed,
-                        MouseButton::Middle => mouse_state.pressed.2 = state == Pressed,
+                        MouseButton::Left => {
+                            mouse_state.pressed.0 = state == Pressed
+                        }
+                        MouseButton::Right => {
+                            mouse_state.pressed.1 = state == Pressed
+                        }
+                        MouseButton::Middle => {
+                            mouse_state.pressed.2 = state == Pressed
+                        }
                         _ => {}
                     },
                     MouseWheel {
@@ -252,12 +368,14 @@ where
 
         let now = Instant::now();
         let delta = now - last_frame;
-        let delta_s = delta.as_secs() as f32 + delta.subsec_nanos() as f32 / 1_000_000_000.0;
+        let delta_s = delta.as_secs() as f32
+            + delta.subsec_nanos() as f32 / 1_000_000_000.0;
         last_frame = now;
 
         imgui_winit_support::update_mouse_cursor(&imgui, &window);
 
-        let frame_size = imgui_winit_support::get_frame_size(&window, hidpi_factor).unwrap();
+        let frame_size =
+            imgui_winit_support::get_frame_size(&window, hidpi_factor).unwrap();
 
         let ui = imgui.frame(frame_size, delta_s);
         if !run_ui(&ui, display.get_context(), renderer.textures()) {

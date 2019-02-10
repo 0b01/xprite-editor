@@ -90,7 +90,12 @@ impl Tool for Eraser {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
+    fn mouse_down(
+        &mut self,
+        xpr: &Xprite,
+        p: Vec2f,
+        button: InputItem,
+    ) -> Result<(), String> {
         self.is_mouse_down = Some(button);
         self.current_polyline.push(p);
 
@@ -155,7 +160,12 @@ impl Tool for Eraser {
         }
     }
 
-    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(
+        &mut self,
+        _xpr: &Xprite,
+        option: &str,
+        value: &str,
+    ) -> Result<(), String> {
         match option {
             "mode" => {}
             "brush" => {

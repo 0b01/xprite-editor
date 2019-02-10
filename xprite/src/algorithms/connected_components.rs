@@ -4,7 +4,9 @@ pub fn connected_components(pixs: &Pixels, w: usize, h: usize) -> Vec<Pixels> {
     let mut ret = Vec::new();
     let mut canvas = pixs.as_mat(w, h);
 
-    let ff = |canvas: &[Vec<Option<Pixel>>], origin: Vec2f, bg_col: Option<Color>| {
+    let ff = |canvas: &[Vec<Option<Pixel>>],
+              origin: Vec2f,
+              bg_col: Option<Color>| {
         let mut cc = Pixels::new();
         let mut stack = vec![origin];
         let mut visited = vec![vec![false; w as usize]; h as usize];
@@ -138,7 +140,10 @@ mod tests {
             ),
             vec![
                 pixels![pixel!(0., 0., Color::red())],
-                pixels![pixel!(1., 1., Color::red()), pixel!(2., 1., Color::red())]
+                pixels![
+                    pixel!(1., 1., Color::red()),
+                    pixel!(2., 1., Color::red())
+                ]
             ]
         );
     }

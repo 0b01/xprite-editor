@@ -145,7 +145,11 @@ impl Brush {
     }
 
     /// convert brush shape to actual pixel on canvas
-    pub fn to_canvas_pixels(&self, cursor: Vec2f, color: Color) -> Option<Pixels> {
+    pub fn to_canvas_pixels(
+        &self,
+        cursor: Vec2f,
+        color: Color,
+    ) -> Option<Pixels> {
         let Vec2f { x, y } = cursor;
         let (offset_x, offset_y) = self.offset;
         let ret: Vec<Pixel> = self

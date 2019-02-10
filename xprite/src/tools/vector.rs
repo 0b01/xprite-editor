@@ -25,7 +25,8 @@ impl VectorMode {
         }
     }
 
-    pub const VARIANTS: [VectorMode; 2] = [VectorMode::Continuous, VectorMode::Curvature];
+    pub const VARIANTS: [VectorMode; 2] =
+        [VectorMode::Continuous, VectorMode::Curvature];
 }
 
 impl FromStr for VectorMode {
@@ -96,7 +97,8 @@ impl Vector {
     }
 
     fn draw_continuous(&self) -> Result<(Path, Pixels), String> {
-        let simple = self.current_polyline.reumann_witkam(self.tolerence as f64);
+        let simple =
+            self.current_polyline.reumann_witkam(self.tolerence as f64);
         if let Ok(simple) = simple {
             let path = simple.interp();
             let mut buf = path.rasterize(self.mono_sort).unwrap();
@@ -180,7 +182,11 @@ impl Vector {
         Ok(())
     }
 
-    fn get_anchor(&self, xpr: &Xprite, p: Vec2f) -> Option<(usize, AnchorType)> {
+    fn get_anchor(
+        &self,
+        xpr: &Xprite,
+        p: Vec2f,
+    ) -> Option<(usize, AnchorType)> {
         for (i, curve) in self.curves.iter().enumerate() {
             let &CubicBezierSegment {
                 from,
@@ -271,7 +277,12 @@ impl Tool for Vector {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, point: Vec2f, button: InputItem) -> Result<(), String> {
+    fn mouse_down(
+        &mut self,
+        xpr: &Xprite,
+        point: Vec2f,
+        button: InputItem,
+    ) -> Result<(), String> {
         self.is_mouse_down = Some(button);
         let p = xpr.canvas.shrink_size_no_floor(point);
         self.cursor_pos = Some(p);
@@ -322,7 +333,8 @@ impl Tool for Vector {
         }
         self.recording = false;
 
-        let simple = self.current_polyline.reumann_witkam(self.tolerence as f64);
+        let simple =
+            self.current_polyline.reumann_witkam(self.tolerence as f64);
         if let Ok(simple) = simple {
             let path = simple.interp();
             self.curves.extend(path.segments);
@@ -398,7 +410,12 @@ impl Tool for Vector {
         }
     }
 
-    fn set(&mut self, xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(
+        &mut self,
+        xpr: &Xprite,
+        option: &str,
+        value: &str,
+    ) -> Result<(), String> {
         match option {
             "tolerence" => {
                 if let Ok(val) = value.parse() {

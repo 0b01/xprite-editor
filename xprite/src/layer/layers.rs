@@ -15,7 +15,10 @@ impl Default for Layers {
 
 impl Layers {
     pub fn new() -> Self {
-        let groups = vec![("Group 1".to_owned(), vec![Layer::new("Layer 0".to_owned())])];
+        let groups = vec![(
+            "Group 1".to_owned(),
+            vec![Layer::new("Layer 0".to_owned())],
+        )];
         let selected = 0;
         let sel_group = 0;
         Self {
@@ -64,9 +67,11 @@ impl Layers {
     }
 
     pub fn add_layer(&mut self, name: Option<&str>) {
-        let name = name
-            .and_then(|i: &str| Some(i.to_owned()))
-            .unwrap_or_else(|| format!("Layer {}", self.selected_group().unwrap().1.len()));
+        let name =
+            name.and_then(|i: &str| Some(i.to_owned()))
+                .unwrap_or_else(|| {
+                    format!("Layer {}", self.selected_group().unwrap().1.len())
+                });
         let new_layer = Layer::new(name);
         self.selected_group_mut().unwrap().1.push(new_layer);
     }
@@ -81,7 +86,11 @@ impl Layers {
         self.groups[group].1.remove(to_remove);
     }
 
-    pub fn toggle_layer_visibility(&mut self, group: usize, layer: usize) -> Option<()> {
+    pub fn toggle_layer_visibility(
+        &mut self,
+        group: usize,
+        layer: usize,
+    ) -> Option<()> {
         self.groups
             .get_mut(group)?
             .1

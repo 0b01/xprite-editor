@@ -270,7 +270,11 @@ impl Pixels {
     }
 
     #[deprecated]
-    pub fn to_strips(&self, w: usize, h: usize) -> Vec<(usize, (usize, usize), Color)> {
+    pub fn to_strips(
+        &self,
+        w: usize,
+        h: usize,
+    ) -> Vec<(usize, (usize, usize), Color)> {
         let ccs = self.connected_components(w, h);
         let mut rect_list = vec![];
         for cc in &ccs {
@@ -398,7 +402,12 @@ impl Pixels {
         self.0.is_empty()
     }
 
-    pub fn as_image(&self, w: f64, h: f64, origin: (f64, f64)) -> img::DynamicImage {
+    pub fn as_image(
+        &self,
+        w: f64,
+        h: f64,
+        origin: (f64, f64),
+    ) -> img::DynamicImage {
         let mut rdr = ImageRenderer::new(w, h);
         for pix in &self.0 {
             let Pixel {
@@ -504,8 +513,11 @@ mod tests {
             pixel!(0., 0., Color::red()),
             pixel!(0., 1., Color::red()),
         ]);
-        let intersection =
-            v1.intersection(&Pixels::from_slice(&vec![pixel!(0., 1., Color::blue())]));
+        let intersection = v1.intersection(&Pixels::from_slice(&vec![pixel!(
+            0.,
+            1.,
+            Color::blue()
+        )]));
         assert_eq!(
             Pixels::from_slice(&vec![pixel!(0., 1., Color::red())]),
             intersection
@@ -548,7 +560,8 @@ mod tests {
     #[test]
     fn test_as_mat_bb() {
         use super::*;
-        let pixs = pixels!(pixel!(0, 1, Color::red()), pixel!(0, 2, Color::red()));
+        let pixs =
+            pixels!(pixel!(0, 1, Color::red()), pixel!(0, 2, Color::red()));
         let bb = pixs.bounding_rect();
         let ret = pixs.as_mat_bb(bb);
 
@@ -577,19 +590,23 @@ mod tests {
         );
 
         let bb = pixs.bounding_rect();
-        assert_eq!(Rect(Vec2f { x: 0.0, y: 0.0 }, Vec2f { x: 2.0, y: 1.0 }), bb);
+        assert_eq!(
+            Rect(Vec2f { x: 0.0, y: 0.0 }, Vec2f { x: 2.0, y: 1.0 }),
+            bb
+        );
     }
 
     #[test]
     fn test_as_image() {
         use super::*;
-        let pixs = pixels!(pixel!(0., 0., Color::red()), pixel!(1., 1., Color::red()));
+        let pixs =
+            pixels!(pixel!(0., 0., Color::red()), pixel!(1., 1., Color::red()));
         let img = pixs.as_image(3., 3., (0., 0.));
         assert_eq!(
             img.raw_pixels(),
             vec![
-                255, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 255, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                255, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0,
+                255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             ]
         );
     }

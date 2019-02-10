@@ -172,7 +172,8 @@ impl Pencil {
     }
 
     fn draw_line(&self) -> Option<Pixels> {
-        let buf = continuous_line(self.last_mouse_down_or_up?, self.cursor_pos?);
+        let buf =
+            continuous_line(self.last_mouse_down_or_up?, self.cursor_pos?);
         let buf = self.brush.follow_stroke(&buf)?;
         Some(buf)
     }
@@ -207,7 +208,12 @@ impl Tool for Pencil {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
+    fn mouse_down(
+        &mut self,
+        xpr: &Xprite,
+        p: Vec2f,
+        button: InputItem,
+    ) -> Result<(), String> {
         self.is_mouse_down = Some(button);
 
         self.current_polyline.push(p);
@@ -287,7 +293,12 @@ impl Tool for Pencil {
     }
 
     // TODO: dedupe brush instantiation code(pencil, eraser)
-    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(
+        &mut self,
+        _xpr: &Xprite,
+        option: &str,
+        value: &str,
+    ) -> Result<(), String> {
         match option {
             "mode" => {
                 match PencilMode::from_str(value) {
@@ -333,7 +344,8 @@ pub fn get_brush(value: &str) -> (Brush, BrushType) {
                 let size = value[1..].parse::<i32>().unwrap();
                 (Brush::square(size), BrushType::Square)
             } else if value.starts_with("/") {
-                let params: Vec<f64> = value[1..].split(",").map(|i| i.parse().unwrap()).collect();
+                let params: Vec<f64> =
+                    value[1..].split(",").map(|i| i.parse().unwrap()).collect();
                 (Brush::line(params[0] as i32, params[1]), BrushType::Line)
             } else {
                 panic!("Impossible")

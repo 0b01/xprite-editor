@@ -31,7 +31,10 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
 
             ui.with_item_width(400., || {
                 if ui
-                    .input_text(im_str!(""), &mut state.file_popup.open_file_name)
+                    .input_text(
+                        im_str!(""),
+                        &mut state.file_popup.open_file_name,
+                    )
                     .auto_select_all(true)
                     .enter_returns_true(true)
                     .build()
@@ -65,7 +68,10 @@ fn get_callback() -> impl Fn(&mut State) {
             } else {
                 state.load_ase(&fname.to_owned());
             }
-        } else if fname.ends_with(".png") || fname.ends_with(".jpg") || fname.ends_with(".jpeg") {
+        } else if fname.ends_with(".png")
+            || fname.ends_with(".jpg")
+            || fname.ends_with(".jpeg")
+        {
             if save {
                 state.save_img(&fname.to_owned());
             } else {

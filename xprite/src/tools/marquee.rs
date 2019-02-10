@@ -56,7 +56,12 @@ impl Tool for Marquee {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
+    fn mouse_down(
+        &mut self,
+        xpr: &Xprite,
+        p: Vec2f,
+        button: InputItem,
+    ) -> Result<(), String> {
         if InputItem::Left != button {
             return Ok(());
         }
@@ -78,7 +83,12 @@ impl Tool for Marquee {
         Ok(false)
     }
 
-    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(
+        &mut self,
+        _xpr: &Xprite,
+        option: &str,
+        value: &str,
+    ) -> Result<(), String> {
         match option {
             "ctrl" => match value {
                 _ => error!("unimpl for ctrl: {}", value),

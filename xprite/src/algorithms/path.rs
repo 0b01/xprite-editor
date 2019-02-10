@@ -150,7 +150,10 @@ impl Path {
     }
 
     // Generates tangents for a cardinal spline.
-    fn d3_svg_line_cardinal_tangents(points: &[Vec2f], tension: f64) -> Vec<Vec2f> {
+    fn d3_svg_line_cardinal_tangents(
+        points: &[Vec2f],
+        tension: f64,
+    ) -> Vec<Vec2f> {
         let mut tangents = Vec::new();
 
         let a = (1. - tension) / 2.;

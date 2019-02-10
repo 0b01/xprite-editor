@@ -128,10 +128,13 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     for (i, (col_name, col)) in colors {
         let is_sel = col == &state.xpr.selected_color;
         let x = MARGIN + BLOCK_SZ * ((i % state.cols_per_row as usize) as f32);
-        let y = PALETTE_BEGIN_Y + BLOCK_SZ * ((i / state.cols_per_row as usize) as f32);
+        let y = PALETTE_BEGIN_Y
+            + BLOCK_SZ * ((i / state.cols_per_row as usize) as f32);
 
         ui.set_cursor_screen_pos((x, y));
-        if ui.invisible_button(im_str!("colorcell##{}", i), (BLOCK_SZ, BLOCK_SZ)) {
+        if ui
+            .invisible_button(im_str!("colorcell##{}", i), (BLOCK_SZ, BLOCK_SZ))
+        {
             state.xpr.selected_color = *col;
         }
 
@@ -163,7 +166,8 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         let id = im_str!("MyColor##{}", i);
         let b = ui.color_edit(id, &mut sel).flags(misc_flags).alpha(false);
         if ui.is_item_hovered() {
-            state.palette_window.palette_color_name = Some(Cow::Owned(col_name.to_owned()));
+            state.palette_window.palette_color_name =
+                Some(Cow::Owned(col_name.to_owned()));
             ui.tooltip(|| {
                 ui.text(col_name.to_owned());
             });

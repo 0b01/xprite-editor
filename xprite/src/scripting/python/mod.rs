@@ -16,9 +16,12 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
     let py = gil.python();
 
     let locals = PyDict::new(py);
-    let mptr = unsafe { pyo3::ffi::PyImport_AddModule("__main__\0".as_ptr() as *const _) };
+    let mptr = unsafe {
+        pyo3::ffi::PyImport_AddModule("__main__\0".as_ptr() as *const _)
+    };
     let main_globals = unsafe { pyo3::ffi::PyModule_GetDict(mptr) };
-    let obj: PyObject = unsafe { PyObject::from_borrowed_ptr(py, main_globals) };
+    let obj: PyObject =
+        unsafe { PyObject::from_borrowed_ptr(py, main_globals) };
     let globals: &PyDict = obj.cast_as::<PyDict>(py).unwrap();
 
     let xpr = xpr_module::init_mod(py).unwrap();

@@ -18,13 +18,18 @@ impl PaletteManager {
 
         if cfg!(not(wasm32)) {
             let dir = "/home/g/Desktop/xprite/config/palettes";
-            let mut entries: Vec<_> = fs::read_dir(dir)?.map(|r| r.unwrap()).collect();
+            let mut entries: Vec<_> =
+                fs::read_dir(dir)?.map(|r| r.unwrap()).collect();
             entries.sort_by(|dir1, dir2| {
-                natord::compare(dir1.path().to_str().unwrap(), dir2.path().to_str().unwrap())
+                natord::compare(
+                    dir1.path().to_str().unwrap(),
+                    dir2.path().to_str().unwrap(),
+                )
             });
             for entry in &entries {
                 let path = entry.path();
-                let palname = path.file_stem().unwrap().to_str().unwrap().to_owned();
+                let palname =
+                    path.file_stem().unwrap().to_str().unwrap().to_owned();
                 let pal = match path.extension().unwrap().to_str().unwrap() {
                     "hex" => get_palette_hex(&path)?,
                     "png" => get_palette_png(&path)?,
@@ -197,8 +202,8 @@ fn get_palette_hex(p: &path::PathBuf) -> io::Result<PaletteGroup> {
     let mut colors = IndexMap::new();
     let cols = fs::read_to_string(p)?;
     for col in cols.lines() {
-        let color =
-            Color::from_hex(&col[1..]).expect(&format!("Cannot decode hex in file {:?}", p));
+        let color = Color::from_hex(&col[1..])
+            .expect(&format!("Cannot decode hex in file {:?}", p));
         colors.insert(col.to_owned(), color);
     }
     Ok(colors)
