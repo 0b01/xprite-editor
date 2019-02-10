@@ -83,7 +83,7 @@ impl PartialEq for Pixel {
 
 impl Debug for Pixel {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "@({},{})", self.point.y, self.point.x)
+        write!(f, "@({},{}){:?}", self.point.y, self.point.x, self.color)
     }
 }
 
@@ -184,7 +184,9 @@ impl Pixels {
     }
 
     pub fn intersection(&self, other: &Pixels) -> Pixels {
-        let common: Vec<_> = self.0.intersection(&other.0).cloned().collect();
+        let common: Vec<_> = self.0
+            .intersection(&other.0).cloned()
+            .collect();
         Pixels::from_slice(&common)
     }
 
@@ -399,12 +401,12 @@ impl Pixels {
         arr
     }
 
-    pub fn shifted(&self, d: (f64, f64)) -> Pixels {
+    pub fn shifted(&self, d: Vec2f) -> Pixels {
         let mut ret = Pixels::new();
         for i in self.iter() {
             let mut shifted_i = i.clone();
-            shifted_i.point.x += d.0;
-            shifted_i.point.y += d.1;
+            shifted_i.point.x += d.x;
+            shifted_i.point.y += d.y;
             ret.push(shifted_i);
         }
         ret
@@ -432,7 +434,7 @@ impl Pixels {
             if oob(*x - origin.x, *y - origin.y, w as f64, h as f64) {
                 continue;
             }
-            rdr.pixel(*x - origin.y, *y - origin.y, (*color).into(), true);
+            rdr.pixel(*x - origin.x, *y - origin.y, (*color).into(), true);
         }
         rdr.render();
         rdr.image
@@ -627,6 +629,20 @@ mod tests {
             vec![
                 255, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0,
                 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ]
+        );
+    }
+
+    #[test]
+    fn test_as_image_one_pixel() {
+        use super::*;
+        let pixs = pixels!(pixel!(1,1, Color::red()));
+        let bb = pixs.bounding_rect();
+        let img = pixs.as_image(bb);
+        assert_eq!(
+            img.raw_pixels(),
+            vec![
+                255, 0, 0, 255
             ]
         );
     }

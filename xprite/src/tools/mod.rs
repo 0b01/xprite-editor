@@ -11,6 +11,7 @@ pub mod rect;
 pub mod symmetry;
 pub mod texture;
 pub mod vector;
+pub mod autoshade;
 
 pub mod traits;
 
@@ -33,6 +34,7 @@ pub enum ToolType {
     Marquee,
     Settings,
     Symmetry,
+    AutoShade,
 }
 
 impl Default for ToolType {
@@ -42,7 +44,7 @@ impl Default for ToolType {
 }
 
 impl ToolType {
-    pub const VARIANTS: [ToolType; 9] = [
+    pub const VARIANTS: [ToolType; 10] = [
         ToolType::Pencil,
         ToolType::Line,
         ToolType::PaintBucket,
@@ -52,6 +54,7 @@ impl ToolType {
         ToolType::Texture,
         ToolType::Ellipse,
         ToolType::Marquee,
+        ToolType::AutoShade,
     ];
 
     pub fn as_str(&self) -> &str {
@@ -70,6 +73,7 @@ impl ToolType {
             ToolType::Marquee => "Marquee",
             ToolType::Settings => "Settings",
             ToolType::Symmetry => "Symmetry",
+            ToolType::AutoShade => "AutoShade",
         }
     }
 }
@@ -92,6 +96,7 @@ impl FromStr for ToolType {
             "Marquee" => Ok(ToolType::Marquee),
             "Settings" => Ok(ToolType::Settings),
             "Symmetry" => Ok(ToolType::Symmetry),
+            "AutoShade" => Ok(ToolType::AutoShade),
             _ => Err(()),
         }
     }

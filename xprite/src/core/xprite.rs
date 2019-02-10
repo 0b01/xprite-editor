@@ -3,6 +3,8 @@ use crate::rendering::Renderer;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::sync::{Arc, Mutex};
+use std::fs::File;
+use img::GenericImageView;
 
 #[derive(Debug)]
 pub struct Xprite {
@@ -470,9 +472,6 @@ impl Xprite {
     }
 }
 
-use std::fs::File;
-use std::io::{Read, Cursor};
-use img::GenericImageView;
 impl Xprite {
     pub fn save_img(&mut self, img_path: &str) {
         let mut rdr =

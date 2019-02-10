@@ -5,18 +5,20 @@ use imageproc::affine::translate;
 
 const DBG_SAVE_IMG: bool = false;
 
-pub fn autoshade(pixs: &Pixels, steps: Vec<(f64, f64, Color)>) -> Pixels {
+pub fn autoshade(pixs: &Pixels, steps: &[(f64, f64, Color)]) -> Pixels {
     let mut ret = pixs.clone();
     if steps.is_empty() { return ret; }
 
     // convert pixs to image
     let mut bb = pixs.bounding_rect();
-    // expand bounding box by 1 to differentiate foreground at edge
+    let orig_bb = bb.clone();
+    // expand bounding box to differentiate foreground at edge
     bb.0.x -= 100.;
     bb.0.y -= 100.;
     bb.1.x += 100.;
     bb.1.y += 100.;
     let img = pixs.as_image(bb);
+    img.save("expanded.png");
     let mut orig = img.to_luma();
     // binarize
     for p in orig.iter_mut() {
@@ -24,12 +26,13 @@ pub fn autoshade(pixs: &Pixels, steps: Vec<(f64, f64, Color)>) -> Pixels {
     }
     if DBG_SAVE_IMG { orig.save("orig.png").unwrap(); }
 
+    let shift = vec2f!(-100.,-100.) + orig_bb.0;
     let (mut acc, curr) = autoshade_step(&orig, 0, steps[0].0, steps[0].1, steps[0].2);
-    ret.extend(&curr.shifted((-100.,-100.)));
+    ret.extend(&curr.shifted(shift));
     for (i, (step_d, step_dist_mul, step_col)) in steps[1..].iter().enumerate() {
         let (step_acc, curr) = autoshade_step(&acc, i+1, *step_d, *step_dist_mul, *step_col);
         acc = step_acc;
-        ret.extend(&curr.shifted((-100.,-100.)));
+        ret.extend(&curr.shifted(shift));
     }
     ret
 }
@@ -84,13 +87,24 @@ mod tests {
         use super::*;
         let r = 100;
         let mut pixs = crate::algorithms::ellipse::algo_ellipsefill(0,0,r,r);
-        pixs.extend(&pixs.shifted((0., 50.)));
+        pixs.extend(&pixs.shifted(vec2f!(0., 50.)));
 
-        let shaded = autoshade(&pixs, vec![
+        let shaded = autoshade(&pixs, &[
             (200., 0.03, Color::blue()),
             (200., 0.03, Color::green()),
         ]);
         let img = shaded.as_image(shaded.bounding_rect());
         if DBG_SAVE_IMG { img.save("out.png").unwrap(); }
+    }
+
+    #[test]
+    fn test_autoshade_one_pixel() {
+        use super::*;
+        let pixs = pixels!(pixel!(0,0, Color::red()));
+        let shaded = autoshade(&pixs, &[
+            (200., 0.03, Color::blue()),
+            (200., 0.03, Color::green()),
+        ]);
+        assert_eq!(shaded, pixs);
     }
 }

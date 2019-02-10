@@ -6,7 +6,7 @@ use std::rc::Rc;
 use crate::tools::{
     color_picker::ColorPicker, ellipse::Ellipse, eraser::Eraser, line::Line,
     marquee::Marquee, paint_bucket::PaintBucket, pencil::Pencil, rect::Rect,
-    symmetry::Symmetry, texture::Texture, vector::Vector, Tool,
+    autoshade::AutoShade, symmetry::Symmetry, texture::Texture, vector::Vector, Tool,
 };
 
 #[derive(Default, Debug)]
@@ -22,6 +22,7 @@ pub struct Toolbox {
     pub ellipse: Rc<RefCell<Ellipse>>,
     pub marquee: Rc<RefCell<Marquee>>,
     pub symmetry: Rc<RefCell<Symmetry>>,
+    pub autoshade: Rc<RefCell<AutoShade>>,
 
     pub selected: ToolType,
 
@@ -41,6 +42,7 @@ impl Toolbox {
         let ellipse = Rc::new(RefCell::new(Ellipse::new()));
         let marquee = Rc::new(RefCell::new(Marquee::new()));
         let symmetry = Rc::new(RefCell::new(Symmetry::new()));
+        let autoshade = Rc::new(RefCell::new(AutoShade::new()));
 
         let selected = ToolType::Pencil;
 
@@ -59,6 +61,7 @@ impl Toolbox {
             ellipse,
             marquee,
             symmetry,
+            autoshade,
         }
     }
 
@@ -80,6 +83,7 @@ impl Toolbox {
             Texture => self.texture.clone(),
             Marquee => self.marquee.clone(),
             Symmetry => self.symmetry.clone(),
+            AutoShade => self.autoshade.clone(),
         }
     }
 
