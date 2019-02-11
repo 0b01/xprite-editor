@@ -12,6 +12,7 @@ git submodule update --init --recursive
 
 ## Bugs and Improvements
 
+* [ ] rotational symmetry
 * [ ] Performance is bad when drawing with 150x150 brush
 * [ ] huge refactor to eliminate pixels copying
 * [ ] Symmetry tool
@@ -19,7 +20,10 @@ git submodule update --init --recursive
 * [ ] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
 * [ ] Outline in selected area
 * [ ] snapping with one button(shift)
+* [ ] refactor color tool(using palette crate)
 * [ ] Autoshade: erode and then color with gradient
+* [ ] Autoshade: erosion modes: accumulative(step by step), vs erode original
+
 
 ## Backburner
 
@@ -38,7 +42,7 @@ git submodule update --init --recursive
 
 ## Done
 
-* [x] Add a mode in paintbucket for 8-way connected fill
+* [x] Add a mode in paintbucket for 8-way connected floodfill
 * [x] Icon for color picker
 * [x] hover show color in color picker
 * [x] show selected color in palette

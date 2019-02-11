@@ -66,20 +66,21 @@ impl Pixel {
         let c = angle.cos();
         let s = angle.sin();
 
-        // dbg!((c,s));
-        let px = self.point.x - pivot.x + 1.;
-        let py = self.point.y - pivot.y + 1.;
-        // dbg!((px, py));
-        // dbg!(pivot);
+        dbg!((c,s));
+        let px = self.point.x - pivot.x + 0.5;
+        let py = self.point.y - pivot.y + 0.5;
+        dbg!((px, py));
+        dbg!(pivot);
 
         let mut point = Vec2f {
             x: c * px + s * py,
-            y: -s * px + c * py - 1.,
+            y: -s * px + c * py,
         };
 
-        // dbg!(point);
+        dbg!(point);
         point += pivot;
-
+        point.x = point.x.floor();
+        point.y = point.y.floor();
 
         return Pixel {
             point,
@@ -705,94 +706,31 @@ mod tests {
     #[test]
     fn test_pixel_rotation() {
         use super::*;
-        use std::f64::consts::PI;
-        let pix = Pixel {
-            point: Vec2f { y:0., x:2. },
-            color: Color::red()
-        };
-        let rotated = pix.rotate(
-            Vec2f{ y:0., x:1. },
-            -PI/2.
-        );
-        assert_eq!(rotated, Pixel{
-            point: Vec2f { y: 1., x: 0. },
-            color: Color::red(),
-        });
+        macro_rules! test_rotated {
+            (
+                ($a:expr, $b:expr), // from
+                ($c:expr, $d:expr), // pivot
+                $e:expr,            // angle
+                ($f:expr, $g:expr)  // to
+            ) => {
+                assert_eq!(
+                    pixel!($a, $b, Color::red())
+                        .rotate(
+                            Vec2f{ y:$c as f64, x:$d as f64 },
+                            $e
+                        ),
+                    pixel!($f, $g, Color::red())
+                );
+            }
+        }
+
+        test_rotated!((0,2),(0,1),-PI/2.,(1,0));
+        test_rotated!((0,3),(0,1),-PI/2.,(2,0));
+        test_rotated!((1,2),(1,1),-PI/2.,(2,0));
+        test_rotated!((1,3),(1,2),-PI/2.,(2,1));
+        test_rotated!((3,5),(3,3),-PI,(2,0));
+
+        test_rotated!((3,3),(2,3),PI,(0,2));
+        test_rotated!((3,3),(2,3),-PI,(0,2));
     }
-
-    #[test]
-    fn test_pixel_rotation1() {
-        use super::*;
-        use std::f64::consts::PI;
-        let pix = Pixel {
-            point: Vec2f { y:0., x:3. },
-            color: Color::red()
-        };
-        let rotated = pix.rotate(
-            Vec2f{ y:0., x:1. },
-            -PI/2.
-        );
-        assert_eq!(rotated, Pixel{
-            point: Vec2f { y: 2., x: 0. },
-            color: Color::red(),
-        });
-    }
-
-    #[test]
-    fn test_pixel_rotation2() {
-        use super::*;
-        use std::f64::consts::PI;
-        let pix = Pixel {
-            point: Vec2f { y:1., x:2. },
-            color: Color::red()
-        };
-        let rotated = pix.rotate(
-            Vec2f{ y:1., x:1. },
-            -PI/2.
-        );
-        assert_eq!(rotated, Pixel{
-            point: Vec2f { y: 2., x: 0. },
-            color: Color::red(),
-        });
-    }
-
-    #[test]
-    fn test_pixel_rotation3() {
-        use super::*;
-        use std::f64::consts::PI;
-        let pix = Pixel {
-            point: Vec2f { y:1., x:3. },
-            color: Color::red()
-        };
-        let rotated = pix.rotate(
-            Vec2f{ y:1., x:2. },
-            -PI/2.
-        );
-        assert_eq!(rotated, Pixel{
-            point: Vec2f { y: 2., x: 1. },
-            color: Color::red(),
-        });
-    }
-
-    #[test]
-    fn test_pixels_rotation() {
-        #[macro_use]
-        use super::*;
-        use std::f64::consts::PI;
-        let mut pixs = pixels!(
-            pixel!(1, 3, Color::red()),
-            pixel!(1, 4, Color::red())
-        );
-
-        let rotated = pixs.rotate(
-            Vec2f{ y:1., x:2. },
-            -PI/2.
-        );
-
-        assert_eq!(pixels!(
-            pixel!(2, 1, Color::red()),
-            pixel!(3, 1, Color::red())
-        ), rotated);
-    }
-
 }

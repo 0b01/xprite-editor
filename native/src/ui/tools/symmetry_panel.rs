@@ -6,21 +6,14 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     use SymmetryMode::*;
     let symm = Rc::clone(&state.xpr.toolbox.symmetry);
     let mut tool = symm.borrow_mut();
-    if ui.button(im_str!("|"), (0.,0.)) {
-        tool.add_symmetry(SymmetryMode::Vertical(10.));
+    for symm in &SymmetryMode::VARIANTS {
+        ui.same_line(0.);
+        if ui.button(im_str!("{}", symm.symbol()), (0.,0.)) {
+            tool.add_symmetry(symm.clone()); }
+        ui.tooltip(|| {
+            ui.text(symm.as_str());
+        })
     }
-    ui.same_line(0.);
-    if ui.button(im_str!("-"), (0.,0.)) {
-        tool.add_symmetry(SymmetryMode::Horizontal(10.)); }
-    ui.same_line(0.);
-    if ui.button(im_str!("/"), (0.,0.)) {
-        tool.add_symmetry(SymmetryMode::AntiDiagonal(10.)); }
-    ui.same_line(0.);
-    if ui.button(im_str!("\\"), (0.,0.)) {
-        tool.add_symmetry(SymmetryMode::Diagonal(10.)); }
-    ui.same_line(0.);
-    if ui.button(im_str!("+"), (0.,0.)) {
-        tool.add_symmetry(SymmetryMode::Quad(10., 10.)); }
 
     let len = tool.symms.len();
     'out: for i in 0..len {
@@ -72,6 +65,9 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
                     *n = i[1].into();
                     tool.dirty = true;
                 }
+            }
+            Rotational(pivot, deg, maxn) =>  {
+                // ...
             }
         }
         ui.pop_id();

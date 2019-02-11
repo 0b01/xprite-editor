@@ -144,8 +144,8 @@ mod tests {
             pixel!(1,0,Color::red())
         );
         let mut symm = Symmetry::new();
-        symm.push(SymmetryMode::Horizontal(2.));
-        symm.push(SymmetryMode::Vertical(1.));
+        symm.add_symmetry(SymmetryMode::Horizontal(2.));
+        symm.add_symmetry(SymmetryMode::Vertical(1.));
         let ret = symm.process(&pixs);
         assert_eq!(ret, pixels!(
             pixel!(0,1,Color::red()),

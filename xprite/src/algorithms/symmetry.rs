@@ -12,6 +12,8 @@ pub enum SymmetryMode {
     Diagonal(f64),
     /// (horizontal, vertical)
     Quad(f64, f64),
+    /// (pivot, degrees, max_rotations)
+    Rotational(Vec2f, f64, u8)
 }
 
 impl SymmetryMode {
@@ -22,16 +24,29 @@ impl SymmetryMode {
             SymmetryMode::Diagonal(_) => "Diagonal",
             SymmetryMode::AntiDiagonal(_) => "AntiDiagonal",
             SymmetryMode::Quad(_,_) => "Quad",
+            SymmetryMode::Rotational(_,_,_) => "Rotational",
         }
     }
 
-    pub const VARIANTS: [SymmetryMode; 5] =
+    pub fn symbol(&self) -> &str {
+        match self {
+            SymmetryMode::Horizontal(_) => "-",
+            SymmetryMode::Vertical(_) => "|",
+            SymmetryMode::Diagonal(_) => "\\",
+            SymmetryMode::AntiDiagonal(_) => "/",
+            SymmetryMode::Quad(_,_) => "+",
+            SymmetryMode::Rotational(_,_,_) => "rot",
+        }
+    }
+
+    pub const VARIANTS: [SymmetryMode; 6] =
         [
             SymmetryMode::Horizontal(0.),
             SymmetryMode::Vertical(0.),
             SymmetryMode::Quad(0., 0.),
             SymmetryMode::Diagonal(0.),
             SymmetryMode::AntiDiagonal(0.),
+            SymmetryMode::Rotational(vec2f!(0,0), 0., 0),
         ];
 
     pub fn process(&self, pixs: &Pixels, ret: &mut Pixels) {
@@ -62,6 +77,9 @@ impl SymmetryMode {
                 let pivot = vec2f!(0, *y);
                 SymmetryMode::Horizontal(*y).process(pixs, ret);
                 *ret = ret.rotate(pivot, -PI/2.);
+            }
+            SymmetryMode::Rotational(pivot, deg, max_rot) => {
+                // ...
             }
         }
     }
@@ -95,6 +113,10 @@ impl SymmetryMode {
                     vec2f!(0, m)
                 };
                 vec![Rect(vec2f!(m, 0), p1)]
+            }
+            SymmetryMode::Rotational(pivot, deg, max_rot) => {
+                // ...
+                vec![]
             }
         }
     }
