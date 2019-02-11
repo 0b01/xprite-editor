@@ -66,18 +66,18 @@ impl Pixel {
         let c = angle.cos();
         let s = angle.sin();
 
-        dbg!((c,s));
+        // dbg!((c,s));
         let px = self.point.x - pivot.x + 0.5;
         let py = self.point.y - pivot.y + 0.5;
-        dbg!((px, py));
-        dbg!(pivot);
+        // dbg!((px, py));
+        // dbg!(pivot);
 
         let mut point = Vec2f {
             x: c * px + s * py,
             y: -s * px + c * py,
         };
 
-        dbg!(point);
+        // dbg!(point);
         point += pivot;
         point.x = point.x.floor();
         point.y = point.y.floor();

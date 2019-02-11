@@ -5,7 +5,8 @@ use crate::algorithms::symmetry::SymmetryMode;
 #[derive(Clone, Default, Debug)]
 pub struct Symmetry {
     is_mouse_down: Option<InputItem>,
-    pub symms: Vec<SymmetryMode>,
+    /// (enabled, symm)
+    pub symms: Vec<(bool,  SymmetryMode)>,
     pub dirty: bool,
 }
 
@@ -20,7 +21,7 @@ impl Symmetry {
 
     pub fn add_symmetry(&mut self, symm: SymmetryMode) {
         self.dirty = true;
-        self.symms.push(symm);
+        self.symms.push((true, symm));
     }
 
     pub fn remove_symmetry(&mut self, i: usize) {
@@ -33,8 +34,11 @@ impl Symmetry {
     pub fn process(&self, pixs: &Pixels) -> Pixels {
         if self.symms.is_empty() { return Pixels::new(); }
         let mut ret = Pixels::new();
-        self.symms[0].process(pixs, &mut ret);
-        for symm in &self.symms[1..] {
+        if self.symms[0].0 {
+            self.symms[0].1.process(pixs, &mut ret);
+        }
+        for (to_process, symm) in &self.symms[1..] {
+            if ! to_process { continue; }
             symm.process(&ret.clone(), &mut ret);
             symm.process(pixs, &mut ret);
         };
@@ -100,8 +104,9 @@ impl Tool for Symmetry {
         if self.dirty {
             xpr.line_buf.clear();
             let (w, h) = xpr.canvas.get_art_dimension();
-            for symm in &self.symms {
-                xpr.line_buf.extend(&symm.get_line(w, h));
+            for (show, symm) in &self.symms {
+                if !show { continue; }
+                xpr.line_buf.extend(&symm.get_graph(w, h));
             }
             self.dirty = false;
             Ok(true)

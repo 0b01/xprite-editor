@@ -46,11 +46,11 @@ impl SymmetryMode {
             SymmetryMode::Quad(0., 0.),
             SymmetryMode::Diagonal(0.),
             SymmetryMode::AntiDiagonal(0.),
-            SymmetryMode::Rotational(vec2f!(0,0), 0., 0),
+            SymmetryMode::Rotational(vec2f!(10,10), 90., 4),
         ];
 
     pub fn process(&self, pixs: &Pixels, ret: &mut Pixels) {
-        match self {
+        match *self {
             SymmetryMode::Horizontal(m) => {
                 let adjust = 1.; // ...
                 for Pixel{point: Vec2f{x,y}, color} in pixs.iter() {
@@ -64,27 +64,34 @@ impl SymmetryMode {
                 }
             }
             SymmetryMode::Quad(m1, m2) => {
-                SymmetryMode::Horizontal(*m1).process(pixs, ret);
-                SymmetryMode::Vertical(*m2).process(&ret.clone(), ret); // ...
-                SymmetryMode::Vertical(*m2).process(pixs, ret);
+                SymmetryMode::Horizontal(m1).process(pixs, ret);
+                SymmetryMode::Vertical(m2).process(&ret.clone(), ret); // ...
+                SymmetryMode::Vertical(m2).process(pixs, ret);
             }
             SymmetryMode::AntiDiagonal(y) => {
-                let pivot = vec2f!(0, *y);
-                SymmetryMode::Vertical(*y).process(pixs, ret);
+                let pivot = vec2f!(0, y);
+                SymmetryMode::Vertical(y).process(pixs, ret);
                 *ret = ret.rotate(pivot, -PI/2.);
             }
             SymmetryMode::Diagonal(y) => {
-                let pivot = vec2f!(0, *y);
-                SymmetryMode::Horizontal(*y).process(pixs, ret);
+                let pivot = vec2f!(0, y);
+                SymmetryMode::Horizontal(y).process(pixs, ret);
                 *ret = ret.rotate(pivot, -PI/2.);
             }
-            SymmetryMode::Rotational(pivot, deg, max_rot) => {
-                // ...
+            SymmetryMode::Rotational(pivot, deg, max_) => {
+                let radian = deg/180. * PI;
+                let max_allowed = (2. * PI / radian).floor();
+                let max_rot = u8::min(max_allowed as u8, max_);
+                for i in 1..max_rot {
+                    let angle = -(i as f64 * radian);
+                    let rotated = pixs.rotate(pivot, angle);
+                    ret.extend(&rotated);
+                }
             }
         }
     }
 
-    pub fn get_line(&self, w: f64, h: f64) -> Vec<Rect> {
+    pub fn get_graph(&self, w: f64, h: f64) -> Vec<Rect> {
         match *self {
             SymmetryMode::Horizontal(m) => {
                 vec![Rect(vec2f!(m, 0), vec2f!(m, w))]
@@ -114,9 +121,19 @@ impl SymmetryMode {
                 };
                 vec![Rect(vec2f!(m, 0), p1)]
             }
-            SymmetryMode::Rotational(pivot, deg, max_rot) => {
-                // ...
-                vec![]
+            SymmetryMode::Rotational(pivot, deg, max_) => {
+                let radian = deg/180. * PI;
+                let max_allowed = (2. * PI / radian).floor();
+                let max_rot = u8::min(max_allowed as u8, max_);
+                let mut ret = vec![];
+                for i in 0..max_rot {
+                    let angle = i as f64 * radian;
+                    let y = -100. * angle.cos();
+                    let x = 100. * angle.sin();
+                    let end = vec2f!(y, x) + pivot;
+                    ret.push(Rect(pivot, end));
+                }
+                ret
             }
         }
     }
