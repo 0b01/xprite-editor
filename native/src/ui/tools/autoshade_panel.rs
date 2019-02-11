@@ -20,7 +20,7 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     let len = tool.steps.len();
     if ui.button(im_str!("+"), (0.,0.)) {
         tool.steps.push((200., 0.03, Color::red()));
-        tool.finalize(&mut state.xpr);
+        tool.finalize(&mut state.xpr).unwrap();
     }
     for i in 0..len {
         let mut corrode = tool.steps[i].0 as f32;
@@ -28,11 +28,11 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
 
         if ui.drag_float(im_str!("corrode"), &mut corrode).build() {
             tool.steps[i].0 = corrode as f64;
-            tool.finalize(&mut state.xpr);
+            tool.finalize(&mut state.xpr).unwrap();
         }
         if ui.drag_float(im_str!("dist"), &mut dist).build() {
             tool.steps[i].1 = dist as f64;
-            tool.finalize(&mut state.xpr);
+            tool.finalize(&mut state.xpr).unwrap();
         }
 
         // ui.same_line(0.);
@@ -44,7 +44,7 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
             .alpha(false);
         if b.build() {
             tool.steps[i].2 = sel.into();
-            tool.finalize(&mut state.xpr);
+            tool.finalize(&mut state.xpr).unwrap();
         }
     }
 }

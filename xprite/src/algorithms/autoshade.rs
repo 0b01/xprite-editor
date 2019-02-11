@@ -18,7 +18,7 @@ pub fn autoshade(pixs: &Pixels, steps: &[(f64, f64, Color)]) -> Pixels {
     bb.1.x += 100.;
     bb.1.y += 100.;
     let img = pixs.as_image(bb);
-    img.save("expanded.png");
+    if DBG_SAVE_IMG { img.save("expanded.png"); }
     let mut orig = img.to_luma();
     // binarize
     for p in orig.iter_mut() {

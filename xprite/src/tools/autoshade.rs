@@ -28,7 +28,7 @@ impl AutoShade {
         &mut self,
         xpr: &mut Xprite,
     ) -> Result<(), String> {
-        let mut pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
+        let pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
         let content = &mut xpr.current_layer_mut().unwrap().content;
         let intersection = content.intersection(&pixs);
         let bb = intersection.bounding_rect();

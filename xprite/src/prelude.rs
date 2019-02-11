@@ -20,6 +20,7 @@ pub use crate::rendering::{
 
 #[cfg(feature = "python-scripting")]
 pub use pyo3::prelude::*;
+pub use std::f64::consts::PI;
 
 pub use crate::layer::{Layer, Layers};
 pub use crate::tools::{Tool, ToolType};

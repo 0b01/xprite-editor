@@ -18,6 +18,7 @@ git submodule update --init --recursive
 * [ ] Marquee tool
 * [ ] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
 * [ ] Outline in selected area
+* [ ] snapping with one button(shift)
 * [ ] Autoshade: erode and then color with gradient
 
 ## Backburner

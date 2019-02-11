@@ -81,8 +81,19 @@ impl Xprite {
     }
 
     /// add pixels to temp im_buf
-    pub fn add_pixels(&mut self, pixels: &Pixels) {
-        self.pixels_mut().extend(pixels);
+    pub fn add_pixels(&mut self, orig: &Pixels) {
+        let reflected = self.toolbox.symmetry.borrow_mut().process(&orig);
+        self.pixels_mut().extend(&orig);
+        self.pixels_mut().extend(&reflected);
+    }
+
+    pub fn finalize_pixels(&mut self, pixs: &Pixels) -> Result<(), String>{
+        self.history.enter()?;
+        self.current_layer_mut()
+            .unwrap()
+            .content
+            .extend(&pixs);
+        Ok(())
     }
 
     /// add pixel to temp im_buf

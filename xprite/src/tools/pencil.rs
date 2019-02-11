@@ -266,11 +266,7 @@ impl Tool for Pencil {
 
     fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         if let Some(pixs) = &self.update_buffer {
-            xpr.history.enter()?;
-            xpr.current_layer_mut()
-                .ok_or_else(|| "Layer doesn't exist.".to_owned())?
-                .content
-                .extend(pixs);
+            xpr.finalize_pixels(&pixs)?;
             self.update_buffer = None;
             Ok(true)
         } else {
