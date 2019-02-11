@@ -409,14 +409,21 @@ impl Pixels {
     pub fn as_mat(&self, w: usize, h: usize) -> Vec<Vec<Option<Pixel>>> {
         let mut arr = vec![vec![None; w as usize]; h as usize];
         for p in self.0.iter() {
-            let Pixel { point, .. } = p;
-            let Vec2f { x, y } = point;
+            let Pixel { point: Vec2f { x, y }, .. } = p;
             if oob(*x, *y, w as f64, h as f64) {
                 continue;
             }
             arr[*y as usize][*x as usize] = Some(*p);
         }
         arr
+    }
+
+    pub fn retain_in_bound(&mut self, w: usize, h: usize) {
+        self.0 = self.0.iter().filter_map(|p| {
+            let Pixel { point: Vec2f { x, y }, .. } = p;
+            if oob(*x, *y, w as f64, h as f64) { None }
+            else { Some(*p) }
+        }).collect();
     }
 
     /// shift all pixels in the matrix in accordance to bounding box

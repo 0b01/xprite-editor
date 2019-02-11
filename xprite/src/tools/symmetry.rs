@@ -55,12 +55,12 @@ impl SymmetryMode {
             SymmetryMode::AntiDiagonal(y) => {
                 let pivot = vec2f!(0, *y);
                 SymmetryMode::Vertical(*y).process(pixs, ret);
-                dbg!(&ret);
                 *ret = ret.rotate(pivot, -PI/2.);
-                dbg!(&ret);
             }
             SymmetryMode::Diagonal(y) => {
-                // ...
+                let pivot = vec2f!(0, *y);
+                SymmetryMode::Horizontal(*y).process(pixs, ret);
+                *ret = ret.rotate(pivot, -PI/2.);
             }
         }
     }
@@ -278,29 +278,8 @@ mod tests {
         ));
     }
 
-    // #[test]
-    // fn test_multistep_symmetry1() {
-    //     use super::*;
-    //     let pixs = pixels!(
-    //         pixel!(0,0,Color::red()),
-    //         pixel!(1,0,Color::red())
-    //     );
-    //     let mut symm = Symmetry::new();
-    //     symm.push(SymmetryMode::Horizontal(2.));
-    //     symm.push(SymmetryMode::Vertical(1.));
-    //     let ret = symm.process(&pixs);
-    //     assert_eq!(ret, pixels!(
-    //         pixel!(0,1,Color::red()),
-    //         pixel!(1,1,Color::red()),
-    //         pixel!(2,0,Color::red()),
-    //         pixel!(3,0,Color::red()),
-    //         pixel!(2,1,Color::red()),
-    //         pixel!(3,1,Color::red())
-    //     ));
-    // }
-
     #[test]
-    fn test_anti_diagonal_symmetry() {
+    fn test_antidiagonal_symmetry() {
         use super::*;
         let pixs = pixels!(
             pixel!(0,0,Color::red())
@@ -314,7 +293,7 @@ mod tests {
     }
 
     #[test]
-    fn test_anti_diagonal_symmetry2() {
+    fn test_antidiagonal_symmetry2() {
         use super::*;
         let pixs = pixels!(
             pixel!(0,0,Color::red())
@@ -328,7 +307,7 @@ mod tests {
     }
 
     #[test]
-    fn test_anti_diagonal_symmetry3() {
+    fn test_antidiagonal_symmetry3() {
         use super::*;
         let pixs = pixels!(
             pixel!(0,0,Color::red()),
@@ -340,6 +319,34 @@ mod tests {
         assert_eq!(ret, pixels!(
             pixel!(2,1,Color::red()),
             pixel!(2,2,Color::red())
+        ));
+    }
+
+    #[test]
+    fn test_diagonal_symmetry() {
+        use super::*;
+        let pixs = pixels!(
+            pixel!(0,1,Color::red())
+        );
+        let mut ret = Pixels::new();
+        let symm = SymmetryMode::Diagonal(0.);
+        symm.process(&pixs, &mut ret);
+        assert_eq!(ret, pixels!(
+            pixel!(1,0,Color::red())
+        ));
+    }
+
+    #[test]
+    fn test_diagonal_symmetry1() {
+        use super::*;
+        let pixs = pixels!(
+            pixel!(0,1,Color::red())
+        );
+        let mut ret = Pixels::new();
+        let symm = SymmetryMode::Diagonal(1.);
+        symm.process(&pixs, &mut ret);
+        assert_eq!(ret, pixels!(
+            pixel!(0,-1,Color::red())
         ));
     }
 
