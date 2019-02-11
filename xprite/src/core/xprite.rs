@@ -11,6 +11,7 @@ pub struct Xprite {
     pub history: History,
 
     pub im_buf: Pixels,
+    pub line_buf: Vec<Rect>,
     pub bz_buf: Vec<CubicBezierSegment>,
     marq_buf: Vec<MarqueePixel>,
 
@@ -44,6 +45,7 @@ impl Default for Xprite {
             color_picker_color: None,
             history: Default::default(),
             im_buf: Default::default(),
+            line_buf: Default::default(),
             bz_buf: Default::default(),
             marq_buf: Default::default(),
             canvas: Default::default(),
@@ -82,17 +84,18 @@ impl Xprite {
 
     /// add pixels to temp im_buf
     pub fn add_pixels(&mut self, orig: &Pixels) {
-        let reflected = self.toolbox.symmetry.borrow_mut().process(&orig);
         self.pixels_mut().extend(&orig);
+        let reflected = self.toolbox.symmetry.borrow_mut().process(&orig);
         self.pixels_mut().extend(&reflected);
     }
 
     pub fn finalize_pixels(&mut self, pixs: &Pixels) -> Result<(), String>{
         self.history.enter()?;
-        self.current_layer_mut()
-            .unwrap()
-            .content
-            .extend(&pixs);
+        self.current_layer_mut().unwrap()
+            .content .extend(&pixs);
+        let reflected = self.toolbox.symmetry.borrow_mut().process(&pixs);
+        self.current_layer_mut().unwrap()
+            .content.extend(&reflected);
         Ok(())
     }
 
@@ -215,6 +218,20 @@ impl Xprite {
 }
 
 impl Xprite {
+    pub fn render(&self, rdr: &mut Renderer) {
+        self.render_cursor(rdr);
+        self.render_bezier(rdr);
+        self.render_line(rdr);
+        self.render_marquee(rdr);
+        self.render_canvas_extras(rdr);
+    }
+
+    pub fn render_line(&self, rdr: &mut Renderer) {
+        for Rect(p0, p1) in &self.line_buf {
+            self.canvas.draw_line(rdr, *p0, *p1, Color::red().into());
+        }
+    }
+
     pub fn render_cursor(&self, rdr: &mut Renderer) {
         let outline = self.cursor.outline();
         for p in self.cursor.iter() {

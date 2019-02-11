@@ -64,11 +64,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         )
                         .build();
 
-                        state.xpr.render_cursor(rdr);
-                        state.xpr.render_bezier(rdr);
-                        state.xpr.render_marquee(rdr);
-
-                        state.xpr.render_canvas_extras(rdr);
+                        state.xpr.render(rdr);
 
                         if state.xpr.toolbox.selected == ToolType::ColorPicker {
                             draw_color_picker(state, ui);

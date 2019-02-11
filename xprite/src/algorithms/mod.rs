@@ -10,3 +10,4 @@ pub mod polyline;
 pub mod rect;
 pub mod sorter;
 pub mod autoshade;
+pub mod symmetry;

@@ -130,7 +130,9 @@ impl Tool for Eraser {
     fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         if let Some(pixs) = &self.update_buffer {
             xpr.history.enter()?;
+            let reflected = xpr.toolbox.symmetry.clone().borrow().process(&pixs);
             let layer = &mut xpr.current_layer_mut().unwrap();
+            layer.content.sub_(&reflected);
             layer.content.sub_(&pixs);
             layer.visible = true;
             self.update_buffer = None;
@@ -153,6 +155,8 @@ impl Tool for Eraser {
             let content = layer.content.clone(); // HACK: doesn't borrowck
             xpr.add_pixels(&content);
             xpr.remove_pixels(&self.draw_buffer);
+            let reflected = xpr.toolbox.symmetry.clone().borrow().process(&self.draw_buffer);
+            xpr.remove_pixels(&reflected);
             Ok(true)
         } else {
             layer.visible = true;

@@ -58,6 +58,10 @@ impl Canvas {
         }
     }
 
+    pub fn get_art_dimension(&self) -> (f64, f64) {
+        (self.art_w, self.art_h)
+    }
+
     pub fn update_pos(&mut self, win_x: f64, win_y: f64) {
         self.win_x = win_x;
         self.win_y = win_y;
