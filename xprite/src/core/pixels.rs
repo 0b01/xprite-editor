@@ -3,6 +3,7 @@ use crate::algorithms::{
     perimeter::{find_perimeter, find_outline},
     pixel_perfect::{pixel_antiperfect, pixel_perfect},
     sorter::sort_path,
+    rotsprite::rotsprite,
 };
 use crate::prelude::*;
 use fnv::FnvBuildHasher;
@@ -214,7 +215,11 @@ impl Pixels {
     }
 
     pub fn rotate(&self, pivot: Vec2f, angle: f64) -> Pixels {
-        Self(self.0.iter().map(|p| p.rotate(pivot, angle)).collect())
+        Pixels(self.0.iter().map(|p| p.rotate(pivot, angle)).collect())
+    }
+
+    pub fn rotsprite(&self, pivot: Vec2f, angle: f64) -> Pixels {
+        rotsprite(&self, angle, pivot)
     }
 
     pub fn extend(&mut self, other: &Pixels) {
