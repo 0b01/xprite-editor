@@ -1,66 +1,13 @@
 use crate::prelude::*;
 use crate::render::imgui::ImguiRenderer;
-use std::borrow::Cow;
 use xprite::rendering::image_renderer::ImageRenderer;
 
-use std::str::FromStr;
+const COLOR_PICKER: &'static [u8; 13807] = include_bytes!("../../colorpicker.png");
 
-#[derive(Clone, Copy, PartialEq)]
-pub enum PreviewWindowMode {
-    Fill,
-    OneX,
-    TwoX,
-}
-
-impl PreviewWindowMode {
-    pub fn as_str(&self) -> &str {
-        match self {
-            PreviewWindowMode::Fill => "Fill",
-            PreviewWindowMode::OneX => "1x",
-            PreviewWindowMode::TwoX => "2x",
-        }
-    }
-
-    pub const VARIANTS: [PreviewWindowMode; 3] = [
-        PreviewWindowMode::Fill,
-        PreviewWindowMode::OneX,
-        PreviewWindowMode::TwoX,
-    ];
-}
-
-impl FromStr for PreviewWindowMode {
-    type Err = ();
-    fn from_str(string: &str) -> Result<Self, ()> {
-        match string {
-            "Fill" => Ok(PreviewWindowMode::Fill),
-            "1x" => Ok(PreviewWindowMode::OneX),
-            "2x" => Ok(PreviewWindowMode::TwoX),
-            _ => panic!("impossible"),
-        }
-    }
-}
-
-pub struct PreviewWindowState {
-    pub mode: PreviewWindowMode,
-}
-
-impl Default for PreviewWindowState {
-    fn default() -> Self {
-        Self {
-            mode: PreviewWindowMode::Fill,
-        }
-    }
-}
-
-pub struct BrushState {
-    pub sz: [i32; 2],
-}
-
-impl Default for BrushState {
-    fn default() -> Self {
-        Self { sz: [1, 0] }
-    }
-}
+pub mod preview_window;
+pub mod palette_window;
+pub mod brush_state;
+pub mod exporter_state;
 
 pub struct FilePopupState {
     pub show_file_popup: bool,
@@ -78,27 +25,15 @@ impl Default for FilePopupState {
     }
 }
 
-pub struct PaletteWindowState<'a> {
-    pub palette_color_name: Option<Cow<'a, str>>,
-    pub palette_idx: i32,
-}
-
-impl<'a> Default for PaletteWindowState<'a> {
-    fn default() -> Self {
-        Self {
-            palette_color_name: None,
-            palette_idx: 0,
-        }
-    }
-}
 
 pub struct State<'a> {
     pub xpr: Xprite,
     pub file_popup: FilePopupState,
     pub inputs: InputState,
     pub hotkeys: HotkeyController,
-    pub palette_window: PaletteWindowState<'a>,
-    pub preview_window_state: PreviewWindowState,
+    pub palette_window: palette_window::PaletteWindowState<'a>,
+    pub preview_window_state: preview_window::PreviewWindowState,
+    pub exporter_state: exporter_state::ExporterState,
 
     pub show_console: bool,
     pub script_fname: Option<String>,
@@ -107,7 +42,7 @@ pub struct State<'a> {
 
     pub rename_layer: Option<(usize, usize)>,
     pub rename_group: Option<usize>,
-    pub brush: BrushState,
+    pub brush: brush_state::BrushState,
 
     pub texture: Option<usize>,
     pub color_picker_texture: Option<usize>,
@@ -122,6 +57,7 @@ impl<'a> Default for State<'a> {
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
             preview_window_state: Default::default(),
+            exporter_state: Default::default(),
 
             brush: Default::default(),
             show_console: false,
@@ -145,7 +81,7 @@ impl<'a> State<'a> {
 
     pub fn load_icons(&mut self, rdr: &mut ImguiRenderer) {
         if self.color_picker_texture.is_some() { return; }
-        let color_picker = include_bytes!("../colorpicker.png");
+        let color_picker = COLOR_PICKER;
         let img = image::load_from_memory(color_picker).unwrap();
         let texture_id = rdr.add_img(img, image::ColorType::RGBA(0));
         self.color_picker_texture = Some(texture_id);
@@ -183,6 +119,14 @@ impl<'a> State<'a> {
         self.hotkeys.toggle();
     }
 
+    pub fn toggle_console(&mut self) {
+        self.show_console = !self.show_console;
+    }
+
+    pub fn toggle_exporter(&mut self) {
+        self.exporter_state.show = !self.exporter_state.show;
+    }
+
     pub fn execute(&mut self, bind: Bind) -> Result<(), String> {
         use self::Bind::*;
         match bind {
@@ -191,7 +135,7 @@ impl<'a> State<'a> {
             PushTool(tool) => self.xpr.change_tool(tool)?,
             PopTool => self.xpr.toolbox.pop_tool(),
             ToggleConsole => {
-                self.show_console = !self.show_console;
+                self.toggle_console();
             }
             Load => {
                 self.toggle_hotkeys();
@@ -209,5 +153,9 @@ impl<'a> State<'a> {
             Unmapped => (),
         }
         Ok(())
+    }
+
+    pub fn export(&self) {
+        info!("export unimplemented!()");
     }
 }

@@ -39,13 +39,13 @@ pub fn draw_brush_tree(state: &mut State, ui: &Ui, current_brush: BrushType) {
         .default_open(true)
         .build(|| {
             if ui
-                .input_int(im_str!("size"), &mut state.brush.sz[0])
+                .drag_int(im_str!("size"), &mut state.brush.sz[0])
                 .build()
             {
                 set_brush(state, current_brush);
             }
             if ui
-                .input_int(im_str!("angle"), &mut state.brush.sz[1])
+                .drag_int(im_str!("angle"), &mut state.brush.sz[1])
                 .build()
             {
                 set_brush(state, current_brush);

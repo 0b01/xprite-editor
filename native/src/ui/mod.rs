@@ -8,6 +8,7 @@ pub mod palette;
 pub mod preview;
 pub mod tool_panel;
 pub mod toolbar;
+pub mod exporter;
 pub mod tools;
 
 use crate::prelude::*;
@@ -32,5 +33,6 @@ pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
     self::layers::draw_layers(rdr, state, ui);
     self::console::draw_console(rdr, state, ui);
     self::preview::draw_preview(rdr, state, ui);
+    self::exporter::draw_exporter(rdr, state, ui);
     true
 }

@@ -21,7 +21,6 @@ git submodule update --init --recursive
 * [ ] refactor color tool(using palette crate)
 * [ ] Autoshade: erode and then color with gradient
 * [ ] Autoshade: erosion modes: accumulative(step by step), vs erode original
-* [ ] rotsprite
 
 ## Backburner
 
@@ -41,6 +40,7 @@ git submodule update --init --recursive
 
 ## Done
 
+* [x] rotsprite
 * [x] Symmetry tool
 * [x] rotational symmetry
 * [x] Add a mode in paintbucket for 8-way connected floodfill

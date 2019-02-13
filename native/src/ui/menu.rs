@@ -21,6 +21,11 @@ pub fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             if ui.menu_item(im_str!("Settings")).build() {
                 state.execute(Bind::PushTool(ToolType::Settings)).unwrap();
             }
+
+            if ui.menu_item(im_str!("Exporter")).build() {
+                state.toggle_exporter();
+            }
+
         });
 
         ui.menu(im_str!("Edit")).build(|| {

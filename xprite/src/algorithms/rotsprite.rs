@@ -9,7 +9,7 @@ pub fn rotsprite(pixs: &Pixels, angle: f64) -> Pixels {
         let pixs = scale2x(pixs, pixs.bounding_rect());
         let pixs = scale2x(&pixs, pixs.bounding_rect());
         let pixs = scale2x(&pixs, pixs.bounding_rect());
-        pixs.save("scaled.png");
+        // pixs.save("scaled.png");
         let rotated = rotate_and_reduce(&pixs, pixs.bounding_rect(), angle);
         rotated
     }
@@ -132,26 +132,26 @@ mod tests {
 
         let ret = scale2x(&pixs, pixs.bounding_rect());
 
-        // assert_eq!(
-        //     pixels!{
-        //         pixel!(0,0,Color::void()),
-        //         pixel!(1,0,Color::void()),
-        //         pixel!(0,1,Color::void()),
-        //         pixel!(1,1,Color::void()),
-        //         pixel!(0,4,Color::void()),
-        //         pixel!(1,4,Color::void()),
-        //         pixel!(0,5,Color::void()),
-        //         pixel!(1,5,Color::void()),
-        //         pixel!(2,2,Color::void()),
-        //         pixel!(3,2,Color::void()),
-        //         pixel!(2,3,Color::void()),
-        //         pixel!(3,3,Color::void())
-        //     },
-        //     ret
-        // );
+        assert_eq!(
+            pixels!{
+                pixel!(0,0,Color::void()),
+                pixel!(1,0,Color::void()),
+                pixel!(0,1,Color::void()),
+                pixel!(1,1,Color::void()),
+                pixel!(0,4,Color::void()),
+                pixel!(1,4,Color::void()),
+                pixel!(0,5,Color::void()),
+                pixel!(1,5,Color::void()),
+                pixel!(2,2,Color::void()),
+                pixel!(3,2,Color::void()),
+                pixel!(2,3,Color::void()),
+                pixel!(3,3,Color::void())
+            },
+            ret
+        );
 
         let img = ret.as_image(ret.bounding_rect());
-        img.save("scale2x.png").unwrap();
+        // img.save("scale2x.png").unwrap();
     }
 
     #[test]
@@ -175,10 +175,11 @@ mod tests {
         pixs.extend(&crate::algorithms::rect::rect(
             0, 0, 30, 30, Color::orange()
         ).unwrap());
+        // pixs.save("orig.png");
 
         let rotated = rotsprite(&pixs, -PI/3.);
 
-        rotated.save("rotsprite.png");
+        // rotated.save("rotsprite.png");
 
     }
 }

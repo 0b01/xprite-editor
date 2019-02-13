@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::state::preview_window::PreviewWindowMode;
 
 pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     ui.tree_node(im_str!("Document"))

@@ -1,5 +1,6 @@
 use crate::prelude::*;
 use crate::render::imgui::ImguiRenderer;
+use crate::state::preview_window::PreviewWindowMode;
 
 pub fn draw_preview(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
     ui.window(im_str!("Preview"))
