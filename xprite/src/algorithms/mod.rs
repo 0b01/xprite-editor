@@ -11,3 +11,4 @@ pub mod rect;
 pub mod sorter;
 pub mod autoshade;
 pub mod symmetry;
+pub mod rotsprite;

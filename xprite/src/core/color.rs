@@ -186,4 +186,9 @@ impl Color {
             a: 0,
         }
     }
+
+    pub fn void() -> Color {
+        Color::transparent()
+    }
+
 }

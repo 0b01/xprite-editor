@@ -3,7 +3,7 @@ use std::rc::Rc;
 use xprite::algorithms::symmetry::SymmetryMode;
 
 pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
-    use SymmetryMode::*;
+    use self::SymmetryMode::*;
     let symm = Rc::clone(&state.xpr.toolbox.symmetry);
     let mut tool = symm.borrow_mut();
     for (i, symm) in SymmetryMode::VARIANTS.iter().enumerate() {

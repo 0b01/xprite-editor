@@ -188,6 +188,7 @@ impl Default for Pixels {
 }
 
 impl Pixels {
+
     pub fn new() -> Self {
         Pixels(IndexSet::with_hasher(Default::default()))
     }
@@ -201,6 +202,15 @@ impl Pixels {
             set.insert(*p);
         }
         Pixels(set)
+    }
+
+    /// query pixel in the collection
+    /// returns None if it does not exist
+    pub fn get_pixel(&self, w: isize, h: isize) -> Option<Pixel> {
+        if w < 0 || h < 0 {
+            return None;
+        }
+        self.0.get(&pixel!(w, h, Color::red())).cloned()
     }
 
     pub fn rotate(&self, pivot: Vec2f, angle: f64) -> Pixels {
@@ -398,6 +408,7 @@ impl From<Pixels> for ase::Pixels {
 }
 
 impl Pixels {
+
     pub fn as_bool_mat(&self, w: usize, h: usize) -> Vec<Vec<bool>> {
         let mut arr = vec![vec![false; w]; h];
         for p in self.0.iter() {
@@ -407,6 +418,7 @@ impl Pixels {
         }
         arr
     }
+
     pub fn as_mat(&self, w: usize, h: usize) -> Vec<Vec<Option<Pixel>>> {
         let mut arr = vec![vec![None; w as usize]; h as usize];
         for p in self.0.iter() {
@@ -480,6 +492,13 @@ impl Pixels {
         rdr.render();
         rdr.image
     }
+
+    pub fn save(&self, output: &str) {
+        let bb = self.bounding_rect();
+        let img = self.as_image(bb);
+        img.save(output).unwrap();
+    }
+
 }
 
 impl Pixels {
@@ -732,5 +751,19 @@ mod tests {
 
         test_rotated!((3,3),(2,3),PI,(0,2));
         test_rotated!((3,3),(2,3),-PI,(0,2));
+    }
+
+    #[test]
+    fn test_get_pixel()  {
+        use super::*;
+        let pixs = pixels!(
+            pixel!(0,0,Color::black()),
+            pixel!(0,1,Color::blue())
+        );
+        assert_eq!( pixs.get_pixel(0,0), Some(pixel!(0,0,Color::black())));
+        assert_eq!( pixs.get_pixel(0,0).map(|i|i.color), Some(Color::black()));
+        assert_eq!( pixs.get_pixel(0,1), Some(pixel!(0,1,Color::blue())));
+        assert_eq!( pixs.get_pixel(0,1).map(|i|i.color), Some(Color::blue()));
+
     }
 }

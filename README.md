@@ -25,6 +25,7 @@ git submodule update --init --recursive
 
 ## Backburner
 
+* [ ] Deep learning based rotator
 * [ ] Partial sorting curves(read TC Inglis thesis)
 * [ ] Line modes(perfect span, predictable, continuous, bresenham)
 * [ ] Replace pyo3 with RustPython
