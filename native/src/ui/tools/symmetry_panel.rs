@@ -93,6 +93,29 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
                     *deg = deg_.into();
                     dirty = true;
                 }
+
+                macro_rules! angle_btn {
+                    ($angle: literal) => {
+                        if ui.button(im_str!("{}", stringify!($angle)), (0., 0.)) {
+                            *deg = $angle as f64;
+                            dirty = true;
+                        }
+                    };
+                }
+
+                angle_btn!(30);
+
+                ui.same_line(0.);
+                angle_btn!(45);
+
+                ui.same_line(0.);
+                angle_btn!(60);
+
+                ui.same_line(0.);
+                angle_btn!(90);
+
+                angle_btn!(180);
+
                 if ui.drag_int(im_str!("max"), &mut maxn_).build() {
                     *maxn = maxn_ as u8;
                     dirty = true;

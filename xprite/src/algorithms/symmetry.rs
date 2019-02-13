@@ -84,7 +84,7 @@ impl SymmetryMode {
                 let max_rot = u8::min(max_allowed as u8, max_);
                 for i in 1..max_rot {
                     let angle = -(i as f64 * radian);
-                    let rotated = pixs.rotsprite(pivot, angle);
+                    let rotated = pixs.rotate(pivot, angle);
                     ret.extend(&rotated);
                 }
             }
