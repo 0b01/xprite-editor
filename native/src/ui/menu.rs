@@ -45,7 +45,7 @@ pub fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             }
 
             if ui.menu_item(im_str!("Symmetry")).build() {
-                state.execute(Bind::PushTool(ToolType::Symmetry)).unwrap();
+                state.toggle_symmetry();
             }
         });
 

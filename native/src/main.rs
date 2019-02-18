@@ -40,6 +40,13 @@ fn main() -> Result<(), String> {
                 .help("Run python script"),
         );
     }
+
+    t = t.arg(
+        Arg::with_name("FILENAME")
+            .value_name("FILENAME")
+            .help("file to edit"),
+    );
+
     let matches = t.get_matches();
 
     if let Some(inp_file) = matches.value_of("INPUT") {
@@ -48,7 +55,7 @@ fn main() -> Result<(), String> {
             run_python_script(inp_file)?;
         }
     } else {
-        run_ui();
+        run_ui(matches.value_of("FILENAME"));
     }
 
     Ok(())
@@ -64,11 +71,14 @@ fn run_python_script(fname: &str) -> Result<(), String> {
     Ok(())
 }
 
-fn run_ui() {
+fn run_ui(fname: Option<&str>) {
     trace!("Starting Xprite");
     let art_w = DEFAULT_WIDTH;
     let art_h = DEFAULT_HEIGHT;
-    let xpr = Xprite::new(art_w, art_h);
+    let xpr = match fname {
+        Some(fname) => Xprite::load_ase(fname),
+        None => Xprite::new(art_w, art_h),
+    };
     init_full_logger(Arc::clone(&xpr.log));
     let mut state = State::new(xpr);
 

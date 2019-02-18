@@ -106,7 +106,9 @@ impl Tool for Symmetry {
             let (w, h) = xpr.canvas.get_art_dimension();
             for (show, symm) in &self.symms {
                 if !show { continue; }
-                xpr.line_buf.extend(&symm.get_graph(w, h));
+                let graph = symm.get_graph(w, h);
+                dbg!(&graph);
+                xpr.line_buf.extend(&graph);
             }
             self.dirty = false;
             Ok(true)

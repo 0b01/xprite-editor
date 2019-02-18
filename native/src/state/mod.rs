@@ -36,6 +36,7 @@ pub struct State<'a> {
     pub exporter_state: exporter_state::ExporterState,
 
     pub show_console: bool,
+    pub show_symmetry: bool,
     pub script_fname: Option<String>,
 
     pub cols_per_row: i32,
@@ -61,6 +62,7 @@ impl<'a> Default for State<'a> {
 
             brush: Default::default(),
             show_console: false,
+            show_symmetry: true,
             script_fname: None,
             texture: None,
             cols_per_row: 8,
@@ -125,6 +127,10 @@ impl<'a> State<'a> {
 
     pub fn toggle_exporter(&mut self) {
         self.exporter_state.show = !self.exporter_state.show;
+    }
+
+    pub fn toggle_symmetry(&mut self) {
+        self.show_symmetry = !self.show_symmetry;
     }
 
     pub fn execute(&mut self, bind: Bind) -> Result<(), String> {

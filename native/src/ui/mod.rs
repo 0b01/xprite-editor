@@ -10,6 +10,7 @@ pub mod tool_panel;
 pub mod toolbar;
 pub mod exporter;
 pub mod tools;
+pub mod symmetry;
 
 use crate::prelude::*;
 use crate::render::imgui::ImguiRenderer;
@@ -31,6 +32,7 @@ pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
     self::palette::draw_palette(rdr, state, ui);
     self::palette::draw_color_picker(rdr, state, ui);
     self::layers::draw_layers(rdr, state, ui);
+    self::symmetry::draw_symmetry(rdr, state, ui);
     self::console::draw_console(rdr, state, ui);
     self::preview::draw_preview(rdr, state, ui);
     self::exporter::draw_exporter(rdr, state, ui);

@@ -146,7 +146,10 @@ impl Xprite {
     }
 
     pub fn update(&mut self) -> Result<(), String> {
-        self.redraw = self.toolbox.tool().borrow_mut().update(self)?;
+        let mut redraw = false;
+        redraw |= Rc::clone(&self.toolbox.symmetry).borrow_mut().update(self)?;
+        redraw |= self.toolbox.tool().borrow_mut().update(self)?;
+        self.redraw = redraw;
         Ok(())
     }
 

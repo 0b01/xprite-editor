@@ -165,13 +165,16 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         let mut sel: [f32; 4] = (*col).into();
         let id = im_str!("MyColor##{}", i);
         let b = ui.color_edit(id, &mut sel).flags(misc_flags).alpha(false);
-        if ui.is_item_hovered() {
-            state.palette_window.palette_color_name =
-                Some(Cow::Owned(col_name.to_owned()));
-            ui.tooltip(|| {
-                ui.text(col_name.to_owned());
-            });
-        }
+
+        // // show color name on hover
+        // if ui.is_item_hovered() {
+        //     state.palette_window.palette_color_name =
+        //         Some(Cow::Owned(col_name.to_owned()));
+        //     ui.tooltip(|| {
+        //         ui.text(col_name.to_owned());
+        //     });
+        // }
+
         if b.build() {
             *col = sel.into();
         }

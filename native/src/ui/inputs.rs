@@ -91,9 +91,18 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     // middle key for scrolling
-    if using_window
-        && (ui.imgui().is_mouse_dragging(ImMouseButton::Middle)
-            || (state.inputs.space && state.inputs.left))
+    if
+        using_window
+        &&
+        (
+            ui.imgui().is_mouse_dragging(ImMouseButton::Middle)
+        ||
+            (
+                state.inputs.space
+                &&
+                ui.imgui().is_mouse_dragging(ImMouseButton::Left)
+            )
+        )
     {
         // set cursor
         ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Hand);
