@@ -508,12 +508,20 @@ impl Xprite {
         // todo
     }
 
-    pub fn save_img(&self, img_path: &str) {
+    pub fn save_img(&self, img_path: &str, rescale: u32) {
         let mut rdr =
             ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         self.export(&mut rdr).unwrap();
         rdr.render();
         let im = rdr.as_img();
+
+        //rescale image
+
+        let nwidth = im.width() * rescale;
+        let nheight = im.height() * rescale;
+        let filter = img::FilterType::Nearest;
+        let im = img::imageops::resize(im, nwidth, nheight, filter);
+
         info!("writing file to {}", img_path);
         im.save(img_path).unwrap();
     }

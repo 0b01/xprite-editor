@@ -73,7 +73,7 @@ fn get_callback() -> impl Fn(&mut State) {
             || fname.ends_with(".jpeg")
         {
             if save {
-                state.xpr.save_img(&fname.to_owned());
+                state.xpr.save_img(&fname.to_owned(), 1);
             } else {
                 state.xpr = Xprite::load_img(&fname.to_owned());
             }

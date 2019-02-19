@@ -62,7 +62,7 @@ impl<'a> Default for State<'a> {
 
             brush: Default::default(),
             show_console: false,
-            show_symmetry: true,
+            show_symmetry: false,
             script_fname: None,
             texture: None,
             cols_per_row: 8,

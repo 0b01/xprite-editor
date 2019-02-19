@@ -66,8 +66,8 @@ fn run_python_script(fname: &str) -> Result<(), String> {
     println!("Running Python script {}", fname);
     let xpr = xprite::scripting::python::python(fname)?;
     println!("Finished {}", fname);
-    let mut state = State::new(xpr);
-    state.xpr.save_img("1.png");
+    let state = State::new(xpr);
+    state.xpr.save_img("1.png", 1);
     Ok(())
 }
 

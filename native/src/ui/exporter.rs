@@ -62,9 +62,9 @@ pub fn draw_exporter(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                     });
 
                     if spec!().format != ExporterFormat::ASE {
-                        let mut scale = spec!().scale as f32;
-                        if ui.drag_float(im_str!("scale"), &mut scale).build() {
-                            state.exporter_state.set_scale(i, scale as f64);
+                        let mut scale = spec!().rescale as i32;
+                        if ui.drag_int(im_str!("scale"), &mut scale).min(1).max(100).build() {
+                            state.exporter_state.set_scale(i, scale as u32);
                         }
                     }
 

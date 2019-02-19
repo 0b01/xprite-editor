@@ -41,7 +41,7 @@ impl ExporterFormat {
     }
 
     /// export format to path
-    pub fn export(&self, stem: &str, layer: &Option<(usize, usize)>, xpr: &Xprite) {
+    pub fn export(&self, stem: &str, rescale: u32, layer: &Option<(usize, usize)>, xpr: &Xprite) {
         let ext = self.as_file_extension();
         let path = format!("{}.{}", stem, ext);
 
@@ -53,7 +53,7 @@ impl ExporterFormat {
                 if let Some((group_idx, layer_idx)) = layer {
                     xpr.save_layer_img(*group_idx, *layer_idx, &path);
                 } else {
-                    xpr.save_img(&path);
+                    xpr.save_img(&path, rescale);
                 }
             }
         };
@@ -62,7 +62,7 @@ impl ExporterFormat {
 
 pub struct ExporterSpec {
     pub format: ExporterFormat,
-    pub scale: f64,
+    pub rescale: u32,
     pub stem: String,
     pub layer: Option<(usize, usize)>,
 }
@@ -71,7 +71,7 @@ impl Default for ExporterSpec {
     fn default() -> Self {
         Self {
             format: ExporterFormat::ASE,
-            scale: 1.,
+            rescale: 1,
             stem: String::new(),
             layer: None,
         }
@@ -96,8 +96,8 @@ impl ExporterState {
         self.specs.remove(id);
     }
 
-    pub fn set_scale(&mut self, id: usize, scale: f64) {
-        self.specs[id].scale = scale;
+    pub fn set_scale(&mut self, id: usize, rescale: u32) {
+        self.specs[id].rescale = rescale;
     }
 
     pub fn set_stem(&mut self, id: usize, stem: String) {
@@ -111,8 +111,9 @@ impl ExporterState {
     pub fn run_export(&self, xpr: &Xprite) {
         for s in &self.specs {
             let stem = &s.stem;
+            let rescale = s.rescale;
             let layer = &s.layer;
-            s.format.export(&stem, layer, xpr);
+            s.format.export(&stem, rescale, layer, xpr);
         }
     }
 

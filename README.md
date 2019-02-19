@@ -13,17 +13,18 @@ git submodule update --init --recursive
 ## Bugs and Improvements
 
 * [ ] Performance is bad when drawing with 150x150 brush
-* [ ] huge refactor to eliminate pixels copying
 * [ ] Marquee tool
 * [ ] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
 * [ ] Outline in selected area
 * [ ] snapping with one button(shift)
-* [ ] refactor color tool(using palette crate)
+* [ ] wave function collapse using wfc
 * [ ] Autoshade: erode and then color with gradient
 * [ ] Autoshade: erosion modes: accumulative(step by step), vs erode original
 
 ## Backburner
 
+* [ ] refactor color tool(using palette crate)
+* [ ] huge refactor to eliminate pixels copying
 * [ ] Deep learning based rotator
 * [ ] Partial sorting curves(read TC Inglis thesis)
 * [ ] Line modes(perfect span, predictable, continuous, bresenham)
