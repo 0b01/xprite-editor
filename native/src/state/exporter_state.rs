@@ -45,15 +45,18 @@ impl ExporterFormat {
         let ext = self.as_file_extension();
         let path = format!("{}.{}", stem, ext);
 
-        if &ExporterFormat::ASE == self {
-            xpr.save_ase(&path);
-        } else {
-            if let Some((group_idx, layer_idx)) = layer {
-                xpr.save_layer_img(*group_idx, *layer_idx, &path);
-            } else {
-                xpr.save_img(&path);
+        match self {
+            ExporterFormat::ASE => {
+                xpr.save_ase(&path);
             }
-        }
+            _ => {
+                if let Some((group_idx, layer_idx)) = layer {
+                    xpr.save_layer_img(*group_idx, *layer_idx, &path);
+                } else {
+                    xpr.save_img(&path);
+                }
+            }
+        };
     }
 }
 
@@ -95,6 +98,10 @@ impl ExporterState {
 
     pub fn set_scale(&mut self, id: usize, scale: f64) {
         self.specs[id].scale = scale;
+    }
+
+    pub fn set_stem(&mut self, id: usize, stem: String) {
+        self.specs[id].stem = stem;
     }
 
     pub fn set_format(&mut self, id: usize, fmt: ExporterFormat) {

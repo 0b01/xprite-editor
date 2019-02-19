@@ -1,3 +1,5 @@
+/// TODO: this file is hideous
+
 use crate::prelude::*;
 use xprite::rendering::Renderer;
 
@@ -36,7 +38,7 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 top.groups.iter().map(|i| i.1.len()).collect()
             };
 
-            for (group_id, group_len) in ngroups.into_iter().enumerate() {
+            for (group_id, n_layers) in ngroups.clone().into_iter().enumerate() {
                 ui.with_id(group_id as i32, || {
                     macro_rules! group {
                         () => {
@@ -48,6 +50,7 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                         .default_open(true)
                         .open_on_double_click(false)
                         .build(|| {
+                            // right click
                             if (ui.is_item_hovered()
                                 && ui.imgui().is_mouse_clicked(ImMouseButton::Right))
                                 || (state.rename_group.is_some()
@@ -93,53 +96,61 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                         }
                                     });
                                 } else {
-                                    if ui.selectable(
-                                        im_str!("Rename"),
-                                        false,
-                                        ImGuiSelectableFlags::empty(),
-                                        (50., 0.),
-                                    ) {
+                                    if ui.selectable( im_str!("Rename"), false, ImGuiSelectableFlags::empty(), (50., 0.),) {
                                         info!("renaming layer...");
                                         // disable hotkeys
                                         state.toggle_hotkeys();
                                         state.rename_group = Some(group_id);
                                         ui.close_current_popup();
                                     }
+                                    if ui.selectable( im_str!("Move Up"), false, ImGuiSelectableFlags::empty(), (50., 0.),) {
+                                        info!("moving group up...");
+                                        if group_id != 0 {
+                                            state.xpr.history.enter().expect("enter history failed");
+                                            state.xpr.history.top_mut().swap_group(group_id - 1, group_id);
+                                            ui.close_current_popup();
+                                        }
+                                    }
+                                    if ui.selectable( im_str!("Move Down"), false, ImGuiSelectableFlags::empty(), (50., 0.),) {
+                                        info!("moving group down...");
+                                        if group_id + 1 != ngroups.len() {
+                                            state.xpr.history.enter().expect("enter history failed");
+                                            state.xpr.history.top_mut().swap_group(group_id, group_id + 1);
+                                            ui.close_current_popup();
+                                        }
+                                    }
                                 }
                             });
-                            // if state.rename_group.is_some() && state.rename_group.unwrap() == group_id {
-                            //     ui.open_popup(im_str!("Rename Group"));
-                            // }
 
-                            for i in 0..group_len {
-                                ui.with_id(i as i32, || {
+                            for layer_id in 0..n_layers {
+                                ui.with_id(layer_id as i32, || {
                                     macro_rules! layer {
                                         () => {
-                                            group!().1[i]
+                                            group!().1[layer_id]
                                         };
                                     }
 
-                                    if i >= group!().1.len() {
+                                    if layer_id >= group!().1.len() {
                                         return;
                                     }
                                     if ui.checkbox(im_str!(""), &mut layer!().visible) {
                                         // undo imgui checkbox mutation
                                         layer!().visible = !layer!().visible;
                                         // enter history frame and toggle
-                                        state.xpr.toggle_layer_visibility(group_id, i).unwrap();
+                                        state.xpr.toggle_layer_visibility(group_id, layer_id).unwrap();
                                     }
                                     ui.same_line(60.);
                                     if ui.button(im_str!("X"), (20., 20.)) {
-                                        state.xpr.remove_layer(group_id, i).unwrap();
+                                        state.xpr.remove_layer(group_id, layer_id).unwrap();
                                     }
                                     ui.same_line(90.);
 
                                     let is_sel = {
                                         let top = state.xpr.history.top();
-                                        top.selected == i && top.sel_group == group_id
+                                        top.selected == layer_id && top.sel_group == group_id
                                     };
 
-                                    if i >= group!().1.len() {
+                                    if layer_id >= group!().1.len() {
                                         return;
                                     }
                                     let name = layer!().name.as_str();
@@ -149,15 +160,15 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                         ImGuiSelectableFlags::empty(),
                                         (100., 0.),
                                     ) {
-                                        state.xpr.switch_layer(group_id, i);
+                                        state.xpr.switch_layer(group_id, layer_id);
                                     }
 
                                     if (ui.is_item_hovered()
                                         && ui.imgui().is_mouse_clicked(ImMouseButton::Right))
                                         || (state.rename_layer.is_some()
-                                            && state.rename_layer.unwrap() == (group_id, i))
+                                            && state.rename_layer.unwrap() == (group_id, layer_id))
                                     {
-                                        state.xpr.switch_layer(group_id, i);
+                                        state.xpr.switch_layer(group_id, layer_id);
                                         ui.open_popup(im_str!("contextmenu_layer"));
                                     }
 
@@ -184,18 +195,33 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                                 }
                                             });
                                         } else {
-                                            if ui.selectable(
-                                                im_str!("Rename"),
-                                                false,
-                                                ImGuiSelectableFlags::empty(),
-                                                (50., 0.),
-                                            ) {
+
+                                            if ui.selectable( im_str!("Rename"), false, ImGuiSelectableFlags::empty(), (50., 0.),) {
                                                 info!("renaming layer...");
                                                 // disable hotkeys
                                                 state.toggle_hotkeys();
-                                                state.rename_layer = Some((group_id, i));
+                                                state.rename_layer = Some((group_id, layer_id));
                                                 // ui.close_current_popup();
                                             }
+
+                                            if ui.selectable( im_str!("Move Up"), false, ImGuiSelectableFlags::empty(), (50., 0.),) {
+                                                info!("moving layer up...");
+                                                if layer_id != 0 {
+                                                    state.xpr.history.enter().expect("enter history failed");
+                                                    state.xpr.history.top_mut().swap_layer(layer_id - 1, layer_id);
+                                                    ui.close_current_popup();
+                                                }
+                                            }
+
+                                            if ui.selectable( im_str!("Move Down"), false, ImGuiSelectableFlags::empty(), (50., 0.),) {
+                                                info!("moving layer down...");
+                                                if layer_id + 1 != n_layers {
+                                                    state.xpr.history.enter().expect("enter history failed");
+                                                    state.xpr.history.top_mut().swap_layer(layer_id, layer_id + 1);
+                                                    ui.close_current_popup();
+                                                }
+                                            }
+
                                         }
                                     });
                                 });

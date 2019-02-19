@@ -58,6 +58,10 @@ impl Layers {
         self.groups.get_mut(self.sel_group)
     }
 
+    pub fn swap_group(&mut self, first_idx: usize, second_idx: usize) {
+        self.groups.swap(first_idx, second_idx);
+    }
+
     pub fn add_group(&mut self, name: Option<&str>) {
         let name = name
             .and_then(|i: &str| Some(i.to_owned()))
@@ -75,6 +79,11 @@ impl Layers {
         let new_layer = Layer::new(name);
         self.selected_group_mut().unwrap().1.push(new_layer);
     }
+
+    pub fn swap_layer(&mut self, first_idx: usize, second_idx: usize) {
+        self.selected_group_mut().unwrap().1.swap(first_idx, second_idx);
+    }
+
 
     pub fn duplicate_current(&mut self) {
         let selected = self.selected_layer().unwrap();
@@ -106,7 +115,7 @@ impl Layers {
         Some(())
     }
 
-    pub fn iter_layers(&self) -> impl Iterator<Item = &Layer> {
+    pub fn iter_layers(&self) -> impl DoubleEndedIterator<Item = &Layer> {
         self.groups.iter().map(|g| g.1.iter()).flatten()
     }
 }

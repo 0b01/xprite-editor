@@ -3,6 +3,7 @@ use std::rc::Rc;
 use xprite::algorithms::symmetry::SymmetryMode;
 
 pub fn draw_symmetry(_rdr: &Renderer, state: &mut State, ui: &Ui) {
+    if !state.show_symmetry { return; }
     ui.window(im_str!("Symmetry"))
         .no_bring_to_front_on_focus(false)
         .movable(true)

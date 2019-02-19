@@ -365,7 +365,7 @@ impl Xprite {
             self.canvas.art_h as u16,
         );
         let mut frame = ase::Frame::new();
-        for (i, layer) in self.history.top().iter_layers().enumerate() {
+        for (i, layer) in self.history.top().iter_layers().rev().enumerate() {
             frame.add_chunk(ase::Chunk::new(ase::ChunkData::LayerChunk(
                 ase::chunk::LayerChunk::new(layer.name.as_str(), layer.visible),
             )));

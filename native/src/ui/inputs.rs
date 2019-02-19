@@ -90,20 +90,9 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Hand);
     }
 
+    let is_wheel_dragging = ui.imgui().is_mouse_dragging(ImMouseButton::Middle);
     // middle key for scrolling
-    if
-        using_window
-        &&
-        (
-            ui.imgui().is_mouse_dragging(ImMouseButton::Middle)
-        ||
-            (
-                state.inputs.space
-                &&
-                ui.imgui().is_mouse_dragging(ImMouseButton::Left)
-            )
-        )
-    {
+    if using_window && is_wheel_dragging {
         // set cursor
         ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Hand);
         let d = ui.imgui().mouse_delta();
