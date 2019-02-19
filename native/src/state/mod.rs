@@ -38,6 +38,7 @@ pub struct State<'a> {
     pub exporter_state: exporter_state::ExporterState,
 
     pub show_console: bool,
+    pub show_brush: bool,
     pub show_symmetry: bool,
     pub script_fname: Option<String>,
 
@@ -66,6 +67,7 @@ impl<'a> Default for State<'a> {
 
             brush: Default::default(),
             show_console: false,
+            show_brush: false,
             show_symmetry: false,
             script_fname: None,
             texture: None,
@@ -136,6 +138,10 @@ impl<'a> State<'a> {
 
     pub fn toggle_console(&mut self) {
         self.show_console = !self.show_console;
+    }
+
+    pub fn toggle_brush(&mut self) {
+        self.show_brush = !self.show_brush;
     }
 
     pub fn toggle_exporter(&mut self) {

@@ -1,4 +1,3 @@
-use super::pencil_panel::draw_brush_tree;
 use crate::prelude::*;
 use xprite::tools::vector;
 
@@ -22,8 +21,9 @@ pub fn draw(state: &mut State, ui: &Ui) {
 
     draw_mode(state, ui);
 
-    let current_brush = state.xpr_mut().toolbox.vector.borrow().brush_type;
-    draw_brush_tree(state, ui, current_brush);
+    if ui.button(im_str!("toggle brush"), (0., 0.)) {
+        state.toggle_brush();
+    }
 }
 
 fn draw_mode(state: &mut State, ui: &Ui) {

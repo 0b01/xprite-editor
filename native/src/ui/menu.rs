@@ -41,10 +41,22 @@ pub fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             {
                 state.xpr_mut().redo();
             }
+        });
+
+        ui.menu(im_str!("Window")).build(|| {
 
             if ui.menu_item(im_str!("Symmetry")).build() {
                 state.toggle_symmetry();
             }
+
+            if ui.menu_item(im_str!("Console")).build() {
+                state.toggle_console();
+            }
+
+            if ui.menu_item(im_str!("Brush")).build() {
+                state.toggle_brush();
+            }
+
         });
 
         if cfg!(debug_assertions) {
