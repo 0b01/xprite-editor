@@ -10,8 +10,8 @@ fern = "0.5.6"
 log = { version = "0.4", features = ["std"] }
 libtexsyn = { path = "../libtexsyn" }
 chrono = "0.4"
-image = "0.20.1"
-imageproc = "0.17.0"
+image = "0.21"
+imageproc = "0.18"
 pyo3 = { version = "0.5.2", optional = true }
 hex = "0.3.2"
 natord = "1.0.9"

@@ -1,5 +1,8 @@
 use crate::algorithms::rect::*;
 use crate::tools::*;
+use wfc_image::*;
+use std::num::NonZeroU32;
+
 use libtexsyn::{
     distance::l1,
     generators::patch::{Quilter, QuilterParams},
@@ -53,17 +56,35 @@ impl Texture {
         let img = intersection.as_image(bb);
         let width = xpr.canvas.art_w as u32;
         let height = xpr.canvas.art_h as u32;
-        let params = QuilterParams::new(
-            (width, height),
-            self.blocksize as u32,
-            self.overlap as u32,
-            None,
-            None,
-            l1,
-        )?;
-        let mut quilter = Quilter::new(img.to_rgb(), params);
-        let res = quilter.quilt_image()?;
-        Ok(img::DynamicImage::ImageRgb8(res))
+
+        let res = if false {
+            let params = QuilterParams::new(
+                (width, height),
+                self.blocksize as u32,
+                self.overlap as u32,
+                None,
+                None,
+                l1,
+            )?;
+            let mut quilter = Quilter::new(img.to_rgb(), params);
+            let ret = quilter.quilt_image()?;
+            img::DynamicImage::ImageRgb8(ret)
+        } else {
+            let orientation = orientation::ALL;
+            let pattern_size = NonZeroU32::new(3)
+                .expect("pattern size may not be zero");
+            let output_size = Size::new(40, 40);
+            generate_image(
+                &img,
+                pattern_size,
+                output_size,
+                &orientation,
+                wrap::WrapXY,
+                retry::NumTimes(10),
+            ).map_err(|_| "Too many contradictions".to_owned())?
+        };
+
+        Ok(res)
     }
 }
 
