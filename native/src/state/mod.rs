@@ -162,6 +162,6 @@ impl<'a> State<'a> {
     }
 
     pub fn export(&self) {
-        info!("export unimplemented!()");
+        self.exporter_state.run_export(&self.xpr);
     }
 }

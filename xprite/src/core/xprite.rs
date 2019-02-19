@@ -343,7 +343,7 @@ impl Xprite {
     }
 
     /// export pixels to an image via renderer
-    pub fn export(&mut self, rdr: &mut Renderer) -> Result<(), String> {
+    pub fn export(&self, rdr: &mut Renderer) -> Result<(), String> {
         let top = self.history.top();
         // draw layers
         for layer in top.iter_layers() {
@@ -504,7 +504,11 @@ impl Xprite {
 }
 
 impl Xprite {
-    pub fn save_img(&mut self, img_path: &str) {
+    pub fn save_layer_img(&self, group_idx: usize, layer_idx: usize, img_path: &str) {
+        // todo
+    }
+
+    pub fn save_img(&self, img_path: &str) {
         let mut rdr =
             ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         self.export(&mut rdr).unwrap();
@@ -523,7 +527,7 @@ impl Xprite {
         xpr // TODO: create a new tab for file
     }
 
-    pub fn save_ase(&mut self, file_path: &str) {
+    pub fn save_ase(&self, file_path: &str) {
         info!("saving ase file to {}", file_path);
         let mut f = File::create(file_path).unwrap();
         let aseprite = self.as_ase();
