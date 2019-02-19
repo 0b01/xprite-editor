@@ -79,6 +79,7 @@ impl Tool for Marquee {
         }
         if let Ok(marq) = outline_rect(self.start_pos, self.cursor_pos) {
             xpr.add_marquee(&marq);
+            return Ok(true);
         }
         Ok(false)
     }

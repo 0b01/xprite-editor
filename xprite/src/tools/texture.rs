@@ -1,4 +1,5 @@
 use crate::algorithms::rect::*;
+use crate::core::outline::outline_rect;
 use crate::tools::*;
 use wfc_image::*;
 use std::num::NonZeroU32;
@@ -73,7 +74,7 @@ impl Texture {
             let orientation = orientation::ALL;
             let pattern_size = NonZeroU32::new(3)
                 .expect("pattern size may not be zero");
-            let output_size = Size::new(40, 40);
+            let output_size = Size::new(100, 100);
             generate_image(
                 &img,
                 pattern_size,
@@ -137,13 +138,11 @@ impl Tool for Texture {
         if let Some(cursor) = self.cursor() {
             xpr.set_cursor(&cursor);
         }
-        if let Ok(mut pixs) = get_rect(self.start_pos, self.cursor_pos, false) {
-            pixs.set_color(xpr.color());
-            xpr.add_pixels(&pixs);
-            Ok(true)
-        } else {
-            Ok(false)
+        if let Ok(marq) = outline_rect(self.start_pos, self.cursor_pos) {
+            xpr.add_marquee(&marq);
+            return Ok(true);
         }
+        Ok(false)
     }
 
     fn set(

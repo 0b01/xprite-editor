@@ -76,7 +76,13 @@ fn run_ui(fname: Option<&str>) {
     let art_w = DEFAULT_WIDTH;
     let art_h = DEFAULT_HEIGHT;
     let xpr = match fname {
-        Some(fname) => Xprite::load_ase(fname),
+        Some(fname) => {
+            if fname.ends_with(".ase") || fname.ends_with(".aseprite"){
+                Xprite::load_ase(fname)
+            } else {
+                Xprite::load_img(fname)
+            }
+        }
         None => Xprite::new(art_w, art_h),
     };
     init_full_logger(Arc::clone(&xpr.log));
