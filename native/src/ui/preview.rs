@@ -11,7 +11,7 @@ pub fn draw_preview(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
         .resizable(true)
         .build(|| {
             state.redraw_pixels(rdr).unwrap();
-            let art_ratio = state.xpr.canvas.get_aspect_ratio() as f32;
+            let art_ratio = state.xpr_mut().canvas.get_aspect_ratio() as f32;
 
             let size = match state.preview_window_state.mode {
                 PreviewWindowMode::Fill => {
@@ -26,12 +26,12 @@ pub fn draw_preview(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                     }
                 }
                 PreviewWindowMode::OneX => [
-                    state.xpr.canvas.art_w as f32 * 1.,
-                    state.xpr.canvas.art_h as f32 * 1.,
+                    state.xpr_mut().canvas.art_w as f32 * 1.,
+                    state.xpr_mut().canvas.art_h as f32 * 1.,
                 ],
                 PreviewWindowMode::TwoX => [
-                    state.xpr.canvas.art_w as f32 * 2.,
-                    state.xpr.canvas.art_h as f32 * 2.,
+                    state.xpr_mut().canvas.art_w as f32 * 2.,
+                    state.xpr_mut().canvas.art_h as f32 * 2.,
                 ],
             };
 

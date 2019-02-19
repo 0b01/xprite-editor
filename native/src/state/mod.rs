@@ -27,7 +27,9 @@ impl Default for FilePopupState {
 
 
 pub struct State<'a> {
-    pub xpr: Xprite,
+    pub xprs: Vec<Xprite>,
+    pub xpr_idx: usize,
+
     pub file_popup: FilePopupState,
     pub inputs: InputState,
     pub hotkeys: HotkeyController,
@@ -50,10 +52,12 @@ pub struct State<'a> {
 }
 
 impl<'a> Default for State<'a> {
+
     fn default() -> Self {
         Self {
             file_popup: Default::default(),
-            xpr: Default::default(),
+            xprs: vec![Default::default()],
+            xpr_idx: 0,
             palette_window: Default::default(),
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
@@ -74,9 +78,18 @@ impl<'a> Default for State<'a> {
 }
 
 impl<'a> State<'a> {
+
+    pub fn xpr(&self) -> &Xprite {
+        &self.xprs[self.xpr_idx]
+    }
+
+    pub fn xpr_mut(&mut self) -> &mut Xprite {
+        &mut self.xprs[self.xpr_idx]
+    }
+
     pub fn new(xpr: Xprite) -> State<'a> {
         State {
-            xpr,
+            xprs: vec![xpr],
             ..Default::default()
         }
     }
@@ -95,18 +108,18 @@ impl<'a> State<'a> {
         &mut self,
         rdr: &mut ImguiRenderer,
     ) -> Result<(), String> {
-        if self.xpr.redraw || self.texture.is_none() {
+        if self.xpr().redraw || self.texture.is_none() {
             self.update_preview(rdr);
-            self.xpr.redraw = false;
+            self.xpr_mut().redraw = false;
         }
         Ok(())
     }
 
     fn update_preview(&mut self, rdr: &mut ImguiRenderer) {
         let mut img_rdr =
-            ImageRenderer::new(self.xpr.canvas.art_w, self.xpr.canvas.art_h);
+            ImageRenderer::new(self.xpr().canvas.art_w, self.xpr().canvas.art_h);
         img_rdr.fill_canvas();
-        self.xpr.preview(&mut img_rdr).unwrap();
+        self.xpr().preview(&mut img_rdr).unwrap();
         img_rdr.render();
         let img = img_rdr.as_img();
         if let Some(id) = self.texture {
@@ -136,10 +149,10 @@ impl<'a> State<'a> {
     pub fn execute(&mut self, bind: Bind) -> Result<(), String> {
         use self::Bind::*;
         match bind {
-            Redo => self.xpr.redo(),
-            Undo => self.xpr.undo(),
-            PushTool(tool) => self.xpr.change_tool(tool)?,
-            PopTool => self.xpr.toolbox.pop_tool(),
+            Redo => self.xpr_mut().redo(),
+            Undo => self.xpr_mut().undo(),
+            PushTool(tool) => self.xpr_mut().change_tool(tool)?,
+            PopTool => self.xpr_mut().toolbox.pop_tool(),
             ToggleConsole => {
                 self.toggle_console();
             }
@@ -162,6 +175,6 @@ impl<'a> State<'a> {
     }
 
     pub fn export(&self) {
-        self.exporter_state.run_export(&self.xpr);
+        self.exporter_state.run_export(&self.xpr());
     }
 }

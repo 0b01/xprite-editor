@@ -9,7 +9,7 @@ pub fn draw_console(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             .collapsible(false)
             .resizable(true)
             .build(|| {
-                ui.text(&state.xpr.log.lock().unwrap().as_str());
+                ui.text(&state.xpr_mut().log.lock().unwrap().as_str());
             });
     }
 }

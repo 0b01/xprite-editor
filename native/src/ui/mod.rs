@@ -20,9 +20,9 @@ use crate::render::imgui::ImguiRenderer;
 /// 2. handle mouse and keyboard input, change state
 /// 3. update by calling draw method
 pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
-    state.xpr.draw().unwrap();
+    state.xpr_mut().draw().unwrap();
     state.redraw_pixels(rdr).unwrap();
-    state.xpr.update().unwrap();
+    state.xpr_mut().update().unwrap();
 
     self::file_manager::draw_file_manager(rdr, state, ui);
     self::menu::draw_menu(rdr, state, ui);

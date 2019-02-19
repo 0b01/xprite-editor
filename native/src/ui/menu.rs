@@ -32,14 +32,14 @@ pub fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 .shortcut(im_str!("Ctrl+Z"))
                 .build()
             {
-                state.xpr.undo();
+                state.xpr_mut().undo();
             }
             if ui
                 .menu_item(im_str!("Redo"))
                 .shortcut(im_str!("Ctrl+y"))
                 .build()
             {
-                state.xpr.redo();
+                state.xpr_mut().redo();
             }
 
             if ui.menu_item(im_str!("Symmetry")).build() {

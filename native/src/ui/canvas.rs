@@ -42,7 +42,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
 
                         update_viewport(state, ui);
                         super::inputs::bind_input(state, ui);
-                        let origin = state.xpr.canvas.origin();
+                        let origin = state.xpr_mut().canvas.origin();
                         ui.set_cursor_screen_pos([
                             origin.x as f32,
                             origin.y as f32,
@@ -54,19 +54,19 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         ui.image(
                             ImTexture::from(state.texture.unwrap()),
                             [
-                                (state.xpr.canvas.art_w
-                                    * state.xpr.canvas.scale)
+                                (state.xpr_mut().canvas.art_w
+                                    * state.xpr_mut().canvas.scale)
                                     as f32,
-                                (state.xpr.canvas.art_h
-                                    * state.xpr.canvas.scale)
+                                (state.xpr_mut().canvas.art_h
+                                    * state.xpr_mut().canvas.scale)
                                     as f32,
                             ],
                         )
                         .build();
 
-                        state.xpr.render(rdr);
+                        state.xpr_mut().render(rdr);
 
-                        if state.xpr.toolbox.selected == ToolType::ColorPicker {
+                        if state.xpr_mut().toolbox.selected == ToolType::ColorPicker {
                             draw_color_picker(state, ui);
                         } else {
                             draw_cursor_cross(ui);
@@ -74,24 +74,24 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                     });
             });
 
-            // ui.drag_float(im_str!("scale"), &mut state.xpr.canvas.scale)
+            // ui.drag_float(im_str!("scale"), &mut state.xpr_mut().canvas.scale)
             //   .min(1.)
             //   .max(50.)
             //   .speed(0.1)
             //   .build();
 
             // checkbox for show grid
-            ui.checkbox(im_str!("grid"), &mut state.xpr.canvas.show_grid);
+            ui.checkbox(im_str!("grid"), &mut state.xpr_mut().canvas.show_grid);
             ui.text(im_str!(
                 "{}, {}",
-                state.xpr.last_mouse_pos.y,
-                state.xpr.last_mouse_pos.x
+                state.xpr().last_mouse_pos.y,
+                state.xpr().last_mouse_pos.x
             ));
         });
 }
 
 fn update_viewport(state: &mut State, ui: &Ui) {
-    let cvs = &mut state.xpr.canvas;
+    let cvs = &mut state.xpr_mut().canvas;
     let win_pos = ui.get_cursor_screen_pos();
     cvs.update_pos(win_pos.0.into(), win_pos.1.into());
 
@@ -104,7 +104,7 @@ fn update_viewport(state: &mut State, ui: &Ui) {
         cvs.scroll.y = (cvs.canvas_h - cvs.scale * cvs.art_h) / 2.;
     }
 
-    state.xpr.canvas.initialized = true;
+    state.xpr_mut().canvas.initialized = true;
 }
 
 fn draw_cursor_cross(ui: &Ui) {

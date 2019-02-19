@@ -322,7 +322,7 @@ impl Xprite {
         s.finish()
     }
 
-    pub fn preview(&mut self, rdr: &mut Renderer) -> Result<(), String> {
+    pub fn preview(&self, rdr: &mut Renderer) -> Result<(), String> {
         let top = self.history.top();
         // draw layers
         for layer in top.iter_layers() {

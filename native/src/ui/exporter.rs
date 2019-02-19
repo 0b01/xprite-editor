@@ -46,8 +46,8 @@ pub fn draw_exporter(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                     ui.popup(im_str!("File Format"), || {
                         for spec in &ExporterFormat::VARIANTS {
                             if spec == &ExporterFormat::ICO
-                                && (state.xpr.canvas.art_w > 255. ||
-                                    state.xpr.canvas.art_h > 255.)
+                                && (state.xpr_mut().canvas.art_w > 255. ||
+                                    state.xpr_mut().canvas.art_h > 255.)
                             {
                                 ui.button(im_str!("ico"), (0.,0.));
                                 if ui.is_item_hovered() {

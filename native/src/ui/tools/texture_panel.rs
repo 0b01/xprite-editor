@@ -3,7 +3,7 @@ use std::f64;
 use std::rc::Rc;
 
 pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
-    let tool = Rc::clone(&state.xpr.toolbox.texture);
+    let tool = Rc::clone(&state.xpr_mut().toolbox.texture);
     let texture = &mut tool.borrow_mut();
     let bb = texture.get_bb();
     if bb.is_none() { return; }
@@ -32,7 +32,7 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
 
     if ui.button(im_str!("Quilt!"), (100., 20.)) {
         info!("Quilting...(this may take a few seconds)");
-        match texture.finalize(&mut state.xpr) {
+        match texture.finalize(&mut state.xpr_mut()) {
             Ok(img) => {
                 texture.current_id = Some(rdr.add_img(img, image::RGB(0)));
             }

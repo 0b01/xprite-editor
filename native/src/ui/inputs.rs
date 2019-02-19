@@ -72,10 +72,10 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     let x = x.into();
     let y = y.into();
 
-    if (state.xpr.last_mouse_pos.x != x || state.xpr.last_mouse_pos.y != y)
+    if (state.xpr().last_mouse_pos.x != x || state.xpr().last_mouse_pos.y != y)
         && !state.inputs.space
     {
-        handle_error!(state.xpr.mouse_move(&MouseMove {
+        handle_error!(state.xpr_mut().mouse_move(&MouseMove {
             x: x.into(),
             y: y.into()
         }));
@@ -96,18 +96,18 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         // set cursor
         ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Hand);
         let d = ui.imgui().mouse_delta();
-        state.xpr.canvas.scroll.x += d.0 as f64;
-        state.xpr.canvas.scroll.y += d.1 as f64;
+        state.xpr_mut().canvas.scroll.x += d.0 as f64;
+        state.xpr_mut().canvas.scroll.y += d.1 as f64;
     }
 
     if using_window {
-        state.xpr.canvas.update_zoom(wheel_delta, (x, y))
+        state.xpr_mut().canvas.update_zoom(wheel_delta, (x, y))
     }
-    if state.xpr.canvas.scale > 100. {
-        state.xpr.canvas.scale = 100.;
+    if state.xpr().canvas.scale > 100. {
+        state.xpr_mut().canvas.scale = 100.;
     }
-    if state.xpr.canvas.scale < 0. {
-        state.xpr.canvas.scale = 1.;
+    if state.xpr().canvas.scale < 0. {
+        state.xpr_mut().canvas.scale = 1.;
     }
 
     // left
@@ -117,14 +117,14 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     {
         if left {
             trace!("mouse left down");
-            handle_error!(state.xpr.event(&MouseDown {
+            handle_error!(state.xpr_mut().event(&MouseDown {
                 x: x.into(),
                 y: y.into(),
                 button: Left
             }));
         } else {
             trace!("mouse left up");
-            handle_error!(state.xpr.event(&MouseUp {
+            handle_error!(state.xpr_mut().event(&MouseUp {
                 x: x.into(),
                 y: y.into(),
                 button: Right
@@ -136,14 +136,14 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     if state.inputs.debounce(InputItem::Right, right) && using_window {
         if right {
             let (x, y) = ui.imgui().mouse_pos();
-            handle_error!(state.xpr.event(&MouseDown {
+            handle_error!(state.xpr_mut().event(&MouseDown {
                 x: x.into(),
                 y: y.into(),
                 button: Right
             }));
         } else {
             trace!("mouse right up");
-            handle_error!(state.xpr.event(&MouseUp {
+            handle_error!(state.xpr_mut().event(&MouseUp {
                 x: x.into(),
                 y: y.into(),
                 button: Right
@@ -155,9 +155,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         ($boolval: expr, $key_upper: ident) => {
             if state.inputs.debounce(InputItem::$key_upper, $boolval) {
                 if $boolval {
-                    handle_error!(state
-                        .xpr
-                        .event(&KeyDown { key: $key_upper }));
+                    handle_error!(state.xpr_mut().event(&KeyDown { key: $key_upper }));
                     handle_error!({
                         let bind = state.hotkeys.lookup(Action::$key_upper(
                             state.inputs.ctrl,
@@ -168,7 +166,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
                         state.execute(bind)
                     });
                 } else {
-                    handle_error!(state.xpr.event(&KeyUp { key: $key_upper }));
+                    handle_error!(state.xpr_mut().event(&KeyUp { key: $key_upper }));
                     handle_error!({
                         let bind = state.hotkeys.lookup(Action::$key_upper(
                             state.inputs.ctrl,
@@ -213,5 +211,5 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     //     }
     // }
 
-    state.xpr.update_mouse_pos(x.into(), y.into());
+    state.xpr_mut().update_mouse_pos(x.into(), y.into());
 }

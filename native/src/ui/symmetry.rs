@@ -11,7 +11,7 @@ pub fn draw_symmetry(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         .resizable(true)
         .build(||{
             use self::SymmetryMode::*;
-            let symm = Rc::clone(&state.xpr.toolbox.symmetry);
+            let symm = Rc::clone(&state.xpr_mut().toolbox.symmetry);
                 let mut tool = symm.borrow_mut();
                 for (i, symm) in SymmetryMode::VARIANTS.iter().enumerate() {
                     ui.push_id(i as i32);

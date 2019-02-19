@@ -2,7 +2,7 @@ use crate::prelude::*;
 use std::f64::consts::PI;
 
 pub fn draw(state: &mut State, ui: &Ui) {
-    let mut tool = state.xpr.toolbox.rect.borrow_mut();
+    let mut tool = state.xpr_mut().toolbox.rect.borrow_mut();
     if ui.checkbox(im_str!("filled"), &mut tool.filled) {}
 
     if let Some(info) = tool.get_info() {

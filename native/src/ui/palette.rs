@@ -58,10 +58,10 @@ pub fn draw_color_picker(_rdr: &Renderer, state: &mut State, ui: &Ui) {
             };
 
             let mut sel: [f32; 4] = {
-                if let Some(col) = &state.xpr.color_picker_color {
+                if let Some(col) = &state.xpr_mut().color_picker_color {
                     (*col).into()
                 } else {
-                    state.xpr.selected_color.into()
+                    state.xpr_mut().selected_color.into()
                 }
             };
             let b = ui
@@ -74,14 +74,13 @@ pub fn draw_color_picker(_rdr: &Renderer, state: &mut State, ui: &Ui) {
 
             if b.build() {
                 let ret = sel.into();
-                state.xpr.selected_color = ret;
+                state.xpr_mut().selected_color = ret;
             };
         });
 }
 
 fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
-    let items: Vec<_> = state
-        .xpr
+    let items: Vec<_> = state.xpr_mut()
         .palette_man
         .palettes
         .keys()
@@ -117,25 +116,26 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     //     (RIGHT_SIDE_WIDTH - MARGIN + 5., PALETTE_BEGIN_Y + PALETTE_H + 5.),
     //     LIGHT_GREY
     // ).filled(false).build();
-    let pal = state
-        .xpr
+    let idx = state.palette_window.palette_idx as usize;
+    let cols_per_row = state.cols_per_row as usize;
+    let mut xpr = state.xpr_mut();
+    let pal = xpr
         .palette_man
         .palettes
-        .get_index_mut(state.palette_window.palette_idx as usize)
+        .get_index_mut(idx)
         .unwrap()
         .1;
-    let colors = pal.iter_mut().enumerate();
-    for (i, (col_name, col)) in colors {
-        let is_sel = col == &state.xpr.selected_color;
-        let x = MARGIN + BLOCK_SZ * ((i % state.cols_per_row as usize) as f32);
+    for (i, (col_name, col)) in pal.iter_mut().enumerate() {
+        let is_sel = col == &xpr.selected_color;
+        let x = MARGIN + BLOCK_SZ * ((i % cols_per_row) as f32);
         let y = PALETTE_BEGIN_Y
-            + BLOCK_SZ * ((i / state.cols_per_row as usize) as f32);
+            + BLOCK_SZ * ((i / cols_per_row) as f32);
 
         ui.set_cursor_screen_pos((x, y));
         if ui
             .invisible_button(im_str!("colorcell##{}", i), (BLOCK_SZ, BLOCK_SZ))
         {
-            state.xpr.selected_color = *col;
+            xpr.selected_color = *col;
         }
 
         // if the color block is selected
@@ -181,11 +181,10 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     }
 
     if ui.small_button(im_str!("+")) {
-        let pal = state
-            .xpr
+        let pal = state.xpr_mut()
             .palette_man
             .palettes
-            .get_index_mut(state.palette_window.palette_idx as usize)
+            .get_index_mut(idx)
             .unwrap()
             .1;
         pal.insert(format!("my_color##{}", pal.len()), Color::black());

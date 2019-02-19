@@ -59,23 +59,23 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
 
 fn get_callback() -> impl Fn(&mut State) {
     |state: &mut State| {
-        let fname: &str = state.file_popup.open_file_name.as_ref();
-        info!("opening: {}", fname);
+        let fname = state.file_popup.open_file_name.to_str().to_owned();
+        info!("opening: {:?}", fname);
         let save = state.file_popup.show_file_is_save;
         if fname.ends_with(".ase") || fname.ends_with(".aseprite") {
             if save {
-                state.xpr.save_ase(&fname.to_owned());
+                state.xpr().save_ase(&fname);
             } else {
-                state.xpr = Xprite::load_ase(&fname.to_owned());
+                state.xprs.push(Xprite::load_ase(&fname.to_owned()));
             }
         } else if fname.ends_with(".png")
             || fname.ends_with(".jpg")
             || fname.ends_with(".jpeg")
         {
             if save {
-                state.xpr.save_img(&fname.to_owned(), 1);
+                state.xpr_mut().save_img(&fname.to_owned(), 1);
             } else {
-                state.xpr = Xprite::load_img(&fname.to_owned());
+                state.xprs.push(Xprite::load_img(&fname.to_owned()));
             }
         } else {
             info!("unimplemented file format {}", &fname);

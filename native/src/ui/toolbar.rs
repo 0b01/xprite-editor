@@ -11,7 +11,7 @@ pub fn draw_toolbar(state: &mut State, ui: &Ui) {
         .collapsible(false)
         .resizable(false)
         .build(|| {
-            let selected = state.xpr.toolbox.selected.clone();
+            let selected = state.xpr_mut().toolbox.selected.clone();
             let tools = ToolType::VARIANTS;
             for (_index, name) in tools.iter().enumerate() {
                 let is_sel = selected == *name;
@@ -21,7 +21,7 @@ pub fn draw_toolbar(state: &mut State, ui: &Ui) {
                     ImGuiSelectableFlags::empty(),
                     (0., 0.),
                 ) {
-                    state.xpr.change_tool(*name).unwrap();
+                    state.xpr_mut().change_tool(*name).unwrap();
                 }
             }
         })

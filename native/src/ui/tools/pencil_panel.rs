@@ -4,19 +4,19 @@ use xprite::tools::pencil::{self, PencilMode};
 pub fn draw(state: &mut State, ui: &Ui) {
     ui.tree_node(im_str!("Mode")).default_open(true).build(|| {
         for (_index, mode) in PencilMode::VARIANTS.iter().enumerate() {
-            let is_sel = &state.xpr.toolbox.pencil.borrow().mode == mode;
+            let is_sel = &state.xpr_mut().toolbox.pencil.borrow().mode == mode;
             if ui.selectable(
                 im_str!("{}", mode.as_str()),
                 is_sel,
                 ImGuiSelectableFlags::empty(),
                 (0., 0.),
             ) {
-                state.xpr.set_option("mode", mode.as_str()).unwrap();
+                state.xpr_mut().set_option("mode", mode.as_str()).unwrap();
             }
         }
     });
 
-    let current_brush = state.xpr.toolbox.pencil.borrow().brush_type;
+    let current_brush = state.xpr_mut().toolbox.pencil.borrow().brush_type;
     draw_brush_tree(state, ui, current_brush);
 }
 
@@ -83,27 +83,28 @@ pub fn draw_brush_tree(state: &mut State, ui: &Ui, current_brush: BrushType) {
 pub fn set_brush(state: &mut State, brush: BrushType) {
     match brush {
         BrushType::Pixel | BrushType::Cross => {
-            state.xpr.set_option("brush", brush.as_str()).unwrap();
+            state.xpr_mut().set_option("brush", brush.as_str()).unwrap();
         }
         BrushType::Circle | BrushType::Square => {
-            state
-                .xpr
+            let sz = state.brush.sz[0];
+            state.xpr_mut()
                 .set_option(
                     "brush",
-                    &format!("{}{}", brush.as_str(), state.brush.sz[0]),
+                    &format!("{}{}", brush.as_str(), sz),
                 )
                 .unwrap();
         }
         BrushType::Line => {
-            state
-                .xpr
+            let sz0 = state.brush.sz[0];
+            let sz1 = state.brush.sz[1];
+            state.xpr_mut()
                 .set_option(
                     "brush",
                     &format!(
                         "{}{},{}",
                         brush.as_str(),
-                        state.brush.sz[0],
-                        state.brush.sz[1]
+                        sz0,
+                        sz1
                     ),
                 )
                 .unwrap();
