@@ -12,6 +12,9 @@ git submodule update --init --recursive
 
 ## Bugs and Improvements
 
+* [ ] improve texture sprite generation
+* [ ] multi document()
+* [ ] rotsprite
 * [ ] Performance is bad when drawing with 150x150 brush
 * [ ] Marquee tool
 * [ ] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
@@ -41,7 +44,7 @@ git submodule update --init --recursive
 
 ## Done
 
-* [x] rotsprite
+* [x] Diagonal(\) symmetry is broken
 * [x] Symmetry tool
 * [x] rotational symmetry
 * [x] Add a mode in paintbucket for 8-way connected floodfill

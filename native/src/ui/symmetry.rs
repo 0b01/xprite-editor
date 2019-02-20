@@ -4,9 +4,12 @@ use xprite::algorithms::symmetry::SymmetryMode;
 
 pub fn draw_symmetry(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     if !state.show_symmetry { return; }
+    let sz = ui.frame_size().logical_size;
     ui.window(im_str!("Symmetry"))
         .no_bring_to_front_on_focus(false)
         .movable(true)
+        .position((sz.0 as f32 - RIGHT_SIDE_WIDTH * 3., 20.), ImGuiCond::Once)
+        .size((RIGHT_SIDE_WIDTH, (sz.1 / 2.) as f32), ImGuiCond::Once)
         .collapsible(true)
         .resizable(true)
         .build(||{
