@@ -8,29 +8,13 @@ pub mod preview_window;
 pub mod palette_window;
 pub mod brush_state;
 pub mod exporter_state;
-
-pub struct FilePopupState {
-    pub show_file_popup: bool,
-    pub open_file_name: ImString,
-    pub show_file_is_save: bool,
-}
-
-impl Default for FilePopupState {
-    fn default() -> Self {
-        Self {
-            show_file_popup: false,
-            show_file_is_save: true,
-            open_file_name: ImString::new("./sample_files/1.ase"),
-        }
-    }
-}
-
+pub mod filepopup_state;
 
 pub struct State<'a> {
     pub xprs: Vec<Xprite>,
     pub xpr_idx: usize,
 
-    pub file_popup: FilePopupState,
+    pub file_popup: filepopup_state::FilePopupState,
     pub inputs: InputState,
     pub hotkeys: HotkeyController,
     pub palette_window: palette_window::PaletteWindowState<'a>,

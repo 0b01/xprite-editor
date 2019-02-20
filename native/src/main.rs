@@ -83,7 +83,7 @@ fn run_ui(fname: Option<&str>) {
                 Xprite::load_img(fname)
             }
         }
-        None => Xprite::new(art_w, art_h),
+        None => Xprite::new("Untitled".to_owned(), art_w, art_h),
     };
     init_full_logger(Arc::clone(&xpr.log));
     let mut state = State::new(xpr);

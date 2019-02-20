@@ -69,7 +69,7 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
             "Cannot extract PIXELS".to_owned()
         })?;
 
-    let mut xpr = Xprite::new(width, height);
+    let mut xpr = Xprite::new("python exec".to_owned(), width, height);
 
     xpr.history.enter().unwrap();
     let layer = xpr.current_layer_mut().unwrap();
