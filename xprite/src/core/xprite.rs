@@ -4,10 +4,13 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::sync::{Arc, Mutex};
 use std::fs::File;
+use std::path::Path;
 use img::GenericImageView;
 
 #[derive(Debug)]
 pub struct Xprite {
+    pub name: String,
+
     pub history: History,
 
     pub im_buf: Pixels,
@@ -40,6 +43,7 @@ impl Default for Xprite {
             a: 255,
         };
         Self {
+            name: "Untitled".to_owned(),
             palette_man,
             selected_color,
             color_picker_color: None,
@@ -59,12 +63,17 @@ impl Default for Xprite {
 }
 
 impl Xprite {
-    pub fn new(art_w: f64, art_h: f64) -> Xprite {
+    pub fn new(name: String, art_w: f64, art_h: f64) -> Xprite {
         let canvas = Canvas::new(art_w, art_h);
         Xprite {
+            name,
             canvas,
             ..Default::default()
         }
+    }
+
+    pub fn set_name(&mut self, name: String) {
+        self.name = name;
     }
 
     pub fn undo(&mut self) {
@@ -530,7 +539,12 @@ impl Xprite {
         info!("loading png file {}", png_path);
         let img = img::open(png_path).unwrap();
         let (w, h) = img.dimensions();
-        let mut xpr = Xprite::new(w as f64, h as f64);
+        let name = Path::new(png_path)
+            .file_stem()
+            .unwrap()
+            .to_str().unwrap()
+            .to_owned();
+        let mut xpr = Xprite::new(name, w as f64, h as f64);
         xpr.current_layer_mut().unwrap().content = img.into();
         xpr // TODO: create a new tab for file
     }

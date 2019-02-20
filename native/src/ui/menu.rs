@@ -44,19 +44,27 @@ pub fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         });
 
         ui.menu(im_str!("Window")).build(|| {
-
             if ui.menu_item(im_str!("Symmetry")).build() {
                 state.toggle_symmetry();
             }
-
             if ui.menu_item(im_str!("Console")).build() {
                 state.toggle_console();
             }
-
             if ui.menu_item(im_str!("Brush")).build() {
                 state.toggle_brush();
             }
+        });
 
+        ui.menu(im_str!("Documents")).build(|| {
+            for (i, x) in state.xprs.iter().enumerate() {
+                let mut is_sel = i == state.xpr_idx;
+                if ui.menu_item(im_str!("{}", x.name))
+                    .selected(&mut is_sel)
+                    .build()
+                {
+                    state.xpr_idx = i;
+                }
+            }
         });
 
         if cfg!(debug_assertions) {

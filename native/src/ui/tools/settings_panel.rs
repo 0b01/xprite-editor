@@ -2,6 +2,13 @@ use crate::prelude::*;
 use crate::state::preview_window::PreviewWindowMode;
 
 pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
+
+    let mut fname = ImString::with_capacity(100);
+    fname.push_str(&state.xpr().name);
+    if ui.input_text(im_str!("Filename"),  &mut fname).build() {
+        state.xpr_mut().set_name(fname.to_str().to_owned());
+    }
+
     ui.tree_node(im_str!("Document"))
         .default_open(true)
         .build(|| {

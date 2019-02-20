@@ -25,7 +25,7 @@ fn main() {
     init_logger();
     stdweb::initialize();
 
-    let xpr = Rc::new(RefCell::new(Xprite::new(200., 200.)));
+    let xpr = Rc::new(RefCell::new(Xprite::new("Untitled".to_owned(), 200., 200.)));
     let mut rdr = StdwebRenderer::new("#canvas");
     // xprite.borrow_mut().init(renderer);
 
