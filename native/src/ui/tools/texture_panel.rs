@@ -1,6 +1,7 @@
 use crate::prelude::*;
 use std::f64;
 use std::rc::Rc;
+use xprite::image::GenericImageView;
 
 pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     let tool = Rc::clone(&state.xpr_mut().toolbox.texture);
@@ -30,22 +31,28 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         .max(f64::min(w, h) as i32 - 1)
         .build();
 
-    if ui.button(im_str!("Quilt!"), (100., 20.)) {
+    if ui.button(im_str!("quilt"), (100., 20.)) {
         info!("Quilting...(this may take a few seconds)");
         match texture.finalize(&mut state.xpr_mut()) {
             Ok(img) => {
-                texture.current_id = Some(rdr.add_img(img, image::RGB(0)));
+                let tex_id = rdr.add_img(img.clone(), image::RGB(0));
+                texture.tex = Some((tex_id, img));
             }
             Err(s) => {
                 error!("{}", s);
             }
         }
     }
-    if let Some(texture_id) = texture.current_id {
-        ui.image(
-            ImTexture::from(texture_id),
-            [100., 100.], // TODO
-        )
-        .build();
+
+    if let Some((tex_id, img)) = &texture.tex {
+        ui.image( ImTexture::from(*tex_id), [100., 100.]).build(); // TODO: fix hardcoded size
+
+        if ui.button(im_str!("finalize"), (0., 0.)) {
+            let w = img.width();
+            let h = img.height();
+            let new_xpr = Xprite::from_img("Generated Texture".to_owned(), w, h, img.clone());
+            state.xprs.push(new_xpr);
+        }
     }
+
 }

@@ -27,6 +27,7 @@ pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
 
     self::file_manager::draw_file_manager(rdr, state, ui);
     self::menu::draw_menu(rdr, state, ui);
+    // ... TODO:
     self::toolbar::draw_toolbar(state, ui);
     self::canvas::draw_canvas(rdr, state, ui);
     self::tool_panel::draw_tool_panel(rdr, state, ui);

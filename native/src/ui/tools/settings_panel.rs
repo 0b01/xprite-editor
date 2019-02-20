@@ -3,11 +3,25 @@ use crate::state::preview_window::PreviewWindowMode;
 
 pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
 
-    let mut fname = ImString::with_capacity(100);
-    fname.push_str(&state.xpr().name);
-    if ui.input_text(im_str!("Filename"),  &mut fname).build() {
-        state.xpr_mut().set_name(fname.to_str().to_owned());
+    ui.text(im_str!("{}", state.xpr().name));
+
+    if ui.button(im_str!("Rename Document"), (0., 0.))  {
+        state.toggle_hotkeys();
+        ui.open_popup(im_str!("rename_doc"));
     }
+
+    ui.popup(im_str!("rename_doc"), || {
+        let mut fname = ImString::with_capacity(100);
+        fname.push_str(&state.xpr().name);
+        if ui.input_text(im_str!("Filename"),  &mut fname).build() {
+            state.xpr_mut().set_name(fname.to_str().to_owned());
+        }
+        if ui.button(im_str!("done"), (0., 0.)) {
+            state.toggle_hotkeys();
+            ui.close_current_popup();
+        }
+    });
+
 
     ui.tree_node(im_str!("Document"))
         .default_open(true)

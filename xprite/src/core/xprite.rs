@@ -7,7 +7,6 @@ use std::fs::File;
 use std::path::Path;
 use img::GenericImageView;
 
-#[derive(Debug)]
 pub struct Xprite {
     pub name: String,
 
@@ -395,7 +394,7 @@ impl Xprite {
         ase::Aseprite::new(header, vec![frame])
     }
 
-    pub fn from_ase(aseprite: &ase::Aseprite) -> Self {
+    pub fn from_ase(name: String, aseprite: &ase::Aseprite) -> Self {
         let ase::Aseprite { header, frames } = aseprite;
         let ase::Header {
             width_in_pixels,
@@ -452,7 +451,8 @@ impl Xprite {
             };
         }
 
-        let mut xpr = Self {
+        let mut xpr = Xprite {
+            name,
             canvas,
             history,
             ..Default::default()
@@ -544,9 +544,13 @@ impl Xprite {
             .unwrap()
             .to_str().unwrap()
             .to_owned();
+        Xprite::from_img(name, w, h, img)
+    }
+
+    pub fn from_img(name: String, w: u32, h: u32, img: img::DynamicImage) -> Xprite {
         let mut xpr = Xprite::new(name, w as f64, h as f64);
         xpr.current_layer_mut().unwrap().content = img.into();
-        xpr // TODO: create a new tab for file
+        xpr
     }
 
     pub fn save_ase(&self, file_path: &str) {
@@ -560,7 +564,12 @@ impl Xprite {
         info!("loading ase file {}", file_path);
         let mut f = File::open(file_path).unwrap();
         let ase = ase::Aseprite::from_read(&mut f).unwrap();
-        Xprite::from_ase(&ase)
+        let name = Path::new(file_path)
+            .file_stem()
+            .unwrap()
+            .to_str().unwrap()
+            .to_owned();
+        Xprite::from_ase(name, &ase)
     }
 }
 

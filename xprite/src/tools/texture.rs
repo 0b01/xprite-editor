@@ -9,14 +9,14 @@ use libtexsyn::{
     generators::patch::{Quilter, QuilterParams},
 };
 
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Default)]
 pub struct Texture {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,
     start_pos: Option<Pixel>,
     pub blocksize: i32,
     pub overlap: i32,
-    pub current_id: Option<usize>,
+    pub tex: Option<(usize, img::DynamicImage)>,
 }
 
 impl Texture {
@@ -27,7 +27,7 @@ impl Texture {
             cursor_pos: None,
             blocksize: 12,
             overlap: 6,
-            current_id: None,
+            tex: None,
         }
     }
 

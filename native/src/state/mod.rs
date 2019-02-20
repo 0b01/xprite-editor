@@ -73,6 +73,10 @@ impl<'a> State<'a> {
         &mut self.xprs[self.xpr_idx]
     }
 
+    pub fn close_xpr(&mut self, idx: usize) {
+        self.xprs.remove(idx);
+    }
+
     pub fn new(xpr: Xprite) -> State<'a> {
         State {
             xprs: vec![xpr],

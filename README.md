@@ -12,8 +12,8 @@ git submodule update --init --recursive
 
 ## Bugs and Improvements
 
+* [ ] Fix some stuff in ui/mod.rs
 * [ ] improve texture sprite generation
-* [ ] multi document()
 * [ ] rotsprite
 * [ ] Performance is bad when drawing with 150x150 brush
 * [ ] Marquee tool
@@ -44,6 +44,7 @@ git submodule update --init --recursive
 
 ## Done
 
+* [x] multi document
 * [x] Diagonal(\) symmetry is broken
 * [x] Symmetry tool
 * [x] rotational symmetry
