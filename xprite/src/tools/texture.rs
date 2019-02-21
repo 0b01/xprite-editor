@@ -53,20 +53,19 @@ impl Texture {
         let width = xpr.canvas.art_w as u32;
         let height = xpr.canvas.art_h as u32;
 
-        let res = {
-            let orientation = orientation::ALL;
-            let pattern_size = NonZeroU32::new(3)
-                .expect("pattern size may not be zero");
-            let output_size = Size::new(100, 100);
-            generate_image(
-                &img,
-                pattern_size,
-                output_size,
-                &orientation,
-                wrap::WrapXY,
-                retry::NumTimes(10),
-            ).map_err(|_| "Too many contradictions".to_owned())?
-        };
+        let orientation = orientation::ALL;
+        let pattern_size = NonZeroU32::new(3)
+            .expect("pattern size may not be zero");
+        let output_size = Size::new(100, 100);
+        let res = generate_image(
+            &img,
+            pattern_size,
+            output_size,
+            &orientation,
+            wrap::WrapXY,
+            retry::NumTimes(10),
+        )
+        .map_err(|_| "Too many contradictions".to_owned())?;
 
         Ok(res)
     }

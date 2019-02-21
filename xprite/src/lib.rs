@@ -1,4 +1,5 @@
 #![allow(clippy::too_many_arguments)]
+#![allow(clippy::many_single_char_names)]
 #![allow(clippy::float_cmp)]
 #![feature(vec_remove_item)]
 #![feature(specialization)]
