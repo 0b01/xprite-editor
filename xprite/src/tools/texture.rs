@@ -54,6 +54,7 @@ impl Texture {
         &mut self,
         xpr: &mut Xprite,
     ) -> Result<img::DynamicImage, String> {
+        // TODO: replace this
         let mut pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
         xpr.history.enter()?;
         pixs.set_color(xpr.color());

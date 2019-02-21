@@ -27,10 +27,14 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         }
     });
 
-    ui.drag_int(im_str!("size"), &mut (texture.pattern_size as i32))
+    let mut sz = texture.pattern_size as i32;
+    if ui.drag_int(im_str!("size"), &mut sz)
         .min(1)
         .max(30)
-        .build();
+        .build()
+    {
+        texture.pattern_size = sz as u32;
+    }
     if ui.is_item_hovered() {
         ui.tooltip_text("Building size of the pattern");
     }

@@ -169,6 +169,10 @@ impl<'a> State<'a> {
                 let xpr = Xprite::new("New Sprite".to_owned(), 100., 100.);
                 self.push_xpr(xpr);
             }
+            CloseXpr(idx) => {
+                // TODO: some sort of prompt here
+                self.close_xpr(idx)
+            }
             RunScript => {
                 unimplemented!();
             }

@@ -12,6 +12,7 @@ pub enum Bind {
     Save,
     Load,
     NewXpr,
+    CloseXpr(usize),
     Unmapped,
 }
 
