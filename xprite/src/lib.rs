@@ -18,7 +18,6 @@ extern crate log;
 extern crate pyo3;
 
 extern crate indexmap as imap;
-extern crate libtexsyn;
 extern crate wfc_image;
 extern crate natord;
 

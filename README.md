@@ -12,13 +12,10 @@ git submodule update --init --recursive
 
 ## Bugs and Improvements
 
-* [ ] improve texture sprite generation
 * [ ] rotsprite
 * [ ] Marquee tool
-* [x] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
 * [ ] Outline in selected area
 * [ ] snapping with one button(shift)
-* [ ] wave function collapse using wfc
 * [ ] Autoshade: erode and then color with gradient
 * [ ] Autoshade: erosion modes: accumulative(step by step), vs erode original
 
@@ -43,6 +40,8 @@ git submodule update --init --recursive
 
 ## Done
 
+* [x] wave function collapse using wfc
+* [x] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
 * [x] multi document
 * [x] Diagonal(\) symmetry is broken
 * [x] Symmetry tool

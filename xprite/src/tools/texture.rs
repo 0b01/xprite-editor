@@ -4,11 +4,6 @@ use crate::tools::*;
 use wfc_image::*;
 use std::num::NonZeroU32;
 
-use libtexsyn::{
-    distance::l1,
-    generators::patch::{Quilter, QuilterParams},
-};
-
 #[derive(Clone, Default)]
 pub struct Texture {
     is_mouse_down: Option<InputItem>,
@@ -58,19 +53,7 @@ impl Texture {
         let width = xpr.canvas.art_w as u32;
         let height = xpr.canvas.art_h as u32;
 
-        let res = if false {
-            let params = QuilterParams::new(
-                (width, height),
-                self.blocksize as u32,
-                self.overlap as u32,
-                None,
-                None,
-                l1,
-            )?;
-            let mut quilter = Quilter::new(img.to_rgb(), params);
-            let ret = quilter.quilt_image()?;
-            img::DynamicImage::ImageRgb8(ret)
-        } else {
+        let res = {
             let orientation = orientation::ALL;
             let pattern_size = NonZeroU32::new(3)
                 .expect("pattern size may not be zero");
