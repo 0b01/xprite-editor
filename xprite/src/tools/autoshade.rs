@@ -31,7 +31,7 @@ impl AutoShade {
         let pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
         let content = &mut xpr.current_layer_mut().unwrap().content;
         let intersection = content.intersection(&pixs);
-        let bb = intersection.bounding_rect();
+        let _bb = intersection.bounding_rect();
         let shaded = autoshade(&intersection, &self.steps);
         self.buf.extend(&shaded);
         Ok(())

@@ -71,7 +71,7 @@ impl Tool for ColorPicker {
             xpr.color_picker_color = Some(temp);
         }
         if let Some(col) = self.col {
-            xpr.set_color(&col);
+            xpr.set_color(col);
             xpr.color_picker_color = None;
         }
         self.col = None;

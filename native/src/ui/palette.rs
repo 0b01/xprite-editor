@@ -125,7 +125,7 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         .get_index_mut(idx)
         .unwrap()
         .1;
-    for (i, (col_name, col)) in pal.iter_mut().enumerate() {
+    for (i, (_col_name, col)) in pal.iter_mut().enumerate() {
         let is_sel = col == &xpr.selected_color;
         let x = MARGIN + BLOCK_SZ * ((i % cols_per_row) as f32);
         let y = PALETTE_BEGIN_Y

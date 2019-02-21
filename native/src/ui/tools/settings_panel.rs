@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use crate::state::preview_window::PreviewWindowMode;
 
-pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
+pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
 
     ui.text(im_str!("{}", state.xpr().name));
 

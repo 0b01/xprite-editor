@@ -1,4 +1,3 @@
-use crate::prelude::*;
 use std::borrow::Cow;
 
 pub struct PaletteWindowState<'a> {

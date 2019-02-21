@@ -165,8 +165,8 @@ impl Xprite {
         self.selected_color
     }
 
-    pub fn set_color(&mut self, color: &Color) {
-        self.selected_color = *color;
+    pub fn set_color(&mut self, color: Color) {
+        self.selected_color = color;
     }
 
     pub fn new_frame(&mut self) {
@@ -430,11 +430,11 @@ impl Xprite {
         for ase::Chunk { chunk_data, .. } in chunks {
             match chunk_data {
                 ase::ChunkData::LayerChunk(ase::chunk::LayerChunk {
-                    flags,
+                    flags: _,
                     layer_type,
-                    layer_child_level,
-                    blend_mode,
-                    opacity,
+                    layer_child_level: _,
+                    blend_mode: _,
+                    opacity: _,
                     layer_name,
                 }) => {
                     if *layer_type == ase::chunk::LayerType::Normal {
@@ -449,7 +449,7 @@ impl Xprite {
                     layer_index,
                     x_position,
                     y_position,
-                    opacity_level,
+                    opacity_level: _,
                     cel,
                 }) => {
                     let ase_pixs = cel.pixels(&header.color_depth).unwrap();
@@ -503,8 +503,8 @@ impl Xprite {
     }
 
     pub fn mouse_move(&mut self, evt: &InputEvent) -> Result<(), String> {
-        if let &InputEvent::MouseMove { x, y } = evt {
-            let p = Vec2f { x, y };
+        if let InputEvent::MouseMove { x, y } = evt {
+            let p = Vec2f { x:*x, y:*y };
             let tool = self.toolbox.tool();
             tool.borrow_mut().mouse_move(self, p)?;
         }
@@ -512,19 +512,19 @@ impl Xprite {
     }
 
     pub fn mouse_up(&mut self, evt: &InputEvent) -> Result<(), String> {
-        if let &InputEvent::MouseUp { x, y, .. } = evt {
+        if let InputEvent::MouseUp { x, y, .. } = evt {
             let tool = self.toolbox.tool();
-            let p = Vec2f { x, y };
+            let p = Vec2f { x:*x, y:*y };
             tool.borrow_mut().mouse_up(self, p)?;
         }
         Ok(())
     }
 
     pub fn mouse_down(&mut self, evt: &InputEvent) -> Result<(), String> {
-        if let &InputEvent::MouseDown { x, y, button } = evt {
+        if let InputEvent::MouseDown { x, y, button } = evt {
             let tool = self.toolbox.tool();
-            let p = Vec2f { x, y };
-            tool.borrow_mut().mouse_down(self, p, button)?;
+            let p = Vec2f { x:*x, y:*y };
+            tool.borrow_mut().mouse_down(self, p, *button)?;
         }
         Ok(())
     }
@@ -617,7 +617,7 @@ mod tests {
     fn test_as_ase() {
         use super::*;
         use std::fs::File;
-        let mut xpr = Xprite::new(100., 100.);
+        let mut xpr = Xprite::new("test".to_owned(), 100., 100.);
         xpr.current_layer_mut().unwrap().content.extend(&pixels!(
             pixel!(0, 0, Color::red()),
             pixel!(0, 1, Color::red())
@@ -632,7 +632,7 @@ mod tests {
     fn test_as_ase2() {
         use super::*;
         use std::fs::File;
-        let mut xpr = Xprite::new(100., 100.);
+        let mut xpr = Xprite::new("test".to_owned(), 100., 100.);
         xpr.current_layer_mut().unwrap().content.extend(&pixels!(
             pixel!(1, 1, Color::red()),
             pixel!(1, 2, Color::red())
@@ -650,7 +650,7 @@ mod tests {
         let fname = "../ase-rs/sample_aseprite_files/simple.aseprite";
         let mut f = File::open(fname).unwrap();
         let mut aseprite = ase::Aseprite::from_read(&mut f).unwrap();
-        let _ = Xprite::from_ase(&mut aseprite);
+        let _ = Xprite::from_ase("test".to_owned(), &mut aseprite);
         // dbg!(&xpr.history.top().groups[0].1[0]);
         // dbg!(xpr);
     }

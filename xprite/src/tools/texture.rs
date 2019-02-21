@@ -50,8 +50,8 @@ impl Texture {
         let intersection = content.intersection(&pixs);
         let bb = self.get_bb().unwrap(); // safe to unwrap because of above
         let img = intersection.as_image(bb);
-        let width = xpr.canvas.art_w as u32;
-        let height = xpr.canvas.art_h as u32;
+        let _width = xpr.canvas.art_w as u32;
+        let _height = xpr.canvas.art_h as u32;
 
         let orientation = orientation::ALL;
         let pattern_size = NonZeroU32::new(3)

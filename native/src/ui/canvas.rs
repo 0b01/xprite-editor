@@ -42,7 +42,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                     redraw_idx = Some(i);
                 }
                 // right click
-                if (ui.is_item_hovered() && ui.imgui().is_mouse_clicked(ImMouseButton::Right))
+                if ui.is_item_hovered() && ui.imgui().is_mouse_clicked(ImMouseButton::Right)
                 {
                     info!("right clicked");
                     ui.open_popup(im_str!("contextmenu_doc##{}", i));

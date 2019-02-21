@@ -1,6 +1,4 @@
 use crate::prelude::*;
-use std::rc::Rc;
-use xprite::algorithms::symmetry::SymmetryMode;
 
 pub fn draw_brush(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     if !state.show_brush { return; }

@@ -95,7 +95,7 @@ pub fn draw_exporter(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                             }
                             ui.popup(im_str!("select_export_layer"), ||{
                                 let mut to_change = None;
-                                for (g_id, (name, g)) in state.xpr_mut().history.top_mut().groups.iter().enumerate() {
+                                for (g_id, (name, _g)) in state.xpr_mut().history.top_mut().groups.iter().enumerate() {
                                     ui.push_id(g_id as i32);
                                     if ui.selectable( im_str!("{}", name), false, ImGuiSelectableFlags::empty(), (50., 0.),) {
                                         to_change = Some(ExportType::Group(g_id));

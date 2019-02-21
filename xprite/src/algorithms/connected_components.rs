@@ -70,7 +70,7 @@ fn get_first_true(grid: &[Vec<Option<Pixel>>]) -> Option<Pixel> {
     for row in grid.iter() {
         for cell in row.iter() {
             if cell.is_some() {
-                return cell.clone();
+                return *cell
             }
         }
     }
