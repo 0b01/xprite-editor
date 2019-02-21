@@ -8,28 +8,32 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     let texture = &mut tool.borrow_mut();
     let bb = texture.get_bb();
     if bb.is_none() { return; }
-    let bb = bb.unwrap();
-    let (w, h) = (bb.w(), bb.h());
 
-    let minimum_blocksize = texture.overlap * 2;
-    if ui
-        .drag_int(im_str!("Overlap"), &mut texture.overlap)
-        .min(2)
-        .max(f64::min(w, h) as i32 - 1)
-        .build()
-    {
-        if texture.blocksize < texture.overlap * 2
-            && texture.overlap * 2 < f64::min(w, h) as i32
-        {
-            texture.blocksize = texture.overlap * 2;
-        } else {
-            texture.blocksize = -1;
+    ui.tree_node(im_str!("Orientation")).default_open(true).build(||{
+        if ui.radio_button_bool(im_str!("reflections"), texture.orientation_reflection) {
+            texture.orientation_reflection  = !texture.orientation_reflection;
         }
-    }
-    ui.drag_int(im_str!("Block Size"), &mut texture.blocksize)
-        .min(minimum_blocksize)
-        .max(f64::min(w, h) as i32 - 1)
+        if ui.radio_button_bool(im_str!("rotation"), texture.orientation_rotation) {
+            texture.orientation_rotation = !texture.orientation_rotation;
+        }
+    });
+
+    ui.tree_node(im_str!("Wrap")).default_open(true).build(||{
+        if ui.radio_button_bool(im_str!("wrap x"), texture.wrap_x) {
+            texture.wrap_x  = !texture.wrap_x;
+        }
+        if ui.radio_button_bool(im_str!("wrap y"), texture.wrap_y) {
+            texture.wrap_y = !texture.wrap_y;
+        }
+    });
+
+    ui.drag_int(im_str!("size"), &mut (texture.pattern_size as i32))
+        .min(1)
+        .max(30)
         .build();
+    if ui.is_item_hovered() {
+        ui.tooltip_text("Building size of the pattern");
+    }
 
     if ui.button(im_str!("quilt"), (100., 20.)) {
         info!("Quilting...(this may take a few seconds)");

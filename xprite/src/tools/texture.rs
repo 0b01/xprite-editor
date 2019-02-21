@@ -9,8 +9,16 @@ pub struct Texture {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,
     start_pos: Option<Pixel>,
-    pub blocksize: i32,
-    pub overlap: i32,
+
+
+    // params:
+    pub pattern_size: u32,
+    pub orientation_reflection: bool,
+    pub orientation_rotation: bool,
+    pub wrap_x: bool,
+    pub wrap_y: bool,
+
+    // texture image
     pub tex: Option<(usize, img::DynamicImage)>,
 }
 
@@ -19,9 +27,12 @@ impl Texture {
         Texture {
             is_mouse_down: None,
             start_pos: None,
+            orientation_reflection: true,
+            orientation_rotation: true,
+            wrap_x: false,
+            wrap_y: false,
             cursor_pos: None,
-            blocksize: 12,
-            overlap: 6,
+            pattern_size: 3,
             tex: None,
         }
     }
@@ -53,20 +64,52 @@ impl Texture {
         let _width = xpr.canvas.art_w as u32;
         let _height = xpr.canvas.art_h as u32;
 
-        let orientation = orientation::ALL;
-        let pattern_size = NonZeroU32::new(3)
+        let orientation = {
+            let mut ret = vec![Orientation::Original];
+            if self.orientation_reflection {
+                ret.push(Orientation::DiagonallyFlipped);
+                ret.push(Orientation::DiagonallyFlippedClockwise180);
+                ret.push(Orientation::DiagonallyFlippedClockwise270);
+            }
+            if self.orientation_rotation {
+                ret.push(Orientation::Clockwise90);
+                ret.push(Orientation::Clockwise180);
+                ret.push(Orientation::Clockwise270);
+            }
+            ret
+        };
+
+        let pattern_size = NonZeroU32::new(self.pattern_size)
             .expect("pattern size may not be zero");
         let output_size = Size::new(100, 100);
-        let res = generate_image(
-            &img,
-            pattern_size,
-            output_size,
-            &orientation,
-            wrap::WrapXY,
-            retry::NumTimes(10),
-        )
-        .map_err(|_| "Too many contradictions".to_owned())?;
+        macro_rules! gen {
+            ($e:expr) => {
+                generate_image(
+                    &img,
+                    pattern_size,
+                    output_size,
+                    &orientation,
+                    $e,
+                    retry::NumTimes(10),
+                )
+                .map_err(|_| "Too many contradictions".to_owned())
+            }
+        };
 
+        let res = match (self.wrap_x, self.wrap_y) {
+            (true, true) => {
+                gen!(wrap::WrapXY)
+            }
+            (true, false) => {
+                gen!(wrap::WrapX)
+            }
+            (false, true) => {
+                gen!(wrap::WrapY)
+            }
+            (false, false) => {
+                gen!(wrap::WrapNone)
+            }
+        }?;
         Ok(res)
     }
 }

@@ -20,15 +20,15 @@ pub fn outline_rect(
 
     let start = start.ok_or_else(|| "start is none".to_owned())?;
     let stop = stop.ok_or_else(|| "stop is none".to_owned())?;
-    let x1 = start.point.x as i32;
-    let y1 = start.point.y as i32;
-    let x2 = stop.point.x as i32;
-    let y2 = stop.point.y as i32;
+    let x1_ = start.point.x as i32;
+    let y1_ = start.point.y as i32;
+    let x2_ = stop.point.x as i32;
+    let y2_ = stop.point.y as i32;
 
-    let x1 = i32::min(x1, x2);
-    let x2 = i32::max(x1, x2);
-    let y1 = i32::min(y1, y2);
-    let y2 = i32::max(y1, y2);
+    let x1 = i32::min(x1_, x2_);
+    let x2 = i32::max(x1_, x2_);
+    let y1 = i32::min(y1_, y2_);
+    let y2 = i32::max(y1_, y2_);
 
     ret.push((vec2f!(y1, x1), Outline::TOP | Outline::LEFT));
     ret.push((vec2f!(y2 - 1, x1), Outline::BOTTOM | Outline::LEFT));
