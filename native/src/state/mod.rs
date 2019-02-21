@@ -140,6 +140,10 @@ impl<'a> State<'a> {
         self.show_symmetry = !self.show_symmetry;
     }
 
+    pub fn push_xpr(&mut self, xpr: Xprite) {
+        self.xprs.push(xpr);
+    }
+
     pub fn execute(&mut self, bind: Bind) -> Result<(), String> {
         use self::Bind::*;
         match bind {
@@ -159,6 +163,11 @@ impl<'a> State<'a> {
                 self.toggle_hotkeys();
                 self.file_popup.show_file_popup = true;
                 self.file_popup.show_file_is_save = true;
+            }
+            NewXpr => {
+                // TODO: some sort of prompt here
+                let xpr = Xprite::new("New Sprite".to_owned(), 100., 100.);
+                self.push_xpr(xpr);
             }
             RunScript => {
                 unimplemented!();

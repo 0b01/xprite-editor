@@ -307,16 +307,34 @@ impl Xprite {
 }
 
 impl Xprite {
-    pub fn as_img(&mut self) -> Result<img::DynamicImage, String> {
+    pub fn as_img(&self) -> Result<img::DynamicImage, String> {
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         self.export(&mut rdr)?;
         Ok(rdr.to_img())
     }
 
-    pub fn layer_as_im(&mut self) -> img::DynamicImage {
-        let layer = self.history.top_mut().selected_layer().unwrap();
+    pub fn selected_layer_as_im(&self) -> img::DynamicImage {
+        let layer = self.history.top().selected_layer().unwrap();
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         layer.draw(&mut rdr);
+        rdr.render();
+        rdr.image
+    }
+
+    pub fn layer_as_im(&self, group_idx: usize, layer_idx: usize) -> img::DynamicImage {
+        let layer = &self.history.top().groups[group_idx].1[layer_idx];
+        let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
+        layer.draw(&mut rdr);
+        rdr.render();
+        rdr.image
+    }
+
+    pub fn group_as_im(&self, group_idx: usize) -> img::DynamicImage {
+        let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
+        let group = &self.history.top().groups[group_idx].1;
+        for layer in group.iter() {
+            layer.draw(&mut rdr);
+        }
         rdr.render();
         rdr.image
     }
@@ -513,8 +531,27 @@ impl Xprite {
 }
 
 impl Xprite {
-    pub fn save_layer_img(&self, group_idx: usize, layer_idx: usize, img_path: &str) {
-        // todo
+    pub fn save_layer_img(&self, group_idx: usize, layer_idx: usize, img_path: &str, rescale: u32) {
+        let im = self.layer_as_im(group_idx, layer_idx);
+        let nwidth = im.width() * rescale;
+        let nheight = im.height() * rescale;
+        let filter = img::FilterType::Nearest;
+        let im = img::imageops::resize(&im, nwidth, nheight, filter);
+
+        info!("writing file to {}", img_path);
+        im.save(img_path).unwrap();
+    }
+
+    pub fn save_group_img(&self, group_idx: usize, img_path: &str, rescale: u32) {
+        let im  = self.group_as_im(group_idx);
+        let nwidth = im.width() * rescale;
+        let nheight = im.height() * rescale;
+        let filter = img::FilterType::Nearest;
+        let im = img::imageops::resize(&im, nwidth, nheight, filter);
+
+        info!("writing file to {}", img_path);
+        im.save(img_path).unwrap();
+
     }
 
     pub fn save_img(&self, img_path: &str, rescale: u32) {

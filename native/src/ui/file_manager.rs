@@ -30,7 +30,7 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                     if save {
                         state.xpr().save_ase(&fname);
                     } else {
-                        state.xprs.push(Xprite::load_ase(&fname.to_owned()));
+                        state.push_xpr(Xprite::load_ase(&fname.to_owned()));
                     }
                 } else if fname.ends_with(".png")
                     || fname.ends_with(".jpg")
@@ -39,7 +39,7 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                     if save {
                         state.xpr_mut().save_img(&fname.to_owned(), 1);
                     } else {
-                        state.xprs.push(Xprite::load_img(&fname.to_owned()));
+                        state.push_xpr(Xprite::load_img(&fname.to_owned()));
                     }
                 } else {
                     info!("unimplemented file format {}", &fname);

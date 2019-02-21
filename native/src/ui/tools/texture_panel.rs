@@ -51,7 +51,7 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
             let w = img.width();
             let h = img.height();
             let new_xpr = Xprite::from_img("Generated Texture".to_owned(), w, h, img.clone());
-            state.xprs.push(new_xpr);
+            state.push_xpr(new_xpr);
         }
     }
 

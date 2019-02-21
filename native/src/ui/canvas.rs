@@ -61,6 +61,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
 
             if let Some(cidx) = close_idx {
                 state.close_xpr(cidx);
+                return;
             }
 
             if let Some(ridx) = redraw_idx {

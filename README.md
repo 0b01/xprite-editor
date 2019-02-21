@@ -12,12 +12,10 @@ git submodule update --init --recursive
 
 ## Bugs and Improvements
 
-* [ ] Fix some stuff in ui/mod.rs
 * [ ] improve texture sprite generation
 * [ ] rotsprite
-* [ ] Performance is bad when drawing with 150x150 brush
 * [ ] Marquee tool
-* [ ] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
+* [x] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
 * [ ] Outline in selected area
 * [ ] snapping with one button(shift)
 * [ ] wave function collapse using wfc
@@ -27,7 +25,8 @@ git submodule update --init --recursive
 ## Backburner
 
 * [ ] refactor color tool(using palette crate)
-* [ ] huge refactor to eliminate pixels copying
+* [ ] huge refactor to eliminate copying
+* [ ] Performance is bad when drawing with 150x150 brush
 * [ ] Deep learning based rotator
 * [ ] Partial sorting curves(read TC Inglis thesis)
 * [ ] Line modes(perfect span, predictable, continuous, bresenham)

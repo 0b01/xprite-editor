@@ -4,23 +4,31 @@ use xprite::rendering::Renderer;
 pub fn draw_menu(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     ui.main_menu_bar(|| {
         ui.menu(im_str!("File")).build(|| {
-            if ui
-                .menu_item(im_str!("Load"))
+            if ui.menu_item(im_str!("New"))
+                .shortcut(im_str!("Ctrl+N"))
+                .build()
+            {
+                state.execute(Bind::NewXpr).unwrap();
+            }
+
+            if ui.menu_item(im_str!("Load"))
                 .shortcut(im_str!("Ctrl+O"))
                 .build()
             {
                 state.execute(Bind::Load).unwrap();
             }
-            if ui
-                .menu_item(im_str!("Save"))
+
+            if ui.menu_item(im_str!("Save"))
                 .shortcut(im_str!("Ctrl+S"))
                 .build()
             {
                 state.execute(Bind::Save).unwrap();
             }
+
             if ui.menu_item(im_str!("Settings")).build() {
                 state.execute(Bind::PushTool(ToolType::Settings)).unwrap();
             }
+
             if ui.menu_item(im_str!("Exporter")).build() {
                 state.toggle_exporter();
             }

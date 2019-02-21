@@ -1,5 +1,13 @@
 use crate::prelude::*;
 
+#[derive(PartialEq, Eq, Copy, Clone)]
+pub enum ExportType {
+    All,
+    Group(usize),
+    Layer(usize, usize),
+}
+
+
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum ExporterFormat {
     ICO,
@@ -41,20 +49,27 @@ impl ExporterFormat {
     }
 
     /// export format to path
-    pub fn export(&self, stem: &str, rescale: u32, layer: &Option<(usize, usize)>, xpr: &Xprite) {
+    pub fn export(&self, stem: &str, rescale: u32, layer: ExportType, xpr: &Xprite) {
         let ext = self.as_file_extension();
-        let path = format!("{}.{}", stem, ext);
+        let path = if rescale == 1 {
+            format!("{}.{}", stem, ext)
+        } else {
+            format!("{}.{}x.{}", stem, rescale, ext)
+        };
 
         match self {
             ExporterFormat::ASE => {
                 xpr.save_ase(&path);
             }
             _ => {
-                if let Some((group_idx, layer_idx)) = layer {
-                    xpr.save_layer_img(*group_idx, *layer_idx, &path);
-                } else {
-                    xpr.save_img(&path, rescale);
-                }
+                match layer {
+                    ExportType::All => {xpr.save_img(&path, rescale)}
+                    ExportType::Layer(group_idx, layer_idx) =>
+                        {xpr.save_layer_img(group_idx, layer_idx, &path, rescale)}
+                    ExportType::Group(group_idx) => {
+                        {xpr.save_group_img(group_idx, &path, rescale)}
+                    }
+                };
             }
         };
     }
@@ -64,7 +79,7 @@ pub struct ExporterSpec {
     pub format: ExporterFormat,
     pub rescale: u32,
     pub stem: String,
-    pub layer: Option<(usize, usize)>,
+    pub layer: ExportType,
 }
 
 impl Default for ExporterSpec {
@@ -73,7 +88,7 @@ impl Default for ExporterSpec {
             format: ExporterFormat::ASE,
             rescale: 1,
             stem: String::new(),
-            layer: None,
+            layer: ExportType::All,
         }
     }
 }
@@ -113,7 +128,7 @@ impl ExporterState {
             let stem = &s.stem;
             let rescale = s.rescale;
             let layer = &s.layer;
-            s.format.export(&stem, rescale, layer, xpr);
+            s.format.export(&stem, rescale, *layer, xpr);
         }
     }
 
