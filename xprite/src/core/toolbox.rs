@@ -9,7 +9,7 @@ use crate::tools::{
     autoshade::AutoShade, symmetry::Symmetry, texture::Texture, vector::Vector, Tool,
 };
 
-#[derive(Default, Debug)]
+#[derive(Default)]
 pub struct Toolbox {
     pub pencil: Rc<RefCell<Pencil>>,
     pub paint_bucket: Rc<RefCell<PaintBucket>>,
@@ -25,7 +25,6 @@ pub struct Toolbox {
     pub autoshade: Rc<RefCell<AutoShade>>,
 
     pub selected: ToolType,
-
     pub tool_stack: Vec<ToolType>,
 }
 

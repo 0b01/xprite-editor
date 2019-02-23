@@ -4,19 +4,22 @@ use crate::tools::*;
 use wfc_image::*;
 use std::num::NonZeroU32;
 
-use libtexsyn::{
-    distance::l1,
-    generators::patch::{Quilter, QuilterParams},
-};
-
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Default)]
 pub struct Texture {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,
     start_pos: Option<Pixel>,
-    pub blocksize: i32,
-    pub overlap: i32,
-    pub current_id: Option<usize>,
+
+
+    // params:
+    pub pattern_size: u32,
+    pub orientation_reflection: bool,
+    pub orientation_rotation: bool,
+    pub wrap_x: bool,
+    pub wrap_y: bool,
+
+    // texture image
+    pub tex: Option<(usize, img::DynamicImage)>,
 }
 
 impl Texture {
@@ -24,10 +27,13 @@ impl Texture {
         Texture {
             is_mouse_down: None,
             start_pos: None,
+            orientation_reflection: true,
+            orientation_rotation: true,
+            wrap_x: false,
+            wrap_y: false,
             cursor_pos: None,
-            blocksize: 12,
-            overlap: 6,
-            current_id: None,
+            pattern_size: 3,
+            tex: None,
         }
     }
 
@@ -48,6 +54,7 @@ impl Texture {
         &mut self,
         xpr: &mut Xprite,
     ) -> Result<img::DynamicImage, String> {
+        // TODO: replace this
         let mut pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
         xpr.history.enter()?;
         pixs.set_color(xpr.color());
@@ -55,36 +62,55 @@ impl Texture {
         let intersection = content.intersection(&pixs);
         let bb = self.get_bb().unwrap(); // safe to unwrap because of above
         let img = intersection.as_image(bb);
-        let width = xpr.canvas.art_w as u32;
-        let height = xpr.canvas.art_h as u32;
+        let _width = xpr.canvas.art_w as u32;
+        let _height = xpr.canvas.art_h as u32;
 
-        let res = if false {
-            let params = QuilterParams::new(
-                (width, height),
-                self.blocksize as u32,
-                self.overlap as u32,
-                None,
-                None,
-                l1,
-            )?;
-            let mut quilter = Quilter::new(img.to_rgb(), params);
-            let ret = quilter.quilt_image()?;
-            img::DynamicImage::ImageRgb8(ret)
-        } else {
-            let orientation = orientation::ALL;
-            let pattern_size = NonZeroU32::new(3)
-                .expect("pattern size may not be zero");
-            let output_size = Size::new(100, 100);
-            generate_image(
-                &img,
-                pattern_size,
-                output_size,
-                &orientation,
-                wrap::WrapXY,
-                retry::NumTimes(10),
-            ).map_err(|_| "Too many contradictions".to_owned())?
+        let orientation = {
+            let mut ret = vec![Orientation::Original];
+            if self.orientation_reflection {
+                ret.push(Orientation::DiagonallyFlipped);
+                ret.push(Orientation::DiagonallyFlippedClockwise180);
+                ret.push(Orientation::DiagonallyFlippedClockwise270);
+            }
+            if self.orientation_rotation {
+                ret.push(Orientation::Clockwise90);
+                ret.push(Orientation::Clockwise180);
+                ret.push(Orientation::Clockwise270);
+            }
+            ret
         };
 
+        let pattern_size = NonZeroU32::new(self.pattern_size)
+            .expect("pattern size may not be zero");
+        let output_size = Size::new(100, 100);
+        macro_rules! gen {
+            ($e:expr) => {
+                generate_image(
+                    &img,
+                    pattern_size,
+                    output_size,
+                    &orientation,
+                    $e,
+                    retry::NumTimes(10),
+                )
+                .map_err(|_| "Too many contradictions".to_owned())
+            }
+        };
+
+        let res = match (self.wrap_x, self.wrap_y) {
+            (true, true) => {
+                gen!(wrap::WrapXY)
+            }
+            (true, false) => {
+                gen!(wrap::WrapX)
+            }
+            (false, true) => {
+                gen!(wrap::WrapY)
+            }
+            (false, false) => {
+                gen!(wrap::WrapNone)
+            }
+        }?;
         Ok(res)
     }
 }

@@ -225,11 +225,7 @@ pub fn pixel_perfect_line(start: Vec2f, stop: Vec2f) -> Pixels {
         x: mut x2,
         y: mut y2,
     } = stop;
-    let yaxis: bool = if (y2 - y1).abs() > (x2 - x1).abs() {
-        true
-    } else {
-        false
-    };
+    let yaxis: bool = (y2 - y1).abs() > (x2 - x1).abs();
     if yaxis {
         std::mem::swap(&mut x1, &mut y1);
         std::mem::swap(&mut x2, &mut y2);

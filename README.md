@@ -12,19 +12,18 @@ git submodule update --init --recursive
 
 ## Bugs and Improvements
 
-* [ ] Performance is bad when drawing with 150x150 brush
+* [ ] rotsprite
 * [ ] Marquee tool
-* [ ] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
 * [ ] Outline in selected area
 * [ ] snapping with one button(shift)
-* [ ] wave function collapse using wfc
 * [ ] Autoshade: erode and then color with gradient
 * [ ] Autoshade: erosion modes: accumulative(step by step), vs erode original
 
 ## Backburner
 
 * [ ] refactor color tool(using palette crate)
-* [ ] huge refactor to eliminate pixels copying
+* [ ] huge refactor to eliminate copying
+* [ ] Performance is bad when drawing with 150x150 brush
 * [ ] Deep learning based rotator
 * [ ] Partial sorting curves(read TC Inglis thesis)
 * [ ] Line modes(perfect span, predictable, continuous, bresenham)
@@ -41,7 +40,10 @@ git submodule update --init --recursive
 
 ## Done
 
-* [x] rotsprite
+* [x] wave function collapse using wfc
+* [x] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
+* [x] multi document
+* [x] Diagonal(\) symmetry is broken
 * [x] Symmetry tool
 * [x] rotational symmetry
 * [x] Add a mode in paintbucket for 8-way connected floodfill

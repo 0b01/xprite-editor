@@ -88,6 +88,7 @@ impl Pixel {
             color: self.color,
         };
     }
+
 }
 
 impl Hash for Pixel {

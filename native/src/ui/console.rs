@@ -6,7 +6,7 @@ pub fn draw_console(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         ui.window(im_str!("Console"))
             .size((300., 200.), ImGuiCond::Appearing)
             .movable(true)
-            .collapsible(false)
+            .collapsible(true)
             .resizable(true)
             .build(|| {
                 ui.text(&state.xpr_mut().log.lock().unwrap().as_str());

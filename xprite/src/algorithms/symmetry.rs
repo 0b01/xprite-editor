@@ -74,7 +74,7 @@ impl SymmetryMode {
                 *ret = ret.rotate(pivot, -PI/2.);
             }
             SymmetryMode::Diagonal(y) => {
-                let pivot = vec2f!(0, y);
+                let pivot = vec2f!(y, 0);
                 SymmetryMode::Horizontal(y).process(pixs, ret);
                 *ret = ret.rotate(pivot, -PI/2.);
             }

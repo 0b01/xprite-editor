@@ -53,7 +53,7 @@ impl Tool for Symmetry {
         None
     }
 
-    fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
+    fn mouse_move(&mut self, _xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
         // // set current cursor_pos
         // let point = xpr.canvas.shrink_size(p);
         // let color = xpr.color();
@@ -63,7 +63,7 @@ impl Tool for Symmetry {
         Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
+    fn mouse_up(&mut self, _xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
         // let point = xpr.canvas.shrink_size(p);
         // let color = xpr.color();
         // self.cursor_pos = Some(Pixel { point, color });
@@ -75,9 +75,9 @@ impl Tool for Symmetry {
 
     fn mouse_down(
         &mut self,
-        xpr: &Xprite,
-        p: Vec2f,
-        button: InputItem,
+        _xpr: &Xprite,
+        _p: Vec2f,
+        _button: InputItem,
     ) -> Result<(), String> {
         // if InputItem::Left != button {
         //     return Ok(());

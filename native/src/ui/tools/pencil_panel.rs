@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use xprite::tools::pencil::{self, PencilMode};
+use xprite::tools::pencil::PencilMode;
 
 pub fn draw(state: &mut State, ui: &Ui) {
     ui.tree_node(im_str!("Mode")).default_open(true).build(|| {

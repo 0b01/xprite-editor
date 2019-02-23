@@ -21,14 +21,17 @@ use crate::render::imgui::ImguiRenderer;
 /// 2. handle mouse and keyboard input, change state
 /// 3. update by calling draw method
 pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
+    self::menu::draw_menu(rdr, state, ui);
+    self::file_manager::draw_file_manager(rdr, state, ui);
+    if xpr_idx_oob(state) { return true; }
+
     state.xpr_mut().draw().unwrap();
     state.redraw_pixels(rdr).unwrap();
     state.xpr_mut().update().unwrap();
 
-    self::file_manager::draw_file_manager(rdr, state, ui);
-    self::menu::draw_menu(rdr, state, ui);
     self::toolbar::draw_toolbar(state, ui);
     self::canvas::draw_canvas(rdr, state, ui);
+    if xpr_idx_oob(state) { return true; }
     self::tool_panel::draw_tool_panel(rdr, state, ui);
     self::palette::draw_palette(rdr, state, ui);
     self::palette::draw_color_picker(rdr, state, ui);
@@ -41,4 +44,17 @@ pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
     self::preview::draw_preview(rdr, state, ui);
     self::exporter::draw_exporter(rdr, state, ui);
     true
+}
+
+
+fn xpr_idx_oob(state: &mut State) -> bool {
+    if state.xprs.len() == 0 {
+        return true;
+    }
+    if state.xpr_idx == state.xprs.len() {
+        state.xpr_idx = 0;
+        return false;
+    }
+
+    false
 }

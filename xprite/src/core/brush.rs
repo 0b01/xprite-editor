@@ -160,7 +160,7 @@ impl Brush {
                     x: point.x + x + offset_x,
                     y: point.y + y + offset_y,
                 },
-                color: color,
+                color,
             })
             .collect();
         Some(Pixels::from_slice(&ret))

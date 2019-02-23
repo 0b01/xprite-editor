@@ -1,4 +1,8 @@
 #![allow(clippy::too_many_arguments)]
+#![allow(clippy::many_single_char_names)]
+#![allow(clippy::useless_let_if_seq)]
+#![allow(clippy::single_match)]
+#![allow(clippy::explicit_counter_loop)]
 #![allow(clippy::float_cmp)]
 #![feature(vec_remove_item)]
 #![feature(specialization)]
@@ -18,7 +22,6 @@ extern crate log;
 extern crate pyo3;
 
 extern crate indexmap as imap;
-extern crate libtexsyn;
 extern crate wfc_image;
 extern crate natord;
 

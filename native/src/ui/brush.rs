@@ -1,11 +1,12 @@
 use crate::prelude::*;
-use std::rc::Rc;
-use xprite::algorithms::symmetry::SymmetryMode;
 
 pub fn draw_brush(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     if !state.show_brush { return; }
 
-    ui.window(im_str!("Symmetry"))
+    let sz = ui.frame_size().logical_size;
+    ui.window(im_str!("Brush"))
+        .position((sz.0 as f32 - RIGHT_SIDE_WIDTH * 2., 20.), ImGuiCond::Once)
+        .size((RIGHT_SIDE_WIDTH, (sz.1 / 2.) as f32), ImGuiCond::Once)
         .no_bring_to_front_on_focus(false)
         .movable(true)
         .collapsible(true)

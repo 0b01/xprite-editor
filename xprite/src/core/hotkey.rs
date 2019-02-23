@@ -11,6 +11,8 @@ pub enum Bind {
     RunScript,
     Save,
     Load,
+    NewXpr,
+    CloseXpr(usize),
     Unmapped,
 }
 
@@ -133,6 +135,7 @@ impl HotkeyController {
                 Action::Return(true, false, false, true),
                 Bind::RunScript,
             );
+            binds.insert(Action::N(true, false, false, true), Bind::NewXpr);
             // ctrl-s
             binds.insert(Action::S(true, false, false, true), Bind::Save);
             binds.insert(Action::O(true, false, false, true), Bind::Load);

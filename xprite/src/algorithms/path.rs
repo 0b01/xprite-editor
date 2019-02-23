@@ -149,6 +149,7 @@ impl Path {
         tangents
     }
 
+    #[allow(unused)]
     // Generates tangents for a cardinal spline.
     fn d3_svg_line_cardinal_tangents(
         points: &[Vec2f],
@@ -183,7 +184,7 @@ impl Path {
         // circles: control points
         for seg in &self.segments {
             let CubicBezierSegment { ctrl1, ctrl2, .. } = seg;
-            for p in vec![ctrl1, ctrl2] {
+            for p in &[ctrl1, ctrl2] {
                 // let Vec2f{x, y} = xpr.canvas.snap(p);
                 circ_buf.push(pixel!(p.x, p.y, Color::red()));
             }

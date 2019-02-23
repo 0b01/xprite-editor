@@ -60,13 +60,8 @@ pub fn polygon(points: &[Vec2f]) -> Pixels {
              * that Polygon and FilledPolygon for the same set of points have the
              * same footprint. */
 
-            if (y >= y1) && (y < y2) {
-                poly_ints[ints] = (((y - y1) * (x2 - x1)) as f64
-                    / (y2 - y1) as f64
-                    + 0.5
-                    + x1) as i32;
-                ints += 1;
-            } else if (y == maxy) && (y > y1) && (y <= y2) {
+            if ((y >= y1) && (y < y2))
+            || ((y == maxy) && (y > y1) && (y <= y2)) {
                 poly_ints[ints] = (((y - y1) * (x2 - x1)) as f64
                     / (y2 - y1) as f64
                     + 0.5

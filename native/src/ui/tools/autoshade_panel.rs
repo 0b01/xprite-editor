@@ -2,7 +2,7 @@ use crate::prelude::*;
 use std::f64;
 use std::rc::Rc;
 
-pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
+pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
 
     let misc_flags = {
         let mut f = ImGuiColorEditFlags::empty();

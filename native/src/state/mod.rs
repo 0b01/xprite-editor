@@ -73,6 +73,10 @@ impl<'a> State<'a> {
         &mut self.xprs[self.xpr_idx]
     }
 
+    pub fn close_xpr(&mut self, idx: usize) {
+        self.xprs.remove(idx);
+    }
+
     pub fn new(xpr: Xprite) -> State<'a> {
         State {
             xprs: vec![xpr],
@@ -136,6 +140,10 @@ impl<'a> State<'a> {
         self.show_symmetry = !self.show_symmetry;
     }
 
+    pub fn push_xpr(&mut self, xpr: Xprite) {
+        self.xprs.push(xpr);
+    }
+
     pub fn execute(&mut self, bind: Bind) -> Result<(), String> {
         use self::Bind::*;
         match bind {
@@ -155,6 +163,15 @@ impl<'a> State<'a> {
                 self.toggle_hotkeys();
                 self.file_popup.show_file_popup = true;
                 self.file_popup.show_file_is_save = true;
+            }
+            NewXpr => {
+                // TODO: some sort of prompt here
+                let xpr = Xprite::new("New Sprite".to_owned(), 100., 100.);
+                self.push_xpr(xpr);
+            }
+            CloseXpr(idx) => {
+                // TODO: some sort of prompt here
+                self.close_xpr(idx)
             }
             RunScript => {
                 unimplemented!();
