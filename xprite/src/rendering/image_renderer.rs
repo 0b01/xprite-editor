@@ -91,8 +91,6 @@ impl ImageRenderer {
 
     pub fn fill_canvas(&mut self) {
         use img::Pixel;
-        debug!("Filling canvas");
-        dbg!(self.image.as_mut_rgba8().unwrap().len());
         let color = Rgba::from_channels(200, 200, 200, 255);
 
         for (_i, p) in

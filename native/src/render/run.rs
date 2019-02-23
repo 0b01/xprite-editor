@@ -99,7 +99,7 @@ where
     let context = glutin::ContextBuilder::new().with_vsync(true);
     let builder = glutin::WindowBuilder::new()
         .with_title(title)
-        .with_dimensions(glutin::dpi::LogicalSize::new(1024f64, 768f64));
+        .with_dimensions(glutin::dpi::LogicalSize::new(1024., 768.));
     let display = Display::new(builder, context, &events_loop).unwrap();
     let window = display.gl_window();
 
