@@ -17,7 +17,7 @@ hex = "0.3.2"
 natord = "1.0.9"
 fnv = "1.0.6"
 bitflags = "1.0.4"
-wfc_image = "0.7.0"
+wfc_image = { version = "0.7.0", path = "../../wfc/wfc-image" }
 
 ase = { path = "../ase-rs" }
 
