@@ -4,7 +4,7 @@ use crate::tools::*;
 use wfc_image::*;
 use std::num::NonZeroU32;
 
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct Texture {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,
@@ -17,9 +17,17 @@ pub struct Texture {
     pub orientation_rotation: bool,
     pub wrap_x: bool,
     pub wrap_y: bool,
+    pub tex_w: i32,
+    pub tex_h: i32,
 
     // texture image
     pub tex: Option<(usize, img::DynamicImage)>,
+}
+
+impl Default for Texture {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Texture {
@@ -33,6 +41,8 @@ impl Texture {
             wrap_y: false,
             cursor_pos: None,
             pattern_size: 3,
+            tex_w: 100,
+            tex_h: 100,
             tex: None,
         }
     }
@@ -45,23 +55,27 @@ impl Texture {
     }
 
     pub fn get_bb(&self) -> Option<Rect> {
-        let (p0, p1) = (self.start_pos?, self.cursor_pos?);
-        let bb = Rect(p0.point, p1.point);
+        let (start, stop) = (self.start_pos?, self.cursor_pos?);
+
+        let x1_ = start.point.x as i32;
+        let y1_ = start.point.y as i32;
+        let x2_ = stop.point.x as i32;
+        let y2_ = stop.point.y as i32;
+
+        let x1 = i32::min(x1_, x2_);
+        let x2 = i32::max(x1_, x2_);
+        let y1 = i32::min(y1_, y2_);
+        let y2 = i32::max(y1_, y2_);
+
+        let bb = Rect(vec2f!(y1, x1), vec2f!(y2-1, x2-1));
         Some(bb)
     }
 
-    fn quilt_img(
-        &mut self,
-        xpr: &mut Xprite,
-    ) -> Result<img::DynamicImage, String> {
-        // TODO: replace this
-        let mut pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
-        xpr.history.enter()?;
-        pixs.set_color(xpr.color());
-        let content = &mut xpr.current_layer_mut().unwrap().content;
-        let intersection = content.intersection(&pixs);
-        let bb = self.get_bb().unwrap(); // safe to unwrap because of above
-        let img = intersection.as_image(bb);
+    fn quilt_img( &mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
+        let bb = self.get_bb().ok_or("no cursor".to_owned())?;
+        let mut content = xpr.current_layer_mut().unwrap().content.clone();
+        content.retain_in_rect_mut(bb);
+        let img = content.as_image(bb);
         let _width = xpr.canvas.art_w as u32;
         let _height = xpr.canvas.art_h as u32;
 
@@ -82,7 +96,7 @@ impl Texture {
 
         let pattern_size = NonZeroU32::new(self.pattern_size)
             .expect("pattern size may not be zero");
-        let output_size = Size::new(100, 100);
+        let output_size = Size::new(self.tex_w as u32, self.tex_h as u32);
         macro_rules! gen {
             ($e:expr) => {
                 generate_image(

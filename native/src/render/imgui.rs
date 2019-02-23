@@ -133,11 +133,7 @@ impl<'ui> ImguiRenderer<'ui> {
             .replace(ImTexture::from(texture_id), gl_texture);
     }
 
-    fn to_gl_texture(
-        &self,
-        img: image::DynamicImage,
-        format: image::ColorType,
-    ) -> Texture2d {
+    fn to_gl_texture( &self, img: image::DynamicImage, format: image::ColorType) -> Texture2d {
         let format = match format {
             image::ColorType::RGBA(_) => ClientFormat::U8U8U8U8,
             image::ColorType::RGB(_) => ClientFormat::U8U8U8,

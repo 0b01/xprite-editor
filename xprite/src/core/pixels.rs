@@ -437,7 +437,17 @@ impl Pixels {
         arr
     }
 
-    pub fn retain_in_bound(&mut self, w: usize, h: usize) {
+    pub fn retain_in_rect_mut(&mut self, bb: Rect) {
+        let w = bb.w();
+        let h = bb.h();
+        self.0 = self.0.iter().filter_map(|p|{
+            let Pixel { point: Vec2f { x, y }, .. } = p;
+            if oob(*x-bb.0.x, *y-bb.0.y, w as f64, h as f64) { None }
+            else { Some(*p) }
+        }).collect();
+    }
+
+    pub fn retain_in_bound_mut(&mut self, w: usize, h: usize) {
         self.0 = self.0.iter().filter_map(|p| {
             let Pixel { point: Vec2f { x, y }, .. } = p;
             if oob(*x, *y, w as f64, h as f64) { None }
@@ -771,5 +781,18 @@ mod tests {
         assert_eq!( pixs.get_pixel(0,1), Some(pixel!(0,1,Color::blue())));
         assert_eq!( pixs.get_pixel(0,1).map(|i|i.color), Some(Color::blue()));
 
+    }
+
+    #[test]
+    fn test_retain_in_rect() {
+        use super::*;
+        let mut pixs = pixels!(
+            pixel!(0,0,Color::black()),
+            pixel!(0,1,Color::blue()),
+            pixel!(1,1,Color::blue())
+        );
+
+        pixs.retain_in_rect_mut(Rect(Vec2f{x:0.,y:0.}, Vec2f{x:1.,y:1.}));
+        assert_eq!(pixs, pixels!(pixel!(0,0, Color::red())));
     }
 }

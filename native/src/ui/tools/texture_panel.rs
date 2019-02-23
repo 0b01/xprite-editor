@@ -27,6 +27,11 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         }
     });
 
+    ui.tree_node(im_str!("Texture size")).default_open(true).build(||{
+        ui.drag_int(im_str!("texture width"), &mut texture.tex_w).build();
+        ui.drag_int(im_str!("texture height"), &mut texture.tex_h).build();
+    });
+
     let mut sz = texture.pattern_size as i32;
     if ui.drag_int(im_str!("size"), &mut sz)
         .min(1)
@@ -43,7 +48,7 @@ pub fn draw(rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         info!("Quilting...(this may take a few seconds)");
         match texture.finalize(&mut state.xpr_mut()) {
             Ok(img) => {
-                let tex_id = rdr.add_img(img.clone(), image::RGB(0));
+                let tex_id = rdr.add_img(img.clone(), image::RGBA(0));
                 texture.tex = Some((tex_id, img));
             }
             Err(s) => {

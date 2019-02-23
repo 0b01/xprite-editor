@@ -166,6 +166,7 @@ impl<'a> State<'a> {
             }
             NewXpr => {
                 // TODO: some sort of prompt here
+                debug!("New xpr");
                 let xpr = Xprite::new("New Sprite".to_owned(), 100., 100.);
                 self.push_xpr(xpr);
             }
