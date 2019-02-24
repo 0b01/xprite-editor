@@ -216,14 +216,13 @@ impl Xprite {
         Ok(())
     }
 
-    pub fn remove_layer(
-        &mut self,
-        group: usize,
-        old: usize,
-    ) -> Result<(), String> {
+    pub fn remove_layer( &mut self, group: usize, old: usize) -> Result<(), String> {
+
         self.history.enter()?;
         let layers = self.history.top_mut();
+        layers.selected = 0;
         layers.remove_layer(group, old);
+
         Ok(())
     }
 

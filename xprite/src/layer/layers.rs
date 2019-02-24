@@ -70,16 +70,22 @@ impl Layers {
         self.groups.push(new_group);
     }
 
-    pub fn add_layer(&mut self, name: Option<&str>, visible: bool) {
+    pub fn insert_layer(&mut self, name: Option<&str>, visible: bool, idx: usize) {
         let name =
-            name.and_then(|i: &str| Some(i.to_owned()))
+            name.map(|i| i.to_owned())
                 .unwrap_or_else(|| {
                     format!("Layer {}", self.selected_group().unwrap().1.len())
                 });
         let mut new_layer = Layer::new(name);
         new_layer.visible = visible;
 
-        self.selected_group_mut().unwrap().1.push(new_layer);
+        self.selected_group_mut().unwrap().1.insert(idx, new_layer);
+
+    }
+
+    pub fn add_layer(&mut self, name: Option<&str>, visible: bool) {
+        let idx = self.selected_group_mut().unwrap().1.len();
+        self.insert_layer(name, visible, idx);
     }
 
     pub fn swap_layer(&mut self, first_idx: usize, second_idx: usize) {
