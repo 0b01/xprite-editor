@@ -16,11 +16,7 @@ impl PreviewWindowMode {
         }
     }
 
-    pub const VARIANTS: [PreviewWindowMode; 3] = [
-        PreviewWindowMode::Fill,
-        PreviewWindowMode::OneX,
-        PreviewWindowMode::TwoX,
-    ];
+    pub const VARIANTS: [PreviewWindowMode; 3] = [PreviewWindowMode::Fill, PreviewWindowMode::OneX, PreviewWindowMode::TwoX];
 }
 
 impl FromStr for PreviewWindowMode {
@@ -41,8 +37,6 @@ pub struct PreviewWindowState {
 
 impl Default for PreviewWindowState {
     fn default() -> Self {
-        Self {
-            mode: PreviewWindowMode::Fill,
-        }
+        Self { mode: PreviewWindowMode::Fill }
     }
 }

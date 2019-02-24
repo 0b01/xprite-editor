@@ -3,7 +3,6 @@ use std::f64;
 use std::rc::Rc;
 
 pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
-
     let misc_flags = {
         let mut f = ImGuiColorEditFlags::empty();
         f.set(ImGuiColorEditFlags::HDR, true);
@@ -18,7 +17,7 @@ pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     let autoshade = Rc::clone(&state.xpr_mut().toolbox.autoshade);
     let mut tool = autoshade.borrow_mut();
     let len = tool.steps.len();
-    if ui.button(im_str!("+"), (0.,0.)) {
+    if ui.button(im_str!("+"), (0., 0.)) {
         tool.steps.push((200., 0.03, Color::red()));
         tool.finalize(&mut state.xpr_mut()).unwrap();
     }
@@ -39,9 +38,7 @@ pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         let col = tool.steps[i].2;
         let mut sel: [f32; 4] = col.into();
         let id = im_str!("MyColor##{}", i);
-        let b = ui.color_edit(id, &mut sel)
-            .flags(misc_flags)
-            .alpha(false);
+        let b = ui.color_edit(id, &mut sel).flags(misc_flags).alpha(false);
         if b.build() {
             tool.steps[i].2 = sel.into();
             tool.finalize(&mut state.xpr_mut()).unwrap();

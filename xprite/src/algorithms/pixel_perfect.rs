@@ -79,31 +79,17 @@ mod tests {
     use super::*;
     #[test]
     fn test_pp() {
-        let path = pixels!(
-            pixel!(0., 0., Color::red()),
-            pixel!(0., 1., Color::red()),
-            pixel!(1., 1., Color::red())
-        );
+        let path = pixels!(pixel!(0., 0., Color::red()), pixel!(0., 1., Color::red()), pixel!(1., 1., Color::red()));
 
         let ret = pixel_perfect(&path);
-        assert_eq!(
-            ret,
-            pixels!(pixel!(0., 0., Color::red()), pixel!(1., 1., Color::red()))
-        );
+        assert_eq!(ret, pixels!(pixel!(0., 0., Color::red()), pixel!(1., 1., Color::red())));
     }
 
     #[test]
     fn test_antipp() {
         assert_eq!(
-            pixel_antiperfect(&pixels!(
-                pixel!(0., 0., Color::red()),
-                pixel!(1., 1., Color::red())
-            )),
-            pixels!(
-                pixel!(0., 0., Color::red()),
-                pixel!(0., 1., Color::red()),
-                pixel!(1., 1., Color::red())
-            )
+            pixel_antiperfect(&pixels!(pixel!(0., 0., Color::red()), pixel!(1., 1., Color::red()))),
+            pixels!(pixel!(0., 0., Color::red()), pixel!(0., 1., Color::red()), pixel!(1., 1., Color::red()))
         );
     }
 }

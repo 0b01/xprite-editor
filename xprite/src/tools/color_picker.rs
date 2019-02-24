@@ -22,7 +22,7 @@ impl ColorPicker {
             .top()
             .groups
             .iter()
-            .map(|group| group.1.iter().map(|layer| layer.get_color(point)))
+            .map(|group| group.1.iter().filter(|layer| layer.visible).map(|layer| layer.get_color(point)))
             .flatten()
             .collect();
         *colors.iter().find(|i| i.is_some())?
@@ -50,12 +50,7 @@ impl Tool for ColorPicker {
         Ok(())
     }
 
-    fn mouse_down(
-        &mut self,
-        xpr: &Xprite,
-        p: Vec2f,
-        _button: InputItem,
-    ) -> Result<(), String> {
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, _button: InputItem) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         self.col = if let Some(col) = self.find_color(xpr, point) {
             Some(col)
@@ -87,12 +82,7 @@ impl Tool for ColorPicker {
         Ok(false)
     }
 
-    fn set(
-        &mut self,
-        _xpr: &Xprite,
-        option: &str,
-        _value: &str,
-    ) -> Result<(), String> {
+    fn set(&mut self, _xpr: &Xprite, option: &str, _value: &str) -> Result<(), String> {
         match option {
             _ => (), // noop
         }

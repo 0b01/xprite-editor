@@ -55,9 +55,7 @@ impl Path {
         let mut segments = Vec::new();
 
         if points.len() < 3 {
-            return Path {
-                segments: Vec::new(),
-            };
+            return Path { segments: Vec::new() };
         }
         let tangents = Path::d3_svg_line_monotone(&points);
 
@@ -74,17 +72,9 @@ impl Path {
                 x: p0.x + t0.x,
                 y: p0.y + t0.y,
             };
-            let ctrl2 = Vec2f {
-                x: p.x - t.x,
-                y: p.y - t.y,
-            };
+            let ctrl2 = Vec2f { x: p.x - t.x, y: p.y - t.y };
             let to = Vec2f { x: p.x, y: p.y };
-            let curve = CubicBezierSegment {
-                from,
-                ctrl1,
-                ctrl2,
-                to,
-            };
+            let curve = CubicBezierSegment { from, ctrl1, ctrl2, to };
             segments.push(curve);
 
             let mut i = 2;
@@ -96,17 +86,9 @@ impl Path {
                     x: from.x + tangents[i - 1].x,
                     y: from.y + tangents[i - 1].y,
                 };
-                let ctrl2 = Vec2f {
-                    x: p.x - t.x,
-                    y: p.y - t.y,
-                };
+                let ctrl2 = Vec2f { x: p.x - t.x, y: p.y - t.y };
                 let to = p;
-                let curve = CubicBezierSegment {
-                    from,
-                    ctrl1,
-                    ctrl2,
-                    to,
-                };
+                let curve = CubicBezierSegment { from, ctrl1, ctrl2, to };
                 segments.push(curve);
                 i += 1;
                 pi += 1;
@@ -151,10 +133,7 @@ impl Path {
 
     #[allow(unused)]
     // Generates tangents for a cardinal spline.
-    fn d3_svg_line_cardinal_tangents(
-        points: &[Vec2f],
-        tension: f64,
-    ) -> Vec<Vec2f> {
+    fn d3_svg_line_cardinal_tangents(points: &[Vec2f], tension: f64) -> Vec<Vec2f> {
         let mut tangents = Vec::new();
 
         let a = (1. - tension) / 2.;
@@ -315,16 +294,7 @@ mod test {
     fn test_monotonic_tangent() {
         let points = vec![Vec2f { x: 10., y: 10. }, Vec2f { x: 50., y: 10. }];
         assert_eq!(
-            vec![
-                Vec2f {
-                    x: 6.666666666666667,
-                    y: 0.0
-                },
-                Vec2f {
-                    x: 6.666666666666667,
-                    y: 0.0
-                }
-            ],
+            vec![Vec2f { x: 6.666666666666667, y: 0.0 }, Vec2f { x: 6.666666666666667, y: 0.0 }],
             Path::d3_svg_line_monotone(&points),
         )
     }

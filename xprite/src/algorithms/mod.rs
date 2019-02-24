@@ -1,3 +1,4 @@
+pub mod autoshade;
 pub mod connected_components;
 pub mod ellipse;
 pub mod floodfill;
@@ -8,7 +9,6 @@ pub mod pixel_perfect;
 pub mod polygon;
 pub mod polyline;
 pub mod rect;
-pub mod sorter;
-pub mod autoshade;
-pub mod symmetry;
 pub mod rotsprite;
+pub mod sorter;
+pub mod symmetry;

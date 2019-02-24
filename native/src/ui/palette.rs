@@ -10,10 +10,7 @@ pub fn draw_palette(rdr: &Renderer, state: &mut State, ui: &Ui) {
         ui.window(im_str!("Palette"))
             .no_bring_to_front_on_focus(true)
             .position((0., TOOLBOX_H), ImGuiCond::Always)
-            .size(
-                (LEFT_SIDE_WIDTH, sz.1 as f32 - TOOLBOX_H - COLOR_PICKER_H),
-                ImGuiCond::Always,
-            )
+            .size((LEFT_SIDE_WIDTH, sz.1 as f32 - TOOLBOX_H - COLOR_PICKER_H), ImGuiCond::Always)
             .movable(false)
             .collapsible(false)
             .resizable(false)
@@ -80,27 +77,12 @@ pub fn draw_color_picker(_rdr: &Renderer, state: &mut State, ui: &Ui) {
 }
 
 fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
-    let items: Vec<_> = state.xpr_mut()
-        .palette_man
-        .palettes
-        .keys()
-        .cloned()
-        .map(ImString::new)
-        .collect();
+    let items: Vec<_> = state.xpr_mut().palette_man.palettes.keys().cloned().map(ImString::new).collect();
     let refs: Vec<_> = items.iter().map(|s| s.as_ref()).collect();
-    ui.combo(
-        im_str!("Palette"),
-        &mut state.palette_window.palette_idx,
-        &refs[..],
-        -1,
-    );
+    ui.combo(im_str!("Palette"), &mut state.palette_window.palette_idx, &refs[..], -1);
     ui.text(im_str!(
         "Color: {}",
-        state
-            .palette_window
-            .palette_color_name
-            .as_ref()
-            .unwrap_or(&Cow::Borrowed("None"))
+        state.palette_window.palette_color_name.as_ref().unwrap_or(&Cow::Borrowed("None"))
     ));
 
     let (mut MARGIN, mut PALETTE_BEGIN_Y) = ui.get_cursor_screen_pos();
@@ -119,22 +101,14 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     let idx = state.palette_window.palette_idx as usize;
     let cols_per_row = state.cols_per_row as usize;
     let mut xpr = state.xpr_mut();
-    let pal = xpr
-        .palette_man
-        .palettes
-        .get_index_mut(idx)
-        .unwrap()
-        .1;
+    let pal = xpr.palette_man.palettes.get_index_mut(idx).unwrap().1;
     for (i, (_col_name, col)) in pal.iter_mut().enumerate() {
         let is_sel = col == &xpr.selected_color;
         let x = MARGIN + BLOCK_SZ * ((i % cols_per_row) as f32);
-        let y = PALETTE_BEGIN_Y
-            + BLOCK_SZ * ((i / cols_per_row) as f32);
+        let y = PALETTE_BEGIN_Y + BLOCK_SZ * ((i / cols_per_row) as f32);
 
         ui.set_cursor_screen_pos((x, y));
-        if ui
-            .invisible_button(im_str!("colorcell##{}", i), (BLOCK_SZ, BLOCK_SZ))
-        {
+        if ui.invisible_button(im_str!("colorcell##{}", i), (BLOCK_SZ, BLOCK_SZ)) {
             xpr.selected_color = *col;
         }
 
@@ -181,12 +155,7 @@ fn draw_cells(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     }
 
     if ui.small_button(im_str!("+")) {
-        let pal = state.xpr_mut()
-            .palette_man
-            .palettes
-            .get_index_mut(idx)
-            .unwrap()
-            .1;
+        let pal = state.xpr_mut().palette_man.palettes.get_index_mut(idx).unwrap().1;
         pal.insert(format!("my_color##{}", pal.len()), Color::black());
     }
 }

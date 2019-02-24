@@ -78,63 +78,24 @@ impl HotkeyController {
             binds.insert(Action::Z(true, true, false, true), Bind::Redo);
             binds.insert(Action::Y(true, false, false, true), Bind::Redo);
 
-            binds.insert(
-                Action::Grave(false, false, false, true),
-                Bind::ToggleConsole,
-            );
+            binds.insert(Action::Grave(false, false, false, true), Bind::ToggleConsole);
 
             // tools
-            binds.insert(
-                Action::B(false, false, false, true),
-                Bind::PushTool(ToolType::Pencil),
-            );
-            binds.insert(
-                Action::G(false, false, false, true),
-                Bind::PushTool(ToolType::PaintBucket),
-            );
-            binds.insert(
-                Action::L(false, false, false, true),
-                Bind::PushTool(ToolType::Line),
-            );
-            binds.insert(
-                Action::E(false, false, false, true),
-                Bind::PushTool(ToolType::Eraser),
-            );
-            binds.insert(
-                Action::V(false, false, false, true),
-                Bind::PushTool(ToolType::Vector),
-            );
-            binds.insert(
-                Action::R(false, false, false, true),
-                Bind::PushTool(ToolType::Rect),
-            );
-            binds.insert(
-                Action::U(false, false, false, true),
-                Bind::PushTool(ToolType::Ellipse),
-            );
-            binds.insert(
-                Action::T(false, false, false, true),
-                Bind::PushTool(ToolType::Texture),
-            );
-            binds.insert(
-                Action::M(false, false, false, true),
-                Bind::PushTool(ToolType::Marquee),
-            );
+            binds.insert(Action::B(false, false, false, true), Bind::PushTool(ToolType::Pencil));
+            binds.insert(Action::G(false, false, false, true), Bind::PushTool(ToolType::PaintBucket));
+            binds.insert(Action::L(false, false, false, true), Bind::PushTool(ToolType::Line));
+            binds.insert(Action::E(false, false, false, true), Bind::PushTool(ToolType::Eraser));
+            binds.insert(Action::V(false, false, false, true), Bind::PushTool(ToolType::Vector));
+            binds.insert(Action::R(false, false, false, true), Bind::PushTool(ToolType::Rect));
+            binds.insert(Action::U(false, false, false, true), Bind::PushTool(ToolType::Ellipse));
+            binds.insert(Action::T(false, false, false, true), Bind::PushTool(ToolType::Texture));
+            binds.insert(Action::M(false, false, false, true), Bind::PushTool(ToolType::Marquee));
 
             // alt
-            binds.insert(
-                Action::Alt(false, false, true, true),
-                Bind::PushTool(ToolType::ColorPicker),
-            );
-            binds.insert(
-                Action::Alt(false, false, false, false),
-                Bind::PopTool
-            );
+            binds.insert(Action::Alt(false, false, true, true), Bind::PushTool(ToolType::ColorPicker));
+            binds.insert(Action::Alt(false, false, false, false), Bind::PopTool);
 
-            binds.insert(
-                Action::Return(true, false, false, true),
-                Bind::RunScript,
-            );
+            binds.insert(Action::Return(true, false, false, true), Bind::RunScript);
             binds.insert(Action::N(true, false, false, true), Bind::NewXpr);
             // ctrl-s
             binds.insert(Action::S(true, false, false, true), Bind::Save);
@@ -143,10 +104,7 @@ impl HotkeyController {
             binds.insert(Action::O(true, true, false, true), Bind::Load);
         }
 
-        Self {
-            binds,
-            enabled: true,
-        }
+        Self { binds, enabled: true }
     }
 
     pub fn lookup(&self, action: Action) -> Bind {

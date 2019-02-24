@@ -22,24 +22,9 @@ impl Renderer for ImageRenderer {
 
     fn circ(&mut self, p0: [f64; 2], r: f64, color: [f32; 4], filled: bool) {}
 
-    fn bezier(
-        &mut self,
-        p0: [f64; 2],
-        cp1: [f64; 2],
-        cp2: [f64; 2],
-        p1: [f64; 2],
-        color: [f32; 4],
-        thickness: f64,
-    ) {
-    }
+    fn bezier(&mut self, p0: [f64; 2], cp1: [f64; 2], cp2: [f64; 2], p1: [f64; 2], color: [f32; 4], thickness: f64) {}
 
-    fn rect(
-        &mut self,
-        p0: [f64; 2],
-        p1: [f64; 2],
-        color: [f32; 4],
-        filled: bool,
-    ) {
+    fn rect(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32; 4], filled: bool) {
         ()
     }
 
@@ -73,12 +58,7 @@ impl ImageRenderer {
         let h = art_h;
         let image = DynamicImage::new_rgba8(w as u32, h as u32);
         let draw_list = Pixels::new();
-        Self {
-            w,
-            h,
-            image,
-            draw_list,
-        }
+        Self { w, h, image, draw_list }
     }
 
     pub fn as_img(&self) -> &DynamicImage {
@@ -93,9 +73,7 @@ impl ImageRenderer {
         use img::Pixel;
         let color = Rgba::from_channels(200, 200, 200, 255);
 
-        for (_i, p) in
-            self.image.as_mut_rgba8().unwrap().pixels_mut().enumerate()
-        {
+        for (_i, p) in self.image.as_mut_rgba8().unwrap().pixels_mut().enumerate() {
             *p = color;
         }
     }

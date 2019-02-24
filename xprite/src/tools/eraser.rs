@@ -41,10 +41,7 @@ impl Eraser {
     }
 
     fn erase_stroke(&self, xpr: &Xprite) -> Result<Pixels, String> {
-        let mut line_pixs = self
-            .current_polyline
-            .to_pixel_coords(xpr)?
-            .connect_with_line()?;
+        let mut line_pixs = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line()?;
         line_pixs.push(self.cursor_pos.unwrap());
         let brushstroke = self.brush.follow_stroke(&line_pixs).unwrap();
         Ok(brushstroke)
@@ -65,9 +62,7 @@ impl Tool for Eraser {
     }
 
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
-        let pixels = self
-            .brush
-            .to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
+        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         self.cursor = pixels.clone();
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
@@ -90,18 +85,11 @@ impl Tool for Eraser {
         Ok(())
     }
 
-    fn mouse_down(
-        &mut self,
-        xpr: &Xprite,
-        p: Vec2f,
-        button: InputItem,
-    ) -> Result<(), String> {
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
         self.is_mouse_down = Some(button);
         self.current_polyline.push(p);
 
-        let pixels = self
-            .brush
-            .to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
+        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         if let Some(pixels) = pixels {
             if button == InputItem::Left {
                 self.draw_buffer.extend(&pixels);
@@ -132,8 +120,8 @@ impl Tool for Eraser {
             xpr.history.enter()?;
             let reflected = xpr.toolbox.symmetry.clone().borrow().process(&pixs);
             let layer = &mut xpr.current_layer_mut().unwrap();
-            layer.content.sub_(&reflected);
-            layer.content.sub_(&pixs);
+            layer.content.sub_mut(&reflected);
+            layer.content.sub_mut(&pixs);
             layer.visible = true;
             self.update_buffer = None;
             Ok(true)
@@ -164,12 +152,7 @@ impl Tool for Eraser {
         }
     }
 
-    fn set(
-        &mut self,
-        _xpr: &Xprite,
-        option: &str,
-        value: &str,
-    ) -> Result<(), String> {
+    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "mode" => {}
             "brush" => {

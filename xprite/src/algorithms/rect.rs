@@ -2,13 +2,7 @@ use crate::prelude::*;
 use std::i32;
 
 /// draw the outline of a rectangle
-pub fn rect(
-    x1: i32,
-    y1: i32,
-    x2: i32,
-    y2: i32,
-    col: Color,
-) -> Result<Pixels, String> {
+pub fn rect(x1: i32, y1: i32, x2: i32, y2: i32, col: Color) -> Result<Pixels, String> {
     if y2 == 0 || x2 == 0 {
         return Err("i32 must be greater than 0".to_owned());
     }
@@ -25,13 +19,7 @@ pub fn rect(
 }
 
 /// draw a filled rectangle
-pub fn filled_rect(
-    x1: i32,
-    y1: i32,
-    x2: i32,
-    y2: i32,
-    col: Color,
-) -> Result<Pixels, String> {
+pub fn filled_rect(x1: i32, y1: i32, x2: i32, y2: i32, col: Color) -> Result<Pixels, String> {
     let mut ret = Pixels::new();
     for i in x1..x2 {
         for j in y1..y2 {
@@ -41,11 +29,7 @@ pub fn filled_rect(
     Ok(ret)
 }
 
-pub fn get_rect(
-    start: Option<Pixel>,
-    stop: Option<Pixel>,
-    filled: bool,
-) -> Result<Pixels, String> {
+pub fn get_rect(start: Option<Pixel>, stop: Option<Pixel>, filled: bool) -> Result<Pixels, String> {
     let start = start.ok_or_else(|| "start is none".to_owned())?;
     let stop = stop.ok_or_else(|| "stop is none".to_owned())?;
     let x0 = start.point.x as i32;
@@ -53,13 +37,7 @@ pub fn get_rect(
     let x1 = stop.point.x as i32;
     let y1 = stop.point.y as i32;
     let f = if filled { filled_rect } else { rect };
-    f(
-        i32::min(x0, x1),
-        i32::min(y0, y1),
-        i32::max(x0, x1),
-        i32::max(y0, y1),
-        Color::red(),
-    )
+    f(i32::min(x0, x1), i32::min(y0, y1), i32::max(x0, x1), i32::max(y0, y1), Color::red())
 }
 
 #[cfg(test)]

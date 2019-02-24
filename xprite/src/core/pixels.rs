@@ -1,9 +1,9 @@
 use crate::algorithms::{
     connected_components::connected_components,
-    perimeter::{find_perimeter, find_outline},
+    perimeter::{find_outline, find_perimeter},
     pixel_perfect::{pixel_antiperfect, pixel_perfect},
-    sorter::sort_path,
     rotsprite::rotsprite,
+    sorter::sort_path,
 };
 use crate::prelude::*;
 use fnv::FnvBuildHasher;
@@ -83,12 +83,8 @@ impl Pixel {
         point.x = point.x.floor();
         point.y = point.y.floor();
 
-        return Pixel {
-            point,
-            color: self.color,
-        };
+        return Pixel { point, color: self.color };
     }
-
 }
 
 impl Hash for Pixel {
@@ -132,10 +128,7 @@ macro_rules! pixel {
     };
 
     ($vec2f: expr, $k: expr) => {
-        Pixel {
-            point: $vec2f,
-            color: $k,
-        }
+        Pixel { point: $vec2f, color: $k }
     };
 }
 
@@ -190,7 +183,6 @@ impl Default for Pixels {
 }
 
 impl Pixels {
-
     pub fn new() -> Self {
         Pixels(IndexSet::with_hasher(Default::default()))
     }
@@ -229,14 +221,12 @@ impl Pixels {
         }
     }
 
-    pub fn sub_(&mut self, other: &Pixels) {
+    pub fn sub_mut(&mut self, other: &Pixels) {
         self.0 = self.0.sub(&other.0)
     }
 
     pub fn intersection(&self, other: &Pixels) -> Pixels {
-        let common: Vec<_> = self.0
-            .intersection(&other.0).cloned()
-            .collect();
+        let common: Vec<_> = self.0.intersection(&other.0).cloned().collect();
         Pixels::from_slice(&common)
     }
 
@@ -301,11 +291,7 @@ impl Pixels {
         let mut max_x = f64::MIN;
         let mut min_y = f64::MAX;
         let mut max_y = f64::MIN;
-        for Pixel {
-            point: Vec2f { x, y },
-            ..
-        } in self.iter()
-        {
+        for Pixel { point: Vec2f { x, y }, .. } in self.iter() {
             min_x = min_x.min(*x);
             max_x = max_x.max(*x);
             min_y = min_y.min(*y);
@@ -327,11 +313,7 @@ impl Pixels {
     }
 
     #[deprecated]
-    pub fn to_strips(
-        &self,
-        w: usize,
-        h: usize,
-    ) -> Vec<(usize, (usize, usize), Color)> {
+    pub fn to_strips(&self, w: usize, h: usize) -> Vec<(usize, (usize, usize), Color)> {
         let ccs = self.connected_components(w, h);
         let mut rect_list = vec![];
         for cc in &ccs {
@@ -414,7 +396,6 @@ impl From<Pixels> for ase::Pixels {
 }
 
 impl Pixels {
-
     pub fn as_bool_mat(&self, w: usize, h: usize) -> Vec<Vec<bool>> {
         let mut arr = vec![vec![false; w]; h];
         for p in self.0.iter() {
@@ -440,19 +421,33 @@ impl Pixels {
     pub fn retain_in_rect_mut(&mut self, bb: Rect) {
         let w = bb.w();
         let h = bb.h();
-        self.0 = self.0.iter().filter_map(|p|{
-            let Pixel { point: Vec2f { x, y }, .. } = p;
-            if oob(*x-bb.0.x, *y-bb.0.y, w as f64, h as f64) { None }
-            else { Some(*p) }
-        }).collect();
+        self.0 = self
+            .0
+            .iter()
+            .filter_map(|p| {
+                let Pixel { point: Vec2f { x, y }, .. } = p;
+                if oob(*x - bb.0.x, *y - bb.0.y, w as f64, h as f64) {
+                    None
+                } else {
+                    Some(*p)
+                }
+            })
+            .collect();
     }
 
     pub fn retain_in_bound_mut(&mut self, w: usize, h: usize) {
-        self.0 = self.0.iter().filter_map(|p| {
-            let Pixel { point: Vec2f { x, y }, .. } = p;
-            if oob(*x, *y, w as f64, h as f64) { None }
-            else { Some(*p) }
-        }).collect();
+        self.0 = self
+            .0
+            .iter()
+            .filter_map(|p| {
+                let Pixel { point: Vec2f { x, y }, .. } = p;
+                if oob(*x, *y, w as f64, h as f64) {
+                    None
+                } else {
+                    Some(*p)
+                }
+            })
+            .collect();
     }
 
     /// shift all pixels in the matrix in accordance to bounding box
@@ -496,10 +491,7 @@ impl Pixels {
 
         let mut rdr = ImageRenderer::new(w, h);
         for pix in &self.0 {
-            let Pixel {
-                point: Vec2f { x, y },
-                color,
-            } = pix;
+            let Pixel { point: Vec2f { x, y }, color } = pix;
             if oob(*x - origin.x, *y - origin.y, w as f64, h as f64) {
                 continue;
             }
@@ -514,25 +506,26 @@ impl Pixels {
         let img = self.as_image(bb);
         img.save(output).unwrap();
     }
-
 }
 
 impl Pixels {
     pub fn from_ase_pixels(ase_pixs: &ase::Pixels, bb: Rect) -> Self {
-        let x0 = bb.0.x as usize;
-        let y0 = bb.0.y as usize;
-        let h = bb.w() as usize; // TODO: BUG: reverse this
-        let w = bb.h() as usize;
+        let x0 = bb.0.x as i32;
+        let y0 = bb.0.y as i32;
+        let h = bb.w() as i32; // TODO: BUG: reverse this
+        let w = bb.h() as i32;
         let mut pixs = Pixels::new();
         if let ase::Pixels::RGBA(vec) = ase_pixs {
-            assert_eq!(vec.len(), w * h);
-            for (i, color) in vec.iter().enumerate() {
+            assert_eq!(vec.len() as i32, w * h);
+            for (color, i) in vec.iter().zip(0..) {
                 if color.a == 0 {
                     continue;
                 } // skip transparent pixels
                 let nth_row = i / w;
                 let nth_col = i % w;
-                pixs.push(pixel!(y0 + nth_row, x0 + nth_col, (*color).into()));
+                let y = y0 + nth_row;
+                let x = x0 + nth_col;
+                pixs.push(pixel!(y, x, (*color).into()));
             }
         }
 
@@ -545,10 +538,7 @@ mod tests {
     #[test]
     fn test_extend() {
         use super::*;
-        let mut v1 = Pixels::from_slice(&vec![
-            pixel!(0., 0., Color::blue()),
-            pixel!(0., 1., Color::blue()),
-        ]);
+        let mut v1 = Pixels::from_slice(&vec![pixel!(0., 0., Color::blue()), pixel!(0., 1., Color::blue())]);
         let v2 = Pixels::from_slice(&vec![pixel!(0., 1., Color::blue())]);
         v1.extend(&v2);
         let mut expected = IndexSet::new();
@@ -560,10 +550,7 @@ mod tests {
     #[test]
     fn test_extend_dup() {
         use super::*;
-        let mut v1 = Pixels::from_slice(&vec![
-            pixel!(0., 0., Color::red()),
-            pixel!(0., 1., Color::red()),
-        ]);
+        let mut v1 = Pixels::from_slice(&vec![pixel!(0., 0., Color::red()), pixel!(0., 1., Color::red())]);
         let v2 = Pixels::from_slice(&vec![pixel!(0., 1., Color::blue())]);
         v1.extend(&v2);
         let mut expected = IndexSet::new();
@@ -582,39 +569,23 @@ mod tests {
             pixel!(1,1,Color::red())
         };
 
-        assert_eq!(
-            pixs.as_bool_mat(2, 2),
-            vec![vec![true, true], vec![false, true]]
-        );
+        assert_eq!(pixs.as_bool_mat(2, 2), vec![vec![true, true], vec![false, true]]);
     }
 
     #[test]
     fn test_sub() {
         use super::*;
-        let mut v1 = Pixels::from_slice(&vec![
-            pixel!(0., 0., Color::red()),
-            pixel!(0., 1., Color::red()),
-        ]);
-        v1.sub_(&Pixels::from_slice(&vec![pixel!(0., 1., Color::blue())]));
+        let mut v1 = Pixels::from_slice(&vec![pixel!(0., 0., Color::red()), pixel!(0., 1., Color::red())]);
+        v1.sub_mut(&Pixels::from_slice(&vec![pixel!(0., 1., Color::blue())]));
         assert_eq!(Pixels::from_slice(&vec![pixel!(0., 0., Color::red())]), v1);
     }
 
     #[test]
     fn test_intersection() {
         use super::*;
-        let v1 = Pixels::from_slice(&vec![
-            pixel!(0., 0., Color::red()),
-            pixel!(0., 1., Color::red()),
-        ]);
-        let intersection = v1.intersection(&Pixels::from_slice(&vec![pixel!(
-            0.,
-            1.,
-            Color::blue()
-        )]));
-        assert_eq!(
-            Pixels::from_slice(&vec![pixel!(0., 1., Color::red())]),
-            intersection
-        );
+        let v1 = Pixels::from_slice(&vec![pixel!(0., 0., Color::red()), pixel!(0., 1., Color::red())]);
+        let intersection = v1.intersection(&Pixels::from_slice(&vec![pixel!(0., 1., Color::blue())]));
+        assert_eq!(Pixels::from_slice(&vec![pixel!(0., 1., Color::red())]), intersection);
     }
 
     #[test]
@@ -624,11 +595,7 @@ mod tests {
         let strips = pixs.to_strips(3, 3);
         assert_eq!(strips, vec![(1, (1, 2), Color::red())]);
 
-        let pixs = pixels!(
-            pixel!(0, 0, Color::red()),
-            pixel!(0, 1, Color::red()),
-            pixel!(0, 2, Color::red())
-        );
+        let pixs = pixels!(pixel!(0, 0, Color::red()), pixel!(0, 1, Color::red()), pixel!(0, 2, Color::red()));
         let strips = pixs.to_strips(3, 3);
         assert_eq!(strips, vec![(0, (0, 3), Color::red())]);
 
@@ -644,27 +611,17 @@ mod tests {
             pixel!(1, 1, Color::red())
         );
         let strips = pixs.to_strips(3, 3);
-        assert_eq!(
-            strips,
-            vec![(0, (0, 3), Color::red()), (1, (0, 2), Color::red()),]
-        );
+        assert_eq!(strips, vec![(0, (0, 3), Color::red()), (1, (0, 2), Color::red()),]);
     }
 
     #[test]
     fn test_as_mat_bb() {
         use super::*;
-        let pixs =
-            pixels!(pixel!(0, 1, Color::red()), pixel!(0, 2, Color::red()));
+        let pixs = pixels!(pixel!(0, 1, Color::red()), pixel!(0, 2, Color::red()));
         let bb = pixs.bounding_rect();
         let ret = pixs.as_mat_bb(bb);
 
-        assert_eq!(
-            vec![vec![
-                Some(pixel!(0, 0, Color::red())),
-                Some(pixel!(0, 1, Color::red())),
-            ]],
-            ret
-        );
+        assert_eq!(vec![vec![Some(pixel!(0, 0, Color::red())), Some(pixel!(0, 1, Color::red())),]], ret);
     }
 
     #[test]
@@ -683,44 +640,27 @@ mod tests {
         );
 
         let bb = pixs.bounding_rect();
-        assert_eq!(
-            Rect(Vec2f { x: 0.0, y: 0.0 }, Vec2f { x: 2.0, y: 1.0 }),
-            bb
-        );
+        assert_eq!(Rect(Vec2f { x: 0.0, y: 0.0 }, Vec2f { x: 2.0, y: 1.0 }), bb);
     }
 
     #[test]
     fn test_as_image() {
         use super::*;
-        let pixs =
-            pixels!(pixel!(0., 0., Color::red()), pixel!(1., 1., Color::red()));
-        let img = pixs.as_image(
-            Rect(
-                Vec2f{x:0., y: 0.},
-                Vec2f{x:2., y: 2.}
-            )
-        );
+        let pixs = pixels!(pixel!(0., 0., Color::red()), pixel!(1., 1., Color::red()));
+        let img = pixs.as_image(Rect(Vec2f { x: 0., y: 0. }, Vec2f { x: 2., y: 2. }));
         assert_eq!(
             img.raw_pixels(),
-            vec![
-                255, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0,
-                255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-            ]
+            vec![255, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         );
     }
 
     #[test]
     fn test_as_image_one_pixel() {
         use super::*;
-        let pixs = pixels!(pixel!(1,1, Color::red()));
+        let pixs = pixels!(pixel!(1, 1, Color::red()));
         let bb = pixs.bounding_rect();
         let img = pixs.as_image(bb);
-        assert_eq!(
-            img.raw_pixels(),
-            vec![
-                255, 0, 0, 255
-            ]
-        );
+        assert_eq!(img.raw_pixels(), vec![255, 0, 0, 255]);
     }
 
     #[test]
@@ -749,50 +689,44 @@ mod tests {
                 ($f:expr, $g:expr)  // to
             ) => {
                 assert_eq!(
-                    pixel!($a, $b, Color::red())
-                        .rotate(
-                            Vec2f{ y:$c as f64, x:$d as f64 },
-                            $e
-                        ),
+                    pixel!($a, $b, Color::red()).rotate(
+                        Vec2f {
+                            y: $c as f64,
+                            x: $d as f64
+                        },
+                        $e
+                    ),
                     pixel!($f, $g, Color::red())
                 );
-            }
+            };
         }
 
-        test_rotated!((0,2),(0,1),-PI/2.,(1,0));
-        test_rotated!((0,3),(0,1),-PI/2.,(2,0));
-        test_rotated!((1,2),(1,1),-PI/2.,(2,0));
-        test_rotated!((1,3),(1,2),-PI/2.,(2,1));
-        test_rotated!((3,5),(3,3),-PI,(2,0));
+        test_rotated!((0, 2), (0, 1), -PI / 2., (1, 0));
+        test_rotated!((0, 3), (0, 1), -PI / 2., (2, 0));
+        test_rotated!((1, 2), (1, 1), -PI / 2., (2, 0));
+        test_rotated!((1, 3), (1, 2), -PI / 2., (2, 1));
+        test_rotated!((3, 5), (3, 3), -PI, (2, 0));
 
-        test_rotated!((3,3),(2,3),PI,(0,2));
-        test_rotated!((3,3),(2,3),-PI,(0,2));
+        test_rotated!((3, 3), (2, 3), PI, (0, 2));
+        test_rotated!((3, 3), (2, 3), -PI, (0, 2));
     }
 
     #[test]
-    fn test_get_pixel()  {
+    fn test_get_pixel() {
         use super::*;
-        let pixs = pixels!(
-            pixel!(0,0,Color::black()),
-            pixel!(0,1,Color::blue())
-        );
-        assert_eq!( pixs.get_pixel(0,0), Some(pixel!(0,0,Color::black())));
-        assert_eq!( pixs.get_pixel(0,0).map(|i|i.color), Some(Color::black()));
-        assert_eq!( pixs.get_pixel(0,1), Some(pixel!(0,1,Color::blue())));
-        assert_eq!( pixs.get_pixel(0,1).map(|i|i.color), Some(Color::blue()));
-
+        let pixs = pixels!(pixel!(0, 0, Color::black()), pixel!(0, 1, Color::blue()));
+        assert_eq!(pixs.get_pixel(0, 0), Some(pixel!(0, 0, Color::black())));
+        assert_eq!(pixs.get_pixel(0, 0).map(|i| i.color), Some(Color::black()));
+        assert_eq!(pixs.get_pixel(0, 1), Some(pixel!(0, 1, Color::blue())));
+        assert_eq!(pixs.get_pixel(0, 1).map(|i| i.color), Some(Color::blue()));
     }
 
     #[test]
     fn test_retain_in_rect() {
         use super::*;
-        let mut pixs = pixels!(
-            pixel!(0,0,Color::black()),
-            pixel!(0,1,Color::blue()),
-            pixel!(1,1,Color::blue())
-        );
+        let mut pixs = pixels!(pixel!(0, 0, Color::black()), pixel!(0, 1, Color::blue()), pixel!(1, 1, Color::blue()));
 
-        pixs.retain_in_rect_mut(Rect(Vec2f{x:0.,y:0.}, Vec2f{x:1.,y:1.}));
-        assert_eq!(pixs, pixels!(pixel!(0,0, Color::red())));
+        pixs.retain_in_rect_mut(Rect(Vec2f { x: 0., y: 0. }, Vec2f { x: 1., y: 1. }));
+        assert_eq!(pixs, pixels!(pixel!(0, 0, Color::red())));
     }
 }

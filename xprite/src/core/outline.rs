@@ -12,18 +12,15 @@ bitflags! {
 pub type MarqueePixel = (Vec2f, Outline);
 
 /// outline
-pub fn outline_rect(
-    start: Option<Pixel>,
-    stop: Option<Pixel>,
-) -> Result<Vec<MarqueePixel>, String> {
+pub fn outline_rect(start: Option<Vec2f>, stop: Option<Vec2f>) -> Result<Vec<MarqueePixel>, String> {
     let mut ret = Vec::new();
 
     let start = start.ok_or_else(|| "start is none".to_owned())?;
     let stop = stop.ok_or_else(|| "stop is none".to_owned())?;
-    let x1_ = start.point.x as i32;
-    let y1_ = start.point.y as i32;
-    let x2_ = stop.point.x as i32;
-    let y2_ = stop.point.y as i32;
+    let x1_ = start.x as i32;
+    let y1_ = start.y as i32;
+    let x2_ = stop.x as i32;
+    let y2_ = stop.y as i32;
 
     let x1 = i32::min(x1_, x2_);
     let x2 = i32::max(x1_, x2_);

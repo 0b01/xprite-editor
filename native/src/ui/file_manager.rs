@@ -2,14 +2,7 @@ use crate::prelude::*;
 use xprite::rendering::Renderer;
 
 pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
-    let window_title = im_str!(
-        "{}",
-        if state.file_popup.show_file_is_save {
-            "Save file"
-        } else {
-            "Open file"
-        }
-    );
+    let window_title = im_str!("{}", if state.file_popup.show_file_is_save { "Save file" } else { "Open file" });
 
     if state.file_popup.show_file_popup {
         ui.open_popup(window_title);
@@ -21,7 +14,6 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         .resizable(false)
         .movable(true)
         .build(|| {
-
             let open_file = |state: &mut State| {
                 let fname = state.file_popup.open_file_name.to_str().to_owned();
                 info!("opening: {:?}", fname);
@@ -32,10 +24,7 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                     } else {
                         state.push_xpr(Xprite::load_ase(&fname.to_owned()));
                     }
-                } else if fname.ends_with(".png")
-                    || fname.ends_with(".jpg")
-                    || fname.ends_with(".jpeg")
-                {
+                } else if fname.ends_with(".png") || fname.ends_with(".jpg") || fname.ends_with(".jpeg") {
                     if save {
                         state.xpr_mut().save_img(&fname.to_owned(), 1);
                     } else {
@@ -54,10 +43,7 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
 
             ui.with_item_width(400., || {
                 if ui
-                    .input_text(
-                        im_str!(""),
-                        &mut state.file_popup.open_file_name,
-                    )
+                    .input_text(im_str!(""), &mut state.file_popup.open_file_name)
                     .auto_select_all(true)
                     .enter_returns_true(true)
                     .build()

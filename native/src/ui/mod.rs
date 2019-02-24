@@ -1,17 +1,17 @@
+pub mod brush;
 pub mod canvas;
 pub mod console;
+pub mod exporter;
 pub mod file_manager;
 pub mod inputs;
 pub mod layers;
 pub mod menu;
 pub mod palette;
 pub mod preview;
+pub mod symmetry;
 pub mod tool_panel;
 pub mod toolbar;
-pub mod exporter;
 pub mod tools;
-pub mod symmetry;
-pub mod brush;
 
 use crate::prelude::*;
 use crate::render::imgui::ImguiRenderer;
@@ -23,7 +23,9 @@ use crate::render::imgui::ImguiRenderer;
 pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
     self::menu::draw_menu(rdr, state, ui);
     self::file_manager::draw_file_manager(rdr, state, ui);
-    if xpr_idx_oob(state) { return true; }
+    if xpr_idx_oob(state) {
+        return true;
+    }
 
     state.xpr_mut().draw().unwrap();
     state.redraw_pixels(rdr).unwrap();
@@ -31,7 +33,9 @@ pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
 
     self::toolbar::draw_toolbar(state, ui);
     self::canvas::draw_canvas(rdr, state, ui);
-    if xpr_idx_oob(state) { return true; }
+    if xpr_idx_oob(state) {
+        return true;
+    }
     self::tool_panel::draw_tool_panel(rdr, state, ui);
     self::palette::draw_palette(rdr, state, ui);
     self::palette::draw_color_picker(rdr, state, ui);
@@ -45,7 +49,6 @@ pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
     self::exporter::draw_exporter(rdr, state, ui);
     true
 }
-
 
 fn xpr_idx_oob(state: &mut State) -> bool {
     if state.xprs.len() == 0 {

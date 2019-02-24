@@ -4,11 +4,11 @@ use xprite::rendering::image_renderer::ImageRenderer;
 
 const COLOR_PICKER: &'static [u8; 13807] = include_bytes!("../../colorpicker.png");
 
-pub mod preview_window;
-pub mod palette_window;
 pub mod brush_state;
 pub mod exporter_state;
 pub mod filepopup_state;
+pub mod palette_window;
+pub mod preview_window;
 
 pub struct State<'a> {
     pub xprs: Vec<Xprite>,
@@ -37,7 +37,6 @@ pub struct State<'a> {
 }
 
 impl<'a> Default for State<'a> {
-
     fn default() -> Self {
         Self {
             file_popup: Default::default(),
@@ -64,7 +63,6 @@ impl<'a> Default for State<'a> {
 }
 
 impl<'a> State<'a> {
-
     pub fn xpr(&self) -> &Xprite {
         &self.xprs[self.xpr_idx]
     }
@@ -85,7 +83,9 @@ impl<'a> State<'a> {
     }
 
     pub fn load_icons(&mut self, rdr: &mut ImguiRenderer) {
-        if self.color_picker_texture.is_some() { return; }
+        if self.color_picker_texture.is_some() {
+            return;
+        }
         let color_picker = COLOR_PICKER;
         let img = image::load_from_memory(color_picker).unwrap();
         let texture_id = rdr.add_img(img, image::ColorType::RGBA(0));
@@ -94,10 +94,7 @@ impl<'a> State<'a> {
 
     /// checks if texture needs to be updated.
     /// redraw texture
-    pub fn redraw_pixels(
-        &mut self,
-        rdr: &mut ImguiRenderer,
-    ) -> Result<(), String> {
+    pub fn redraw_pixels(&mut self, rdr: &mut ImguiRenderer) -> Result<(), String> {
         if self.xpr().redraw || self.texture.is_none() {
             self.update_preview(rdr);
             self.xpr_mut().redraw = false;
@@ -106,8 +103,7 @@ impl<'a> State<'a> {
     }
 
     fn update_preview(&mut self, rdr: &mut ImguiRenderer) {
-        let mut img_rdr =
-            ImageRenderer::new(self.xpr().canvas.art_w, self.xpr().canvas.art_h);
+        let mut img_rdr = ImageRenderer::new(self.xpr().canvas.art_w, self.xpr().canvas.art_h);
         img_rdr.fill_canvas();
         self.xpr().preview(&mut img_rdr).unwrap();
         img_rdr.render();

@@ -23,8 +23,8 @@ extern crate log;
 extern crate pyo3;
 
 extern crate indexmap as imap;
-extern crate wfc_image;
 extern crate natord;
+extern crate wfc_image;
 
 #[macro_use]
 pub mod core;

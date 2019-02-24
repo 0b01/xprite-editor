@@ -19,6 +19,8 @@ pub use crate::rendering::{
     image_renderer::{save_img, ImageRenderer},
     traits::Renderer,
 };
+/// re-exports
+pub use std::rc::Rc;
 
 #[cfg(feature = "python-scripting")]
 pub use pyo3::prelude::*;

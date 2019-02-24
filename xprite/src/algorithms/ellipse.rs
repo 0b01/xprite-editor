@@ -2,11 +2,7 @@ use crate::algorithms::line::pixel_perfect_line;
 use crate::prelude::*;
 use std::i32;
 
-pub fn get_ellipse(
-    start: Option<Pixel>,
-    stop: Option<Pixel>,
-    filled: bool,
-) -> Result<Pixels, String> {
+pub fn get_ellipse(start: Option<Pixel>, stop: Option<Pixel>, filled: bool) -> Result<Pixels, String> {
     let start = start.ok_or_else(|| "start is none".to_owned())?;
     let stop = stop.ok_or_else(|| "stop is none".to_owned())?;
     let x0 = start.point.x as i32;
@@ -91,56 +87,20 @@ pub fn algo_ellipse(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
     ry = (y1 - y2).abs();
 
     if rx == 1 {
-        pixel_perfect_line(
-            Vec2f {
-                x: x2 as f64,
-                y: y1 as f64,
-            },
-            Vec2f {
-                x: x2 as f64,
-                y: y2 as f64,
-            },
-        );
+        pixel_perfect_line(Vec2f { x: x2 as f64, y: y1 as f64 }, Vec2f { x: x2 as f64, y: y2 as f64 });
         rx -= 1;
     }
     if rx == 0 {
-        pixel_perfect_line(
-            Vec2f {
-                x: x1 as f64,
-                y: y1 as f64,
-            },
-            Vec2f {
-                x: x1 as f64,
-                y: y2 as f64,
-            },
-        );
+        pixel_perfect_line(Vec2f { x: x1 as f64, y: y1 as f64 }, Vec2f { x: x1 as f64, y: y2 as f64 });
         return ret;
     }
 
     if ry == 1 {
-        pixel_perfect_line(
-            Vec2f {
-                x: x1 as f64,
-                y: y2 as f64,
-            },
-            Vec2f {
-                x: x2 as f64,
-                y: y2 as f64,
-            },
-        );
+        pixel_perfect_line(Vec2f { x: x1 as f64, y: y2 as f64 }, Vec2f { x: x2 as f64, y: y2 as f64 });
         ry -= 1;
     }
     if ry == 0 {
-        pixel_perfect_line(
-            Vec2f {
-                x: x1 as f64,
-                y: y1 as f64,
-            },
-            Vec2f {
-                x: x2 as f64,
-                y: y1 as f64,
-            },
-        );
+        pixel_perfect_line(Vec2f { x: x1 as f64, y: y1 as f64 }, Vec2f { x: x2 as f64, y: y1 as f64 });
         return ret;
     }
 
