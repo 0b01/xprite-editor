@@ -21,13 +21,7 @@ impl BrushType {
             BrushType::Line => "/",
         }
     }
-    pub const VARIANTS: [BrushType; 5] = [
-        BrushType::Pixel,
-        BrushType::Cross,
-        BrushType::Circle,
-        BrushType::Square,
-        BrushType::Line,
-    ];
+    pub const VARIANTS: [BrushType; 5] = [BrushType::Pixel, BrushType::Cross, BrushType::Circle, BrushType::Square, BrushType::Line];
 }
 
 impl Default for BrushType {
@@ -145,11 +139,7 @@ impl Brush {
     }
 
     /// convert brush shape to actual pixel on canvas
-    pub fn to_canvas_pixels(
-        &self,
-        cursor: Vec2f,
-        color: Color,
-    ) -> Option<Pixels> {
+    pub fn to_canvas_pixels(&self, cursor: Vec2f, color: Color) -> Option<Pixels> {
         let Vec2f { x, y } = cursor;
         let (offset_x, offset_y) = self.offset;
         let ret: Vec<Pixel> = self

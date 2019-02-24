@@ -33,23 +33,11 @@ pub fn sort_path(input: &Pixels) -> Result<Pixels, String> {
     let mut path: Vec<Pixel> = input.0.iter().cloned().collect();
 
     // if the path is drawn from bottom to top
-    let up = path
-        .iter()
-        .last()
-        .ok_or_else(|| "does not contain last".to_owned())?
-        .point
-        .y
-        < path[0].point.y;
+    let up = path.iter().last().ok_or_else(|| "does not contain last".to_owned())?.point.y < path[0].point.y;
     let mut dir = if up { -1 } else { 1 };
 
     // if the path is drawn from right to left
-    let right_to_left = path
-        .iter()
-        .last()
-        .ok_or_else(|| "does not contain last".to_owned())?
-        .point
-        .x
-        < path[0].point.x;
+    let right_to_left = path.iter().last().ok_or_else(|| "does not contain last".to_owned())?.point.x < path[0].point.x;
     if right_to_left {
         dir *= -1;
         path.reverse();

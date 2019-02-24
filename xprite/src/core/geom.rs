@@ -23,9 +23,7 @@ macro_rules! vec2f_xy {
 use crate::prelude::*;
 use std::cmp::Ordering;
 use std::hash::{Hash, Hasher};
-use std::ops::{
-    Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign,
-};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 impl Vec2f {
     pub fn mag(&self) -> f64 {
@@ -47,10 +45,7 @@ impl Neg for Vec2f {
     type Output = Vec2f;
 
     fn neg(self) -> Vec2f {
-        Vec2f {
-            x: -self.x,
-            y: -self.y,
-        }
+        Vec2f { x: -self.x, y: -self.y }
     }
 }
 
@@ -216,15 +211,9 @@ impl CubicBezierSegment {
         let one_t2 = one_t * one_t;
         let one_t3 = one_t2 * one_t;
 
-        let x = self.from.x * one_t3
-            + self.ctrl1.x * 3. * one_t2 * t
-            + self.ctrl2.x * 3. * one_t * t2
-            + self.to.x * t3;
+        let x = self.from.x * one_t3 + self.ctrl1.x * 3. * one_t2 * t + self.ctrl2.x * 3. * one_t * t2 + self.to.x * t3;
 
-        let y = self.from.y * one_t3
-            + self.ctrl1.y * 3. * one_t2 * t
-            + self.ctrl2.y * 3. * one_t * t2
-            + self.to.y * t3;
+        let y = self.from.y * one_t3 + self.ctrl1.y * 3. * one_t2 * t + self.ctrl2.y * 3. * one_t * t2 + self.to.y * t3;
 
         Vec2f { x, y }
     }
@@ -297,11 +286,7 @@ impl CubicBezierSegment {
             result[dim] = droots(&p);
             let p: Vec<f64> = dpoints[1].iter().map(mfn).collect();
             result[dim].extend(droots(&p));
-            result[dim] = result[dim]
-                .iter()
-                .filter(|&t| *t >= 0. && *t <= 1.)
-                .cloned()
-                .collect();
+            result[dim] = result[dim].iter().filter(|&t| *t >= 0. && *t <= 1.).cloned().collect();
             result[dim].sort_by(|a: &f64, b: &f64| a.partial_cmp(b).unwrap());
             roots.extend(&result[dim]);
         }

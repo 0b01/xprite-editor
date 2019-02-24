@@ -1,7 +1,4 @@
-use crate::algorithms::{
-    rect::*,
-    autoshade::autoshade,
-};
+use crate::algorithms::{autoshade::autoshade, rect::*};
 use crate::tools::*;
 
 #[derive(Clone, Default, Debug)]
@@ -24,10 +21,7 @@ impl AutoShade {
         }
     }
 
-    pub fn finalize(
-        &mut self,
-        xpr: &mut Xprite,
-    ) -> Result<(), String> {
+    pub fn finalize(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         let pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
         let content = &mut xpr.current_layer_mut().unwrap().content;
         let intersection = content.intersection(&pixs);
@@ -42,7 +36,6 @@ impl AutoShade {
         let bb = Rect(p0.point, p1.point);
         Some(bb)
     }
-
 }
 
 impl Tool for AutoShade {
@@ -73,12 +66,7 @@ impl Tool for AutoShade {
         Ok(())
     }
 
-    fn mouse_down(
-        &mut self,
-        xpr: &Xprite,
-        p: Vec2f,
-        button: InputItem,
-    ) -> Result<(), String> {
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
         if InputItem::Left != button {
             return Ok(());
         }
@@ -107,12 +95,7 @@ impl Tool for AutoShade {
         Ok(ret)
     }
 
-    fn set(
-        &mut self,
-        _xpr: &Xprite,
-        option: &str,
-        value: &str,
-    ) -> Result<(), String> {
+    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "ctrl" => match value {
                 _ => error!("unimpl for ctrl: {}", value),

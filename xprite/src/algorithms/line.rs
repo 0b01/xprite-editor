@@ -29,31 +29,15 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
             1 => {
                 let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(
-                        y0 + i as f64 / 2.,
-                        x0 + i as f64,
-                        Color::red()
-                    ));
-                    ret.push(pixel!(
-                        y0 + i as f64 / 2.,
-                        x0 + 1. + i as f64,
-                        Color::red()
-                    ));
+                    ret.push(pixel!(y0 + i as f64 / 2., x0 + i as f64, Color::red()));
+                    ret.push(pixel!(y0 + i as f64 / 2., x0 + 1. + i as f64, Color::red()));
                 }
             }
             2 => {
                 let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(
-                        y0 + i as f64,
-                        x0 + i as f64 / 2.,
-                        Color::red()
-                    ));
-                    ret.push(pixel!(
-                        y0 + 1. + i as f64,
-                        x0 + i as f64 / 2.,
-                        Color::red()
-                    ));
+                    ret.push(pixel!(y0 + i as f64, x0 + i as f64 / 2., Color::red()));
+                    ret.push(pixel!(y0 + 1. + i as f64, x0 + i as f64 / 2., Color::red()));
                 }
             }
             3 => {
@@ -64,31 +48,15 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
             4 => {
                 let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(
-                        y0 + i as f64,
-                        x0 - i as f64 / 2.,
-                        Color::red()
-                    ));
-                    ret.push(pixel!(
-                        y0 + 1. + i as f64,
-                        x0 - i as f64 / 2.,
-                        Color::red()
-                    ));
+                    ret.push(pixel!(y0 + i as f64, x0 - i as f64 / 2., Color::red()));
+                    ret.push(pixel!(y0 + 1. + i as f64, x0 - i as f64 / 2., Color::red()));
                 }
             }
             5 => {
                 let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(
-                        y0 + i as f64 / 2.,
-                        x0 - i as f64,
-                        Color::red()
-                    ));
-                    ret.push(pixel!(
-                        y0 + i as f64 / 2.,
-                        x0 - 1. - i as f64,
-                        Color::red()
-                    ));
+                    ret.push(pixel!(y0 + i as f64 / 2., x0 - i as f64, Color::red()));
+                    ret.push(pixel!(y0 + i as f64 / 2., x0 - 1. - i as f64, Color::red()));
                 }
             }
             6 => {
@@ -99,31 +67,15 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
             7 => {
                 let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(
-                        y0 - i as f64 / 2.,
-                        x0 - i as f64,
-                        Color::red()
-                    ));
-                    ret.push(pixel!(
-                        y0 - i as f64 / 2.,
-                        x0 - 1. - i as f64,
-                        Color::red()
-                    ));
+                    ret.push(pixel!(y0 - i as f64 / 2., x0 - i as f64, Color::red()));
+                    ret.push(pixel!(y0 - i as f64 / 2., x0 - 1. - i as f64, Color::red()));
                 }
             }
             8 => {
                 let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(
-                        y0 - i as f64,
-                        x0 - i as f64 / 2.,
-                        Color::red()
-                    ));
-                    ret.push(pixel!(
-                        y0 - 1. - i as f64,
-                        x0 - i as f64 / 2.,
-                        Color::red()
-                    ));
+                    ret.push(pixel!(y0 - i as f64, x0 - i as f64 / 2., Color::red()));
+                    ret.push(pixel!(y0 - 1. - i as f64, x0 - i as f64 / 2., Color::red()));
                 }
             }
             9 => {
@@ -134,31 +86,15 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
             10 => {
                 let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(
-                        y0 - i as f64,
-                        x0 + i as f64 / 2.,
-                        Color::red()
-                    ));
-                    ret.push(pixel!(
-                        y0 - 1. - i as f64,
-                        x0 + i as f64 / 2.,
-                        Color::red()
-                    ));
+                    ret.push(pixel!(y0 - i as f64, x0 + i as f64 / 2., Color::red()));
+                    ret.push(pixel!(y0 - 1. - i as f64, x0 + i as f64 / 2., Color::red()));
                 }
             }
             11 => {
                 let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(
-                        y0 - i as f64 / 2.,
-                        x0 + i as f64,
-                        Color::red()
-                    ));
-                    ret.push(pixel!(
-                        y0 - i as f64 / 2.,
-                        x0 + 1. + i as f64,
-                        Color::red()
-                    ));
+                    ret.push(pixel!(y0 - i as f64 / 2., x0 + i as f64, Color::red()));
+                    ret.push(pixel!(y0 - i as f64 / 2., x0 + 1. + i as f64, Color::red()));
                 }
             }
             _ => (),
@@ -217,14 +153,8 @@ pub fn snapped_line(is_45: bool, start: &Pixel, stop: &Pixel) -> Pixels {
 }
 
 pub fn pixel_perfect_line(start: Vec2f, stop: Vec2f) -> Pixels {
-    let Vec2f {
-        x: mut x1,
-        y: mut y1,
-    } = start;
-    let Vec2f {
-        x: mut x2,
-        y: mut y2,
-    } = stop;
+    let Vec2f { x: mut x1, y: mut y1 } = start;
+    let Vec2f { x: mut x2, y: mut y2 } = stop;
     let yaxis: bool = (y2 - y1).abs() > (x2 - x1).abs();
     if yaxis {
         std::mem::swap(&mut x1, &mut y1);
@@ -269,10 +199,7 @@ pub fn pixel_perfect_line(start: Vec2f, stop: Vec2f) -> Pixels {
 
 /// input must be snapped to grid
 pub fn continuous_line(start: Vec2f, stop: Vec2f) -> Pixels {
-    let Vec2f {
-        x: mut x0,
-        y: mut y0,
-    } = start.floor();
+    let Vec2f { x: mut x0, y: mut y0 } = start.floor();
     let Vec2f { x: x1, y: y1 } = stop.floor();
 
     let dx = (x1 - x0).abs();
@@ -341,11 +268,7 @@ mod tests {
     use super::*;
     #[test]
     fn test_snap_line() {
-        let adjusted_end = snapped_line(
-            true,
-            &pixel!(0., 0., Color::red()),
-            &pixel!(9., 10., Color::red()),
-        );
+        let adjusted_end = snapped_line(true, &pixel!(0., 0., Color::red()), &pixel!(9., 10., Color::red()));
 
         let expected = pixels![
             pixel!(0, 0, Color::red()),

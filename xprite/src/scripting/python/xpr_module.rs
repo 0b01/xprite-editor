@@ -83,11 +83,7 @@ impl MyPixels {
         Ok(self)
     }
 
-    pub fn connected_components(
-        &mut self,
-        w: usize,
-        h: usize,
-    ) -> PyResult<Vec<MyPixels>> {
+    pub fn connected_components(&mut self, w: usize, h: usize) -> PyResult<Vec<MyPixels>> {
         let ccs = self.p.connected_components(w, h);
         let ret = ccs.into_iter().map(|p| MyPixels { p }).collect();
         Ok(ret)
@@ -102,11 +98,7 @@ impl MyPixels {
         Ok(self.p.as_bool_mat(w, h))
     }
 
-    pub fn as_mat(
-        &self,
-        w: usize,
-        h: usize,
-    ) -> PyResult<Vec<Vec<Option<Pixel>>>> {
+    pub fn as_mat(&self, w: usize, h: usize) -> PyResult<Vec<Vec<Option<Pixel>>>> {
         Ok(self.p.as_mat(w, h))
     }
 
@@ -136,10 +128,7 @@ impl PyObjectProtocol for MyPixels {
 
 #[pyproto]
 impl PyNumberProtocol for MyPixels {
-    fn __matmul__(
-        lhs: &'p mut MyPixels,
-        rhs: &'p MyPixels,
-    ) -> PyResult<&'p MyPixels> {
+    fn __matmul__(lhs: &'p mut MyPixels, rhs: &'p MyPixels) -> PyResult<&'p MyPixels> {
         lhs.extend(rhs)?;
         Ok(lhs)
     }
@@ -180,12 +169,7 @@ fn add(a: i64, b: i64) -> i64 {
 }
 
 #[pyfunction(name=bezier)]
-fn bezier(
-    from: &PyTuple,
-    ctrl1: &PyTuple,
-    ctrl2: &PyTuple,
-    to: &PyTuple,
-) -> PyResult<MyPixels> {
+fn bezier(from: &PyTuple, ctrl1: &PyTuple, ctrl2: &PyTuple, to: &PyTuple) -> PyResult<MyPixels> {
     let seg = CubicBezierSegment {
         from: from.into(),
         ctrl1: ctrl1.into(),
@@ -199,12 +183,7 @@ fn bezier(
 
 #[pyfunction(name=rect)]
 fn rect(start: &PyTuple, stop: &PyTuple, filled: bool) -> PyResult<MyPixels> {
-    let p = algorithms::rect::get_rect(
-        Some(start.into()),
-        Some(stop.into()),
-        filled,
-    )
-    .unwrap();
+    let p = algorithms::rect::get_rect(Some(start.into()), Some(stop.into()), filled).unwrap();
     Ok(MyPixels { p })
 }
 

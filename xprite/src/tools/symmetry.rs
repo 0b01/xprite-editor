@@ -1,12 +1,11 @@
-use crate::tools::*;
 use crate::algorithms::symmetry::SymmetryMode;
-
+use crate::tools::*;
 
 #[derive(Clone, Default, Debug)]
 pub struct Symmetry {
     is_mouse_down: Option<InputItem>,
     /// (enabled, symm)
-    pub symms: Vec<(bool,  SymmetryMode)>,
+    pub symms: Vec<(bool, SymmetryMode)>,
     pub dirty: bool,
 }
 
@@ -29,19 +28,22 @@ impl Symmetry {
         self.symms.remove(i);
     }
 
-
     /// returns reflected stroke
     pub fn process(&self, pixs: &Pixels) -> Pixels {
-        if self.symms.is_empty() { return Pixels::new(); }
+        if self.symms.is_empty() {
+            return Pixels::new();
+        }
         let mut ret = Pixels::new();
         if self.symms[0].0 {
             self.symms[0].1.process(pixs, &mut ret);
         }
         for (to_process, symm) in &self.symms[1..] {
-            if ! to_process { continue; }
+            if !to_process {
+                continue;
+            }
             symm.process(&ret.clone(), &mut ret);
             symm.process(pixs, &mut ret);
-        };
+        }
         ret
     }
 }
@@ -73,12 +75,7 @@ impl Tool for Symmetry {
         Ok(())
     }
 
-    fn mouse_down(
-        &mut self,
-        _xpr: &Xprite,
-        _p: Vec2f,
-        _button: InputItem,
-    ) -> Result<(), String> {
+    fn mouse_down(&mut self, _xpr: &Xprite, _p: Vec2f, _button: InputItem) -> Result<(), String> {
         // if InputItem::Left != button {
         //     return Ok(());
         // }
@@ -105,7 +102,9 @@ impl Tool for Symmetry {
             xpr.line_buf.clear();
             let (w, h) = xpr.canvas.get_art_dimension();
             for (show, symm) in &self.symms {
-                if !show { continue; }
+                if !show {
+                    continue;
+                }
                 let graph = symm.get_graph(w, h);
                 dbg!(&graph);
                 xpr.line_buf.extend(&graph);
@@ -117,12 +116,7 @@ impl Tool for Symmetry {
         }
     }
 
-    fn set(
-        &mut self,
-        _xpr: &Xprite,
-        option: &str,
-        value: &str,
-    ) -> Result<(), String> {
+    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "ctrl" => match value {
                 _ => error!("unimpl for ctrl: {}", value),
@@ -139,28 +133,27 @@ impl Tool for Symmetry {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     #[test]
     fn test_multistep_symmetry() {
         // this test is functionally equivalent to the prevoius test
         use super::*;
-        let pixs = pixels!(
-            pixel!(0,0,Color::red()),
-            pixel!(1,0,Color::red())
-        );
+        let pixs = pixels!(pixel!(0, 0, Color::red()), pixel!(1, 0, Color::red()));
         let mut symm = Symmetry::new();
         symm.add_symmetry(SymmetryMode::Horizontal(2.));
         symm.add_symmetry(SymmetryMode::Vertical(1.));
         let ret = symm.process(&pixs);
-        assert_eq!(ret, pixels!(
-            pixel!(0,1,Color::red()),
-            pixel!(1,1,Color::red()),
-            pixel!(2,0,Color::red()),
-            pixel!(3,0,Color::red()),
-            pixel!(2,1,Color::red()),
-            pixel!(3,1,Color::red())
-        ));
+        assert_eq!(
+            ret,
+            pixels!(
+                pixel!(0, 1, Color::red()),
+                pixel!(1, 1, Color::red()),
+                pixel!(2, 0, Color::red()),
+                pixel!(3, 0, Color::red()),
+                pixel!(2, 1, Color::red()),
+                pixel!(3, 1, Color::red())
+            )
+        );
     }
 }

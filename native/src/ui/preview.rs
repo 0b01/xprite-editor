@@ -25,17 +25,10 @@ pub fn draw_preview(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         [art_ratio * win_h * 0.8, win_h * 0.8]
                     }
                 }
-                PreviewWindowMode::OneX => [
-                    state.xpr_mut().canvas.art_w as f32 * 1.,
-                    state.xpr_mut().canvas.art_h as f32 * 1.,
-                ],
-                PreviewWindowMode::TwoX => [
-                    state.xpr_mut().canvas.art_w as f32 * 2.,
-                    state.xpr_mut().canvas.art_h as f32 * 2.,
-                ],
+                PreviewWindowMode::OneX => [state.xpr_mut().canvas.art_w as f32 * 1., state.xpr_mut().canvas.art_h as f32 * 1.],
+                PreviewWindowMode::TwoX => [state.xpr_mut().canvas.art_w as f32 * 2., state.xpr_mut().canvas.art_h as f32 * 2.],
             };
 
-            ui.image(ImTexture::from(state.texture.unwrap()), size)
-                .build();
+            ui.image(ImTexture::from(state.texture.unwrap()), size).build();
         })
 }

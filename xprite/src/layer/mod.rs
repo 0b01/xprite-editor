@@ -16,11 +16,7 @@ impl Layer {
         let content = Pixels::new();
         let visible = true;
 
-        Self {
-            name,
-            content,
-            visible,
-        }
+        Self { name, content, visible }
     }
 
     pub fn with_pixels(mut self, content: &Pixels) -> Self {

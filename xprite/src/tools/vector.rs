@@ -25,8 +25,7 @@ impl VectorMode {
         }
     }
 
-    pub const VARIANTS: [VectorMode; 2] =
-        [VectorMode::Continuous, VectorMode::Curvature];
+    pub const VARIANTS: [VectorMode; 2] = [VectorMode::Continuous, VectorMode::Curvature];
 }
 
 impl FromStr for VectorMode {
@@ -97,8 +96,7 @@ impl Vector {
     }
 
     fn draw_continuous(&self) -> Result<(Path, Pixels), String> {
-        let simple =
-            self.current_polyline.reumann_witkam(self.tolerence as f64);
+        let simple = self.current_polyline.reumann_witkam(self.tolerence as f64);
         if let Ok(simple) = simple {
             let path = simple.interp();
             let mut buf = path.rasterize(self.mono_sort).unwrap();
@@ -123,21 +121,11 @@ impl Vector {
             }),
             (Some(from), Some(to), None, ..) => Some({
                 let ctrl1 = self.cursor_pos?;
-                CubicBezierSegment {
-                    from,
-                    to,
-                    ctrl1,
-                    ctrl2: to,
-                }
+                CubicBezierSegment { from, to, ctrl1, ctrl2: to }
             }),
             (Some(from), Some(to), Some(ctrl1), None) => Some({
                 let ctrl2 = self.cursor_pos?;
-                CubicBezierSegment {
-                    from,
-                    to,
-                    ctrl1,
-                    ctrl2,
-                }
+                CubicBezierSegment { from, to, ctrl1, ctrl2 }
             }),
             (Some(_), Some(_), Some(_), Some(_)) => self.finalize_curvature(),
         }
@@ -148,12 +136,7 @@ impl Vector {
         let to = self.end_pos?;
         let ctrl1 = self.ctrl1_pos.unwrap_or(from);
         let ctrl2 = self.ctrl2_pos.unwrap_or(to);
-        Some(CubicBezierSegment {
-            from,
-            to,
-            ctrl1,
-            ctrl2,
-        })
+        Some(CubicBezierSegment { from, to, ctrl1, ctrl2 })
     }
 
     fn reset_curvature(&mut self) -> Result<(), String> {
@@ -182,18 +165,9 @@ impl Vector {
         Ok(())
     }
 
-    fn get_anchor(
-        &self,
-        xpr: &Xprite,
-        p: Vec2f,
-    ) -> Option<(usize, AnchorType)> {
+    fn get_anchor(&self, xpr: &Xprite, p: Vec2f) -> Option<(usize, AnchorType)> {
         for (i, curve) in self.curves.iter().enumerate() {
-            let &CubicBezierSegment {
-                from,
-                to,
-                ctrl1,
-                ctrl2,
-            } = curve;
+            let &CubicBezierSegment { from, to, ctrl1, ctrl2 } = curve;
             if xpr.canvas.within_circle(from, p) {
                 return Some((i, AnchorType::From));
             } else if xpr.canvas.within_circle(ctrl1, p) {
@@ -239,17 +213,12 @@ impl Vector {
 impl Tool for Vector {
     fn cursor(&self) -> Option<Pixels> {
         let point = self.cursor_pos?;
-        Some(pixels!(Pixel {
-            point,
-            color: Color::red()
-        }))
+        Some(pixels!(Pixel { point, color: Color::red() }))
     }
 
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // update cursor pos
-        let pixels = self
-            .brush
-            .to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
+        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         let point = xpr.canvas.shrink_size(p);
         self.cursor_pos = Some(point);
 
@@ -277,12 +246,7 @@ impl Tool for Vector {
         Ok(())
     }
 
-    fn mouse_down(
-        &mut self,
-        xpr: &Xprite,
-        point: Vec2f,
-        button: InputItem,
-    ) -> Result<(), String> {
+    fn mouse_down(&mut self, xpr: &Xprite, point: Vec2f, button: InputItem) -> Result<(), String> {
         self.is_mouse_down = Some(button);
         let p = xpr.canvas.shrink_size_no_floor(point);
         self.cursor_pos = Some(p);
@@ -333,8 +297,7 @@ impl Tool for Vector {
         }
         self.recording = false;
 
-        let simple =
-            self.current_polyline.reumann_witkam(self.tolerence as f64);
+        let simple = self.current_polyline.reumann_witkam(self.tolerence as f64);
         if let Ok(simple) = simple {
             let path = simple.interp();
             self.curves.extend(path.segments);
@@ -406,12 +369,7 @@ impl Tool for Vector {
         }
     }
 
-    fn set(
-        &mut self,
-        xpr: &Xprite,
-        option: &str,
-        value: &str,
-    ) -> Result<(), String> {
+    fn set(&mut self, xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "tolerence" => {
                 if let Ok(val) = value.parse() {

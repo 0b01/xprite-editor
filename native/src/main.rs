@@ -41,11 +41,7 @@ fn main() -> Result<(), String> {
         );
     }
 
-    t = t.arg(
-        Arg::with_name("FILENAME")
-            .value_name("FILENAME")
-            .help("file to edit"),
-    );
+    t = t.arg(Arg::with_name("FILENAME").value_name("FILENAME").help("file to edit"));
 
     let matches = t.get_matches();
 
@@ -77,7 +73,7 @@ fn run_ui(fname: Option<&str>) {
     let art_h = DEFAULT_HEIGHT;
     let xpr = match fname {
         Some(fname) => {
-            if fname.ends_with(".ase") || fname.ends_with(".aseprite"){
+            if fname.ends_with(".ase") || fname.ends_with(".aseprite") {
                 Xprite::load_ase(fname)
             } else {
                 Xprite::load_img(fname)
@@ -114,10 +110,7 @@ fn init_full_logger(console_logger: Arc<Mutex<String>>) {
         // Output to stdout, files, and other Dispatch configurations
         .chain(std::io::stdout())
         .chain(fern::Output::call(move |record| {
-            console_logger
-                .lock()
-                .unwrap()
-                .push_str(&format!("{}\n", record.args()));
+            console_logger.lock().unwrap().push_str(&format!("{}\n", record.args()));
         }))
         // .chain(fern::log_file("output.log")?)
         // Apply globally

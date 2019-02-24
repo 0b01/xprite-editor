@@ -15,12 +15,7 @@ pub fn draw_toolbar(state: &mut State, ui: &Ui) {
             let tools = ToolType::VARIANTS;
             for (_index, name) in tools.iter().enumerate() {
                 let is_sel = selected == *name;
-                if ui.selectable(
-                    im_str!("{}", name.as_str()),
-                    is_sel,
-                    ImGuiSelectableFlags::empty(),
-                    (0., 0.),
-                ) {
+                if ui.selectable(im_str!("{}", name.as_str()), is_sel, ImGuiSelectableFlags::empty(), (0., 0.)) {
                     state.xpr_mut().change_tool(*name).unwrap();
                 }
             }

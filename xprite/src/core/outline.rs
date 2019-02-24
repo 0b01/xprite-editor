@@ -12,10 +12,7 @@ bitflags! {
 pub type MarqueePixel = (Vec2f, Outline);
 
 /// outline
-pub fn outline_rect(
-    start: Option<Vec2f>,
-    stop: Option<Vec2f>,
-) -> Result<Vec<MarqueePixel>, String> {
+pub fn outline_rect(start: Option<Vec2f>, stop: Option<Vec2f>) -> Result<Vec<MarqueePixel>, String> {
     let mut ret = Vec::new();
 
     let start = start.ok_or_else(|| "start is none".to_owned())?;

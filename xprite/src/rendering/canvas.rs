@@ -72,29 +72,13 @@ impl Canvas {
         self.canvas_h = canvas_h;
     }
 
-    pub fn draw_circle(
-        &self,
-        rdr: &mut Renderer,
-        p0: Vec2f,
-        radius: f64,
-        color: [f32; 4],
-        filled: bool,
-    ) {
+    pub fn draw_circle(&self, rdr: &mut Renderer, p0: Vec2f, radius: f64, color: [f32; 4], filled: bool) {
         let p0 = self.to_cli(p0).into();
         let rad = self.scale * radius;
         rdr.circ(p0, rad, color, filled);
     }
 
-    pub fn draw_bezier(
-        &self,
-        rdr: &mut Renderer,
-        from: Vec2f,
-        ctrl1: Vec2f,
-        ctrl2: Vec2f,
-        to: Vec2f,
-        c: [f32; 4],
-        thickness: f64,
-    ) {
+    pub fn draw_bezier(&self, rdr: &mut Renderer, from: Vec2f, ctrl1: Vec2f, ctrl2: Vec2f, to: Vec2f, c: [f32; 4], thickness: f64) {
         let p0 = self.to_cli(from).into();
         let p1 = self.to_cli(to).into();
         let cp0 = self.to_cli(ctrl1).into();
@@ -120,19 +104,11 @@ impl Canvas {
         };
         let rad = self.scale * radius;
 
-        mouse.x < p0.x + rad
-            && mouse.x > p0.x - rad
-            && mouse.y < p0.y + rad
-            && mouse.y > p0.y - rad
+        mouse.x < p0.x + rad && mouse.x > p0.x - rad && mouse.y < p0.y + rad && mouse.y > p0.y - rad
     }
 
     /// draw line around pixel
-    pub fn draw_pixel_outline(
-        &self,
-        rdr: &mut Renderer,
-        p: Vec2f,
-        outline: Outline,
-    ) {
+    pub fn draw_pixel_outline(&self, rdr: &mut Renderer, p: Vec2f, outline: Outline) {
         let Vec2f { x, y } = p;
         let o = self.origin();
         if oob(x, y, self.art_w, self.art_h) {
@@ -162,13 +138,7 @@ impl Canvas {
     }
 
     /// draw an outlined pixel
-    pub fn draw_pixel_marqee(
-        &self,
-        rdr: &mut Renderer,
-        p: Vec2f,
-        outline: Outline,
-        ith: usize,
-    ) {
+    pub fn draw_pixel_marqee(&self, rdr: &mut Renderer, p: Vec2f, outline: Outline, ith: usize) {
         let Vec2f { x, y } = p;
         let o = self.origin();
         if oob(x, y, self.art_w, self.art_h) {
@@ -182,15 +152,12 @@ impl Canvas {
         let p3 = [o.x + self.scale * x, o.y + self.scale * (y + 1.)];
 
         let t = rdr.time() % 1.;
-        let color = if (t < 0.25 && ith % 4 == 0)
-            || (t > 0.25 && t < 0.50 && ith % 4 == 1)
-            || (t > 0.50 && t < 0.75 && ith % 4 == 2)
-            || (t > 0.75 && ith % 4 == 3)
-        {
-            Color::white().into()
-        } else {
-            Color::black().into()
-        };
+        let color =
+            if (t < 0.25 && ith % 4 == 0) || (t > 0.25 && t < 0.50 && ith % 4 == 1) || (t > 0.50 && t < 0.75 && ith % 4 == 2) || (t > 0.75 && ith % 4 == 3) {
+                Color::white().into()
+            } else {
+                Color::black().into()
+            };
 
         if outline.contains(Outline::TOP) {
             rdr.line(p0, p1, color);
@@ -207,13 +174,7 @@ impl Canvas {
     }
 
     /// draw a rectangular pixel using draw list(as opposed to rendering to texture)
-    pub fn draw_pixel_rect(
-        &self,
-        rdr: &mut Renderer,
-        p: Vec2f,
-        color: [f32; 4],
-        filled: bool,
-    ) {
+    pub fn draw_pixel_rect(&self, rdr: &mut Renderer, p: Vec2f, color: [f32; 4], filled: bool) {
         let Vec2f { x, y } = p;
         let o = self.origin();
         if oob(x, y, self.art_w, self.art_h) {
@@ -241,43 +202,25 @@ impl Canvas {
         let color = Color::black().into();
         let mut x = 0.;
         while x < self.scale * self.art_w {
-            rdr.line(
-                [o.x + x, o.y],
-                [o.x + x, o.y + self.scale * self.art_h],
-                color,
-            );
+            rdr.line([o.x + x, o.y], [o.x + x, o.y + self.scale * self.art_h], color);
             x += self.scale;
         }
 
         let mut y = 0.;
         while y < self.scale * self.art_h {
-            rdr.line(
-                [o.x, o.y + y],
-                [o.x + self.scale * self.art_w, o.y + y],
-                color,
-            );
+            rdr.line([o.x, o.y + y], [o.x + self.scale * self.art_w, o.y + y], color);
             y += self.scale;
         }
     }
 
-    pub fn draw_line(
-        &self,
-        rdr: &mut Renderer,
-        p0: Vec2f,
-        p1: Vec2f,
-        c: [f32; 4],
-    ) {
+    pub fn draw_line(&self, rdr: &mut Renderer, p0: Vec2f, p1: Vec2f, c: [f32; 4]) {
         let p0 = self.to_cli(p0).into();
         let p1 = self.to_cli(p1).into();
 
         rdr.line(p0, p1, c);
     }
 
-    pub fn update_zoom(
-        &mut self,
-        wheel_delta: f64,
-        (cursor_x, cursor_y): (f64, f64),
-    ) {
+    pub fn update_zoom(&mut self, wheel_delta: f64, (cursor_x, cursor_y): (f64, f64)) {
         if wheel_delta == 0. {
             return;
         }
@@ -287,15 +230,11 @@ impl Canvas {
         } else if new_scale > 10. {
             new_scale = 10.;
         }
-        let ratio_x =
-            (cursor_x - self.win_x - self.scroll.x) / (self.scale * self.art_w);
-        let ratio_y =
-            (cursor_y - self.win_y - self.scroll.y) / (self.scale * self.art_h);
+        let ratio_x = (cursor_x - self.win_x - self.scroll.x) / (self.scale * self.art_w);
+        let ratio_y = (cursor_y - self.win_y - self.scroll.y) / (self.scale * self.art_h);
 
-        self.scroll.x =
-            cursor_x - ratio_x * (new_scale * self.art_w) - self.win_x;
-        self.scroll.y =
-            cursor_y - ratio_y * (new_scale * self.art_h) - self.win_y;
+        self.scroll.x = cursor_x - ratio_x * (new_scale * self.art_w) - self.win_x;
+        self.scroll.y = cursor_y - ratio_y * (new_scale * self.art_h) - self.win_y;
         self.scale = new_scale;
     }
 

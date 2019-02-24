@@ -8,13 +8,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
     ui.window(im_str!("canvas"))
         .no_bring_to_front_on_focus(true)
         .position((LEFT_SIDE_WIDTH, 20.0), ImGuiCond::Always)
-        .size(
-            (
-                sz.0 as f32 - RIGHT_SIDE_WIDTH - LEFT_SIDE_WIDTH,
-                sz.1 as f32 - 20.,
-            ),
-            ImGuiCond::Always,
-        )
+        .size((sz.0 as f32 - RIGHT_SIDE_WIDTH - LEFT_SIDE_WIDTH, sz.1 as f32 - 20.), ImGuiCond::Always)
         .flags(
             ImGuiWindowFlags::NoBringToFrontOnFocus
                 | ImGuiWindowFlags::NoTitleBar
@@ -23,10 +17,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                 | ImGuiWindowFlags::NoCollapse,
         )
         .build(|| {
-            let styles = [
-                StyleVar::FramePadding(ImVec2::new(-1., -1.)),
-                StyleVar::WindowPadding(ImVec2::new(-1., -1.)),
-            ];
+            let styles = [StyleVar::FramePadding(ImVec2::new(-1., -1.)), StyleVar::WindowPadding(ImVec2::new(-1., -1.))];
             let colors = [(ImGuiCol::ChildBg, BACKGROUND)];
 
             // if switched, set redraw dirty flg for the new xpr doc
@@ -42,13 +33,12 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                     redraw_idx = Some(i);
                 }
                 // right click
-                if ui.is_item_hovered() && ui.imgui().is_mouse_clicked(ImMouseButton::Right)
-                {
+                if ui.is_item_hovered() && ui.imgui().is_mouse_clicked(ImMouseButton::Right) {
                     info!("right clicked");
                     ui.open_popup(im_str!("contextmenu_doc##{}", i));
                 }
                 ui.popup(im_str!("contextmenu_doc##{}", i), || {
-                    if ui.selectable( im_str!("Close"), false, ImGuiSelectableFlags::empty(), (50., 0.),) {
+                    if ui.selectable(im_str!("Close"), false, ImGuiSelectableFlags::empty(), (50., 0.)) {
                         info!("close pressed");
                         close_idx = Some(i);
                         ui.close_current_popup();
@@ -56,7 +46,6 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                 });
 
                 ui.pop_id();
-
             }
 
             if let Some(cidx) = close_idx {
@@ -83,10 +72,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         update_viewport(state, ui);
                         super::inputs::bind_input(state, ui);
                         let origin = state.xpr_mut().canvas.origin();
-                        ui.set_cursor_screen_pos([
-                            origin.x as f32,
-                            origin.y as f32,
-                        ]);
+                        ui.set_cursor_screen_pos([origin.x as f32, origin.y as f32]);
                         rdr.render();
 
                         state.redraw_pixels(rdr).unwrap();
@@ -94,12 +80,8 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                         ui.image(
                             ImTexture::from(state.texture.unwrap()),
                             [
-                                (state.xpr_mut().canvas.art_w
-                                    * state.xpr_mut().canvas.scale)
-                                    as f32,
-                                (state.xpr_mut().canvas.art_h
-                                    * state.xpr_mut().canvas.scale)
-                                    as f32,
+                                (state.xpr_mut().canvas.art_w * state.xpr_mut().canvas.scale) as f32,
+                                (state.xpr_mut().canvas.art_h * state.xpr_mut().canvas.scale) as f32,
                             ],
                         )
                         .build();
@@ -122,11 +104,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
 
             // checkbox for show grid
             ui.checkbox(im_str!("grid"), &mut state.xpr_mut().canvas.show_grid);
-            ui.text(im_str!(
-                "{}, {}",
-                state.xpr().last_mouse_pos.y,
-                state.xpr().last_mouse_pos.x
-            ));
+            ui.text(im_str!("{}, {}", state.xpr().last_mouse_pos.y, state.xpr().last_mouse_pos.x));
         });
 }
 
@@ -178,13 +156,8 @@ fn draw_cursor_cross(ui: &Ui) {
     draw_list.add_line(right1, right2, color2).build();
 }
 
-
 fn draw_color_picker(state: &mut State, ui: &Ui) {
     let (x, y) = ui.imgui().mouse_pos();
-    ui.set_cursor_screen_pos([x-10.,y-10.]);
-    ui.image(
-        ImTexture::from(state.color_picker_texture.unwrap()),
-        [20., 20.],
-    )
-    .build();
+    ui.set_cursor_screen_pos([x - 10., y - 10.]);
+    ui.image(ImTexture::from(state.color_picker_texture.unwrap()), [20., 20.]).build();
 }

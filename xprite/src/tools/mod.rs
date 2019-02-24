@@ -1,5 +1,6 @@
 use crate::prelude::*;
 
+pub mod autoshade;
 pub mod color_picker;
 pub mod ellipse;
 pub mod eraser;
@@ -11,7 +12,6 @@ pub mod rect;
 pub mod symmetry;
 pub mod texture;
 pub mod vector;
-pub mod autoshade;
 
 pub mod traits;
 

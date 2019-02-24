@@ -4,9 +4,8 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::tools::{
-    color_picker::ColorPicker, ellipse::Ellipse, eraser::Eraser, line::Line,
-    marquee::Marquee, paint_bucket::PaintBucket, pencil::Pencil, rect::Rect,
-    autoshade::AutoShade, symmetry::Symmetry, texture::Texture, vector::Vector, Tool,
+    autoshade::AutoShade, color_picker::ColorPicker, ellipse::Ellipse, eraser::Eraser, line::Line, marquee::Marquee, paint_bucket::PaintBucket, pencil::Pencil,
+    rect::Rect, symmetry::Symmetry, texture::Texture, vector::Vector, Tool,
 };
 
 #[derive(Default)]

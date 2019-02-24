@@ -1,5 +1,4 @@
 /// TODO: this file is hideous
-
 use crate::prelude::*;
 use xprite::rendering::Renderer;
 
@@ -7,10 +6,7 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.frame_size().logical_size;
     ui.window(im_str!("Layers"))
         .no_bring_to_front_on_focus(true)
-        .position(
-            (sz.0 as f32 - RIGHT_SIDE_WIDTH, (sz.1 / 2.) as f32 + 20.),
-            ImGuiCond::Always,
-        )
+        .position((sz.0 as f32 - RIGHT_SIDE_WIDTH, (sz.1 / 2.) as f32 + 20.), ImGuiCond::Always)
         .size((RIGHT_SIDE_WIDTH, (sz.1 / 2.) as f32), ImGuiCond::Always)
         .movable(true)
         .collapsible(true)
@@ -52,10 +48,8 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                         .open_on_double_click(false)
                         .build(|| {
                             // right click
-                            if (ui.is_item_hovered()
-                                && ui.imgui().is_mouse_clicked(ImMouseButton::Right))
-                                || (state.rename_group.is_some()
-                                    && state.rename_group.unwrap() == group_id)
+                            if (ui.is_item_hovered() && ui.imgui().is_mouse_clicked(ImMouseButton::Right))
+                                || (state.rename_group.is_some() && state.rename_group.unwrap() == group_id)
                             {
                                 info!("clicked group");
                                 // change selected group
@@ -64,45 +58,29 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                             }
                             ui.popup(im_str!("contextmenu_group##{}", group_id), || {
                                 if state.rename_group.is_some() {
-                                    let name = state.xpr_mut()
-                                        .history
-                                        .top()
-                                        .selected_group()
-                                        .unwrap()
-                                        .0
-                                        .to_owned();
+                                    let name = state.xpr_mut().history.top().selected_group().unwrap().0.to_owned();
                                     let mut im = ImString::with_capacity(100);
                                     im.push_str(&name);
                                     ui.with_item_width(100., || {
-                                        if ui
-                                            .input_text(im_str!(""), &mut im)
-                                            .auto_select_all(true)
-                                            .enter_returns_true(true)
-                                            .build()
-                                        {
+                                        if ui.input_text(im_str!(""), &mut im).auto_select_all(true).enter_returns_true(true).build() {
                                             let im: &str = &im.as_ref();
                                             info!("renaming: {}", im);
                                             // state.xpr_mut().rename_layer(&im).unwrap();
-                                            state.xpr_mut()
-                                                .history
-                                                .top_mut()
-                                                .selected_group_mut()
-                                                .unwrap()
-                                                .0 = im.to_owned();
+                                            state.xpr_mut().history.top_mut().selected_group_mut().unwrap().0 = im.to_owned();
                                             state.rename_group = None;
                                             state.toggle_hotkeys();
                                             ui.close_current_popup();
                                         }
                                     });
                                 } else {
-                                    if ui.selectable( im_str!("Rename"), false, ImGuiSelectableFlags::empty(), (0., 0.),) {
+                                    if ui.selectable(im_str!("Rename"), false, ImGuiSelectableFlags::empty(), (0., 0.)) {
                                         info!("renaming layer...");
                                         // disable hotkeys
                                         state.toggle_hotkeys();
                                         state.rename_group = Some(group_id);
                                         ui.close_current_popup();
                                     }
-                                    if ui.selectable( im_str!("Move Up"), false, ImGuiSelectableFlags::empty(), (0., 0.),) {
+                                    if ui.selectable(im_str!("Move Up"), false, ImGuiSelectableFlags::empty(), (0., 0.)) {
                                         info!("moving group up...");
                                         if group_id != 0 {
                                             state.xpr_mut().history.enter().expect("enter history failed");
@@ -110,7 +88,7 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                             ui.close_current_popup();
                                         }
                                     }
-                                    if ui.selectable( im_str!("Move Down"), false, ImGuiSelectableFlags::empty(), (0., 0.),) {
+                                    if ui.selectable(im_str!("Move Down"), false, ImGuiSelectableFlags::empty(), (0., 0.)) {
                                         info!("moving group down...");
                                         if group_id + 1 != ngroups.len() {
                                             state.xpr_mut().history.enter().expect("enter history failed");
@@ -149,19 +127,12 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                         return;
                                     }
                                     let name = layer!().name.as_str();
-                                    if ui.selectable(
-                                        im_str!("{}", name),
-                                        is_sel,
-                                        ImGuiSelectableFlags::empty(),
-                                        (100., 0.),
-                                    ) {
+                                    if ui.selectable(im_str!("{}", name), is_sel, ImGuiSelectableFlags::empty(), (100., 0.)) {
                                         state.xpr_mut().switch_layer(group_id, layer_id);
                                     }
 
-                                    if (ui.is_item_hovered()
-                                        && ui.imgui().is_mouse_clicked(ImMouseButton::Right))
-                                        || (state.rename_layer.is_some()
-                                            && state.rename_layer.unwrap() == (group_id, layer_id))
+                                    if (ui.is_item_hovered() && ui.imgui().is_mouse_clicked(ImMouseButton::Right))
+                                        || (state.rename_layer.is_some() && state.rename_layer.unwrap() == (group_id, layer_id))
                                     {
                                         state.xpr_mut().switch_layer(group_id, layer_id);
                                         ui.open_popup(im_str!("contextmenu_layer"));
@@ -169,18 +140,11 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
 
                                     ui.popup(im_str!("contextmenu_layer"), || {
                                         if state.rename_layer.is_some() {
-                                            let name = {
-                                                state.xpr_mut().current_layer().unwrap().name.to_owned()
-                                            };
+                                            let name = { state.xpr_mut().current_layer().unwrap().name.to_owned() };
                                             let mut im = ImString::with_capacity(100);
                                             im.push_str(&name);
                                             ui.with_item_width(100., || {
-                                                if ui
-                                                    .input_text(im_str!(""), &mut im)
-                                                    .auto_select_all(true)
-                                                    .enter_returns_true(true)
-                                                    .build()
-                                                {
+                                                if ui.input_text(im_str!(""), &mut im).auto_select_all(true).enter_returns_true(true).build() {
                                                     let im: &str = &im.as_ref();
                                                     info!("renaming: {}", im);
                                                     state.xpr_mut().rename_layer(&im).unwrap();
@@ -190,8 +154,7 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                                 }
                                             });
                                         } else {
-
-                                            if ui.selectable( im_str!("Rename"), false, ImGuiSelectableFlags::empty(), (0., 0.),) {
+                                            if ui.selectable(im_str!("Rename"), false, ImGuiSelectableFlags::empty(), (0., 0.)) {
                                                 info!("renaming layer...");
                                                 // disable hotkeys
                                                 state.toggle_hotkeys();
@@ -199,23 +162,23 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                                 // ui.close_current_popup();
                                             }
 
-                                            if ui.selectable( im_str!("Delete"), false, ImGuiSelectableFlags::empty(), (0., 0.),) {
+                                            if ui.selectable(im_str!("Delete"), false, ImGuiSelectableFlags::empty(), (0., 0.)) {
                                                 state.xpr_mut().remove_layer(group_id, layer_id).unwrap();
                                             }
 
-                                            if ui.selectable( im_str!("Insert Below"), false, ImGuiSelectableFlags::empty(), (0., 0.),) {
+                                            if ui.selectable(im_str!("Insert Below"), false, ImGuiSelectableFlags::empty(), (0., 0.)) {
                                                 state.xpr_mut().history.enter().expect("enter history failed");
-                                                state.xpr_mut().history.top_mut().insert_layer(None, true, layer_id+1);
+                                                state.xpr_mut().history.top_mut().insert_layer(None, true, layer_id + 1);
                                                 ui.close_current_popup();
                                             }
 
-                                            if ui.selectable( im_str!("Insert Above"), false, ImGuiSelectableFlags::empty(), (0., 0.),) {
+                                            if ui.selectable(im_str!("Insert Above"), false, ImGuiSelectableFlags::empty(), (0., 0.)) {
                                                 state.xpr_mut().history.enter().expect("enter history failed");
                                                 state.xpr_mut().history.top_mut().insert_layer(None, true, layer_id);
                                                 ui.close_current_popup();
                                             }
 
-                                            if ui.selectable( im_str!("Move Up"), false, ImGuiSelectableFlags::empty(), (0., 0.),) {
+                                            if ui.selectable(im_str!("Move Up"), false, ImGuiSelectableFlags::empty(), (0., 0.)) {
                                                 info!("moving layer up...");
                                                 if layer_id != 0 {
                                                     state.xpr_mut().history.enter().expect("enter history failed");
@@ -224,7 +187,7 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                                 }
                                             }
 
-                                            if ui.selectable( im_str!("Move Down"), false, ImGuiSelectableFlags::empty(), (0., 0.),) {
+                                            if ui.selectable(im_str!("Move Down"), false, ImGuiSelectableFlags::empty(), (0., 0.)) {
                                                 info!("moving layer down...");
                                                 if layer_id + 1 != n_layers {
                                                     state.xpr_mut().history.enter().expect("enter history failed");
@@ -232,7 +195,6 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                                     ui.close_current_popup();
                                                 }
                                             }
-
                                         }
                                     });
                                 });

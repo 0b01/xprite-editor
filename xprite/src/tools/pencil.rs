@@ -99,10 +99,7 @@ impl Pencil {
     }
 
     pub fn draw_stroke(&self, xpr: &Xprite) -> Result<Pixels, String> {
-        let mut line_pixs = self
-            .current_polyline
-            .to_pixel_coords(xpr)?
-            .connect_with_line()?;
+        let mut line_pixs = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line()?;
         let pixs = if self.mode == PencilMode::Raw {
             line_pixs
         } else {
@@ -114,12 +111,7 @@ impl Pencil {
         Ok(pixs)
     }
 
-    fn finalize_continuous_line(
-        &mut self,
-        xpr: &Xprite,
-        start: Option<Vec2f>,
-        stop: Option<Vec2f>,
-    ) -> Result<(), String> {
+    fn finalize_continuous_line(&mut self, xpr: &Xprite, start: Option<Vec2f>, stop: Option<Vec2f>) -> Result<(), String> {
         if let (Some(start), Some(stop)) = (start, stop) {
             let buf = continuous_line(start, stop);
             let mut buf = self.brush.follow_stroke(&buf).unwrap();
@@ -138,10 +130,7 @@ impl Pencil {
                 if !self.moved {
                     self.cursor.clone().unwrap()
                 } else {
-                    let mut points = self
-                        .current_polyline
-                        .to_pixel_coords(xpr)?
-                        .connect_with_line()?;
+                    let mut points = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line()?;
                     if self.mode == PencilMode::PixelPerfect {
                         points.pixel_perfect();
                     } else {
@@ -153,10 +142,7 @@ impl Pencil {
                 }
             }
             SortedMonotonic => {
-                let mut points = self
-                    .current_polyline
-                    .to_pixel_coords(xpr)?
-                    .connect_with_line()?;
+                let mut points = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line()?;
                 points.pixel_perfect();
                 if points.len() > 1 {
                     points.monotonic_sort();
@@ -172,8 +158,7 @@ impl Pencil {
     }
 
     fn draw_line(&self) -> Option<Pixels> {
-        let buf =
-            continuous_line(self.last_mouse_down_or_up?, self.cursor_pos?);
+        let buf = continuous_line(self.last_mouse_down_or_up?, self.cursor_pos?);
         let buf = self.brush.follow_stroke(&buf)?;
         Some(buf)
     }
@@ -208,18 +193,11 @@ impl Tool for Pencil {
         Ok(())
     }
 
-    fn mouse_down(
-        &mut self,
-        xpr: &Xprite,
-        p: Vec2f,
-        button: InputItem,
-    ) -> Result<(), String> {
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
         self.is_mouse_down = Some(button);
 
         self.current_polyline.push(p);
-        let pixels = self
-            .brush
-            .to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
+        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         // TODO:
         if let Some(pixels) = pixels {
             if button == InputItem::Left {
@@ -289,12 +267,7 @@ impl Tool for Pencil {
     }
 
     // TODO: dedupe brush instantiation code(pencil, eraser)
-    fn set(
-        &mut self,
-        _xpr: &Xprite,
-        option: &str,
-        value: &str,
-    ) -> Result<(), String> {
+    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "mode" => {
                 match PencilMode::from_str(value) {
@@ -340,8 +313,7 @@ pub fn get_brush(value: &str) -> (Brush, BrushType) {
                 let size = value[1..].parse::<i32>().unwrap();
                 (Brush::square(size), BrushType::Square)
             } else if value.starts_with("/") {
-                let params: Vec<f64> =
-                    value[1..].split(",").map(|i| i.parse().unwrap()).collect();
+                let params: Vec<f64> = value[1..].split(",").map(|i| i.parse().unwrap()).collect();
                 (Brush::line(params[0] as i32, params[1]), BrushType::Line)
             } else {
                 panic!("Impossible")

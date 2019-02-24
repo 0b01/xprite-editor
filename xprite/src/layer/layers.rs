@@ -15,28 +15,17 @@ impl Default for Layers {
 
 impl Layers {
     pub fn new() -> Self {
-        let groups = vec![(
-            "Group 1".to_owned(),
-            vec![Layer::new("Layer 0".to_owned())],
-        )];
+        let groups = vec![("Group 1".to_owned(), vec![Layer::new("Layer 0".to_owned())])];
         let selected = 0;
         let sel_group = 0;
-        Self {
-            groups,
-            selected,
-            sel_group,
-        }
+        Self { groups, selected, sel_group }
     }
 
     pub fn empty() -> Self {
         let groups = vec![("Group 1".to_owned(), vec![])];
         let selected = 0;
         let sel_group = 0;
-        Self {
-            groups,
-            selected,
-            sel_group,
-        }
+        Self { groups, selected, sel_group }
     }
 
     pub fn selected_layer(&self) -> Option<&Layer> {
@@ -71,16 +60,13 @@ impl Layers {
     }
 
     pub fn insert_layer(&mut self, name: Option<&str>, visible: bool, idx: usize) {
-        let name =
-            name.map(|i| i.to_owned())
-                .unwrap_or_else(|| {
-                    format!("Layer {}", self.selected_group().unwrap().1.len())
-                });
+        let name = name
+            .map(|i| i.to_owned())
+            .unwrap_or_else(|| format!("Layer {}", self.selected_group().unwrap().1.len()));
         let mut new_layer = Layer::new(name);
         new_layer.visible = visible;
 
         self.selected_group_mut().unwrap().1.insert(idx, new_layer);
-
     }
 
     pub fn add_layer(&mut self, name: Option<&str>, visible: bool) {
@@ -92,7 +78,6 @@ impl Layers {
         self.selected_group_mut().unwrap().1.swap(first_idx, second_idx);
     }
 
-
     pub fn duplicate_current(&mut self) {
         let selected = self.selected_layer().unwrap();
         let new_layer = selected.clone();
@@ -103,16 +88,8 @@ impl Layers {
         self.groups[group].1.remove(to_remove);
     }
 
-    pub fn toggle_layer_visibility(
-        &mut self,
-        group: usize,
-        layer: usize,
-    ) -> Option<()> {
-        self.groups
-            .get_mut(group)?
-            .1
-            .get_mut(layer)?
-            .toggle_visible();
+    pub fn toggle_layer_visibility(&mut self, group: usize, layer: usize) -> Option<()> {
+        self.groups.get_mut(group)?.1.get_mut(layer)?.toggle_visible();
         Some(())
     }
 

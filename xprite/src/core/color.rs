@@ -71,12 +71,7 @@ impl From<(i32, i32, i32, i32)> for Color {
 /// [f64;4] = [0.,0.,0.,0.9];
 impl From<Color> for [f32; 4] {
     fn from(c: Color) -> Self {
-        [
-            c.r as f32 / 255.,
-            c.g as f32 / 255.,
-            c.b as f32 / 255.,
-            c.a as f32 / 255.,
-        ]
+        [c.r as f32 / 255., c.g as f32 / 255., c.b as f32 / 255., c.a as f32 / 255.]
     }
 }
 
@@ -125,70 +120,34 @@ impl Color {
     }
 
     pub fn red() -> Color {
-        Color {
-            r: 255,
-            g: 0,
-            b: 0,
-            a: 255,
-        }
+        Color { r: 255, g: 0, b: 0, a: 255 }
     }
 
     pub fn green() -> Color {
-        Color {
-            r: 0,
-            g: 255,
-            b: 0,
-            a: 255,
-        }
+        Color { r: 0, g: 255, b: 0, a: 255 }
     }
 
     pub fn blue() -> Color {
-        Color {
-            r: 0,
-            g: 0,
-            b: 255,
-            a: 255,
-        }
+        Color { r: 0, g: 0, b: 255, a: 255 }
     }
 
     pub fn black() -> Color {
-        Color {
-            r: 0,
-            g: 0,
-            b: 0,
-            a: 255,
-        }
+        Color { r: 0, g: 0, b: 0, a: 255 }
     }
 
     pub fn orange() -> Color {
-        Color {
-            r: 255,
-            g: 128,
-            b: 0,
-            a: 255,
-        }
+        Color { r: 255, g: 128, b: 0, a: 255 }
     }
 
     pub fn grey() -> Color {
-        Color {
-            r: 1,
-            g: 1,
-            b: 1,
-            a: 255,
-        }
+        Color { r: 1, g: 1, b: 1, a: 255 }
     }
 
     pub fn transparent() -> Color {
-        Color {
-            r: 0,
-            g: 0,
-            b: 0,
-            a: 0,
-        }
+        Color { r: 0, g: 0, b: 0, a: 0 }
     }
 
     pub fn void() -> Color {
         Color::transparent()
     }
-
 }

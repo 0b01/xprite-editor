@@ -60,12 +60,8 @@ pub fn polygon(points: &[Vec2f]) -> Pixels {
              * that Polygon and FilledPolygon for the same set of points have the
              * same footprint. */
 
-            if ((y >= y1) && (y < y2))
-            || ((y == maxy) && (y > y1) && (y <= y2)) {
-                poly_ints[ints] = (((y - y1) * (x2 - x1)) as f64
-                    / (y2 - y1) as f64
-                    + 0.5
-                    + x1) as i32;
+            if ((y >= y1) && (y < y2)) || ((y == maxy) && (y > y1) && (y <= y2)) {
+                poly_ints[ints] = (((y - y1) * (x2 - x1)) as f64 / (y2 - y1) as f64 + 0.5 + x1) as i32;
                 ints += 1;
             }
         }
@@ -107,26 +103,10 @@ mod tests {
     fn test_polygon_square() {
         use super::*;
         assert_eq!(
-            polygon(&vec![
-                vec2f!(0, 0),
-                vec2f!(0, 10),
-                vec2f!(10, 10),
-                vec2f!(10, 0),
-                vec2f!(0, 0),
-            ])
-            .len(),
+            polygon(&vec![vec2f!(0, 0), vec2f!(0, 10), vec2f!(10, 10), vec2f!(10, 0), vec2f!(0, 0),]).len(),
             11 * 11
         );
 
-        assert_eq!(
-            polygon(&vec![
-                vec2f!(0, 0),
-                vec2f!(0, 2),
-                vec2f!(2, 2),
-                vec2f!(2, 0),
-            ])
-            .len(),
-            3 * 3
-        );
+        assert_eq!(polygon(&vec![vec2f!(0, 0), vec2f!(0, 2), vec2f!(2, 2), vec2f!(2, 0),]).len(), 3 * 3);
     }
 }

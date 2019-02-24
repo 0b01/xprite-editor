@@ -7,7 +7,6 @@ pub enum ExportType {
     Layer(usize, usize),
 }
 
-
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum ExporterFormat {
     ICO,
@@ -22,7 +21,7 @@ pub enum ExporterFormat {
 }
 
 impl ExporterFormat {
-    pub const VARIANTS: [ExporterFormat;9] = [
+    pub const VARIANTS: [ExporterFormat; 9] = [
         ExporterFormat::ICO,
         ExporterFormat::JPG,
         ExporterFormat::PNG,
@@ -47,7 +46,6 @@ impl ExporterFormat {
             ExporterFormat::ASE => "ase",
         }
     }
-
 }
 
 pub struct ExporterSpec {
@@ -72,7 +70,13 @@ impl Default for ExporterSpec {
 
 impl ExporterSpec {
     fn export(&self, xpr: &Xprite) {
-        let ExporterSpec {format, rescale, stem, layer, trim } = self;
+        let ExporterSpec {
+            format,
+            rescale,
+            stem,
+            layer,
+            trim,
+        } = self;
         let ext = self.format.as_file_extension();
         let path = if *rescale == 1 {
             format!("{}.{}", stem, ext)
@@ -86,12 +90,9 @@ impl ExporterSpec {
             }
             _ => {
                 match layer {
-                    ExportType::All => {xpr.save_img(&path, *rescale)}
-                    ExportType::Layer(group_idx, layer_idx) =>
-                        {xpr.save_layer_img(*group_idx, *layer_idx, &path, *rescale, *trim)}
-                    ExportType::Group(group_idx) => {
-                        {xpr.save_group_img(*group_idx, &path, *rescale, *trim)}
-                    }
+                    ExportType::All => xpr.save_img(&path, *rescale),
+                    ExportType::Layer(group_idx, layer_idx) => xpr.save_layer_img(*group_idx, *layer_idx, &path, *rescale, *trim),
+                    ExportType::Group(group_idx) => xpr.save_group_img(*group_idx, &path, *rescale, *trim),
                 };
             }
         }
@@ -107,7 +108,6 @@ pub struct ExporterState {
 }
 
 impl ExporterState {
-
     pub fn add_default(&mut self) {
         self.specs.push(Default::default());
     }
@@ -133,5 +133,4 @@ impl ExporterState {
             s.export(xpr);
         }
     }
-
 }

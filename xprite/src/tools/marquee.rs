@@ -32,7 +32,7 @@ impl Marquee {
         let x2 = i32::max(x1_, x2_);
         let y1 = i32::min(y1_, y2_);
         let y2 = i32::max(y1_, y2_);
-        let bb = Rect(vec2f!(y1, x1), vec2f!(y2-1, x2-1));
+        let bb = Rect(vec2f!(y1, x1), vec2f!(y2 - 1, x2 - 1));
         Some(bb)
     }
 
@@ -57,16 +57,14 @@ impl Marquee {
         self.move_orig_pos = None;
         self.move_final_pos = None;
 
-        self.start_pos = self.start_pos.map(|i|i + diff);
-        self.cursor_pos = self.cursor_pos.map(|i|i + diff);
+        self.start_pos = self.start_pos.map(|i| i + diff);
+        self.cursor_pos = self.cursor_pos.map(|i| i + diff);
 
         Ok(())
     }
-
 }
 
 impl Tool for Marquee {
-
     fn cursor(&self) -> Option<Pixels> {
         None
     }
@@ -74,7 +72,9 @@ impl Tool for Marquee {
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
-        if self.move_orig_pos.is_some() { return Ok(()); }
+        if self.move_orig_pos.is_some() {
+            return Ok(());
+        }
         if self.is_mouse_down.is_some() {
             self.cursor_pos = Some(point);
         }
@@ -92,26 +92,19 @@ impl Tool for Marquee {
         Ok(())
     }
 
-    fn mouse_down(
-        &mut self,
-        xpr: &Xprite,
-        p: Vec2f,
-        button: InputItem,
-    ) -> Result<(), String> {
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
         if InputItem::Left != button {
             return Ok(());
         }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(p);
 
-        if self.start_pos.is_some() && self.cursor_pos.is_some() &&
-            {
-                let bb = self.get_bb().unwrap();
-                !oob(point.x - bb.0.x, point.y -  bb.0.y, bb.w(), bb.h())
-            }
-        {
+        if self.start_pos.is_some() && self.cursor_pos.is_some() && {
+            let bb = self.get_bb().unwrap();
+            !oob(point.x - bb.0.x, point.y - bb.0.y, bb.w(), bb.h())
+        } {
             self.move_orig_pos = Some(point);
-            return Ok(())
+            return Ok(());
         }
 
         self.start_pos = Some(point);
@@ -135,12 +128,7 @@ impl Tool for Marquee {
         Ok(ret.is_ok())
     }
 
-    fn set(
-        &mut self,
-        _xpr: &Xprite,
-        option: &str,
-        value: &str,
-    ) -> Result<(), String> {
+    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "ctrl" => match value {
                 _ => error!("unimpl for ctrl: {}", value),

@@ -1,15 +1,14 @@
 use crate::algorithms::rect::*;
 use crate::core::outline::outline_rect;
 use crate::tools::*;
-use wfc_image::*;
 use std::num::NonZeroU32;
+use wfc_image::*;
 
 #[derive(Clone)]
 pub struct Texture {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Vec2f>,
     start_pos: Option<Vec2f>,
-
 
     // params:
     pub pattern_size: u32,
@@ -47,10 +46,7 @@ impl Texture {
         }
     }
 
-    pub fn finalize(
-        &mut self,
-        xpr: &mut Xprite,
-    ) -> Result<img::DynamicImage, String> {
+    pub fn finalize(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
         self.quilt_img(xpr)
     }
 
@@ -64,11 +60,11 @@ impl Texture {
         let x2 = i32::max(x1_, x2_);
         let y1 = i32::min(y1_, y2_);
         let y2 = i32::max(y1_, y2_);
-        let bb = Rect(vec2f!(y1, x1), vec2f!(y2-1, x2-1));
+        let bb = Rect(vec2f!(y1, x1), vec2f!(y2 - 1, x2 - 1));
         Some(bb)
     }
 
-    fn quilt_img( &mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
+    fn quilt_img(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
         let bb = self.get_bb().ok_or("no cursor".to_owned())?;
         let mut content = xpr.current_layer().unwrap().content.clone();
         content.retain_in_rect_mut(bb);
@@ -89,8 +85,7 @@ impl Texture {
             ret
         };
 
-        let pattern_size = NonZeroU32::new(self.pattern_size)
-            .expect("pattern size may not be zero");
+        let pattern_size = NonZeroU32::new(self.pattern_size).expect("pattern size may not be zero");
         let output_size = Size::new(self.tex_w as u32, self.tex_h as u32);
         macro_rules! gen {
             ($e:expr) => {
@@ -107,18 +102,10 @@ impl Texture {
         };
 
         let res = match (self.wrap_x, self.wrap_y) {
-            (true, true) => {
-                gen!(wrap::WrapXY)
-            }
-            (true, false) => {
-                gen!(wrap::WrapX)
-            }
-            (false, true) => {
-                gen!(wrap::WrapY)
-            }
-            (false, false) => {
-                gen!(wrap::WrapNone)
-            }
+            (true, true) => gen!(wrap::WrapXY),
+            (true, false) => gen!(wrap::WrapX),
+            (false, true) => gen!(wrap::WrapY),
+            (false, false) => gen!(wrap::WrapNone),
         }?;
         Ok(res)
     }
@@ -150,12 +137,7 @@ impl Tool for Texture {
         Ok(())
     }
 
-    fn mouse_down(
-        &mut self,
-        xpr: &Xprite,
-        p: Vec2f,
-        button: InputItem,
-    ) -> Result<(), String> {
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
         if InputItem::Left != button {
             return Ok(());
         }
@@ -178,12 +160,7 @@ impl Tool for Texture {
         Ok(false)
     }
 
-    fn set(
-        &mut self,
-        _xpr: &Xprite,
-        option: &str,
-        value: &str,
-    ) -> Result<(), String> {
+    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "ctrl" => match value {
                 _ => error!("unimpl for ctrl: {}", value),
