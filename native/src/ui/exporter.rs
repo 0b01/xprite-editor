@@ -42,8 +42,9 @@ pub fn draw_exporter(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                     }
 
                     ui.same_line(0.);
+                    ui.checkbox(im_str!("trim"), &mut spec!().trim);
+
                     ui.text("layer(s):");
-                    ui.same_line(0.);
                     ui.same_line(0.);
                     if ui.radio_button_bool(im_str!("all"), spec!().layer == ExportType::All) {
                         spec!().layer = ExportType::All;
@@ -73,7 +74,7 @@ pub fn draw_exporter(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                         for (l_id, layer) in g.iter().enumerate() {
                                             ui.push_id(l_id as i32);
                                             if ui.selectable( im_str!("{}", layer.name), false, ImGuiSelectableFlags::empty(), (50., 0.),) {
-                                                to_change = Some(ExportType::Layer(g_id, l_id));
+                                                to_change = Some((ExportType::Layer(g_id, l_id), layer.name.clone()));
                                                 ui.close_current_popup();
                                             }
                                             ui.pop_id();
@@ -82,8 +83,9 @@ pub fn draw_exporter(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                                     ui.pop_id();
                                 }
 
-                                if let Some(to_change) = to_change {
+                                if let Some((to_change, stem)) = to_change {
                                     spec!().layer = to_change;
+                                    spec!().stem = stem;
                                 }
                             });
                         }
@@ -125,6 +127,7 @@ pub fn draw_exporter(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                             }
                             if ui.button(im_str!("{:#?}", spec), (0.,0.)) {
                                 state.exporter_state.set_format(i, *spec);
+                                ui.close_current_popup();
                             }
                         }
                     });

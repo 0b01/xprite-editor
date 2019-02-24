@@ -229,7 +229,7 @@ impl Pixels {
         }
     }
 
-    pub fn sub_(&mut self, other: &Pixels) {
+    pub fn sub_mut(&mut self, other: &Pixels) {
         self.0 = self.0.sub(&other.0)
     }
 
@@ -519,20 +519,22 @@ impl Pixels {
 
 impl Pixels {
     pub fn from_ase_pixels(ase_pixs: &ase::Pixels, bb: Rect) -> Self {
-        let x0 = bb.0.x as usize;
-        let y0 = bb.0.y as usize;
-        let h = bb.w() as usize; // TODO: BUG: reverse this
-        let w = bb.h() as usize;
+        let x0 = bb.0.x as i32;
+        let y0 = bb.0.y as i32;
+        let h = bb.w() as i32; // TODO: BUG: reverse this
+        let w = bb.h() as i32;
         let mut pixs = Pixels::new();
         if let ase::Pixels::RGBA(vec) = ase_pixs {
-            assert_eq!(vec.len(), w * h);
-            for (i, color) in vec.iter().enumerate() {
+            assert_eq!(vec.len() as i32, w * h);
+            for (color, i) in vec.iter().zip(0..) {
                 if color.a == 0 {
                     continue;
                 } // skip transparent pixels
                 let nth_row = i / w;
                 let nth_col = i % w;
-                pixs.push(pixel!(y0 + nth_row, x0 + nth_col, (*color).into()));
+                let y = y0 + nth_row;
+                let x = x0 + nth_col;
+                pixs.push(pixel!(y, x, (*color).into()));
             }
         }
 
@@ -595,7 +597,7 @@ mod tests {
             pixel!(0., 0., Color::red()),
             pixel!(0., 1., Color::red()),
         ]);
-        v1.sub_(&Pixels::from_slice(&vec![pixel!(0., 1., Color::blue())]));
+        v1.sub_mut(&Pixels::from_slice(&vec![pixel!(0., 1., Color::blue())]));
         assert_eq!(Pixels::from_slice(&vec![pixel!(0., 0., Color::red())]), v1);
     }
 

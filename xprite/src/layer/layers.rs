@@ -70,13 +70,15 @@ impl Layers {
         self.groups.push(new_group);
     }
 
-    pub fn add_layer(&mut self, name: Option<&str>) {
+    pub fn add_layer(&mut self, name: Option<&str>, visible: bool) {
         let name =
             name.and_then(|i: &str| Some(i.to_owned()))
                 .unwrap_or_else(|| {
                     format!("Layer {}", self.selected_group().unwrap().1.len())
                 });
-        let new_layer = Layer::new(name);
+        let mut new_layer = Layer::new(name);
+        new_layer.visible = visible;
+
         self.selected_group_mut().unwrap().1.push(new_layer);
     }
 

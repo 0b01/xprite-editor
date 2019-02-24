@@ -132,8 +132,8 @@ impl Tool for Eraser {
             xpr.history.enter()?;
             let reflected = xpr.toolbox.symmetry.clone().borrow().process(&pixs);
             let layer = &mut xpr.current_layer_mut().unwrap();
-            layer.content.sub_(&reflected);
-            layer.content.sub_(&pixs);
+            layer.content.sub_mut(&reflected);
+            layer.content.sub_mut(&pixs);
             layer.visible = true;
             self.update_buffer = None;
             Ok(true)

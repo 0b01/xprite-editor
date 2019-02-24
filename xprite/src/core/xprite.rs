@@ -114,7 +114,7 @@ impl Xprite {
 
     /// remove pixels from temp im_buf
     pub fn remove_pixels(&mut self, pixels: &Pixels) {
-        self.pixels_mut().sub_(pixels);
+        self.pixels_mut().sub_mut(pixels);
     }
 
     pub fn pixels_mut(&mut self) -> &mut Pixels {
@@ -123,6 +123,13 @@ impl Xprite {
 
     pub fn pixels(&self) -> &Pixels {
         &self.im_buf
+    }
+
+    pub fn set_brush_option(&mut self, opt: &str, val: &str) -> Result<(), String> {
+        self.toolbox.pencil.borrow_mut().set(self, opt, val);
+        self.toolbox.vector.borrow_mut().set(self, opt, val);
+        self.toolbox.eraser.borrow_mut().set(self, opt, val);
+        Ok(())
     }
 
     pub fn set_option(&mut self, opt: &str, val: &str) -> Result<(), String> {
@@ -321,17 +328,29 @@ impl Xprite {
         rdr.image
     }
 
-    pub fn layer_as_im(&self, group_idx: usize, layer_idx: usize) -> img::DynamicImage {
+    pub fn layer_as_im(&self, group_idx: usize, layer_idx: usize, trim: bool) -> img::DynamicImage {
         let layer = &self.history.top().groups[group_idx].1[layer_idx];
+        if trim {
+            let bb = layer.content.bounding_rect();
+            return layer.content.as_image(bb);
+        }
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         layer.draw(&mut rdr);
         rdr.render();
         rdr.image
     }
 
-    pub fn group_as_im(&self, group_idx: usize) -> img::DynamicImage {
-        let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
+    pub fn group_as_im(&self, group_idx: usize, trim: bool) -> img::DynamicImage {
         let group = &self.history.top().groups[group_idx].1;
+        if trim  {
+            let mut content = Pixels::new();
+            for i in group.iter() {
+                content.extend(&i.content);
+            }
+            let bb = content.bounding_rect();
+            return content.as_image(bb);
+        }
+        let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         for layer in group.iter() {
             layer.draw(&mut rdr);
         }
@@ -351,18 +370,27 @@ impl Xprite {
     pub fn preview(&self, rdr: &mut Renderer) -> Result<(), String> {
         let top = self.history.top();
         // draw layers
-        for layer in top.iter_layers() {
-            // skip invisible layers
-            if !layer.visible {
-                continue;
-            }
-            layer.draw(rdr);
-        }
 
-        // draw current layer pixels
-        for &Pixel { point, color } in self.pixels().iter() {
-            let Vec2f { x, y } = point;
-            rdr.pixel(x, y, color.into(), true);
+
+        for (i, group) in top.groups.iter().enumerate().rev() {
+            for (j, layer) in group.1.iter().enumerate().rev() {
+                let mut draw_buf = |rdr: &mut Renderer| {
+                    if i == top.sel_group && j == top.selected {
+                        // draw current layer pixels
+                        for &Pixel { point, color } in self.pixels().iter() {
+                            let Vec2f { x, y } = point;
+                            rdr.pixel(x, y, color.into(), true);
+                        }
+                    }
+                };
+                if !layer.visible {
+                    draw_buf(rdr);
+                    continue;
+                } else {
+                    layer.draw(rdr);
+                    draw_buf(rdr);
+                }
+            }
         }
 
         Ok(())
@@ -372,7 +400,7 @@ impl Xprite {
     pub fn export(&self, rdr: &mut Renderer) -> Result<(), String> {
         let top = self.history.top();
         // draw layers
-        for layer in top.iter_layers() {
+        for layer in top.iter_layers().rev() {
             // skip invisible layers
             if !layer.visible {
                 continue;
@@ -430,16 +458,17 @@ impl Xprite {
         for ase::Chunk { chunk_data, .. } in chunks {
             match chunk_data {
                 ase::ChunkData::LayerChunk(ase::chunk::LayerChunk {
-                    flags: _,
+                    flags,
                     layer_type,
                     layer_child_level: _,
                     blend_mode: _,
                     opacity: _,
                     layer_name,
                 }) => {
+                    let visible = flags.contains(ase::chunk::layer_chunk::Flags::Visible);
                     if *layer_type == ase::chunk::LayerType::Normal {
                         // image layer
-                        history.top_mut().add_layer(Some(layer_name));
+                        history.top_mut().add_layer(Some(layer_name), visible);
                     } else {
                         // group layer
                         history.top_mut().add_group(Some(layer_name));
@@ -468,6 +497,8 @@ impl Xprite {
                 _ => (),
             };
         }
+
+        history.top_mut().groups[0].1.reverse();
 
         let mut xpr = Xprite {
             name,
@@ -531,8 +562,8 @@ impl Xprite {
 }
 
 impl Xprite {
-    pub fn save_layer_img(&self, group_idx: usize, layer_idx: usize, img_path: &str, rescale: u32) {
-        let im = self.layer_as_im(group_idx, layer_idx);
+    pub fn save_layer_img(&self, group_idx: usize, layer_idx: usize, img_path: &str, rescale: u32, trim: bool) {
+        let im = self.layer_as_im(group_idx, layer_idx, trim);
         let nwidth = im.width() * rescale;
         let nheight = im.height() * rescale;
         let filter = img::FilterType::Nearest;
@@ -542,8 +573,8 @@ impl Xprite {
         im.save(img_path).unwrap();
     }
 
-    pub fn save_group_img(&self, group_idx: usize, img_path: &str, rescale: u32) {
-        let im  = self.group_as_im(group_idx);
+    pub fn save_group_img(&self, group_idx: usize, img_path: &str, rescale: u32, trim: bool) {
+        let im  = self.group_as_im(group_idx, trim);
         let nwidth = im.width() * rescale;
         let nheight = im.height() * rescale;
         let filter = img::FilterType::Nearest;

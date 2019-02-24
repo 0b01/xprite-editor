@@ -30,7 +30,6 @@ impl PaletteManager {
                 let path = entry.path();
                 let palname =
                     path.file_stem().expect("filestem").to_str().expect("filestem to_str").to_owned();
-                dbg!(&path);
                 let pal = match path.extension().expect("extension").to_str().expect("to_str") {
                     "hex" => get_palette_hex(&path)?,
                     "png" => get_palette_png(&path)?,

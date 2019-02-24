@@ -4,8 +4,11 @@ use crate::tools::*;
 #[derive(Clone, Default, Debug)]
 pub struct Marquee {
     is_mouse_down: Option<InputItem>,
-    cursor_pos: Option<Pixel>,
-    start_pos: Option<Pixel>,
+    cursor_pos: Option<Vec2f>,
+    start_pos: Option<Vec2f>,
+
+    move_orig_pos: Option<Vec2f>,
+    move_final_pos: Option<Vec2f>,
 }
 
 impl Marquee {
@@ -14,45 +17,78 @@ impl Marquee {
             is_mouse_down: None,
             start_pos: None,
             cursor_pos: None,
+            move_orig_pos: None,
+            move_final_pos: None,
         }
     }
 
-    fn get_dims(&self) -> Option<(f64, f64, (f64, f64))> {
-        let x0 = self.start_pos?.point.x;
-        let y0 = self.start_pos?.point.y;
-        let x1 = self.cursor_pos?.point.x;
-        let y1 = self.cursor_pos?.point.y;
-        Some((
-            (x1 - x0).abs(),
-            (y1 - y0).abs(),
-            (f64::min(x0, x1), f64::min(y0, y1)),
-        ))
+    pub fn get_bb(&self) -> Option<Rect> {
+        let (start, stop) = (self.start_pos?, self.cursor_pos?);
+        let x1_ = start.x as i32;
+        let y1_ = start.y as i32;
+        let x2_ = stop.x as i32;
+        let y2_ = stop.y as i32;
+        let x1 = i32::min(x1_, x2_);
+        let x2 = i32::max(x1_, x2_);
+        let y1 = i32::min(y1_, y2_);
+        let y2 = i32::max(y1_, y2_);
+        let bb = Rect(vec2f!(y1, x1), vec2f!(y2-1, x2-1));
+        Some(bb)
     }
+
+    fn move_pixs(&mut self, xpr: &mut Xprite) -> Result<(), String> {
+        dbg!("move_pixs");
+        let start = self.start_pos.ok_or("start".to_owned())?;
+        let cursor = self.cursor_pos.ok_or("stop".to_owned())?;
+        let move_orig = self.move_orig_pos.ok_or("move_orig".to_owned())?;
+        let move_final = self.move_final_pos.ok_or("move_final".to_owned())?;
+        let diff = move_final - move_orig;
+
+        xpr.history.enter()?;
+
+        let bb = Rect(start, cursor);
+        let mut pixs = xpr.current_layer().unwrap().content.clone();
+        pixs.retain_in_rect_mut(bb);
+
+        let content_mut = &mut xpr.current_layer_mut().unwrap().content;
+        content_mut.sub_mut(&pixs);
+        content_mut.extend(&pixs.shifted(diff));
+
+        self.move_orig_pos = None;
+        self.move_final_pos = None;
+
+        self.start_pos = self.start_pos.map(|i|i + diff);
+        self.cursor_pos = self.cursor_pos.map(|i|i + diff);
+
+        Ok(())
+    }
+
 }
 
 impl Tool for Marquee {
+
     fn cursor(&self) -> Option<Pixels> {
-        let p = self.cursor_pos?;
-        Some(pixels!(p))
+        None
     }
 
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
-        let color = xpr.color();
+        if self.move_orig_pos.is_some() { return Ok(()); }
         if self.is_mouse_down.is_some() {
-            self.cursor_pos = Some(Pixel { point, color });
+            self.cursor_pos = Some(point);
         }
         Ok(())
     }
 
     fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
-        let color = xpr.color();
-        self.cursor_pos = Some(Pixel { point, color });
-
+        if self.move_orig_pos.is_some() {
+            self.move_final_pos = Some(point);
+        } else {
+            self.cursor_pos = Some(point);
+        }
         self.is_mouse_down = None;
-        // self.start_pos = None;
         Ok(())
     }
 
@@ -67,8 +103,18 @@ impl Tool for Marquee {
         }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(p);
-        let color = xpr.color();
-        self.start_pos = Some(Pixel { point, color });
+
+        if self.start_pos.is_some() && self.cursor_pos.is_some() &&
+            {
+                let bb = self.get_bb().unwrap();
+                !oob(point.x - bb.0.x, point.y -  bb.0.y, bb.w(), bb.h())
+            }
+        {
+            self.move_orig_pos = Some(point);
+            return Ok(())
+        }
+
+        self.start_pos = Some(point);
         Ok(())
     }
 
@@ -82,6 +128,11 @@ impl Tool for Marquee {
             return Ok(true);
         }
         Ok(false)
+    }
+
+    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
+        let ret = self.move_pixs(xpr);
+        Ok(ret.is_ok())
     }
 
     fn set(

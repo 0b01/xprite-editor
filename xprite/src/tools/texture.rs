@@ -7,8 +7,8 @@ use std::num::NonZeroU32;
 #[derive(Clone)]
 pub struct Texture {
     is_mouse_down: Option<InputItem>,
-    cursor_pos: Option<Pixel>,
-    start_pos: Option<Pixel>,
+    cursor_pos: Option<Vec2f>,
+    start_pos: Option<Vec2f>,
 
 
     // params:
@@ -56,28 +56,23 @@ impl Texture {
 
     pub fn get_bb(&self) -> Option<Rect> {
         let (start, stop) = (self.start_pos?, self.cursor_pos?);
-
-        let x1_ = start.point.x as i32;
-        let y1_ = start.point.y as i32;
-        let x2_ = stop.point.x as i32;
-        let y2_ = stop.point.y as i32;
-
+        let x1_ = start.x as i32;
+        let y1_ = start.y as i32;
+        let x2_ = stop.x as i32;
+        let y2_ = stop.y as i32;
         let x1 = i32::min(x1_, x2_);
         let x2 = i32::max(x1_, x2_);
         let y1 = i32::min(y1_, y2_);
         let y2 = i32::max(y1_, y2_);
-
         let bb = Rect(vec2f!(y1, x1), vec2f!(y2-1, x2-1));
         Some(bb)
     }
 
     fn quilt_img( &mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
         let bb = self.get_bb().ok_or("no cursor".to_owned())?;
-        let mut content = xpr.current_layer_mut().unwrap().content.clone();
+        let mut content = xpr.current_layer().unwrap().content.clone();
         content.retain_in_rect_mut(bb);
         let img = content.as_image(bb);
-        let _width = xpr.canvas.art_w as u32;
-        let _height = xpr.canvas.art_h as u32;
 
         let orientation = {
             let mut ret = vec![Orientation::Original];
@@ -132,23 +127,21 @@ impl Texture {
 impl Tool for Texture {
     fn cursor(&self) -> Option<Pixels> {
         let p = self.cursor_pos?;
-        Some(pixels!(p))
+        None
     }
 
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
-        let color = xpr.color();
         if self.is_mouse_down.is_some() {
-            self.cursor_pos = Some(Pixel { point, color });
+            self.cursor_pos = Some(point);
         }
         Ok(())
     }
 
     fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
-        let color = xpr.color();
-        self.cursor_pos = Some(Pixel { point, color });
+        self.cursor_pos = Some(point);
         // self.quilt_img(xpr)?;
 
         self.is_mouse_down = None;
@@ -169,7 +162,7 @@ impl Tool for Texture {
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
-        self.start_pos = Some(Pixel { point, color });
+        self.start_pos = Some(point);
         Ok(())
     }
 

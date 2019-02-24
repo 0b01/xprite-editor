@@ -22,7 +22,7 @@ impl ColorPicker {
             .top()
             .groups
             .iter()
-            .map(|group| group.1.iter().map(|layer| layer.get_color(point)))
+            .map(|group| group.1.iter().filter(|layer|layer.visible).map(|layer| layer.get_color(point)))
             .flatten()
             .collect();
         *colors.iter().find(|i| i.is_some())?

@@ -12,6 +12,8 @@ git submodule update --init --recursive
 
 ## Bugs and Improvements
 
+* [ ] Foreground/background color
+* [ ] Copy paste
 * [ ] rotsprite
 * [ ] Marquee tool
 * [ ] Outline in selected area

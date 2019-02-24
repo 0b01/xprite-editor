@@ -41,13 +41,13 @@ impl MyPixels {
         self.p.extend(&other.p);
         Ok(())
     }
-    pub fn sub_(&mut self, other: &MyPixels) -> PyResult<&MyPixels> {
-        self.p.sub_(&other.p);
+    pub fn sub_mut(&mut self, other: &MyPixels) -> PyResult<&MyPixels> {
+        self.p.sub_mut(&other.p);
         Ok(self)
     }
     pub fn sub(&self, other: &MyPixels) -> PyResult<MyPixels> {
         let mut new_self = self.clone();
-        new_self.sub_(other)?;
+        new_self.sub_mut(other)?;
         Ok(new_self)
     }
     pub fn intersection(&mut self, other: &MyPixels) -> PyResult<MyPixels> {

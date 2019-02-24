@@ -100,8 +100,15 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         state.xpr_mut().canvas.scroll.y += d.1 as f64;
     }
 
-    if using_window {
-        state.xpr_mut().canvas.update_zoom(wheel_delta, (x, y))
+    if using_window && wheel_delta != 0. {
+        if state.inputs.alt {
+            // change brush size
+            state.brush.sz[0] += wheel_delta.signum() as i32;
+            let current_tool = *state.xpr().toolbox.tool_stack.last().unwrap();
+            crate::ui::brush::set_brush_for_tool(state, BrushType::Circle, current_tool);
+        } else {
+            state.xpr_mut().canvas.update_zoom(wheel_delta, (x, y))
+        }
     }
     if state.xpr().canvas.scale > 100. {
         state.xpr_mut().canvas.scale = 100.;

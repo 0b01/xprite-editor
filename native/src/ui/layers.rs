@@ -17,7 +17,8 @@ pub fn draw_layers(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         .resizable(true)
         .build(|| {
             if ui.button(im_str!("+Layer"), (60., 20.)) {
-                state.xpr_mut().history.top_mut().add_layer(None);
+                let visible = true;
+                state.xpr_mut().history.top_mut().add_layer(None, visible);
             }
             if ui.is_item_hovered() {
                 ui.tooltip_text("Add layer under selected group");

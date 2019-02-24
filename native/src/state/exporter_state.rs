@@ -48,31 +48,6 @@ impl ExporterFormat {
         }
     }
 
-    /// export format to path
-    pub fn export(&self, stem: &str, rescale: u32, layer: ExportType, xpr: &Xprite) {
-        let ext = self.as_file_extension();
-        let path = if rescale == 1 {
-            format!("{}.{}", stem, ext)
-        } else {
-            format!("{}.{}x.{}", stem, rescale, ext)
-        };
-
-        match self {
-            ExporterFormat::ASE => {
-                xpr.save_ase(&path);
-            }
-            _ => {
-                match layer {
-                    ExportType::All => {xpr.save_img(&path, rescale)}
-                    ExportType::Layer(group_idx, layer_idx) =>
-                        {xpr.save_layer_img(group_idx, layer_idx, &path, rescale)}
-                    ExportType::Group(group_idx) => {
-                        {xpr.save_group_img(group_idx, &path, rescale)}
-                    }
-                };
-            }
-        };
-    }
 }
 
 pub struct ExporterSpec {
@@ -80,6 +55,7 @@ pub struct ExporterSpec {
     pub rescale: u32,
     pub stem: String,
     pub layer: ExportType,
+    pub trim: bool,
 }
 
 impl Default for ExporterSpec {
@@ -89,6 +65,35 @@ impl Default for ExporterSpec {
             rescale: 1,
             stem: String::new(),
             layer: ExportType::All,
+            trim: true,
+        }
+    }
+}
+
+impl ExporterSpec {
+    fn export(&self, xpr: &Xprite) {
+        let ExporterSpec {format, rescale, stem, layer, trim } = self;
+        let ext = self.format.as_file_extension();
+        let path = if *rescale == 1 {
+            format!("{}.{}", stem, ext)
+        } else {
+            format!("{}.{}x.{}", stem, rescale, ext)
+        };
+
+        match format {
+            ExporterFormat::ASE => {
+                xpr.save_ase(&path);
+            }
+            _ => {
+                match layer {
+                    ExportType::All => {xpr.save_img(&path, *rescale)}
+                    ExportType::Layer(group_idx, layer_idx) =>
+                        {xpr.save_layer_img(*group_idx, *layer_idx, &path, *rescale, *trim)}
+                    ExportType::Group(group_idx) => {
+                        {xpr.save_group_img(*group_idx, &path, *rescale, *trim)}
+                    }
+                };
+            }
         }
     }
 }
@@ -125,10 +130,7 @@ impl ExporterState {
 
     pub fn run_export(&self, xpr: &Xprite) {
         for s in &self.specs {
-            let stem = &s.stem;
-            let rescale = s.rescale;
-            let layer = &s.layer;
-            s.format.export(&stem, rescale, *layer, xpr);
+            s.export(xpr);
         }
     }
 
