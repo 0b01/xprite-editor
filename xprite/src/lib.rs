@@ -12,6 +12,7 @@ extern crate bitflags;
 pub extern crate ase;
 extern crate fnv;
 extern crate hex;
+extern crate palette;
 extern crate image as img;
 extern crate imageproc;
 #[macro_use]

@@ -1,3 +1,6 @@
+/// re-exports
+pub use palette::Srgb;
+pub use std::rc::Rc;
 pub use crate::algorithms::{path::Path, polyline::Polyline};
 pub use crate::core::{
     brush::{Brush, BrushType},
