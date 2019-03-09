@@ -18,12 +18,33 @@ impl PaletteManager {
 
         if cfg!(not(wasm32)) {
             let dir = "config/palettes";
-            let mut entries: Vec<_> = fs::read_dir(dir)?.map(|r| r.unwrap()).collect();
-            entries.sort_by(|dir1, dir2| natord::compare(dir1.path().to_str().unwrap(), dir2.path().to_str().unwrap()));
+            let dir_entries = fs::read_dir(dir);
+            if dir_entries.is_err() {
+                return Ok(Self { palettes });
+            }
+            let mut entries: Vec<_> = dir_entries?
+                .map(|r| r.unwrap())
+                .collect();
+            entries.sort_by(
+                |dir1, dir2|
+                    natord::compare(
+                        dir1.path().to_str().unwrap(),
+                        dir2.path().to_str().unwrap()
+                    )
+                );
             for entry in &entries {
                 let path = entry.path();
-                let palname = path.file_stem().expect("filestem").to_str().expect("filestem to_str").to_owned();
-                let pal = match path.extension().expect("extension").to_str().expect("to_str") {
+                let palname = path.file_stem()
+                    .expect("filestem")
+                    .to_str()
+                    .expect("filestem to_str")
+                    .to_owned();
+                let pal = match path
+                    .extension()
+                    .expect("extension")
+                    .to_str()
+                    .expect("to_str")
+                {
                     "hex" => get_palette_hex(&path)?,
                     "png" => get_palette_png(&path)?,
                     _ => continue,

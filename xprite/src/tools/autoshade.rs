@@ -27,6 +27,7 @@ impl AutoShade {
         let intersection = content.intersection(&pixs);
         let _bb = intersection.bounding_rect();
         let shaded = autoshade(&intersection, &self.steps);
+        self.buf.clear();
         self.buf.extend(&shaded);
         Ok(())
     }

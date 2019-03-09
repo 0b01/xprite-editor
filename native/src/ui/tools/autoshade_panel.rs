@@ -10,7 +10,7 @@ pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         f.set(ImGuiColorEditFlags::NoOptions, false);
         f.set(ImGuiColorEditFlags::NoInputs, true);
         f.set(ImGuiColorEditFlags::NoLabel, true);
-        f.set(ImGuiColorEditFlags::NoPicker, true);
+        f.set(ImGuiColorEditFlags::NoPicker, false);
         f
     };
 
@@ -22,6 +22,7 @@ pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         tool.finalize(&mut state.xpr_mut()).unwrap();
     }
     for i in 0..len {
+        ui.push_id(i as i32);
         let mut corrode = tool.steps[i].0 as f32;
         let mut dist = tool.steps[i].1 as f32;
 
@@ -29,7 +30,12 @@ pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
             tool.steps[i].0 = corrode as f64;
             tool.finalize(&mut state.xpr_mut()).unwrap();
         }
-        if ui.drag_float(im_str!("dist"), &mut dist).build() {
+        if ui.drag_float(im_str!("dist"), &mut dist)
+            .speed(0.01)
+            .min(0.)
+            .max(1.)
+            .build()
+        {
             tool.steps[i].1 = dist as f64;
             tool.finalize(&mut state.xpr_mut()).unwrap();
         }
@@ -43,5 +49,7 @@ pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
             tool.steps[i].2 = sel.into();
             tool.finalize(&mut state.xpr_mut()).unwrap();
         }
+
+        ui.pop_id();
     }
 }

@@ -3,6 +3,7 @@ members = [
     "xprite",
     "web",
     "native",
+    "font",
     "imgui-rs/imgui-glium-examples",
 ]
 
