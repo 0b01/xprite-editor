@@ -1,4 +1,6 @@
-use crate::algorithms::{autoshade::{autoshade, AutoshadeStepParam}, rect::*};
+use crate::algorithms::autoshade::{autoshade, AutoshadeStepParam};
+use crate::core::outline::outline_rect;
+use crate::algorithms::rect::get_rect;
 use crate::tools::*;
 
 #[derive(Clone, Default, Debug)]
@@ -25,9 +27,9 @@ impl AutoShade {
         let pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
         let content = &mut xpr.current_layer_mut().unwrap().content;
         let intersection = content.intersection(&pixs);
-        let _bb = intersection.bounding_rect();
-        let shaded = autoshade(&intersection, &self.steps);
-        self.buf.extend(&shaded);
+        // let _bb = intersection.bounding_rect();
+        let shaded = autoshade(&intersection, false, &self.steps);
+        self.buf = shaded;
         Ok(())
     }
 
@@ -87,10 +89,11 @@ impl Tool for AutoShade {
             xpr.add_pixels(&self.buf);
             ret = true;
         }
-        if let Ok(mut pixs) = get_rect(self.start_pos, self.cursor_pos, false) {
-            pixs.set_color(xpr.color());
-            xpr.add_pixels(&pixs);
-            ret = true;
+        if self.start_pos.is_some() && self.cursor_pos.is_some() {
+            if let Ok(marq) = outline_rect(self.start_pos.unwrap().point, self.cursor_pos.unwrap().point) {
+                xpr.add_marquee(&marq);
+                ret = true;
+            }
         }
         Ok(ret)
     }

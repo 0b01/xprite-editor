@@ -1,5 +1,4 @@
 #![recursion_limit = "128"]
-#![feature(try_from)]
 
 // #[macro_use]
 #[macro_use]

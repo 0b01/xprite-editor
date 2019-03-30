@@ -21,23 +21,28 @@ pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
     if ui.button(im_str!("+"), (0., 0.)) {
         tool.steps.push(
             AutoshadeStepParam {
-                corrode: 200.,
-                dist_mul: 0.03,
+                erode: 200.,
+                shift: Vec2f{x: -10., y: -10.},
                 color: Color::red()
             }
         );
         tool.finalize(&mut state.xpr_mut()).unwrap();
     }
     for i in 0..len {
-        let mut corrode = tool.steps[i].corrode as f32;
-        let mut dist = tool.steps[i].dist_mul as f32;
+        let mut erode = tool.steps[i].erode as f32;
+        let mut dist_x = tool.steps[i].shift.x as f32;
+        let mut dist_y = tool.steps[i].shift.y as f32;
 
-        if ui.drag_float(im_str!("corrode"), &mut corrode).build() {
-            tool.steps[i].corrode = corrode as f64;
+        if ui.drag_float(im_str!("erode"), &mut erode).build() {
+            tool.steps[i].erode = erode as f64;
             tool.finalize(&mut state.xpr_mut()).unwrap();
         }
-        if ui.drag_float(im_str!("dist"), &mut dist).build() {
-            tool.steps[i].dist_mul = dist as f64;
+        if ui.drag_float(im_str!("dist_x"), &mut dist_x).build() {
+            tool.steps[i].shift.x = dist_x as f64;
+            tool.finalize(&mut state.xpr_mut()).unwrap();
+        }
+        if ui.drag_float(im_str!("dist_y"), &mut dist_y).build() {
+            tool.steps[i].shift.y = dist_y as f64;
             tool.finalize(&mut state.xpr_mut()).unwrap();
         }
 
