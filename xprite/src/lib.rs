@@ -4,8 +4,6 @@
 #![allow(clippy::single_match)]
 #![allow(clippy::explicit_counter_loop)]
 #![allow(clippy::float_cmp)]
-#![feature(vec_remove_item)]
-#![feature(specialization)]
 
 #[macro_use]
 extern crate bitflags;

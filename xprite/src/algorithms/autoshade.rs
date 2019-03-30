@@ -5,21 +5,34 @@ use img::GrayImage;
 
 const DBG_SAVE_IMG: bool = false;
 
-pub fn autoshade(pixs: &Pixels, steps: &[(f64, f64, Color)]) -> Pixels {
+#[derive(Debug, Clone, Default)]
+pub struct AutoshadeStepParam {
+    pub corrode: f64,
+    pub dist_mul: f64,
+    pub color: Color
+}
+
+
+pub fn autoshade(pixs: &Pixels, step_params: &[AutoshadeStepParam]) -> Pixels {
     let mut ret = pixs.clone();
-    if steps.is_empty() {
+    if step_params.is_empty() {
         return ret;
     }
 
-    // convert pixs to image
-    let mut bb = pixs.bounding_rect();
-    let orig_bb = bb.clone();
     // expand bounding box to differentiate foreground at edge
-    bb.0.x -= 100.;
-    bb.0.y -= 100.;
-    bb.1.x += 100.;
-    bb.1.y += 100.;
-    let img = pixs.as_image(bb);
+    let (orig_bb, expanded_bb) = {
+        let orig = pixs.bounding_rect();
+
+        let mut bb = orig.clone();
+        bb.0.x -= 100.;
+        bb.0.y -= 100.;
+        bb.1.x += 100.;
+        bb.1.y += 100.;
+
+        (orig, bb)
+    };
+    // convert pixs to image
+    let img = pixs.as_image(expanded_bb);
     if DBG_SAVE_IMG {
         img.save("expanded.png").unwrap();
     }
@@ -30,29 +43,31 @@ pub fn autoshade(pixs: &Pixels, steps: &[(f64, f64, Color)]) -> Pixels {
             *p = 255;
         }
     }
+
     if DBG_SAVE_IMG {
         orig.save("orig.png").unwrap();
     }
 
     let shift = vec2f!(-100., -100.) + orig_bb.0;
-    let (mut acc, curr) = autoshade_step(&orig, 0, steps[0].0, steps[0].1, steps[0].2);
-    ret.extend(&curr.shifted(shift));
-    for (i, (step_d, step_dist_mul, step_col)) in steps[1..].iter().enumerate() {
-        let (step_acc, curr) = autoshade_step(&acc, i + 1, *step_d, *step_dist_mul, *step_col);
+    let mut acc = orig;
+    for (i, step_param) in step_params[0..].iter().enumerate() {
+        let (step_acc, curr) = autoshade_step(&acc, i + 1, step_param);
         acc = step_acc;
         ret.extend(&curr.shifted(shift));
     }
     ret
+
 }
 
-fn autoshade_step(orig: &GrayImage, ith: usize, step: f64, dist_mul: f64, color: Color) -> (GrayImage, Pixels) {
-    let eroded = erode_l2norm(&orig, step);
+fn autoshade_step( orig: &GrayImage, ith: usize, params: &AutoshadeStepParam) -> (GrayImage, Pixels) {
+    let AutoshadeStepParam {corrode, dist_mul, color} = params;
+    let eroded = erode_l2norm(&orig, *corrode);
     if DBG_SAVE_IMG {
         eroded.save(format!("eroded{}.png", ith)).unwrap();
     }
 
     // shift the eroded image
-    let d = (step * dist_mul) as i32;
+    let d = (corrode * dist_mul) as i32;
     let translated = translate(&eroded, (-d, -d));
     if DBG_SAVE_IMG {
         translated.save(&format!("translated{}.png", ith)).unwrap();
@@ -68,7 +83,7 @@ fn autoshade_step(orig: &GrayImage, ith: usize, step: f64, dist_mul: f64, color:
             continue;
         }
         if *p == 255 && *orig_p == 255 {
-            ret.push(pixel!(row, col, color));
+            ret.push(pixel!(row, col, *color));
         }
     }
 

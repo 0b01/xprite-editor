@@ -21,8 +21,10 @@ chrono = "0.4"
 [dependencies.xprite]
 path = "../xprite"
 default-features = false
-features = ["python-scripting"]
+# features = ["python-scripting"]
+features = []
 
 [features]
-default = ["python-scripting"]
+# default = ["python-scripting"]
+default = []
 python-scripting = []

@@ -1,4 +1,4 @@
-use crate::algorithms::{autoshade::autoshade, rect::*};
+use crate::algorithms::{autoshade::{autoshade, AutoshadeStepParam}, rect::*};
 use crate::tools::*;
 
 #[derive(Clone, Default, Debug)]
@@ -6,7 +6,7 @@ pub struct AutoShade {
     is_mouse_down: Option<InputItem>,
     cursor_pos: Option<Pixel>,
     start_pos: Option<Pixel>,
-    pub steps: Vec<(f64, f64, Color)>,
+    pub steps: Vec<AutoshadeStepParam>,
     buf: Pixels,
 }
 
