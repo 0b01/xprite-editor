@@ -95,6 +95,7 @@ impl Texture {
                     output_size,
                     &orientation,
                     $e,
+                    ForbidNothing,
                     retry::NumTimes(10),
                 )
                 .map_err(|_| "Too many contradictions".to_owned())

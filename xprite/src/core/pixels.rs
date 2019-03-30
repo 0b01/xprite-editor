@@ -201,11 +201,11 @@ impl Pixels {
 
     /// query pixel in the collection
     /// returns None if it does not exist
-    pub fn get_pixel(&self, w: isize, h: isize) -> Option<Pixel> {
-        if w < 0 || h < 0 {
+    pub fn get_pixel(&self, y: isize, x: isize) -> Option<Pixel> {
+        if y < 0 || x < 0 {
             return None;
         }
-        self.0.get(&pixel!(w, h, Color::red())).cloned()
+        self.0.get(&pixel!(y, x, Color::red())).cloned()
     }
 
     pub fn rotate(&self, pivot: Vec2f, angle: f64) -> Pixels {

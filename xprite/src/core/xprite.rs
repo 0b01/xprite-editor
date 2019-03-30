@@ -118,9 +118,9 @@ impl Xprite {
     }
 
     pub fn set_brush_option(&mut self, opt: &str, val: &str) -> Result<(), String> {
-        self.toolbox.pencil.borrow_mut().set(self, opt, val);
-        self.toolbox.vector.borrow_mut().set(self, opt, val);
-        self.toolbox.eraser.borrow_mut().set(self, opt, val);
+        self.toolbox.pencil.borrow_mut().set(self, opt, val)?;
+        self.toolbox.vector.borrow_mut().set(self, opt, val)?;
+        self.toolbox.eraser.borrow_mut().set(self, opt, val)?;
         Ok(())
     }
 

@@ -28,7 +28,7 @@ impl AutoShade {
         let content = &mut xpr.current_layer_mut().unwrap().content;
         let intersection = content.intersection(&pixs);
         // let _bb = intersection.bounding_rect();
-        let shaded = autoshade(&intersection, false, &self.steps);
+        let shaded = autoshade(&intersection, true, &self.steps);
         self.buf = shaded;
         Ok(())
     }

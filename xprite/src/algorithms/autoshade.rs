@@ -1,22 +1,29 @@
 //! Autoshade algorithm explanation
-//! 1. expand bounding box
-//! 2. convert to luma and binarize
-//! 3. corrode to mask
-//! 4. shift the mask
 use crate::prelude::*;
 use imageproc::affine::translate;
 use imageproc::distance_transform::euclidean_squared_distance_transform;
 use img::GrayImage;
 
-const DBG_SAVE_IMG: bool = true;
+const DBG_SAVE_IMG: bool = false;
 
 #[derive(Debug, Clone, Default)]
 pub struct AutoshadeStepParam {
     pub erode: f64,
     pub shift: Vec2f,
-    pub color: Color
+    pub mode: AutoshadeBlendingMode,
 }
 
+#[derive(Debug, Clone)]
+pub enum AutoshadeBlendingMode {
+    Lighten(u8),
+    Replace(Color),
+}
+
+impl Default for AutoshadeBlendingMode {
+    fn default() -> Self {
+        AutoshadeBlendingMode::Lighten(10)
+    }
+}
 
 pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStepParam]) -> Pixels {
     let mut ret = pixs.clone();
@@ -30,10 +37,10 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
         let AutoshadeStepParam{shift: Vec2f{x,y}, ..} = &step_params[0];
 
         let mut bb = orig.clone();
-        bb.0.x += x;
-        bb.0.y += y;
-        bb.1.x -= x;
-        bb.1.y -= y;
+        bb.0.x -= 1.;
+        bb.0.y -= 1.;
+        bb.1.x += 1.;
+        bb.1.y += 1.;
         (orig, bb)
     };
 
@@ -48,7 +55,7 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
     let mut shift_acc = vec2f!(0., 0.);
     let mut erode_acc = 0.;
     for (i, step_param) in step_params.iter().enumerate() {
-        let AutoshadeStepParam {erode, shift, color} = step_param;
+        let AutoshadeStepParam {erode, shift, mode} = step_param;
         shift_acc += *shift;
         erode_acc += *erode;
         let eroded = erode_l2norm(&acc, erode_acc);
@@ -56,26 +63,48 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
             eroded.save(format!("eroded{}.png", i)).unwrap();
         }
 
+        let translated = translate(&eroded, (-shift.x as i32, -shift.y as i32));
+
         let mut step_acc = Pixels::new();
 
         let w = eroded.width() as usize;
         let h = eroded.height() as usize;
-        for (i, (p, orig_p)) in eroded.iter().zip(prev_mask.iter()).enumerate() {
-            let row = i / w;
-            let col = i % w;
-            if row == 0 || row == h - 1 || col == 0 || col == w - 1 {
+        for (i, (p, orig_p)) in translated.iter().zip(prev_mask.iter()).enumerate() {
+            let y = i / w;
+            let x = i % w;
+            if y == 0 || y == h - 1 || x == 0 || x == w - 1 {
                 continue;
             }
-            if *p == 255 && *orig_p == 255 {
-                step_acc.push(pixel!(row, col, *color));
+            let intersect = *p == 255 && *orig_p == 255;
+            if intersect {
+                let mut orig_pixel = ret.get_pixel(
+                    orig_bb.0.y as isize + y as isize - 1,
+                    orig_bb.0.x as isize + x as isize - 1,
+                ).unwrap();
+                let new_col = blend(mode, orig_pixel.color);
+                step_acc.push(pixel!(y-1, x-1, new_col));
             }
         }
         acc = if accumulative { eroded.clone() } else { acc };
-        prev_mask = translate(&eroded, (-shift.x as i32, -shift.y as i32));
+        prev_mask = translated;
         erode_acc = if accumulative { 0. } else { erode_acc };
-        ret.extend(&step_acc.shifted(shift_acc + orig_bb.0));
+        ret.extend(&step_acc.shifted(orig_bb.0));
     }
     ret
+}
+
+fn blend(mode: &AutoshadeBlendingMode, orig_col: Color) -> Color {
+    use AutoshadeBlendingMode::*;
+    match mode {
+        Replace(col) => *col,
+        Lighten(diff) => {
+            let mut col = orig_col;
+            col.r += *diff;
+            col.g += *diff;
+            col.b += *diff;
+            col
+        },
+    }
 }
 
 fn erode_l2norm(image: &GrayImage, k: f64) -> GrayImage {
@@ -116,17 +145,17 @@ mod tests {
             AutoshadeStepParam {
                 erode: 200.,
                 shift: vec2f!(-6., -6.),
-                color: Color::blue(),
+                mode: AutoshadeBlendingMode::Lighten(10.),
             },
             AutoshadeStepParam {
                 erode: 200.,
                 shift: vec2f!(-6., -6.),
-                color: Color::green(),
+                mode: AutoshadeBlendingMode::Lighten(10.),
             },
             AutoshadeStepParam {
                 erode: 200.,
                 shift: vec2f!(-6., -6.),
-                color: Color::orange(),
+                mode: AutoshadeBlendingMode::Lighten(10.),
             }
         ]);
         let img = shaded.as_image(shaded.bounding_rect());
