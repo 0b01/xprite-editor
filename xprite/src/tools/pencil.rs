@@ -58,7 +58,6 @@ pub struct Pencil {
     shift: bool,
 
     pub brush: Brush,
-    pub brush_type: BrushType,
 
     moved: bool,
     draw_buffer: Pixels,
@@ -76,8 +75,7 @@ impl Pencil {
     pub fn new() -> Self {
         let is_mouse_down = None;
         let cursor = None;
-        let brush_type = BrushType::Pixel;
-        let brush = Brush::pixel();
+        let brush = Brush::circle(1);
         let current_polyline = Polyline::new();
         let redraw = true;
 
@@ -89,7 +87,6 @@ impl Pencil {
             current_polyline,
             cursor,
             brush,
-            brush_type,
             mode: PencilMode::PixelPerfect,
             moved: false,
             draw_buffer: Pixels::new(),

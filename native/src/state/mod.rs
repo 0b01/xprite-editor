@@ -183,12 +183,12 @@ impl<'a> State<'a> {
     }
 
     pub fn set_brush_for_tool(&mut self, brush: BrushType, tool_type: ToolType) {
+        if self.brush.sz[0] < 1 {
+            self.brush.sz[0] = 1;
+        }
         macro_rules! tool {
             ($tool: expr) => {
                 match brush {
-                    BrushType::Pixel | BrushType::Cross => {
-                        $tool.set(self.xpr_mut(), "brush", brush.as_str()).unwrap();
-                    }
                     BrushType::Circle(_) | BrushType::Square(_) => {
                         let sz = self.brush.sz[0];
                         $tool.set(self.xpr_mut(), "brush", &format!("{}{}", brush.as_str(), sz)).unwrap();

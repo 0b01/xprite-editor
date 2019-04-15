@@ -22,8 +22,7 @@ impl Eraser {
         let is_mouse_down = None;
         let cursor = None;
         let cursor_pos = None;
-        let brush_type = BrushType::Pixel;
-        let brush = Brush::pixel();
+        let brush = Brush::circle(1);
         let current_polyline = Polyline::new();
 
         Self {

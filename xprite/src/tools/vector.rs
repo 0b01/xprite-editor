@@ -78,17 +78,13 @@ impl Vector {
     pub fn new() -> Self {
         let is_mouse_down = None;
         let current_polyline = Polyline::new();
-        let brush = Brush::pixel();
-        let brush_type = BrushType::Pixel;
-
         Self {
             is_mouse_down,
             current_polyline,
             tolerence: 15.,
             draw_bezier: true,
             mono_sort: true,
-            brush,
-            brush_type,
+            brush: Brush::circle(1),
             recording: true,
             ..Default::default()
         }

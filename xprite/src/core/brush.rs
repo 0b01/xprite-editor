@@ -5,8 +5,6 @@ use std::str::FromStr;
 
 #[derive(PartialEq, Eq, Clone, Debug, Copy)]
 pub enum BrushType {
-    Pixel,
-    Cross,
     Circle(u32),
     Square(u32),
     Line(u32, u32),
@@ -15,16 +13,12 @@ pub enum BrushType {
 impl BrushType {
     pub fn as_str(&self) -> &str {
         match self {
-            BrushType::Pixel => ".",
-            BrushType::Cross => "+",
             BrushType::Circle(_) => "o",
             BrushType::Square(_) => "s",
             BrushType::Line(_, _) => "/",
         }
     }
-    pub const VARIANTS: [BrushType; 5] = [
-        BrushType::Pixel,
-        BrushType::Cross,
+    pub const VARIANTS: [BrushType; 3] = [
         BrushType::Circle(8),
         BrushType::Square(4),
         BrushType::Line(2, 0),
@@ -33,31 +27,26 @@ impl BrushType {
 
 impl Default for BrushType {
     fn default() -> Self {
-        BrushType::Pixel
+        BrushType::Circle(1)
     }
 }
 
 impl FromStr for Brush {
     type Err = String;
     fn from_str(value: &str) -> Result<Brush, String> {
-        match value {
-            "+" => Ok(Brush::cross()),
-            "." => Ok(Brush::pixel()),
-            _ => {
-                if value.starts_with("o") {
-                    let size = value[1..].parse::<u32>().unwrap();
-                    Ok(Brush::circle(size))
-                } else if value.starts_with("s") {
-                    let size = value[1..].parse::<u32>().unwrap();
-                    Ok(Brush::square(size))
-                } else if value.starts_with("/") {
-                    let params: Vec<f64> = value[1..].split(",").map(|i| i.parse().unwrap()).collect();
-                    Ok(Brush::line(params[0] as u32, params[1]))
-                } else {
-                    Err("unimplemented brush shape".to_owned())
-                }
-            }
+        if value.starts_with("o") {
+            let size = value[1..].parse::<u32>().unwrap();
+            Ok(Brush::circle(size))
+        } else if value.starts_with("s") {
+            let size = value[1..].parse::<u32>().unwrap();
+            Ok(Brush::square(size))
+        } else if value.starts_with("/") {
+            let params: Vec<f64> = value[1..].split(",").map(|i| i.parse().unwrap()).collect();
+            Ok(Brush::line(params[0] as u32, params[1]))
+        } else {
+            Err("unimplemented brush shape".to_owned())
         }
+
     }
 }
 
@@ -71,13 +60,13 @@ pub struct Brush {
 
 impl Default for Brush {
     fn default() -> Self {
-        Self::pixel()
+        Self::new()
     }
 }
 
 impl Brush {
     pub fn new() -> Self {
-        Brush::pixel()
+        Brush::circle(1)
     }
 
     pub fn pixel() -> Self {
@@ -87,7 +76,7 @@ impl Brush {
             shape,
             bb: (1., 1.),
             offset: (0., 0.),
-            brush_type: BrushType::Pixel,
+            brush_type: BrushType::Circle(1),
         }
     }
 
@@ -102,7 +91,7 @@ impl Brush {
             shape,
             bb: (3., 3.),
             offset: (-1., -1.),
-            brush_type: BrushType::Cross,
+            brush_type: BrushType::Circle(3),
         }
     }
 
