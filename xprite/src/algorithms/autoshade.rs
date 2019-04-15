@@ -63,7 +63,7 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
             eroded.save(format!("eroded{}.png", i)).unwrap();
         }
 
-        let translated = translate(&eroded, (-shift.x as i32, -shift.y as i32));
+        let translated = translate(&eroded, (shift.x as i32, shift.y as i32));
 
         let mut step_acc = Pixels::new();
 

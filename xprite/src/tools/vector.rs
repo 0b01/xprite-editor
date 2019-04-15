@@ -1,6 +1,5 @@
 //! This module contains the implementation for the vector tool
 use crate::prelude::*;
-use crate::tools::pencil::get_brush;
 use std::str::FromStr;
 
 #[derive(Debug, Copy, Clone)]
@@ -63,7 +62,7 @@ pub struct Vector {
     current_polyline: Polyline,
     recording: bool,
 
-    brush: Brush,
+    pub brush: Brush,
     pub brush_type: BrushType,
     /// edit mode
     pub mode: VectorMode,
@@ -387,9 +386,7 @@ impl Tool for Vector {
                 };
             }
             "brush" => {
-                let (brush, brush_type) = get_brush(value);
-                self.brush = brush;
-                self.brush_type = brush_type;
+                self.brush = value.parse()?;
             }
             "return" => {
                 self.add_to_hist(xpr)?;

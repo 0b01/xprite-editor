@@ -1,14 +1,15 @@
 use crate::algorithms::{ellipse, line, rect};
 use crate::prelude::*;
 use std::f64::consts::PI;
+use std::str::FromStr;
 
 #[derive(PartialEq, Eq, Clone, Debug, Copy)]
 pub enum BrushType {
     Pixel,
     Cross,
-    Circle,
-    Square,
-    Line,
+    Circle(u32),
+    Square(u32),
+    Line(u32, u32),
 }
 
 impl BrushType {
@@ -16,12 +17,18 @@ impl BrushType {
         match self {
             BrushType::Pixel => ".",
             BrushType::Cross => "+",
-            BrushType::Circle => "o",
-            BrushType::Square => "s",
-            BrushType::Line => "/",
+            BrushType::Circle(_) => "o",
+            BrushType::Square(_) => "s",
+            BrushType::Line(_, _) => "/",
         }
     }
-    pub const VARIANTS: [BrushType; 5] = [BrushType::Pixel, BrushType::Cross, BrushType::Circle, BrushType::Square, BrushType::Line];
+    pub const VARIANTS: [BrushType; 5] = [
+        BrushType::Pixel,
+        BrushType::Cross,
+        BrushType::Circle(8),
+        BrushType::Square(4),
+        BrushType::Line(2, 0),
+    ];
 }
 
 impl Default for BrushType {
@@ -30,11 +37,36 @@ impl Default for BrushType {
     }
 }
 
+impl FromStr for Brush {
+    type Err = String;
+    fn from_str(value: &str) -> Result<Brush, String> {
+        match value {
+            "+" => Ok(Brush::cross()),
+            "." => Ok(Brush::pixel()),
+            _ => {
+                if value.starts_with("o") {
+                    let size = value[1..].parse::<u32>().unwrap();
+                    Ok(Brush::circle(size))
+                } else if value.starts_with("s") {
+                    let size = value[1..].parse::<u32>().unwrap();
+                    Ok(Brush::square(size))
+                } else if value.starts_with("/") {
+                    let params: Vec<f64> = value[1..].split(",").map(|i| i.parse().unwrap()).collect();
+                    Ok(Brush::line(params[0] as u32, params[1]))
+                } else {
+                    Err("unimplemented brush shape".to_owned())
+                }
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Brush {
     pub shape: PixelOffsets,
     pub bb: (f64, f64),
     pub offset: (f64, f64),
+    pub brush_type: BrushType,
 }
 
 impl Default for Brush {
@@ -55,6 +87,7 @@ impl Brush {
             shape,
             bb: (1., 1.),
             offset: (0., 0.),
+            brush_type: BrushType::Pixel,
         }
     }
 
@@ -69,37 +102,40 @@ impl Brush {
             shape,
             bb: (3., 3.),
             offset: (-1., -1.),
+            brush_type: BrushType::Cross,
         }
     }
 
-    pub fn square(size: i32) -> Self {
-        let shape = rect::filled_rect(0, 0, size, size, Color::red()).unwrap();
+    pub fn square(size: u32) -> Self {
+        let shape = rect::filled_rect(0, 0, size as i32, size as i32, Color::red()).unwrap();
         let off = (size / 2) as f64;
         Self {
             shape,
             bb: (size as f64, size as f64),
             offset: (-off, -off),
+            brush_type: BrushType::Square(size),
         }
     }
 
-    pub fn circle(size: i32) -> Self {
+    pub fn circle(size: u32) -> Self {
         if size == 1 {
             return Self::pixel();
         }
         if size == 3 {
             return Self::cross();
         }
-        let shape = ellipse::algo_ellipsefill(0, 0, size, size - 1);
+        let shape = ellipse::algo_ellipsefill(0, 0, size as i32, size as i32 - 1);
         let off = (size / 2) as f64;
         Self {
             shape,
             bb: (size as f64, size as f64),
             offset: (-off, -off),
+            brush_type: BrushType::Circle(size),
         }
     }
 
-    pub fn line(size: i32, angle: f64) -> Self {
-        let size = size as f64;
+    pub fn line(sz: u32, angle: f64) -> Self {
+        let size = sz as f64;
 
         let a = PI * angle / 180.;
         let r = size as f64 / 2.;
@@ -125,7 +161,9 @@ impl Brush {
             (-off_x.floor(), -off_y.floor())
         };
 
-        Self { shape, bb, offset }
+        let brush_type = BrushType::Circle(sz);
+
+        Self { shape, bb, offset, brush_type }
     }
 
     pub fn follow_stroke(&self, stroke: &Pixels) -> Option<Pixels> {

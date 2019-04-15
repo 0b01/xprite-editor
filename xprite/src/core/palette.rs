@@ -71,56 +71,16 @@ fn pico8() -> PaletteGroup {
     colors.insert("dark-green".to_owned(), Color { r: 0, g: 135, b: 81, a: 255 });
     colors.insert("brown".to_owned(), Color { r: 171, g: 82, b: 54, a: 255 });
     colors.insert("dark-gray".to_owned(), Color { r: 95, g: 87, b: 79, a: 255 });
-    colors.insert(
-        "light-gray".to_owned(),
-        Color {
-            r: 194,
-            g: 195,
-            b: 199,
-            a: 255,
-        },
-    );
-    colors.insert(
-        "white".to_owned(),
-        Color {
-            r: 255,
-            g: 241,
-            b: 232,
-            a: 255,
-        },
-    );
+    colors.insert("light-gray".to_owned(), Color { r: 194, g: 195, b: 199, a: 255, },);
+    colors.insert("white".to_owned(), Color { r: 255, g: 241, b: 232, a: 255, },);
     colors.insert("red".to_owned(), Color { r: 255, g: 0, b: 77, a: 255 });
     colors.insert("orange".to_owned(), Color { r: 255, g: 163, b: 0, a: 255 });
     colors.insert("yellow".to_owned(), Color { r: 255, g: 236, b: 39, a: 255 });
     colors.insert("green".to_owned(), Color { r: 0, g: 228, b: 54, a: 255 });
     colors.insert("blue".to_owned(), Color { r: 41, g: 173, b: 255, a: 255 });
-    colors.insert(
-        "indigo".to_owned(),
-        Color {
-            r: 131,
-            g: 118,
-            b: 156,
-            a: 255,
-        },
-    );
-    colors.insert(
-        "pink".to_owned(),
-        Color {
-            r: 255,
-            g: 119,
-            b: 168,
-            a: 255,
-        },
-    );
-    colors.insert(
-        "peach".to_owned(),
-        Color {
-            r: 255,
-            g: 204,
-            b: 170,
-            a: 255,
-        },
-    );
+    colors.insert("indigo".to_owned(), Color { r: 131, g: 118, b: 156, a: 255, },);
+    colors.insert("pink".to_owned(), Color { r: 255, g: 119, b: 168, a: 255, },);
+    colors.insert("peach".to_owned(), Color { r: 255, g: 204, b: 170, a: 255, },);
     colors
 }
 

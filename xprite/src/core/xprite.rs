@@ -117,13 +117,6 @@ impl Xprite {
         &self.im_buf
     }
 
-    pub fn set_brush_option(&mut self, opt: &str, val: &str) -> Result<(), String> {
-        self.toolbox.pencil.borrow_mut().set(self, opt, val)?;
-        self.toolbox.vector.borrow_mut().set(self, opt, val)?;
-        self.toolbox.eraser.borrow_mut().set(self, opt, val)?;
-        Ok(())
-    }
-
     pub fn set_option(&mut self, opt: &str, val: &str) -> Result<(), String> {
         let tool = self.toolbox.tool();
         let mut current_tool = tool.borrow_mut();
@@ -214,6 +207,49 @@ impl Xprite {
         layers.selected_layer_mut().unwrap().name = name.to_owned();
         Ok(())
     }
+
+    pub fn get_brush_for_tool(&self, tool_type: ToolType) -> Option<Brush> {
+        match tool_type {
+            ToolType::Pencil => {
+                let tool = self.toolbox.pencil.borrow_mut();
+                Some(tool.brush.clone())
+            }
+            ToolType::Vector => {
+                let tool = self.toolbox.vector.borrow_mut();
+                Some(tool.brush.clone())
+            }
+            ToolType::Eraser => {
+                let tool = self.toolbox.eraser.borrow_mut();
+                Some(tool.brush.clone())
+            }
+            _ => None,
+        }
+    }
+    pub fn set_brush_for_tool(&self, tool_type: ToolType, brush: Brush) -> Result<(), String> {
+        match tool_type {
+            ToolType::Pencil => {
+                let mut tool = self.toolbox.pencil.borrow_mut();
+                tool.brush = brush;
+                Ok(())
+            }
+            ToolType::Vector => {
+                let mut tool = self.toolbox.vector.borrow_mut();
+                tool.brush = brush;
+                Ok(())
+            }
+            ToolType::Eraser => {
+                let mut tool = self.toolbox.eraser.borrow_mut();
+                tool.brush = brush;
+                Ok(())
+            }
+            _ => Err("No brush attached to tool".to_owned())
+        }
+    }
+
+    pub fn last_tool(&self) -> ToolType {
+        *self.toolbox.tool_stack.last().unwrap()
+    }
+
 }
 
 impl Xprite {

@@ -96,11 +96,15 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     if using_window && wheel_delta != 0. {
+        // if alt pressed, change brush size
         if state.inputs.alt {
-            // change brush size
-            state.brush.sz[0] += wheel_delta.signum() as i32;
-            let current_tool = *state.xpr().toolbox.tool_stack.last().unwrap();
-            crate::ui::brush::set_brush_for_tool(state, BrushType::Circle, current_tool);
+            // TODO: refactor
+            // BUG: negative brush size
+            let current_tool = state.xpr().last_tool();
+            if let Some(brush) = state.xpr().get_brush_for_tool(current_tool) {
+                state.brush.sz[0] += wheel_delta.signum() as i32;
+                state.set_brush_for_tool(brush.brush_type, current_tool);
+            }
         } else {
             state.xpr_mut().canvas.update_zoom(wheel_delta, (x, y))
         }

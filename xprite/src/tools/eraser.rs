@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::tools::pencil::get_brush;
 
 #[derive(Debug)]
 pub struct Eraser {
@@ -7,8 +6,7 @@ pub struct Eraser {
     current_polyline: Polyline,
     cursor: Option<Pixels>,
     cursor_pos: Option<Pixel>,
-    brush: Brush,
-    pub brush_type: BrushType,
+    pub brush: Brush,
     update_buffer: Option<Pixels>,
     draw_buffer: Pixels,
 }
@@ -34,7 +32,6 @@ impl Eraser {
             cursor,
             cursor_pos,
             brush,
-            brush_type,
             update_buffer: None,
             draw_buffer: Pixels::new(),
         }
@@ -156,9 +153,8 @@ impl Tool for Eraser {
         match option {
             "mode" => {}
             "brush" => {
-                let (brush, brush_type) = get_brush(value);
+                let brush = value.parse()?;
                 self.brush = brush;
-                self.brush_type = brush_type;
             }
             _ => (),
         }

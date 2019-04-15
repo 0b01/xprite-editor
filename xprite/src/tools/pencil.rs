@@ -57,7 +57,7 @@ pub struct Pencil {
     last_mouse_down_or_up: Option<Vec2f>,
     shift: bool,
 
-    brush: Brush,
+    pub brush: Brush,
     pub brush_type: BrushType,
 
     moved: bool,
@@ -276,9 +276,7 @@ impl Tool for Pencil {
                 };
             }
             "brush" => {
-                let (brush, brush_type) = get_brush(value);
-                self.brush = brush;
-                self.brush_type = brush_type;
+                self.brush = value.parse()?;
             }
             "shift" => match value {
                 "true" => {
@@ -298,26 +296,5 @@ impl Tool for Pencil {
             _ => (),
         }
         Ok(())
-    }
-}
-
-pub fn get_brush(value: &str) -> (Brush, BrushType) {
-    match value {
-        "+" => (Brush::cross(), BrushType::Cross),
-        "." => (Brush::pixel(), BrushType::Pixel),
-        _ => {
-            if value.starts_with("o") {
-                let size = value[1..].parse::<i32>().unwrap();
-                (Brush::circle(size), BrushType::Circle)
-            } else if value.starts_with("s") {
-                let size = value[1..].parse::<i32>().unwrap();
-                (Brush::square(size), BrushType::Square)
-            } else if value.starts_with("/") {
-                let params: Vec<f64> = value[1..].split(",").map(|i| i.parse().unwrap()).collect();
-                (Brush::line(params[0] as i32, params[1]), BrushType::Line)
-            } else {
-                panic!("Impossible")
-            }
-        }
     }
 }
