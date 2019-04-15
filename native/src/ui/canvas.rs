@@ -49,7 +49,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
             }
 
             if let Some(cidx) = close_idx {
-                state.execute(Bind::CloseXpr(cidx));
+                state.execute(Bind::CloseXpr(cidx)).unwrap();
                 return;
             }
 

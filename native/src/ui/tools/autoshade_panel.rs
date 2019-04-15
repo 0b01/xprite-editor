@@ -4,16 +4,6 @@ use std::f64;
 use std::rc::Rc;
 
 pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
-    let misc_flags = {
-        let mut f = ImGuiColorEditFlags::empty();
-        f.set(ImGuiColorEditFlags::HDR, true);
-        f.set(ImGuiColorEditFlags::AlphaPreview, true);
-        f.set(ImGuiColorEditFlags::NoOptions, false);
-        f.set(ImGuiColorEditFlags::NoInputs, true);
-        f.set(ImGuiColorEditFlags::NoLabel, true);
-        f.set(ImGuiColorEditFlags::NoPicker, false);
-        f
-    };
 
     let autoshade = Rc::clone(&state.xpr_mut().toolbox.autoshade);
     let mut tool = autoshade.borrow_mut();

@@ -1,4 +1,4 @@
-// TODO: remove this state. directly modify tool brush state w/ msg
+// Note: this is necessary because of imgui
 
 pub struct BrushState {
     pub sz: [i32; 2],

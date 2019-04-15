@@ -15,9 +15,14 @@ pub fn draw_brush(_rdr: &Renderer, state: &mut State, ui: &Ui) {
         .resizable(true)
         .build(|| {
             let current_tool = state.xpr_mut().toolbox.selected;
-            if let Some(current_brush) = state.xpr().get_brush_for_tool(current_tool) {
-                draw_brush_tree(state, ui, current_brush.brush_type, current_tool);
-            }
+            let brush_type = if let Some(b) = state.xpr().get_brush_for_tool(current_tool) {
+                b.brush_type
+            } else if let Some(b) = state.xpr().get_brush_for_tool(state.xpr().last_tool()) {
+                b.brush_type
+            } else {
+                return;
+            };
+            draw_brush_tree(state, ui, brush_type, current_tool);
         });
 }
 

@@ -44,7 +44,7 @@ impl Toolbox {
 
         let selected = ToolType::Pencil;
 
-        let tool_stack = Vec::with_capacity(1);
+        let tool_stack = vec![ToolType::Pencil];
         Toolbox {
             tool_stack,
             pencil,

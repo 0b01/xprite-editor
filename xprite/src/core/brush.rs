@@ -216,7 +216,8 @@ mod tests {
                     pixel!(3, 2, Color::red())
                 ),
                 bb: (4.0, 4.0),
-                offset: (-2.0, -2.0)
+                offset: (-2.0, -2.0),
+                BrushType::Circle(4),
             }
         );
     }
@@ -235,7 +236,8 @@ mod tests {
                     pixel!(1, 1, Color::red())
                 ),
                 bb: (2.0, 2.0),
-                offset: (-1.0, -1.0)
+                offset: (-1.0, -1.0),
+                brush_type: BrushType::Square(2),
             }
         );
     }

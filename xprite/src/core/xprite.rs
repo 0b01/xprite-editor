@@ -372,7 +372,7 @@ impl Xprite {
 
         for (i, group) in top.groups.iter().enumerate().rev() {
             for (j, layer) in group.1.iter().enumerate().rev() {
-                let mut draw_buf = |rdr: &mut Renderer| {
+                let draw_buf = |rdr: &mut Renderer| {
                     if i == top.sel_group && j == top.selected {
                         // draw current layer pixels
                         for &Pixel { point, color } in self.pixels().iter() {

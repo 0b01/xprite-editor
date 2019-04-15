@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use std::f64;
 use std::rc::Rc;
 use xprite::image::GenericImageView;
 

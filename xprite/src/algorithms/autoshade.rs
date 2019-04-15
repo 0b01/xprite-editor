@@ -56,14 +56,14 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
     let mut erode_acc = 0.;
     for (i, step_param) in step_params.iter().enumerate() {
         let AutoshadeStepParam {erode, shift, mode} = step_param;
-        shift_acc += *shift;
         erode_acc += *erode;
+        shift_acc += *shift;
         let eroded = erode_l2norm(&acc, erode_acc);
         if DBG_SAVE_IMG {
             eroded.save(format!("eroded{}.png", i)).unwrap();
         }
 
-        let translated = translate(&eroded, (shift.x as i32, shift.y as i32));
+        let translated = translate(&eroded, (shift_acc.x as i32, shift_acc.y as i32));
 
         let mut step_acc = Pixels::new();
 
@@ -77,7 +77,7 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
             }
             let intersect = *p == 255 && *orig_p == 255;
             if intersect {
-                let mut orig_pixel = ret.get_pixel(
+                let orig_pixel = ret.get_pixel(
                     orig_bb.0.y as isize + y as isize - 1,
                     orig_bb.0.x as isize + x as isize - 1,
                 ).unwrap();
@@ -145,17 +145,17 @@ mod tests {
             AutoshadeStepParam {
                 erode: 200.,
                 shift: vec2f!(-6., -6.),
-                mode: AutoshadeBlendingMode::Lighten(10.),
+                mode: AutoshadeBlendingMode::Lighten(10),
             },
             AutoshadeStepParam {
                 erode: 200.,
                 shift: vec2f!(-6., -6.),
-                mode: AutoshadeBlendingMode::Lighten(10.),
+                mode: AutoshadeBlendingMode::Lighten(10),
             },
             AutoshadeStepParam {
                 erode: 200.,
                 shift: vec2f!(-6., -6.),
-                mode: AutoshadeBlendingMode::Lighten(10.),
+                mode: AutoshadeBlendingMode::Lighten(10),
             }
         ]);
         let img = shaded.as_image(shaded.bounding_rect());

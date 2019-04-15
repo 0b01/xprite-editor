@@ -85,7 +85,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Hand);
     }
 
-    let is_wheel_dragging = ui.imgui().is_mouse_dragging(ImMouseButton::Middle);
+    let is_wheel_dragging = ui.imgui().is_mouse_dragging(ImMouseButton::Middle) || state.inputs.space;
     // middle key for scrolling
     if using_window && is_wheel_dragging {
         // set cursor
@@ -98,8 +98,6 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     if using_window && wheel_delta != 0. {
         // if alt pressed, change brush size
         if state.inputs.alt {
-            // TODO: refactor
-            // BUG: negative brush size
             let current_tool = state.xpr().last_tool();
             if let Some(brush) = state.xpr().get_brush_for_tool(current_tool) {
                 state.brush.sz[0] += wheel_delta.signum() as i32;
