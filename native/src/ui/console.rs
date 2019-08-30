@@ -1,10 +1,10 @@
 use crate::prelude::*;
 use xprite::rendering::Renderer;
 
-pub fn draw_console(_rdr: &Renderer, state: &mut State, ui: &Ui) {
+pub fn draw_console(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     if state.show_console {
-        ui.window(im_str!("Console"))
-            .size((300., 200.), ImGuiCond::Appearing)
+        ui.window(&im_str!("Console"))
+            .size([300., 200.], Condition::Appearing)
             .movable(true)
             .collapsible(true)
             .resizable(true)

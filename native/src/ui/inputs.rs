@@ -1,5 +1,6 @@
 use crate::prelude::*;
 
+#[allow(unused)]
 #[repr(usize)]
 pub enum KeyCode {
     Tab = 0,
@@ -67,32 +68,32 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     use self::InputEvent::*;
     use self::InputItem::*;
 
-    let wheel_delta = ui.imgui().mouse_wheel() as f64 / 5.;
-    let (x, y) = ui.imgui().mouse_pos();
-    let x = x.into();
-    let y = y.into();
+    let wheel_delta = ui.io().mouse_wheel as f64 / 5.;
+    let pos = ui.io().mouse_pos;
+    let x = pos[0].into();
+    let y = pos[1].into();
 
     if (state.xpr().last_mouse_pos.x != x || state.xpr().last_mouse_pos.y != y) && !state.inputs.space {
         handle_error!(state.xpr_mut().mouse_move(&MouseMove { x: x.into(), y: y.into() }));
     }
 
-    let left = ui.imgui().is_mouse_down(ImMouseButton::Left);
-    let right = ui.imgui().is_mouse_down(ImMouseButton::Right);
+    let left = ui.is_mouse_down(MouseButton::Left);
+    let right = ui.is_mouse_down(MouseButton::Right);
 
     let using_window = ui.is_window_hovered() && !ui.is_item_active();
 
     if state.inputs.space {
-        ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Hand);
+        ui.set_mouse_cursor(Some(MouseCursor::Hand));
     }
 
-    let is_wheel_dragging = ui.imgui().is_mouse_dragging(ImMouseButton::Middle) || state.inputs.space;
+    let is_wheel_dragging = ui.is_mouse_dragging(MouseButton::Middle) || state.inputs.space;
     // middle key for scrolling
     if using_window && is_wheel_dragging {
         // set cursor
-        ui.imgui().set_mouse_cursor(ImGuiMouseCursor::Hand);
-        let d = ui.imgui().mouse_delta();
-        state.xpr_mut().canvas.scroll.x += d.0 as f64;
-        state.xpr_mut().canvas.scroll.y += d.1 as f64;
+        ui.set_mouse_cursor(Some(MouseCursor::Hand));
+        let d = ui.io().mouse_delta;
+        state.xpr_mut().canvas.scroll.x += d[0] as f64;
+        state.xpr_mut().canvas.scroll.y += d[1] as f64;
     }
 
     if using_window && wheel_delta != 0. {
@@ -136,17 +137,19 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     // right
     if state.inputs.debounce(InputItem::Right, right) && using_window {
         if right {
-            let (x, y) = ui.imgui().mouse_pos();
+            let pos = ui.io().mouse_pos;
+            let x = pos[0].into();
+            let y = pos[1].into();
             handle_error!(state.xpr_mut().event(&MouseDown {
-                x: x.into(),
-                y: y.into(),
+                x: x,
+                y: y,
                 button: Right
             }));
         } else {
             trace!("mouse right up");
             handle_error!(state.xpr_mut().event(&MouseUp {
-                x: x.into(),
-                y: y.into(),
+                x: x,
+                y: y,
                 button: Right
             }));
         }
@@ -176,19 +179,19 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
         };
     }
 
-    let is_ctrl = ui.imgui().key_ctrl();
+    let is_ctrl = ui.io().key_ctrl;
     handle_input!(is_ctrl, Ctrl);
 
-    let is_shift = ui.imgui().key_shift();
+    let is_shift = ui.io().key_shift;
     handle_input!(is_shift, Shift);
 
-    let is_alt = ui.imgui().key_alt();
+    let is_alt = ui.io().key_alt;
     handle_input!(is_alt, Alt);
 
     macro_rules! expand_handle_input {
         ($($key:ident),*) => {
             $(
-                let i = ui.imgui().is_key_down(KeyCode::$key as usize);
+                let i = ui.is_key_down(KeyCode::$key as u32);
                 handle_input!(i, $key);
             )*
         };
@@ -200,7 +203,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     );
 
     // for i in 0..512 {
-    //     if ui.imgui().is_key_down(i) {
+    //     if ui.is_keys_down(i) {
     //         println!("{}", i);
     //     }
     // }

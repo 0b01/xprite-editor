@@ -4,7 +4,6 @@ members = [
     "web",
     "native",
     # "font",
-    "imgui-rs/imgui-glium-examples",
 ]
 
 

@@ -3,9 +3,9 @@ use crate::render::imgui::ImguiRenderer;
 use crate::state::preview_window::PreviewWindowMode;
 
 pub fn draw_preview(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
-    ui.window(im_str!("Preview"))
-        .position((LEFT_SIDE_WIDTH, 220.), ImGuiCond::Appearing)
-        .size((LEFT_SIDE_WIDTH, 100.), ImGuiCond::Appearing)
+    ui.window(&im_str!("Preview"))
+        .position([LEFT_SIDE_WIDTH, 220.], Condition::Appearing)
+        .size([LEFT_SIDE_WIDTH, 100.], Condition::Appearing)
         .movable(true)
         .collapsible(true)
         .resizable(true)
@@ -15,7 +15,9 @@ pub fn draw_preview(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
 
             let size = match state.preview_window_state.mode {
                 PreviewWindowMode::Fill => {
-                    let (win_w, win_h) = ui.get_window_size();
+                    let sz = ui.io().display_size;
+                    let win_w = sz[0];
+                    let win_h = sz[1];
                     let win_ratio = win_w / win_h;
                     if art_ratio > win_ratio {
                         // constrainted by width
@@ -29,6 +31,6 @@ pub fn draw_preview(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                 PreviewWindowMode::TwoX => [state.xpr_mut().canvas.art_w as f32 * 2., state.xpr_mut().canvas.art_h as f32 * 2.],
             };
 
-            ui.image(ImTexture::from(state.texture.unwrap()), size).build();
+            ui.image(TextureId::from(state.texture.unwrap()), size).build();
         })
 }

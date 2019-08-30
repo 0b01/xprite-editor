@@ -1,14 +1,14 @@
 use crate::prelude::*;
 use xprite::rendering::Renderer;
 
-pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
+pub fn draw_file_manager(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     let window_title = im_str!("{}", if state.file_popup.show_file_is_save { "Save file" } else { "Open file" });
 
     if state.file_popup.show_file_popup {
-        ui.open_popup(window_title);
+        ui.open_popup(&window_title);
     }
 
-    ui.popup_modal(window_title)
+    ui.popup_modal(&window_title)
         .inputs(true)
         .collapsible(true)
         .resizable(false)
@@ -41,27 +41,26 @@ pub fn draw_file_manager(_rdr: &Renderer, state: &mut State, ui: &Ui) {
                 state.file_popup.show_file_popup = false;
             };
 
-            ui.with_item_width(400., || {
-                if ui
-                    .input_text(im_str!(""), &mut state.file_popup.open_file_name)
-                    .auto_select_all(true)
-                    .enter_returns_true(true)
-                    .build()
-                {
-                    open_file(state);
-                    close_window(state);
-                }
+            let _ = ui.push_item_width(400.);
+            if ui
+                .input_text(&im_str!(""), &mut state.file_popup.open_file_name)
+                .auto_select_all(true)
+                .enter_returns_true(true)
+                .build()
+            {
+                open_file(state);
+                close_window(state);
+            }
 
-                if ui.button(im_str!("Cancel"), (60., 20.)) {
-                    close_window(state);
-                }
+            if ui.button(&im_str!("Cancel"), [60., 20.]) {
+                close_window(state);
+            }
 
-                ui.same_line(100.);
+            ui.same_line(100.);
 
-                if ui.button(window_title, (60., 20.)) {
-                    open_file(state);
-                    close_window(state);
-                }
-            });
+            if ui.button(&window_title, [60., 20.]) {
+                open_file(state);
+                close_window(state);
+            }
         });
 }

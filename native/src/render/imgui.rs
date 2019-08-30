@@ -4,6 +4,7 @@ use glium::{
     texture::{ClientFormat, RawImage2d},
     Texture2d,
 };
+use std::rc::Rc;
 use imgui::*;
 use std::borrow::Cow;
 use std::f64;
@@ -11,21 +12,21 @@ use xprite::rendering::{MouseCursorType, Renderer};
 
 pub struct ImguiRenderer<'ui> {
     pub ui: &'ui Ui<'ui>,
-    pub gl_ctx: &'ui Facade,
-    pub textures: &'ui mut Textures<Texture2d>,
+    pub gl_ctx: &'ui dyn Facade,
+    pub textures: &'ui mut Textures<Rc<Texture2d>>, // TODO: refactor into a common type
 }
 
 impl<'ui> Renderer for ImguiRenderer<'ui> {
     fn time(&self) -> f32 {
-        (self.ui.imgui().get_frame_count() % 60) as f32 / 60.
+        (self.ui.frame_count() % 60) as f32 / 60.
     }
 
     fn width(&self) -> f64 {
-        self.ui.get_window_size().0 as f64
+        self.ui.io().display_size[0] as f64
     }
 
     fn height(&self) -> f64 {
-        self.ui.get_window_size().1 as f64
+        self.ui.io().display_size[1] as f64
     }
 
     fn circ(&mut self, p0: [f64; 2], r: f64, color: [f32; 4], filled: bool) {
@@ -70,14 +71,13 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
 
     fn set_mouse_cursor(&mut self, cursor_type: MouseCursorType) {
         let c = match cursor_type {
-            MouseCursorType::Hand => ImGuiMouseCursor::Hand,
-            MouseCursorType::None => ImGuiMouseCursor::None,
+            MouseCursorType::Hand => Some(MouseCursor::Hand),
+            MouseCursorType::None => None,
         };
-        self.ui.imgui().set_mouse_cursor(c);
+        self.ui.set_mouse_cursor(c);
     }
-
     fn add_img(&mut self, img: image::DynamicImage, format: image::ColorType) -> usize {
-        let gl_texture = self.to_gl_texture(img, format);
+        let gl_texture = Rc::new(self.to_gl_texture(img, format));
         self.textures.insert(gl_texture).id()
     }
 
@@ -89,13 +89,13 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
 }
 
 impl<'ui> ImguiRenderer<'ui> {
-    pub fn new(ui: &'ui Ui, gl_ctx: &'ui Facade, textures: &'ui mut Textures<Texture2d>) -> Self {
+    pub fn new(ui: &'ui Ui, gl_ctx: &'ui dyn Facade, textures: &'ui mut Textures<Rc<Texture2d>>) -> Self {
         Self { ui, gl_ctx, textures }
     }
 
     pub fn replace_img(&mut self, img: image::DynamicImage, format: image::ColorType, texture_id: usize) {
-        let gl_texture = self.to_gl_texture(img, format);
-        self.textures.replace(ImTexture::from(texture_id), gl_texture);
+        let gl_texture = Rc::new(self.to_gl_texture(img, format));
+        self.textures.replace(TextureId::from(texture_id), gl_texture);
     }
 
     fn to_gl_texture(&self, img: image::DynamicImage, format: image::ColorType) -> Texture2d {

@@ -3,10 +3,10 @@ use crate::prelude::*;
 // use xprite::rendering::Renderer;
 
 pub fn draw_toolbar(state: &mut State, ui: &Ui) {
-    ui.window(im_str!("toolbox"))
+    ui.window(&im_str!("toolbox"))
         .no_bring_to_front_on_focus(true)
-        .position((0., 20.), ImGuiCond::Appearing)
-        .size((LEFT_SIDE_WIDTH, 200.), ImGuiCond::Appearing)
+        .position([0., 20.], Condition::Appearing)
+        .size([LEFT_SIDE_WIDTH, 200.], Condition::Appearing)
         .movable(false)
         .collapsible(false)
         .resizable(false)
@@ -15,7 +15,7 @@ pub fn draw_toolbar(state: &mut State, ui: &Ui) {
             let tools = ToolType::VARIANTS;
             for (_index, name) in tools.iter().enumerate() {
                 let is_sel = selected == *name;
-                if ui.selectable(im_str!("{}", name.as_str()), is_sel, ImGuiSelectableFlags::empty(), (0., 0.)) {
+                if ui.selectable(&im_str!("{}", name.as_str()), is_sel, ImGuiSelectableFlags::empty(), [0., 0.]) {
                     state.xpr_mut().change_tool(*name).unwrap();
                 }
             }

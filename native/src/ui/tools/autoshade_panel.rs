@@ -3,12 +3,12 @@ use crate::prelude::*;
 use std::f64;
 use std::rc::Rc;
 
-pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
+pub fn draw(_rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
 
     let autoshade = Rc::clone(&state.xpr_mut().toolbox.autoshade);
     let mut tool = autoshade.borrow_mut();
     let len = tool.steps.len();
-    if ui.button(im_str!("+"), (0., 0.)) {
+    if ui.button(&im_str!("+"), [0., 0.]) {
         tool.steps.push(
             AutoshadeStepParam {
                 erode: 200.,
@@ -24,20 +24,20 @@ pub fn draw(_rdr: &mut Renderer, state: &mut State, ui: &Ui) {
         let mut dist_x = tool.steps[i].shift.x as f32;
         let mut dist_y = tool.steps[i].shift.y as f32;
 
-        if ui.small_button(im_str!("-")) {
+        if ui.small_button(&im_str!("-")) {
             tool.steps.remove(i);
             ui.pop_id();
             return;
         }
-        if ui.drag_float(im_str!("erode"), &mut erode).build() {
+        if ui.drag_float(&im_str!("erode"), &mut erode).build() {
             tool.steps[i].erode = erode as f64;
             tool.finalize(&mut state.xpr_mut()).unwrap();
         }
-        if ui.drag_float(im_str!("dist_x"), &mut dist_x).build() {
+        if ui.drag_float(&im_str!("dist_x"), &mut dist_x).build() {
             tool.steps[i].shift.x = dist_x as f64;
             tool.finalize(&mut state.xpr_mut()).unwrap();
         }
-        if ui.drag_float(im_str!("dist_y"), &mut dist_y).build() {
+        if ui.drag_float(&im_str!("dist_y"), &mut dist_y).build() {
             tool.steps[i].shift.y = dist_y as f64;
             tool.finalize(&mut state.xpr_mut()).unwrap();
         }

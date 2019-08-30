@@ -84,11 +84,19 @@ fn run_ui(fname: Option<&str>) {
     init_full_logger(Arc::clone(&xpr.log));
     let mut state = State::new(xpr);
 
-    render::run("Xprite".to_owned(), BGCOLOR, |ui, gl_ctx, textures| {
+    let system = crate::render::run2::init(file!());
+    system.main_loop(|_, ui, gl_ctx, textures| {
         let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures);
         state.load_icons(&mut rdr);
-        ui::draw(&mut rdr, &mut state, ui)
+        ui::draw(&mut rdr, &mut state, ui);
     });
+
+    // render::run::run("Xprite".to_owned(), BGCOLOR, |ui, gl_ctx, textures| {
+    //     let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures);
+    //     state.load_icons(&mut rdr);
+    //     ui::draw(&mut rdr, &mut state, ui)
+    // });
+
 }
 
 fn init_full_logger(console_logger: Arc<Mutex<String>>) {

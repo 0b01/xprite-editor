@@ -1,14 +1,14 @@
 use crate::prelude::*;
 
-pub fn draw_brush(_rdr: &Renderer, state: &mut State, ui: &Ui) {
+pub fn draw_brush(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     if !state.show_brush {
         return;
     }
 
-    let sz = ui.frame_size().logical_size;
-    ui.window(im_str!("Brush"))
-        .position((sz.0 as f32 - RIGHT_SIDE_WIDTH * 2., 20.), ImGuiCond::Once)
-        .size((RIGHT_SIDE_WIDTH, (sz.1 / 2.) as f32), ImGuiCond::Once)
+    let sz = ui.io().display_size;
+    ui.window(&im_str!("Brush"))
+        .position([sz[0] as f32 - RIGHT_SIDE_WIDTH * 2., 20.], Condition::Once)
+        .size([RIGHT_SIDE_WIDTH, (sz[1] / 2.) as f32], Condition::Once)
         .no_bring_to_front_on_focus(false)
         .movable(true)
         .collapsible(true)
@@ -27,25 +27,25 @@ pub fn draw_brush(_rdr: &Renderer, state: &mut State, ui: &Ui) {
 }
 
 pub fn draw_brush_tree(state: &mut State, ui: &Ui, current_brush: BrushType, tool_type: ToolType) {
-    ui.tree_node(im_str!("Brush")).default_open(true).build(|| {
+    ui.tree_node(&im_str!("Brush")).default_open(true).build(|| {
         for (_index, brush) in BrushType::VARIANTS.iter().enumerate() {
             let is_sel = &current_brush == brush;
-            if ui.selectable(im_str!("{}", brush.as_str()), is_sel, ImGuiSelectableFlags::empty(), (0., 0.)) {
+            if ui.selectable(&im_str!("{}", brush.as_str()), is_sel, ImGuiSelectableFlags::empty(), [0., 0.]) {
                 state.set_brush_for_tool(*brush, tool_type);
             }
         }
     });
 
-    ui.tree_node(im_str!("Brush Settings")).default_open(true).build(|| {
-        if ui.drag_int(im_str!("size"), &mut state.brush.sz[0]).build() {
+    ui.tree_node(&im_str!("Brush Settings")).default_open(true).build(|| {
+        if ui.drag_int(&im_str!("size"), &mut state.brush.sz[0]).build() {
             state.set_brush_for_tool(current_brush, tool_type);
         }
-        if ui.drag_int(im_str!("angle"), &mut state.brush.sz[1]).build() {
+        if ui.drag_int(&im_str!("angle"), &mut state.brush.sz[1]).build() {
             state.set_brush_for_tool(current_brush, tool_type);
         }
         macro_rules! angle_btn {
             ($angle: literal) => {
-                if ui.button(im_str!("{}", stringify!($angle)), (0., 0.)) {
+                if ui.button(&im_str!("{}", stringify!($angle)), [0., 0.]) {
                     state.brush.sz[1] = $angle;
                     state.set_brush_for_tool(current_brush, tool_type);
                 }

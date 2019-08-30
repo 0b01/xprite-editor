@@ -41,7 +41,7 @@ impl Layer {
         self.content.iter().find(|i| i.point == p).map(|i| i.color)
     }
 
-    pub fn draw(&self, rdr: &mut Renderer) {
+    pub fn draw(&self, rdr: &mut dyn Renderer) {
         for &Pixel { point, color } in self.content.iter() {
             let Vec2f { x, y } = point;
             if oob(x, y, rdr.width(), rdr.height()) {

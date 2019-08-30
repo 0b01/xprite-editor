@@ -13,7 +13,7 @@ pub mod settings_panel;
 pub mod texture_panel;
 pub mod vector_panel;
 
-pub fn draw(selected: ToolType, rdr: &mut Renderer, state: &mut State, ui: &Ui) {
+pub fn draw(selected: ToolType, rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
     match selected {
         ToolType::Pencil => pencil_panel::draw(state, ui),
         ToolType::Line => line_panel::draw(state, ui),

@@ -217,7 +217,7 @@ mod tests {
                 ),
                 bb: (4.0, 4.0),
                 offset: (-2.0, -2.0),
-                BrushType::Circle(4),
+                brush_type: BrushType::Circle(4),
             }
         );
     }
@@ -254,7 +254,8 @@ mod tests {
                     pixel!(0,2,Color::red())
                 },
                 bb: (3.0, 3.0),
-                offset: (-1.0, -1.0)
+                offset: (-1.0, -1.0),
+                brush_type: BrushType::Line(3, 45),
             }
         );
     }

@@ -253,7 +253,7 @@ impl Xprite {
 }
 
 impl Xprite {
-    pub fn render(&self, rdr: &mut Renderer) {
+    pub fn render(&self, rdr: &mut dyn Renderer) {
         self.render_cursor(rdr);
         self.render_bezier(rdr);
         self.render_line(rdr);
@@ -261,13 +261,13 @@ impl Xprite {
         self.render_canvas_extras(rdr);
     }
 
-    pub fn render_line(&self, rdr: &mut Renderer) {
+    pub fn render_line(&self, rdr: &mut dyn Renderer) {
         for Rect(p0, p1) in &self.line_buf {
             self.canvas.draw_line(rdr, *p0, *p1, Color::red().into());
         }
     }
 
-    pub fn render_cursor(&self, rdr: &mut Renderer) {
+    pub fn render_cursor(&self, rdr: &mut dyn Renderer) {
         let outline = self.cursor.outline();
         for p in self.cursor.iter() {
             self.canvas.draw_pixel_rect(rdr, p.point, p.color.into(), true);
@@ -277,13 +277,13 @@ impl Xprite {
         }
     }
 
-    pub fn render_canvas_extras(&self, rdr: &mut Renderer) {
+    pub fn render_canvas_extras(&self, rdr: &mut dyn Renderer) {
         rdr.reset();
         // self.canvas.draw_canvas(rdr);
         self.canvas.draw_grid(rdr);
     }
 
-    pub fn render_bezier(&self, rdr: &mut Renderer) {
+    pub fn render_bezier(&self, rdr: &mut dyn Renderer) {
         for seg in &self.bz_buf {
             let &CubicBezierSegment { ctrl1, ctrl2, from, to } = seg;
             self.canvas.draw_bezier(rdr, from, ctrl1, ctrl2, to, Color::grey().into(), 1.);
@@ -305,7 +305,7 @@ impl Xprite {
         }
     }
 
-    pub fn render_marquee(&self, rdr: &mut Renderer) {
+    pub fn render_marquee(&self, rdr: &mut dyn Renderer) {
         for (ith, (p, outline)) in self.marq_buf.iter().enumerate() {
             self.canvas.draw_pixel_marqee(rdr, *p, *outline, ith);
         }
@@ -366,13 +366,13 @@ impl Xprite {
         s.finish()
     }
 
-    pub fn preview(&self, rdr: &mut Renderer) -> Result<(), String> {
+    pub fn preview(&self, rdr: &mut dyn Renderer) -> Result<(), String> {
         let top = self.history.top();
         // draw layers
 
         for (i, group) in top.groups.iter().enumerate().rev() {
             for (j, layer) in group.1.iter().enumerate().rev() {
-                let draw_buf = |rdr: &mut Renderer| {
+                let draw_buf = |rdr: &mut dyn Renderer| {
                     if i == top.sel_group && j == top.selected {
                         // draw current layer pixels
                         for &Pixel { point, color } in self.pixels().iter() {
@@ -395,7 +395,7 @@ impl Xprite {
     }
 
     /// export pixels to an image via renderer
-    pub fn export(&self, rdr: &mut Renderer) -> Result<(), String> {
+    pub fn export(&self, rdr: &mut dyn Renderer) -> Result<(), String> {
         let top = self.history.top();
         // draw layers
         for layer in top.iter_layers().rev() {
@@ -509,7 +509,7 @@ impl Xprite {
             MouseDown { .. } => self.mouse_down(evt),
             MouseUp { .. } => self.mouse_up(evt),
             KeyUp { key } => self.key_up(key),
-            KeyDown { key } => self.key_down(key),
+            KeyDown { key } => self.keys_down(key),
         }
     }
 
@@ -517,7 +517,7 @@ impl Xprite {
         self.set_option(key.as_str(), "false")
     }
 
-    pub fn key_down(&mut self, key: &InputItem) -> Result<(), String> {
+    pub fn keys_down(&mut self, key: &InputItem) -> Result<(), String> {
         self.set_option(key.as_str(), "true")
     }
 

@@ -72,13 +72,13 @@ impl Canvas {
         self.canvas_h = canvas_h;
     }
 
-    pub fn draw_circle(&self, rdr: &mut Renderer, p0: Vec2f, radius: f64, color: [f32; 4], filled: bool) {
+    pub fn draw_circle(&self, rdr: &mut dyn Renderer, p0: Vec2f, radius: f64, color: [f32; 4], filled: bool) {
         let p0 = self.to_cli(p0).into();
         let rad = self.scale * radius;
         rdr.circ(p0, rad, color, filled);
     }
 
-    pub fn draw_bezier(&self, rdr: &mut Renderer, from: Vec2f, ctrl1: Vec2f, ctrl2: Vec2f, to: Vec2f, c: [f32; 4], thickness: f64) {
+    pub fn draw_bezier(&self, rdr: &mut dyn Renderer, from: Vec2f, ctrl1: Vec2f, ctrl2: Vec2f, to: Vec2f, c: [f32; 4], thickness: f64) {
         let p0 = self.to_cli(from).into();
         let p1 = self.to_cli(to).into();
         let cp0 = self.to_cli(ctrl1).into();
@@ -108,7 +108,7 @@ impl Canvas {
     }
 
     /// draw line around pixel
-    pub fn draw_pixel_outline(&self, rdr: &mut Renderer, p: Vec2f, outline: Outline) {
+    pub fn draw_pixel_outline(&self, rdr: &mut dyn Renderer, p: Vec2f, outline: Outline) {
         let Vec2f { x, y } = p;
         let o = self.origin();
         if oob(x, y, self.art_w, self.art_h) {
@@ -138,7 +138,7 @@ impl Canvas {
     }
 
     /// draw an outlined pixel
-    pub fn draw_pixel_marqee(&self, rdr: &mut Renderer, p: Vec2f, outline: Outline, ith: usize) {
+    pub fn draw_pixel_marqee(&self, rdr: &mut dyn Renderer, p: Vec2f, outline: Outline, ith: usize) {
         let Vec2f { x, y } = p;
         let o = self.origin();
         if oob(x, y, self.art_w, self.art_h) {
@@ -174,7 +174,7 @@ impl Canvas {
     }
 
     /// draw a rectangular pixel using draw list(as opposed to rendering to texture)
-    pub fn draw_pixel_rect(&self, rdr: &mut Renderer, p: Vec2f, color: [f32; 4], filled: bool) {
+    pub fn draw_pixel_rect(&self, rdr: &mut dyn Renderer, p: Vec2f, color: [f32; 4], filled: bool) {
         let Vec2f { x, y } = p;
         let o = self.origin();
         if oob(x, y, self.art_w, self.art_h) {
@@ -193,7 +193,7 @@ impl Canvas {
         }
     }
 
-    pub fn draw_grid(&self, rdr: &mut Renderer) {
+    pub fn draw_grid(&self, rdr: &mut dyn Renderer) {
         if !self.show_grid {
             return;
         }
@@ -213,7 +213,7 @@ impl Canvas {
         }
     }
 
-    pub fn draw_line(&self, rdr: &mut Renderer, p0: Vec2f, p1: Vec2f, c: [f32; 4]) {
+    pub fn draw_line(&self, rdr: &mut dyn Renderer, p0: Vec2f, p1: Vec2f, c: [f32; 4]) {
         let p0 = self.to_cli(p0).into();
         let p1 = self.to_cli(p1).into();
 
