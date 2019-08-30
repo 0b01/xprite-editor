@@ -10,7 +10,6 @@ extern crate cairo;
 extern crate clap;
 extern crate glium;
 extern crate imgui;
-extern crate imgui_glium_renderer;
 extern crate imgui_winit_support;
 extern crate xprite;
 
@@ -84,7 +83,7 @@ fn run_ui(fname: Option<&str>) {
     init_full_logger(Arc::clone(&xpr.log));
     let mut state = State::new(xpr);
 
-    let system = crate::render::run2::init(file!());
+    let system = crate::render::run::init(file!());
     system.main_loop(|_, ui, gl_ctx, textures| {
         let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures);
         state.load_icons(&mut rdr);

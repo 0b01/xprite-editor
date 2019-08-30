@@ -63,11 +63,11 @@ impl Toolbox {
         }
     }
 
-    pub fn tool(&mut self) -> Rc<RefCell<Tool>> {
+    pub fn tool(&mut self) -> Rc<RefCell<dyn Tool>> {
         self.get(&self.selected)
     }
 
-    pub fn get(&self, name: &ToolType) -> Rc<RefCell<Tool>> {
+    pub fn get(&self, name: &ToolType) -> Rc<RefCell<dyn Tool>> {
         use self::ToolType::*;
         match name {
             Pencil | Settings => self.pencil.clone(),
