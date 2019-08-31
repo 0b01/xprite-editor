@@ -1,5 +1,3 @@
-/// re-exports
-pub use std::rc::Rc;
 pub use crate::algorithms::{path::Path, polyline::Polyline};
 pub use crate::core::{
     brush::{Brush, BrushType},
@@ -18,6 +16,8 @@ pub use crate::rendering::{
     image_renderer::{save_img, ImageRenderer},
     traits::Renderer,
 };
+/// re-exports
+pub use std::rc::Rc;
 
 #[cfg(feature = "python-scripting")]
 pub use pyo3::prelude::*;

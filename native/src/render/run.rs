@@ -1,9 +1,9 @@
+use glium::backend::Facade;
 use glium::glutin::{self, Event, WindowEvent};
 use glium::{Display, Surface};
 use imgui::*;
 use imgui_winit_support::{HiDpiMode, WinitPlatform};
 use std::time::Instant;
-use glium::backend::Facade;
 
 use std::rc::Rc;
 
@@ -118,8 +118,7 @@ pub fn init(title: &str) -> System {
     let builder = glutin::WindowBuilder::new()
         .with_title(title.to_owned())
         .with_dimensions(glutin::dpi::LogicalSize::new(1024f64, 768f64));
-    let display =
-        Display::new(builder, context, &events_loop).expect("Failed to initialize display");
+    let display = Display::new(builder, context, &events_loop).expect("Failed to initialize display");
 
     let mut imgui = Context::create();
     imgui.set_ini_filename(None);
@@ -189,19 +188,16 @@ impl System {
         let mut last_frame = Instant::now();
         let mut run = true;
 
-
         while run {
-
+            use crate::ui::inputs::KeyCode;
             use glium::glutin::ElementState::Pressed;
             use glium::glutin::WindowEvent::*;
             use glium::glutin::{MouseButton, MouseScrollDelta, TouchPhase, WindowEvent::CloseRequested};
-            use crate::ui::inputs::KeyCode;
 
             events_loop.poll_events(|event| {
                 platform.handle_event(imgui.io_mut(), &window, &event);
 
                 if let Event::WindowEvent { event, .. } = event {
-
                     match event {
                         CloseRequested => run = false,
                         KeyboardInput { input, .. } => {
@@ -224,9 +220,8 @@ impl System {
                             }
 
                             handle_key!(
-                                Tab, Left, Right, Up, Down, PageUp, PageDown, Home, End, Delete, Back,
-                                Return, Escape, Grave, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
-                                Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9, Space
+                                Tab, Left, Right, Up, Down, PageUp, PageDown, Home, End, Delete, Back, Return, Escape, Grave, A, B, C, D, E, F, G, H, I, J, K,
+                                L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9, Space
                             )
                         }
                         CursorMoved { position: pos, .. } => {
@@ -261,9 +256,7 @@ impl System {
             });
 
             let io = imgui.io_mut();
-            platform
-                .prepare_frame(io, &window)
-                .expect("Failed to start frame");
+            platform.prepare_frame(io, &window).expect("Failed to start frame");
             last_frame = io.update_delta_time(last_frame);
             let mut ui = imgui.frame();
             run_ui(&mut run, &mut ui, display.get_context(), renderer.textures());
@@ -272,9 +265,7 @@ impl System {
             target.clear_color_srgb(1.0, 1.0, 1.0, 1.0);
             platform.prepare_render(&ui, &window);
             let draw_data = ui.render();
-            renderer
-                .render(&mut target, draw_data)
-                .expect("Rendering failed");
+            renderer.render(&mut target, draw_data).expect("Rendering failed");
             target.finish().expect("Failed to swap buffers");
         }
     }

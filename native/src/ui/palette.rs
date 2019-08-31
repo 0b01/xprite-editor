@@ -83,10 +83,7 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     if ui.combo(&im_str!("Palette"), &mut pal_idx, &refs, -1) {
         state.xpr_mut().palette.selected_palette_idx = pal_idx as usize;
     }
-    ui.text(&im_str!(
-        "Color: {}",
-        state.xpr().palette.current_color().0
-    ));
+    ui.text(&im_str!("Color: {}", state.xpr().palette.current_color().0));
 
     let temp = ui.get_cursor_screen_pos();
     let mut MARGIN = temp[0];
@@ -95,14 +92,14 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     PALETTE_BEGIN_Y += 1.5;
     let PALETTE_W = LEFT_SIDE_WIDTH - 2. * MARGIN;
     let BLOCK_SZ = PALETTE_W / state.cols_per_row as f32;
-// let PALETTE_H = 400.;
+    // let PALETTE_H = 400.;
 
-// let draw_list = ui.get_window_draw_list();
-// draw_list.add_rect(
-//     (MARGIN - 5., PALETTE_BEGIN_Y - 5.),
-//     (RIGHT_SIDE_WIDTH - MARGIN + 5., PALETTE_BEGIN_Y + PALETTE_H + 5.),
-//     LIGHT_GREY
-// ).filled(false).build();
+    // let draw_list = ui.get_window_draw_list();
+    // draw_list.add_rect(
+    //     (MARGIN - 5., PALETTE_BEGIN_Y - 5.),
+    //     (RIGHT_SIDE_WIDTH - MARGIN + 5., PALETTE_BEGIN_Y + PALETTE_H + 5.),
+    //     LIGHT_GREY
+    // ).filled(false).build();
     let cols_per_row = state.cols_per_row as usize;
     let mut xpr = state.xpr_mut();
     let pal_idx = xpr.palette.selected_palette_idx as usize;
@@ -110,7 +107,7 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     let pal = xpr.palette.current_palette();
     let mut pal_ = pal.borrow_mut();
     for (i, (_col_name, col)) in pal_.iter_mut().enumerate() {
-//        let is_sel = col == &xpr.selected_color;
+        //        let is_sel = col == &xpr.selected_color;
         let is_sel = i == color_idx;
         let x = MARGIN + BLOCK_SZ * ((i % cols_per_row) as f32);
         let y = PALETTE_BEGIN_Y + BLOCK_SZ * ((i / cols_per_row) as f32);
@@ -120,10 +117,12 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
         } // if the color block is selected
         if is_sel {
             let draw_list = ui.get_window_draw_list();
-            draw_list.add_rect([x - MARGIN / 4., y - MARGIN / 4.],
-                               [x + BLOCK_SZ - MARGIN / 4., y + BLOCK_SZ - MARGIN / 4.],
-                               LIGHT_GREY,
-            )
+            draw_list
+                .add_rect(
+                    [x - MARGIN / 4., y - MARGIN / 4.],
+                    [x + BLOCK_SZ - MARGIN / 4., y + BLOCK_SZ - MARGIN / 4.],
+                    LIGHT_GREY,
+                )
                 .filled(true)
                 .build();
         }

@@ -10,10 +10,10 @@ use fnv::FnvBuildHasher;
 use img::GenericImageView;
 use indexmap::{set::Iter, IndexSet};
 use std::cmp::Ordering;
-use std::iter::FromIterator;
 use std::f64;
 use std::fmt::{Debug, Error, Formatter};
 use std::hash::{Hash, Hasher};
+use std::iter::FromIterator;
 use std::ops::{Index, Sub};
 
 #[cfg_attr(feature = "python-scripting", pyclass)]
@@ -393,7 +393,7 @@ impl From<img::DynamicImage> for Pixels {
 }
 
 impl FromIterator<Pixel> for Pixels {
-    fn from_iter<I: IntoIterator<Item=Pixel>>(iter: I) -> Self {
+    fn from_iter<I: IntoIterator<Item = Pixel>>(iter: I) -> Self {
         let mut c = Pixels::new();
         for i in iter {
             c.push(i);
@@ -403,7 +403,6 @@ impl FromIterator<Pixel> for Pixels {
 }
 
 impl Pixels {
-
     pub fn as_bool_mat(&self, w: usize, h: usize) -> Vec<Vec<bool>> {
         let mut arr = vec![vec![false; w]; h];
         for p in self.0.iter() {
@@ -493,12 +492,13 @@ impl Pixels {
     }
 
     pub fn to_rgba(&self, xpr: Option<&Xprite>) -> Option<Pixels> {
-        self
-            .iter()
+        self.iter()
             .map(|p| {
                 let mut ret = *p;
-                p.color.to_rgba(xpr)
-                    .map(|c|{ ret.color = Color::Rgba(c); ret })
+                p.color.to_rgba(xpr).map(|c| {
+                    ret.color = Color::Rgba(c);
+                    ret
+                })
             })
             .collect()
     }
@@ -529,11 +529,10 @@ impl Pixels {
 }
 
 impl Pixels {
-
     pub fn to_ase_pixels(&self, xpr: Option<&Xprite>) -> Option<ase::Pixels> {
         let bb = self.bounding_rect();
 
-            self.as_mat_bb(bb)
+        self.as_mat_bb(bb)
             .into_iter()
             .flatten()
             .map(|op| match op {

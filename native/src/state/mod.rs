@@ -194,9 +194,7 @@ impl State {
                     BrushType::Line(_, _) => {
                         let sz0 = self.brush.sz[0];
                         let sz1 = self.brush.sz[1];
-                        $tool
-                            .set(self.xpr_mut(), "brush", &format!("{}{},{}", brush.as_str(), sz0, sz1))
-                            .unwrap();
+                        $tool.set(self.xpr_mut(), "brush", &format!("{}{},{}", brush.as_str(), sz0, sz1)).unwrap();
                     }
                 };
             };

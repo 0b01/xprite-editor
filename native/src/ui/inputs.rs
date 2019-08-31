@@ -140,18 +140,10 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
             let pos = ui.io().mouse_pos;
             let x = pos[0].into();
             let y = pos[1].into();
-            handle_error!(state.xpr_mut().event(&MouseDown {
-                x: x,
-                y: y,
-                button: Right
-            }));
+            handle_error!(state.xpr_mut().event(&MouseDown { x: x, y: y, button: Right }));
         } else {
             trace!("mouse right up");
-            handle_error!(state.xpr_mut().event(&MouseUp {
-                x: x,
-                y: y,
-                button: Right
-            }));
+            handle_error!(state.xpr_mut().event(&MouseUp { x: x, y: y, button: Right }));
         }
     }
 

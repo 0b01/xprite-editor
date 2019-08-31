@@ -1,7 +1,11 @@
 use crate::prelude::*;
 
 #[derive(Clone, Default, Debug)]
-pub struct ColorPicker { cursor: Option<Pixels>, temp: Option<Color>, col: Option<Color> }
+pub struct ColorPicker {
+    cursor: Option<Pixels>,
+    temp: Option<Color>,
+    col: Option<Color>,
+}
 
 impl ColorPicker {
     pub fn new() -> Self {

@@ -18,11 +18,7 @@ impl BrushType {
             BrushType::Line(_, _) => "/",
         }
     }
-    pub const VARIANTS: [BrushType; 3] = [
-        BrushType::Circle(8),
-        BrushType::Square(4),
-        BrushType::Line(2, 0),
-    ];
+    pub const VARIANTS: [BrushType; 3] = [BrushType::Circle(8), BrushType::Square(4), BrushType::Line(2, 0)];
 }
 
 impl Default for BrushType {
@@ -46,7 +42,6 @@ impl FromStr for Brush {
         } else {
             Err("unimplemented brush shape".to_owned())
         }
-
     }
 }
 

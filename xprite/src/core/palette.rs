@@ -30,33 +30,16 @@ impl PaletteManager {
                     selected_palette_idx: Default::default(),
                 });
             }
-            let mut entries: Vec<_> = dir_entries?
-                .map(|r| r.unwrap())
-                .collect();
-            entries.sort_by(
-                |dir1, dir2|
-                    natord::compare(
-                        dir1.path().to_str().unwrap(),
-                        dir2.path().to_str().unwrap(),
-                    )
-            );
+            let mut entries: Vec<_> = dir_entries?.map(|r| r.unwrap()).collect();
+            entries.sort_by(|dir1, dir2| natord::compare(dir1.path().to_str().unwrap(), dir2.path().to_str().unwrap()));
             for entry in &entries {
                 let path = entry.path();
-                let palette_name = path.file_stem()
-                    .expect("file_stem")
-                    .to_str()
-                    .expect("file_stem to_str")
-                    .to_owned();
-                let pal = match path
-                    .extension()
-                    .expect("extension")
-                    .to_str()
-                    .expect("to_str")
-                    {
-                        "hex" => get_palette_hex(&path)?,
-                        "png" => get_palette_png(&path)?,
-                        _ => continue,
-                    };
+                let palette_name = path.file_stem().expect("file_stem").to_str().expect("file_stem to_str").to_owned();
+                let pal = match path.extension().expect("extension").to_str().expect("to_str") {
+                    "hex" => get_palette_hex(&path)?,
+                    "png" => get_palette_png(&path)?,
+                    _ => continue,
+                };
                 palettes.insert(palette_name, Rc::new(RefCell::new(pal)));
             }
         }
@@ -70,20 +53,21 @@ impl PaletteManager {
 
     pub fn set_color(&mut self, color: Color) {
         self.selected_color_idx = match color {
-            Color::Indexed(i) => {
-                i
-            }
+            Color::Indexed(i) => i,
             Color::Rgba(rgba) => {
                 use itertools::Itertools;
-                self.current_palette().borrow().iter().find_position(|&(k,v)| unsafe {
-                    v.as_rgba() == color.as_rgba()
-                }).unwrap().0
+                self.current_palette()
+                    .borrow()
+                    .iter()
+                    .find_position(|&(k, v)| unsafe { v.as_rgba() == color.as_rgba() })
+                    .unwrap()
+                    .0
             }
         }
     }
 
     pub fn current_palette(&self) -> Rc<RefCell<PaletteGroup>> {
-        return Rc::clone(self.palettes.get_index(self.selected_palette_idx).unwrap().1)
+        return Rc::clone(self.palettes.get_index(self.selected_palette_idx).unwrap().1);
     }
 
     pub fn current_color(&self) -> (String, Color) {
@@ -93,7 +77,6 @@ impl PaletteManager {
 
         (ret.0.to_owned(), *ret.1)
     }
-
 }
 
 fn pico8() -> PaletteGroup {

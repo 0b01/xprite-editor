@@ -235,14 +235,13 @@ impl Xprite {
                 tool.brush = brush;
                 Ok(())
             }
-            _ => Err("No brush attached to tool".to_owned())
+            _ => Err("No brush attached to tool".to_owned()),
         }
     }
 
     pub fn last_tool(&self) -> ToolType {
         *self.toolbox.tool_stack.last().unwrap()
     }
-
 }
 
 impl Xprite {
@@ -256,7 +255,7 @@ impl Xprite {
 
     pub fn render_line(&self, rdr: &mut dyn Renderer) {
         for Rect(p0, p1) in &self.line_buf {
-            self.canvas.draw_line(rdr, *p0, *p1, XpriteRgba::red().into() );
+            self.canvas.draw_line(rdr, *p0, *p1, XpriteRgba::red().into());
         }
     }
 
@@ -373,8 +372,7 @@ impl Xprite {
                         for &Pixel { point, color } in self.pixels().iter() {
                             let Vec2f { x, y } = point;
                             println!("{:?}", color);
-                            let c = color.to_rgba(Some(self))
-                                .ok_or("color index too big".to_owned())?.into();
+                            let c = color.to_rgba(Some(self)).ok_or("color index too big".to_owned())?.into();
                             rdr.pixel(x, y, c, true);
                         }
                     }

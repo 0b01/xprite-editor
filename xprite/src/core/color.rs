@@ -33,10 +33,8 @@ pub struct XpriteRgba {
 }
 
 impl Color {
-
     pub fn from_hex(col: &str) -> Result<Self, hex::FromHexError> {
-        XpriteRgba::from_hex(col)
-            .map(|i| Color::Rgba(i))
+        XpriteRgba::from_hex(col).map(|i| Color::Rgba(i))
     }
 
     pub unsafe fn as_rgba(&self) -> XpriteRgba {
@@ -44,7 +42,7 @@ impl Color {
             Color::Indexed(_) => unsafe {
                 use std::hint::unreachable_unchecked;
                 unreachable_unchecked();
-            }
+            },
             Color::Rgba(rgba) => *rgba,
         }
     }
@@ -52,17 +50,19 @@ impl Color {
     pub fn to_rgba(&self, xpr: Option<&Xprite>) -> Option<XpriteRgba> {
         match *self {
             Color::Indexed(i) => {
-                if xpr.is_none() { return None }
+                if xpr.is_none() {
+                    return None;
+                }
                 let pm = &xpr.unwrap().palette;
                 let (_pal_name, pal) = pm.palettes.get_index(pm.selected_palette_idx)?;
                 Some(unsafe { pal.borrow().get_index(i)?.1.as_rgba() })
             }
-            Color::Rgba(c) => Some(c)
+            Color::Rgba(c) => Some(c),
         }
     }
 
     pub fn rgba(r: u8, g: u8, b: u8, a: u8) -> Color {
-        Color::Rgba(XpriteRgba {r, g, b, a})
+        Color::Rgba(XpriteRgba { r, g, b, a })
     }
 
     pub fn white() -> Color {
@@ -100,7 +100,6 @@ impl Color {
     pub fn void() -> Color {
         Color::Rgba(XpriteRgba::void())
     }
-
 }
 
 #[cfg(feature = "python-scripting")]
@@ -119,19 +118,15 @@ impl<'a> pyo3::FromPyObject<'a> for Color {
 impl ToString for Color {
     fn to_string(&self) -> String {
         match self {
-            Color::Indexed(i) => {
-                format!("indexed({})", i)
-            }
-            Color::Rgba(c) => {
-                c.to_string()
-            }
+            Color::Indexed(i) => format!("indexed({})", i),
+            Color::Rgba(c) => c.to_string(),
         }
     }
 }
 
 impl ToString for XpriteRgba {
     fn to_string(&self) -> String {
-        format!("rgba({}, {}, {}, {})", self.r, self.g, self.b, self.a, )
+        format!("rgba({}, {}, {}, {})", self.r, self.g, self.b, self.a,)
     }
 }
 
@@ -165,7 +160,7 @@ impl From<XpriteRgba> for (i32, i32, i32, i32) {
 
 impl From<(i32, i32, i32, i32)> for Color {
     fn from(c: (i32, i32, i32, i32)) -> Self {
-        Color::Rgba( XpriteRgba {
+        Color::Rgba(XpriteRgba {
             r: c.0 as u8,
             g: c.1 as u8,
             b: c.2 as u8,
@@ -215,11 +210,16 @@ impl XpriteRgba {
         let r = hex::decode(&col[..2])?[0];
         let g = hex::decode(&col[2..4])?[0];
         let b = hex::decode(&col[4..])?[0];
-        Ok(XpriteRgba{r, g, b, a: 255})
+        Ok(XpriteRgba { r, g, b, a: 255 })
     }
 
     pub fn white() -> XpriteRgba {
-        XpriteRgba { r: 255, g: 255, b: 255, a: 255, }
+        XpriteRgba {
+            r: 255,
+            g: 255,
+            b: 255,
+            a: 255,
+        }
     }
 
     pub fn red() -> XpriteRgba {
