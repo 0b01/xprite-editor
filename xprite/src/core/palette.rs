@@ -6,21 +6,29 @@ use std::{fs, io, path};
 
 type PaletteGroup = IndexMap<String, Color>;
 
+use std::cell::RefCell;
+
 #[derive(Debug)]
 pub struct PaletteManager {
-    pub palettes: IndexMap<String, PaletteGroup>,
+    pub palettes: IndexMap<String, Rc<RefCell<PaletteGroup>>>,
+    pub selected_color_idx: usize,
+    pub selected_palette_idx: usize,
 }
 
 impl PaletteManager {
     pub fn new() -> io::Result<Self> {
         let mut palettes = IndexMap::new();
-        palettes.insert("pico8".to_owned(), pico8());
+        palettes.insert("pico8".to_owned(), Rc::new(RefCell::new(pico8())));
 
         if cfg!(not(wasm32)) {
             let dir = "config/palettes";
             let dir_entries = fs::read_dir(dir);
             if dir_entries.is_err() {
-                return Ok(Self { palettes });
+                return Ok(Self {
+                    palettes,
+                    selected_color_idx: Default::default(),
+                    selected_palette_idx: Default::default(),
+                });
             }
             let mut entries: Vec<_> = dir_entries?
                 .map(|r| r.unwrap())
@@ -49,18 +57,43 @@ impl PaletteManager {
                         "png" => get_palette_png(&path)?,
                         _ => continue,
                     };
-                palettes.insert(palette_name, pal);
+                palettes.insert(palette_name, Rc::new(RefCell::new(pal)));
             }
         }
 
-        Ok(Self { palettes })
+        Ok(Self {
+            palettes,
+            selected_color_idx: Default::default(),
+            selected_palette_idx: Default::default(),
+        })
     }
-    pub fn get(&self, name: &str) -> Option<&PaletteGroup> {
-        self.palettes.get(name)
+
+    pub fn set_color(&mut self, color: Color) {
+        self.selected_color_idx = match color {
+            Color::Indexed(i) => {
+                i
+            }
+            Color::Rgba(rgba) => {
+                use itertools::Itertools;
+                self.current_palette().borrow().iter().find_position(|&(k,v)| unsafe {
+                    v.as_rgba() == color.as_rgba()
+                }).unwrap().0
+            }
+        }
     }
-    pub fn get_mut(&mut self, name: &str) -> Option<&mut PaletteGroup> {
-        self.palettes.get_mut(name)
+
+    pub fn current_palette(&self) -> Rc<RefCell<PaletteGroup>> {
+        return Rc::clone(self.palettes.get_index(self.selected_palette_idx).unwrap().1)
     }
+
+    pub fn current_color(&self) -> (String, Color) {
+        let pal = self.current_palette();
+        let pal_ = pal.borrow();
+        let ret = pal_.get_index(self.selected_color_idx).unwrap();
+
+        (ret.0.to_owned(), *ret.1)
+    }
+
 }
 
 fn pico8() -> PaletteGroup {

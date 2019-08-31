@@ -5,9 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="529b08c0-0e9b-4167-abbe-955b4eb7ca07" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/native/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/native/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/native/src/ui/canvas.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/canvas.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/state/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/state/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/state/palette_window.rs" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/native/src/ui/palette.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/palette.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/ui/preview.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/preview.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xprite/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xprite/src/core/color.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/color.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xprite/src/core/palette.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/palette.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xprite/src/core/xprite.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/xprite.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xprite/src/layer/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/layer/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xprite/src/tools/color_picker.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/tools/color_picker.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

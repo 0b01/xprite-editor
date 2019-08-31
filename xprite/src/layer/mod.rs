@@ -47,7 +47,10 @@ impl Layer {
             if oob(x, y, rdr.width(), rdr.height()) {
                 continue;
             }
-            rdr.pixel(x, y, color.to_rgba(xpr)?.into(), true);
+            // print!("{}, {}, {:?}, c", x, y, color);
+            let c = color.to_rgba(xpr)?.into();
+            // println!("{:#?}", c);
+            rdr.pixel(x, y, c, true);
         }
         Some(())
     }

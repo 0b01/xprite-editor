@@ -1,11 +1,7 @@
 use crate::prelude::*;
 
 #[derive(Clone, Default, Debug)]
-pub struct ColorPicker {
-    cursor: Option<Pixels>,
-    temp: Option<Color>,
-    col: Option<Color>,
-}
+pub struct ColorPicker { cursor: Option<Pixels>, temp: Option<Color>, col: Option<Color> }
 
 impl ColorPicker {
     pub fn new() -> Self {
@@ -66,7 +62,7 @@ impl Tool for ColorPicker {
             xpr.color_picker_color = Some(temp);
         }
         if let Some(col) = self.col {
-            xpr.set_color(col);
+            xpr.palette.set_color(col);
             xpr.color_picker_color = None;
         }
         self.col = None;

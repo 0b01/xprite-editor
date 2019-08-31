@@ -19,16 +19,13 @@ pub struct Xprite {
 
     pub canvas: Canvas,
     pub color_picker_color: Option<Color>,
-    pub selected_color: Color,
-    pub palette_man: PaletteManager,
+    pub palette: PaletteManager,
 
     pub toolbox: Toolbox,
     pub cursor: Pixels,
     pub last_mouse_pos: Vec2f,
 
     pub log: Arc<Mutex<String>>,
-
-    pub indexed_palette: Vec<XpriteRgba>,
 
     pub redraw: bool,
 }
@@ -38,8 +35,7 @@ impl Default for Xprite {
         let palette_man = PaletteManager::new().expect("Cannot initialize palettes");
         Self {
             name: "Untitled".to_owned(),
-            palette_man,
-            selected_color: Default::default(),
+            palette: palette_man,
             color_picker_color: None,
             history: Default::default(),
             im_buf: Default::default(),
@@ -50,7 +46,6 @@ impl Default for Xprite {
             toolbox: Default::default(),
             cursor: Default::default(),
             last_mouse_pos: Default::default(),
-            indexed_palette: Default::default(),
             log: Arc::new(Mutex::new(String::new())),
             redraw: true,
         }
@@ -151,11 +146,7 @@ impl Xprite {
     }
 
     pub fn color(&self) -> Color {
-        self.selected_color
-    }
-
-    pub fn set_color(&mut self, color: Color) {
-        self.selected_color = color;
+        Color::Indexed(self.palette.selected_color_idx)
     }
 
     pub fn new_frame(&mut self) {
@@ -381,6 +372,7 @@ impl Xprite {
                         // draw current layer pixels
                         for &Pixel { point, color } in self.pixels().iter() {
                             let Vec2f { x, y } = point;
+                            println!("{:?}", color);
                             let c = color.to_rgba(Some(self))
                                 .ok_or("color index too big".to_owned())?.into();
                             rdr.pixel(x, y, c, true);

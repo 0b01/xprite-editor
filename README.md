@@ -12,6 +12,7 @@ git submodule update --init --recursive
 
 ## Bugs and Improvements
 
+* [ ] frame rate drops when marquee selection is active
 * [ ] Pass in mutable buffer and minimize copying
 * [ ] Layer merge down/up
 * [ ] Foreground/background color
@@ -44,7 +45,7 @@ git submodule update --init --recursive
 
 ## Done
 
-* [*] Indexed Color mode
+* [x] Indexed Color mode
 * [x] wave function collapse using wfc
 * [x] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
 * [x] multi document

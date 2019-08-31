@@ -29,67 +29,72 @@ pub fn draw_palette(rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
 }
 
 pub fn draw_color_picker(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
-let sz = ui.io().display_size;
+    let sz = ui.io().display_size;
 
-ui.window(&im_str!("Color Picker"))
-    .no_bring_to_front_on_focus(true)
-    .position([0., sz[1] as f32 - COLOR_PICKER_H], Condition::Always)
-    .size([LEFT_SIDE_WIDTH, COLOR_PICKER_H], Condition::Always)
-    .movable(false)
-    .collapsible(false)
-    .resizable(false)
-    .build(|| {
-        let misc_flags = {
-            let mut f = ImGuiColorEditFlags::empty();
-            f.set(ImGuiColorEditFlags::AlphaBar, true);
-            f.set(ImGuiColorEditFlags::AlphaPreview, true);
-            f.set(ImGuiColorEditFlags::AlphaPreviewHalf, true);
-            f.set(ImGuiColorEditFlags::NoLabel, true);
-            f.set(ImGuiColorEditFlags::HEX, true);
+    ui.window(&im_str!("Color Picker"))
+        .no_bring_to_front_on_focus(true)
+        .position([0., sz[1] as f32 - COLOR_PICKER_H], Condition::Always)
+        .size([LEFT_SIDE_WIDTH, COLOR_PICKER_H], Condition::Always)
+        .movable(false)
+        .collapsible(false)
+        .resizable(false)
+        .build(|| {
+            let misc_flags = {
+                let mut f = ImGuiColorEditFlags::empty();
+                f.set(ImGuiColorEditFlags::AlphaBar, true);
+                f.set(ImGuiColorEditFlags::AlphaPreview, true);
+                f.set(ImGuiColorEditFlags::AlphaPreviewHalf, true);
+                f.set(ImGuiColorEditFlags::NoLabel, true);
+                f.set(ImGuiColorEditFlags::HEX, true);
 
-            f.set(ImGuiColorEditFlags::PickerHueBar, true);
-            // f.set(ImGuiColorEditFlags::PickerHueWheel, true);
-            f
-        };
+                f.set(ImGuiColorEditFlags::PickerHueBar, true);
+                // f.set(ImGuiColorEditFlags::PickerHueWheel, true);
+                f
+            };
 
-        let mut sel: [f32; 4] = {
-            if let Some(col) = &state.xpr_mut().color_picker_color {
-                unsafe { (*col).as_rgba().into() }
-            } else {
-                unsafe { state.xpr_mut().selected_color.as_rgba().into() }
-            }
-        };
-        let b = ui
-            .color_picker(&im_str!("MyColor##4"), &mut sel)
-            .flags(misc_flags)
-            .alpha(true)
-            .alpha_bar(true)
-            .side_preview(true)
-            .rgb(true);
+            let mut sel: [f32; 4] = {
+                if let Some(col) = &state.xpr_mut().color_picker_color {
+                    unsafe { (*col).as_rgba().into() }
+                } else {
+                    unsafe { state.xpr_mut().palette.current_color().1.as_rgba().into() }
+                }
+            };
+            let b = ui
+                .color_picker(&im_str!("MyColor##4"), &mut sel)
+                .flags(misc_flags)
+                .alpha(true)
+                .alpha_bar(true)
+                .side_preview(true)
+                .rgb(true);
 
-        if b.build() {
-            let ret = sel.into();
-            state.xpr_mut().selected_color = ret;
-        };
-    });
+            if b.build() {
+                let ret = sel.into();
+                let color_idx = state.xpr_mut().palette.selected_color_idx;
+                *state.xpr_mut().palette.current_palette().borrow_mut().get_index_mut(color_idx).unwrap().1 = ret;
+                state.xpr_mut().redraw = true;
+            };
+        });
 }
 
 fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
-let items: Vec<_> = state.xpr_mut().palette_man.palettes.keys().cloned().map(ImString::new).collect();
-let refs: Vec<_> = items.iter().collect();
-ui.combo(&im_str!("Palette"), &mut state.palette_window.palette_idx, &refs, -1);
-ui.text(&im_str!(
-    "Color: {}",
-    state.palette_window.palette_color_name.as_ref().unwrap_or(&Cow::Borrowed("None"))
-));
+    let items: Vec<_> = state.xpr_mut().palette.palettes.keys().cloned().map(ImString::new).collect();
+    let refs: Vec<_> = items.iter().collect();
+    let mut pal_idx: i32 = state.xpr_mut().palette.selected_palette_idx as i32;
+    if ui.combo(&im_str!("Palette"), &mut pal_idx, &refs, -1) {
+        state.xpr_mut().palette.selected_palette_idx = pal_idx as usize;
+    }
+    ui.text(&im_str!(
+        "Color: {}",
+        state.xpr().palette.current_color().0
+    ));
 
-let temp = ui.get_cursor_screen_pos();
-let mut MARGIN = temp[0];
-let mut PALETTE_BEGIN_Y = temp[1];
-MARGIN += 1.5;
-PALETTE_BEGIN_Y += 1.5;
-let PALETTE_W = LEFT_SIDE_WIDTH - 2. * MARGIN;
-let BLOCK_SZ = PALETTE_W / state.cols_per_row as f32;
+    let temp = ui.get_cursor_screen_pos();
+    let mut MARGIN = temp[0];
+    let mut PALETTE_BEGIN_Y = temp[1];
+    MARGIN += 1.5;
+    PALETTE_BEGIN_Y += 1.5;
+    let PALETTE_W = LEFT_SIDE_WIDTH - 2. * MARGIN;
+    let BLOCK_SZ = PALETTE_W / state.cols_per_row as f32;
 // let PALETTE_H = 400.;
 
 // let draw_list = ui.get_window_draw_list();
@@ -98,64 +103,63 @@ let BLOCK_SZ = PALETTE_W / state.cols_per_row as f32;
 //     (RIGHT_SIDE_WIDTH - MARGIN + 5., PALETTE_BEGIN_Y + PALETTE_H + 5.),
 //     LIGHT_GREY
 // ).filled(false).build();
-let idx = state.palette_window.palette_idx as usize;
-let cols_per_row = state.cols_per_row as usize;
-let mut xpr = state.xpr_mut();
-let pal = xpr.palette_man.palettes.get_index_mut(idx).unwrap().1;
-for (i, (_col_name, col)) in pal.iter_mut().enumerate() {
-    let is_sel = col == &xpr.selected_color;
-    let x = MARGIN + BLOCK_SZ * ((i % cols_per_row) as f32);
-    let y = PALETTE_BEGIN_Y + BLOCK_SZ * ((i / cols_per_row) as f32);
-
-    ui.set_cursor_screen_pos([x, y]);
-    if ui.invisible_button(&im_str!("colorcell##{}", i), [BLOCK_SZ, BLOCK_SZ]) {
-        xpr.selected_color = *col;
-    }
-
-    // if the color block is selected
-    if is_sel {
-        let draw_list = ui.get_window_draw_list();
-        draw_list
-            .add_rect(
-                [x - MARGIN / 4., y - MARGIN / 4.],
-                [x + BLOCK_SZ - MARGIN / 4., y + BLOCK_SZ - MARGIN / 4.],
-                LIGHT_GREY,
+    let cols_per_row = state.cols_per_row as usize;
+    let mut xpr = state.xpr_mut();
+    let pal_idx = xpr.palette.selected_palette_idx as usize;
+    let color_idx = xpr.palette.selected_color_idx;
+    let pal = xpr.palette.current_palette();
+    let mut pal_ = pal.borrow_mut();
+    for (i, (_col_name, col)) in pal_.iter_mut().enumerate() {
+//        let is_sel = col == &xpr.selected_color;
+        let is_sel = i == color_idx;
+        let x = MARGIN + BLOCK_SZ * ((i % cols_per_row) as f32);
+        let y = PALETTE_BEGIN_Y + BLOCK_SZ * ((i / cols_per_row) as f32);
+        ui.set_cursor_screen_pos([x, y]);
+        if ui.invisible_button(&im_str!("colorcell##{}", i), [BLOCK_SZ, BLOCK_SZ]) {
+            xpr.palette.selected_color_idx = i;
+        } // if the color block is selected
+        if is_sel {
+            let draw_list = ui.get_window_draw_list();
+            draw_list.add_rect([x - MARGIN / 4., y - MARGIN / 4.],
+                               [x + BLOCK_SZ - MARGIN / 4., y + BLOCK_SZ - MARGIN / 4.],
+                               LIGHT_GREY,
             )
-            .filled(true)
-            .build();
-    }
+                .filled(true)
+                .build();
+        }
 
-    ui.set_cursor_screen_pos([x, y]);
-    let misc_flags = {
-        let mut f = ImGuiColorEditFlags::empty();
-        f.set(ImGuiColorEditFlags::HDR, true);
-        f.set(ImGuiColorEditFlags::AlphaPreview, true);
-        f.set(ImGuiColorEditFlags::NoOptions, false);
-        f.set(ImGuiColorEditFlags::NoInputs, true);
-        f.set(ImGuiColorEditFlags::NoLabel, true);
-        f.set(ImGuiColorEditFlags::NoPicker, true);
-        f
-    };
-    let mut sel: [f32; 4] = unsafe { (*col).as_rgba().into() };
-    let id = im_str!("MyColor##{}", i);
-    let b = ui.color_edit(&id, &mut sel).flags(misc_flags).alpha(false);
+        ui.set_cursor_screen_pos([x, y]);
+        let misc_flags = {
+            let mut f = ImGuiColorEditFlags::empty();
+            f.set(ImGuiColorEditFlags::HDR, true);
+            f.set(ImGuiColorEditFlags::AlphaPreview, true);
+            f.set(ImGuiColorEditFlags::NoOptions, false);
+            f.set(ImGuiColorEditFlags::NoInputs, true);
+            f.set(ImGuiColorEditFlags::NoLabel, true);
+            f.set(ImGuiColorEditFlags::NoPicker, true);
+            f
+        };
+        let mut sel: [f32; 4] = unsafe { (*col).as_rgba().into() };
+        let id = im_str!("MyColor##{}", i);
+        let b = ui.color_edit(&id, &mut sel).flags(misc_flags).alpha(false);
 
-    // // show color name on hover
-    // if ui.is_item_hovered() {
-    //     state.palette_window.palette_color_name =
-    //         Some(Cow::Owned(col_name.to_owned()));
-    //     ui.tooltip(|| {
-    //         ui.text(col_name.to_owned());
-    //     });
-    // }
+        // // show color name on hover
+        // if ui.is_item_hovered() {
+        //     state.palette_window.palette_color_name =
+        //         Some(Cow::Owned(col_name.to_owned()));
+        //     ui.tooltip(|| {
+        //         ui.text(col_name.to_owned());
+        //     });
+        // }
 
-    if b.build() {
-        *col = sel.into();
-    }
+        if b.build() {
+            *col = sel.into();
+        }
     }
 
     if ui.small_button(&im_str!("+")) {
-        let pal = state.xpr_mut().palette_man.palettes.get_index_mut(idx).unwrap().1;
-        pal.insert(format!("my_color##{}", pal.len()), Color::black());
+        let pal = state.xpr_mut().palette.current_palette();
+        let key = format!("my_color##{}", pal.borrow().len());
+        pal.borrow_mut().insert(key, Color::black());
     }
 }
