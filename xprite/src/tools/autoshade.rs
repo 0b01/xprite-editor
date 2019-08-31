@@ -26,7 +26,7 @@ impl AutoShade {
     pub fn finalize(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         let pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
         let content = &mut xpr.current_layer_mut().unwrap().content;
-        let intersection = content.intersection(&pixs);
+        let intersection = content.intersection(&pixs); // TODO: don't construct a rect, filter based on w, h directly
         // let _bb = intersection.bounding_rect();
         let shaded = autoshade(&intersection, true, &self.steps);
         self.buf = shaded;

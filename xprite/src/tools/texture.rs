@@ -1,4 +1,3 @@
-use crate::algorithms::rect::*;
 use crate::core::outline::outline_rect;
 use crate::tools::*;
 use std::num::NonZeroU32;
