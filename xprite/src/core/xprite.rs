@@ -371,7 +371,7 @@ impl Xprite {
                         // draw current layer pixels
                         for &Pixel { point, color } in self.pixels().iter() {
                             let Vec2f { x, y } = point;
-                            println!("{:?}", color);
+                            // println!("{:?}", color);
                             let c = color.to_rgba(Some(self)).ok_or("color index too big".to_owned())?.into();
                             rdr.pixel(x, y, c, true);
                         }

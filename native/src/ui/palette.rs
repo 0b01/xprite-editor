@@ -151,8 +151,10 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
         //     });
         // }
 
+        // mutate
         if b.build() {
             *col = sel.into();
+            xpr.redraw = true;
         }
     }
 
