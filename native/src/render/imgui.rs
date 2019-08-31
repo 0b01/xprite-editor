@@ -4,10 +4,10 @@ use glium::{
     texture::{ClientFormat, RawImage2d},
     Texture2d,
 };
-use std::rc::Rc;
 use imgui::*;
 use std::borrow::Cow;
 use std::f64;
+use std::rc::Rc;
 use xprite::rendering::{MouseCursorType, Renderer};
 
 pub struct ImguiRenderer<'ui> {

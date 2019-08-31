@@ -242,14 +242,13 @@ impl Xprite {
                 tool.brush = brush;
                 Ok(())
             }
-            _ => Err("No brush attached to tool".to_owned())
+            _ => Err("No brush attached to tool".to_owned()),
         }
     }
 
     pub fn last_tool(&self) -> ToolType {
         *self.toolbox.tool_stack.last().unwrap()
     }
-
 }
 
 impl Xprite {

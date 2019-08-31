@@ -158,8 +158,8 @@ fn draw_cursor_cross(ui: &Ui) {
 
 fn draw_color_picker(state: &mut State, ui: &Ui) {
     let pos = ui.io().mouse_pos;
-    let x: f32= pos[0].into();
-    let y: f32= pos[1].into();
+    let x: f32 = pos[0].into();
+    let y: f32 = pos[1].into();
     ui.set_cursor_screen_pos([x - 10., y - 10.]);
     ui.image(TextureId::from(state.color_picker_texture.unwrap()), [20., 20.]).build();
 }

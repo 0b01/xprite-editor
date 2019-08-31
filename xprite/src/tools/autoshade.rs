@@ -1,6 +1,6 @@
 use crate::algorithms::autoshade::{autoshade, AutoshadeStepParam};
-use crate::core::outline::outline_rect;
 use crate::algorithms::rect::get_rect;
+use crate::core::outline::outline_rect;
 use crate::tools::*;
 
 #[derive(Clone, Default, Debug)]
