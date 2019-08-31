@@ -516,7 +516,7 @@ impl Pixels {
             }
             rdr.pixel(*x - origin.x, *y - origin.y, (*color).to_rgba(xpr)?.into(), true);
         }
-        rdr.render();
+        rdr.render(xpr)?;
         Some(rdr.image)
     }
 

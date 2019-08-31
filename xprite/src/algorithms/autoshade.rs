@@ -16,7 +16,7 @@ pub struct AutoshadeStepParam {
 #[derive(Debug, Clone)]
 pub enum AutoshadeBlendingMode {
     Lighten(u8),
-    Replace(Color),
+    Replace(XpriteRgba),
 }
 
 impl Default for AutoshadeBlendingMode {
@@ -25,10 +25,10 @@ impl Default for AutoshadeBlendingMode {
     }
 }
 
-pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStepParam]) -> Pixels {
+pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStepParam]) -> Option<Pixels> {
     let mut ret = pixs.clone();
     if step_params.is_empty() {
-        return ret;
+        return Some(ret);
     }
 
     // expand bounding box to differentiate foreground at edge
@@ -45,7 +45,7 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
     };
 
     // convert pixs to image
-    let orig = binarize(pixs.as_image(expanded_bb).to_luma());
+    let orig = binarize(pixs.as_image(expanded_bb, None)?.to_luma());
 
     if DBG_SAVE_IMG {
         orig.save("orig.png").unwrap();
@@ -81,8 +81,8 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
                     orig_bb.0.y as isize + y as isize - 1,
                     orig_bb.0.x as isize + x as isize - 1,
                 ).unwrap();
-                let new_col = blend(mode, orig_pixel.color);
-                step_acc.push(pixel!(y-1, x-1, new_col));
+                let new_col = blend(mode, unsafe{orig_pixel.color.as_rgba()});
+                step_acc.push(pixel!(y-1, x-1, Color::Rgba(new_col)));
             }
         }
         acc = if accumulative { eroded.clone() } else { acc };
@@ -90,20 +90,20 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
         erode_acc = if accumulative { 0. } else { erode_acc };
         ret.extend(&step_acc.shifted(orig_bb.0));
     }
-    ret
+    Some(ret)
 }
 
-fn blend(mode: &AutoshadeBlendingMode, orig_col: Color) -> Color {
+fn blend(mode: &AutoshadeBlendingMode, input_color: XpriteRgba) -> XpriteRgba {
     use AutoshadeBlendingMode::*;
     match mode {
         Replace(col) => *col,
         Lighten(diff) => {
-            let mut col = orig_col;
-            col.r += *diff;
-            col.g += *diff;
-            col.b += *diff;
-            col
-        },
+            let mut ret = input_color;
+            ret.r += *diff;
+            ret.g += *diff;
+            ret.b += *diff;
+            ret
+        }
     }
 }
 

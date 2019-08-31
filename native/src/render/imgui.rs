@@ -1,3 +1,4 @@
+use crate::prelude::*;
 use crate::image::{self, GenericImageView};
 use glium::{
     backend::Facade,
@@ -81,8 +82,8 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         self.textures.insert(gl_texture).id()
     }
 
-    fn render(&mut self) {
-        ()
+    fn render(&mut self, xpr: Option<&Xprite>) -> Option<()> {
+        Some(())
     }
 
     fn reset(&mut self) {}

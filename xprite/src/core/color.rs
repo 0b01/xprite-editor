@@ -202,6 +202,12 @@ impl From<img::Rgba<u8>> for Color {
     }
 }
 
+impl From<XpriteRgba> for [u8; 4] {
+    fn from(c: XpriteRgba) -> [u8; 4] {
+        [c.r, c.g, c.b, c.a]
+    }
+}
+
 impl XpriteRgba {
     pub fn from_hex(col: &str) -> Result<Self, hex::FromHexError> {
         let r = hex::decode(&col[..2])?[0];

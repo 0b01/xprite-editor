@@ -1,3 +1,4 @@
+use crate::prelude::*;
 pub enum MouseCursorType {
     Hand,
     None,
@@ -16,7 +17,7 @@ pub trait Renderer {
     fn bezier(&mut self, p0: [f64; 2], cp1: [f64; 2], cp2: [f64; 2], p1: [f64; 2], color: [f32; 4], thickness: f64);
     #[allow(unused)]
     fn set_mouse_cursor(&mut self, cursor_type: MouseCursorType) {}
-    fn render(&mut self) {}
+    fn render(&mut self, xpr: Option<&Xprite>) -> Option<()> { Option::None }
     fn reset(&mut self) {}
     fn add_img(&mut self, _img: img::DynamicImage, _format: img::ColorType) -> usize {
         0

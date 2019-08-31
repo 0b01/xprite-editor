@@ -323,12 +323,12 @@ impl Xprite {
         Ok(rdr.to_img())
     }
 
-    pub fn selected_layer_as_im(&self) -> img::DynamicImage {
+    pub fn selected_layer_as_im(&self) -> Option<img::DynamicImage> {
         let layer = self.history.top().selected_layer().unwrap();
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
-        layer.draw(&mut rdr);
-        rdr.render();
-        rdr.image
+        layer.draw(&mut rdr, Some(self));
+        rdr.render(Some(self))?;
+        Some(rdr.image)
     }
 
     pub fn layer_as_im(&self, group_idx: usize, layer_idx: usize, trim: bool) -> Option<img::DynamicImage> {
@@ -338,8 +338,8 @@ impl Xprite {
             return layer.content.as_image(bb, Some(self));
         }
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
-        layer.draw(&mut rdr);
-        rdr.render();
+        layer.draw(&mut rdr, Some(self));
+        rdr.render(Some(self))?;
         Some(rdr.image)
     }
 
@@ -355,9 +355,9 @@ impl Xprite {
         }
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         for layer in group.iter() {
-            layer.draw(&mut rdr);
+            layer.draw(&mut rdr, Some(self));
         }
-        rdr.render();
+        rdr.render(Some(self))?;
         Some(rdr.image)
     }
 
@@ -392,7 +392,7 @@ impl Xprite {
                     draw_buf(rdr)?;
                     continue;
                 } else {
-                    layer.draw(rdr);
+                    layer.draw(rdr, Some(self));
                     draw_buf(rdr)?;
                 }
             }
@@ -410,7 +410,7 @@ impl Xprite {
             if !layer.visible {
                 continue;
             }
-            layer.draw(rdr);
+            layer.draw(rdr, Some(self));
         }
         Ok(())
     }
@@ -581,10 +581,10 @@ impl Xprite {
         Some(())
     }
 
-    pub fn save_img(&self, img_path: &str, rescale: u32) {
+    pub fn save_img(&self, img_path: &str, rescale: u32) -> Option<()> {
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         self.export(&mut rdr).unwrap();
-        rdr.render();
+        rdr.render(Some(self))?;
         let im = rdr.as_img();
 
         //rescale image
@@ -596,6 +596,7 @@ impl Xprite {
 
         info!("writing file to {}", img_path);
         im.save(img_path).unwrap();
+        Some(())
     }
 
     pub fn load_img(png_path: &str) -> Xprite {

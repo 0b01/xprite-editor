@@ -102,17 +102,18 @@ impl<'a> State<'a> {
         Ok(())
     }
 
-    fn update_preview(&mut self, rdr: &mut ImguiRenderer) {
+    fn update_preview(&mut self, rdr: &mut ImguiRenderer) -> Option<()> {
         let mut img_rdr = ImageRenderer::new(self.xpr().canvas.art_w, self.xpr().canvas.art_h);
         img_rdr.fill_canvas();
         self.xpr().preview(&mut img_rdr).unwrap();
-        img_rdr.render();
+        img_rdr.render(Some(self.xpr()))?;
         let img = img_rdr.as_img();
         if let Some(id) = self.texture {
             rdr.replace_img(img.to_owned(), image::RGBA(0), id);
         } else {
             self.texture = Some(rdr.add_img(img.to_owned(), image::RGBA(0)));
         }
+        Some(())
     }
 
     pub fn toggle_hotkeys(&mut self) {
