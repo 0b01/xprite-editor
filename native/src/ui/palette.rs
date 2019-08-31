@@ -54,9 +54,9 @@ ui.window(&im_str!("Color Picker"))
 
         let mut sel: [f32; 4] = {
             if let Some(col) = &state.xpr_mut().color_picker_color {
-                (*col).into()
+                unsafe { (*col).as_rgba().into() }
             } else {
-                state.xpr_mut().selected_color.into()
+                unsafe { state.xpr_mut().selected_color.as_rgba().into() }
             }
         };
         let b = ui
@@ -136,7 +136,7 @@ for (i, (_col_name, col)) in pal.iter_mut().enumerate() {
         f.set(ImGuiColorEditFlags::NoPicker, true);
         f
     };
-    let mut sel: [f32; 4] = (*col).into();
+    let mut sel: [f32; 4] = unsafe { (*col).as_rgba().into() };
     let id = im_str!("MyColor##{}", i);
     let b = ui.color_edit(&id, &mut sel).flags(misc_flags).alpha(false);
 
