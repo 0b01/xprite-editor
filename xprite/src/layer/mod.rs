@@ -41,13 +41,17 @@ impl Layer {
         self.content.iter().find(|i| i.point == p).map(|i| i.color)
     }
 
-    pub fn draw(&self, rdr: &mut dyn Renderer) {
+    pub fn draw(&self, rdr: &mut dyn Renderer, xpr: Option<&Xprite>) -> Option<()> {
         for &Pixel { point, color } in self.content.iter() {
             let Vec2f { x, y } = point;
             if oob(x, y, rdr.width(), rdr.height()) {
                 continue;
             }
-            rdr.pixel(x, y, color.into(), true);
+            // print!("{}, {}, {:?}, c", x, y, color);
+            let c = color.to_rgba(xpr)?.into();
+            // println!("{:#?}", c);
+            rdr.pixel(x, y, c, true);
         }
+        Some(())
     }
 }

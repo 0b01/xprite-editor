@@ -15,7 +15,7 @@ pub fn draw_preview(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
 
             let size = match state.preview_window_state.mode {
                 PreviewWindowMode::Fill => {
-                    let sz = ui.io().display_size;
+                    let sz = ui.get_window_size();
                     let win_w = sz[0];
                     let win_h = sz[1];
                     let win_ratio = win_w / win_h;

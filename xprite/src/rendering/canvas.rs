@@ -121,7 +121,7 @@ impl Canvas {
         let p2 = [o.x + self.scale * (x + 1.), o.y + self.scale * (y + 1.)];
         let p3 = [o.x + self.scale * x, o.y + self.scale * (y + 1.)];
 
-        let color = Color::red().into();
+        let color = XpriteRgba::red().into();
 
         if outline.contains(Outline::TOP) {
             rdr.line(p0, p1, color);
@@ -154,9 +154,9 @@ impl Canvas {
         let t = rdr.time() % 1.;
         let color =
             if (t < 0.25 && ith % 4 == 0) || (t > 0.25 && t < 0.50 && ith % 4 == 1) || (t > 0.50 && t < 0.75 && ith % 4 == 2) || (t > 0.75 && ith % 4 == 3) {
-                Color::white().into()
+                XpriteRgba::white().into()
             } else {
-                Color::black().into()
+                XpriteRgba::black().into()
             };
 
         if outline.contains(Outline::TOP) {
@@ -199,7 +199,7 @@ impl Canvas {
         }
         let o = self.origin();
 
-        let color = Color::black().into();
+        let color = XpriteRgba::black().into();
         let mut x = 0.;
         while x < self.scale * self.art_w {
             rdr.line([o.x + x, o.y], [o.x + x, o.y + self.scale * self.art_h], color);

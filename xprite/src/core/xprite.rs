@@ -15,12 +15,11 @@ pub struct Xprite {
     pub im_buf: Pixels,
     pub line_buf: Vec<Rect>,
     pub bz_buf: Vec<CubicBezierSegment>,
-    marq_buf: Vec<MarqueePixel>,
+    marquee_buf: Vec<MarqueePixel>,
 
     pub canvas: Canvas,
     pub color_picker_color: Option<Color>,
-    pub selected_color: Color,
-    pub palette_man: PaletteManager,
+    pub palette: PaletteManager,
 
     pub toolbox: Toolbox,
     pub cursor: Pixels,
@@ -34,17 +33,15 @@ pub struct Xprite {
 impl Default for Xprite {
     fn default() -> Self {
         let palette_man = PaletteManager::new().expect("Cannot initialize palettes");
-        let selected_color = Color { r: 0, g: 0, b: 0, a: 255 };
         Self {
             name: "Untitled".to_owned(),
-            palette_man,
-            selected_color,
+            palette: palette_man,
             color_picker_color: None,
             history: Default::default(),
             im_buf: Default::default(),
             line_buf: Default::default(),
             bz_buf: Default::default(),
-            marq_buf: Default::default(),
+            marquee_buf: Default::default(),
             canvas: Default::default(),
             toolbox: Default::default(),
             cursor: Default::default(),
@@ -149,17 +146,13 @@ impl Xprite {
     }
 
     pub fn color(&self) -> Color {
-        self.selected_color
-    }
-
-    pub fn set_color(&mut self, color: Color) {
-        self.selected_color = color;
+        Color::Indexed(self.palette.selected_color_idx)
     }
 
     pub fn new_frame(&mut self) {
         self.pixels_mut().clear();
         self.bz_buf.clear();
-        self.marq_buf.clear();
+        self.marquee_buf.clear();
     }
 
     pub fn set_cursor(&mut self, pos: &Pixels) {
@@ -167,7 +160,7 @@ impl Xprite {
     }
 
     pub fn add_marquee(&mut self, marq: &[MarqueePixel]) {
-        self.marq_buf.extend(marq);
+        self.marquee_buf.extend(marq);
     }
 }
 
@@ -262,18 +255,20 @@ impl Xprite {
 
     pub fn render_line(&self, rdr: &mut dyn Renderer) {
         for Rect(p0, p1) in &self.line_buf {
-            self.canvas.draw_line(rdr, *p0, *p1, Color::red().into());
+            self.canvas.draw_line(rdr, *p0, *p1, XpriteRgba::red().into());
         }
     }
 
-    pub fn render_cursor(&self, rdr: &mut dyn Renderer) {
-        let outline = self.cursor.outline();
+    pub fn render_cursor(&self, rdr: &mut dyn Renderer) -> Option<()> {
         for p in self.cursor.iter() {
-            self.canvas.draw_pixel_rect(rdr, p.point, p.color.into(), true);
+            let c = p.color.to_rgba(Some(self))?.into();
+            self.canvas.draw_pixel_rect(rdr, p.point, c, true);
         }
+        let outline = self.cursor.outline();
         for (point, outline) in outline.iter() {
             self.canvas.draw_pixel_outline(rdr, *point, *outline);
         }
+        Some(())
     }
 
     pub fn render_canvas_extras(&self, rdr: &mut dyn Renderer) {
@@ -285,9 +280,9 @@ impl Xprite {
     pub fn render_bezier(&self, rdr: &mut dyn Renderer) {
         for seg in &self.bz_buf {
             let &CubicBezierSegment { ctrl1, ctrl2, from, to } = seg;
-            self.canvas.draw_bezier(rdr, from, ctrl1, ctrl2, to, Color::grey().into(), 1.);
-            let red = Color::red().into();
-            let blue = Color::blue().into();
+            self.canvas.draw_bezier(rdr, from, ctrl1, ctrl2, to, XpriteRgba::grey().into(), 1.);
+            let red = XpriteRgba::red().into();
+            let blue = XpriteRgba::blue().into();
             self.canvas.draw_circle(rdr, from, 0.3, blue, true);
             self.canvas.draw_circle(rdr, ctrl1, 0.3, red, true);
             self.canvas.draw_circle(rdr, ctrl2, 0.3, red, true);
@@ -305,7 +300,7 @@ impl Xprite {
     }
 
     pub fn render_marquee(&self, rdr: &mut dyn Renderer) {
-        for (ith, (p, outline)) in self.marq_buf.iter().enumerate() {
+        for (ith, (p, outline)) in self.marquee_buf.iter().enumerate() {
             self.canvas.draw_pixel_marqee(rdr, *p, *outline, ith);
         }
     }
@@ -318,27 +313,27 @@ impl Xprite {
         Ok(rdr.to_img())
     }
 
-    pub fn selected_layer_as_im(&self) -> img::DynamicImage {
+    pub fn selected_layer_as_im(&self) -> Option<img::DynamicImage> {
         let layer = self.history.top().selected_layer().unwrap();
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
-        layer.draw(&mut rdr);
-        rdr.render();
-        rdr.image
+        layer.draw(&mut rdr, Some(self));
+        rdr.render(Some(self))?;
+        Some(rdr.image)
     }
 
-    pub fn layer_as_im(&self, group_idx: usize, layer_idx: usize, trim: bool) -> img::DynamicImage {
+    pub fn layer_as_im(&self, group_idx: usize, layer_idx: usize, trim: bool) -> Option<img::DynamicImage> {
         let layer = &self.history.top().groups[group_idx].1[layer_idx];
         if trim {
             let bb = layer.content.bounding_rect();
-            return layer.content.as_image(bb);
+            return layer.content.as_image(bb, Some(self));
         }
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
-        layer.draw(&mut rdr);
-        rdr.render();
-        rdr.image
+        layer.draw(&mut rdr, Some(self));
+        rdr.render(Some(self))?;
+        Some(rdr.image)
     }
 
-    pub fn group_as_im(&self, group_idx: usize, trim: bool) -> img::DynamicImage {
+    pub fn group_as_im(&self, group_idx: usize, trim: bool) -> Option<img::DynamicImage> {
         let group = &self.history.top().groups[group_idx].1;
         if trim {
             let mut content = Pixels::new();
@@ -346,14 +341,14 @@ impl Xprite {
                 content.extend(&i.content);
             }
             let bb = content.bounding_rect();
-            return content.as_image(bb);
+            return content.as_image(bb, Some(self));
         }
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         for layer in group.iter() {
-            layer.draw(&mut rdr);
+            layer.draw(&mut rdr, Some(self));
         }
-        rdr.render();
-        rdr.image
+        rdr.render(Some(self))?;
+        Some(rdr.image)
     }
 
     #[deprecated]
@@ -371,21 +366,24 @@ impl Xprite {
 
         for (i, group) in top.groups.iter().enumerate().rev() {
             for (j, layer) in group.1.iter().enumerate().rev() {
-                let draw_buf = |rdr: &mut dyn Renderer| {
+                let draw_buf = |rdr: &mut dyn Renderer| -> Result<(), String> {
                     if i == top.sel_group && j == top.selected {
                         // draw current layer pixels
                         for &Pixel { point, color } in self.pixels().iter() {
                             let Vec2f { x, y } = point;
-                            rdr.pixel(x, y, color.into(), true);
+                            // println!("{:?}", color);
+                            let c = color.to_rgba(Some(self)).ok_or("color index too big".to_owned())?.into();
+                            rdr.pixel(x, y, c, true);
                         }
                     }
+                    Ok(())
                 };
                 if !layer.visible {
-                    draw_buf(rdr);
+                    draw_buf(rdr)?;
                     continue;
                 } else {
-                    layer.draw(rdr);
-                    draw_buf(rdr);
+                    layer.draw(rdr, Some(self));
+                    draw_buf(rdr)?;
                 }
             }
         }
@@ -402,7 +400,7 @@ impl Xprite {
             if !layer.visible {
                 continue;
             }
-            layer.draw(rdr);
+            layer.draw(rdr, Some(self));
         }
         Ok(())
     }
@@ -410,7 +408,7 @@ impl Xprite {
 
 /// aseprite file format converter
 impl Xprite {
-    pub fn as_ase(&self) -> ase::Aseprite {
+    pub fn as_ase(&self) -> Option<ase::Aseprite> {
         let header = ase::Header::new(self.canvas.art_w as u16, self.canvas.art_h as u16);
         let mut frame = ase::Frame::new();
         for (i, layer) in self.history.top().iter_layers().rev().enumerate() {
@@ -423,12 +421,12 @@ impl Xprite {
                     let Rect(Vec2f { x: x0, y: y0 }, Vec2f { x: x1, y: y1 }) = layer.content.bounding_rect();
                     let w = x1 - x0 + 1.;
                     let h = y1 - y0 + 1.;
-                    let pixels: ase::Pixels = layer.content.clone().into();
+                    let pixels: ase::Pixels = layer.content.clone().to_ase_pixels(Some(self))?;
                     ase::chunk::CelChunk::new(i as u16, x0 as i16, y0 as i16, w as u16, h as u16, pixels)
                 })));
             }
         }
-        ase::Aseprite::new(header, vec![frame])
+        Some(ase::Aseprite::new(header, vec![frame]))
     }
 
     pub fn from_ase(name: String, aseprite: &ase::Aseprite) -> Self {
@@ -549,8 +547,8 @@ impl Xprite {
 }
 
 impl Xprite {
-    pub fn save_layer_img(&self, group_idx: usize, layer_idx: usize, img_path: &str, rescale: u32, trim: bool) {
-        let im = self.layer_as_im(group_idx, layer_idx, trim);
+    pub fn save_layer_img(&self, group_idx: usize, layer_idx: usize, img_path: &str, rescale: u32, trim: bool) -> Option<()> {
+        let im = self.layer_as_im(group_idx, layer_idx, trim)?;
         let nwidth = im.width() * rescale;
         let nheight = im.height() * rescale;
         let filter = img::FilterType::Nearest;
@@ -558,10 +556,11 @@ impl Xprite {
 
         info!("writing file to {}", img_path);
         im.save(img_path).unwrap();
+        Some(())
     }
 
-    pub fn save_group_img(&self, group_idx: usize, img_path: &str, rescale: u32, trim: bool) {
-        let im = self.group_as_im(group_idx, trim);
+    pub fn save_group_img(&self, group_idx: usize, img_path: &str, rescale: u32, trim: bool) -> Option<()> {
+        let im = self.group_as_im(group_idx, trim)?;
         let nwidth = im.width() * rescale;
         let nheight = im.height() * rescale;
         let filter = img::FilterType::Nearest;
@@ -569,12 +568,13 @@ impl Xprite {
 
         info!("writing file to {}", img_path);
         im.save(img_path).unwrap();
+        Some(())
     }
 
-    pub fn save_img(&self, img_path: &str, rescale: u32) {
+    pub fn save_img(&self, img_path: &str, rescale: u32) -> Option<()> {
         let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
         self.export(&mut rdr).unwrap();
-        rdr.render();
+        rdr.render(Some(self))?;
         let im = rdr.as_img();
 
         //rescale image
@@ -586,6 +586,7 @@ impl Xprite {
 
         info!("writing file to {}", img_path);
         im.save(img_path).unwrap();
+        Some(())
     }
 
     pub fn load_img(png_path: &str) -> Xprite {
@@ -602,11 +603,12 @@ impl Xprite {
         xpr
     }
 
-    pub fn save_ase(&self, file_path: &str) {
+    pub fn save_ase(&self, file_path: &str) -> Option<()> {
         info!("saving ase file to {}", file_path);
         let mut f = File::create(file_path).unwrap();
-        let aseprite = self.as_ase();
+        let aseprite = self.as_ase()?;
         aseprite.write(&mut f).unwrap();
+        Some(())
     }
 
     pub fn load_ase(file_path: &str) -> Xprite {
@@ -630,7 +632,7 @@ mod tests {
             .unwrap()
             .content
             .extend(&pixels!(pixel!(0, 0, Color::red()), pixel!(0, 1, Color::red())));
-        let aseprite = xpr.as_ase();
+        let aseprite = xpr.as_ase().unwrap();
         let mut f = File::create("test.ase").unwrap();
         aseprite.write(&mut f).unwrap();
         std::fs::remove_file("test.ase").unwrap();
@@ -645,7 +647,7 @@ mod tests {
             .unwrap()
             .content
             .extend(&pixels!(pixel!(1, 1, Color::red()), pixel!(1, 2, Color::red())));
-        let aseprite = xpr.as_ase();
+        let aseprite = xpr.as_ase().unwrap();
         let mut f = File::create("test2.ase").unwrap();
         aseprite.write(&mut f).unwrap();
         std::fs::remove_file("test2.ase").unwrap();

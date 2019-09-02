@@ -13,6 +13,8 @@ pub enum PencilMode {
     PixelAntiPerfect,
     /// sort each monotonic segment
     SortedMonotonic,
+    /// Anti-aliasing with background color for each segment
+    SelectiveAntiAliasing,
 }
 
 impl PencilMode {
@@ -22,14 +24,16 @@ impl PencilMode {
             PencilMode::PixelPerfect => "Pixel Perfect",
             PencilMode::PixelAntiPerfect => "Pixel Anti-Perfect",
             PencilMode::SortedMonotonic => "Sorted Monotonic",
+            PencilMode::SelectiveAntiAliasing => "Selective Anti-Aliasing",
         }
     }
 
-    pub const VARIANTS: [PencilMode; 4] = [
+    pub const VARIANTS: [PencilMode; 5] = [
         PencilMode::Raw,
         PencilMode::PixelPerfect,
         PencilMode::PixelAntiPerfect,
         PencilMode::SortedMonotonic,
+        PencilMode::SelectiveAntiAliasing,
     ];
 }
 
@@ -41,6 +45,7 @@ impl FromStr for PencilMode {
             "Pixel Anti-Perfect" => Ok(PencilMode::PixelAntiPerfect),
             "Pixel Perfect" => Ok(PencilMode::PixelPerfect),
             "Sorted Monotonic" => Ok(PencilMode::SortedMonotonic),
+            "Selective Anti-Aliasing" => Ok(PencilMode::SelectiveAntiAliasing),
             _ => panic!("impossible"),
         }
     }
@@ -133,13 +138,14 @@ impl Pencil {
                     } else {
                         points.pixel_antiperfect();
                     }
-
                     let path = self.brush.follow_stroke(&points).unwrap();
                     path
                 }
             }
             SortedMonotonic => {
-                let mut points = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line()?;
+                let mut points = self.current_polyline
+                    .to_pixel_coords(xpr)?
+                    .connect_with_line()?;
                 points.pixel_perfect();
                 if points.len() > 1 {
                     points.monotonic_sort();
@@ -147,9 +153,23 @@ impl Pencil {
                 let path = self.brush.follow_stroke(&points).unwrap();
                 path
             }
+            SelectiveAntiAliasing => {
+                // if mousedown w/o move
+                if !self.moved {
+                    self.cursor.clone().unwrap()
+                } else {
+                    let mut points = self.current_polyline
+                        .to_pixel_coords(xpr)?
+                        .connect_with_line()?;
+                    points.pixel_perfect();
+                    points.selective_antialias();
+                    // let path = self.brush.follow_stroke(&points).unwrap();
+                    points
+                }
+            }
         };
 
-        buf.set_color(xpr.color());
+        // buf.set_color(xpr.color());
         self.update_buffer = Some(buf);
         Ok(())
     }

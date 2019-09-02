@@ -5,7 +5,7 @@ authors = ["Ricky Han <rickylqhan@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-glium = { version = "0.25", default-features = true }
+glium = { version = "0.25.0", default-features = true }
 imgui = { version = "0.1.0", features = ["glium"] }
 imgui-winit-support = { version = "0.1.0" }
 clipboard = "0.5"

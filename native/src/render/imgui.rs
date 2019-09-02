@@ -1,4 +1,5 @@
 use crate::image::{self, GenericImageView};
+use crate::prelude::*;
 use glium::{
     backend::Facade,
     texture::{ClientFormat, RawImage2d},
@@ -81,8 +82,8 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         self.textures.insert(gl_texture).id()
     }
 
-    fn render(&mut self) {
-        ()
+    fn render(&mut self, xpr: Option<&Xprite>) -> Option<()> {
+        Some(())
     }
 
     fn reset(&mut self) {}
