@@ -158,8 +158,8 @@ mod tests {
                     mode: AutoshadeBlendingMode::Lighten(10),
                 },
             ],
-        );
-        let img = shaded.as_image(shaded.bounding_rect());
+        ).unwrap();
+        let img = shaded.as_image(shaded.bounding_rect(), None).unwrap();
         img.save("autoshade.png").unwrap();
     }
 

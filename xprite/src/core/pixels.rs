@@ -4,6 +4,7 @@ use crate::algorithms::{
     pixel_perfect::{pixel_antiperfect, pixel_perfect},
     rotsprite::rotsprite,
     sorter::sort_path,
+    selective_antialias::selective_antialias,
 };
 use crate::prelude::*;
 use fnv::FnvBuildHasher;
@@ -98,6 +99,25 @@ impl Pixel {
 
         return Pixel { point, color: self.color };
     }
+
+    pub fn with_color(&self, color: Color) -> Pixel {
+        let mut ret = *self;
+        ret.color = color;
+        ret
+    }
+
+    pub fn set_color(&mut self, color: Color) {
+        self.color = color;
+    }
+
+    pub fn dir(&self, other: &Pixel) -> bool {
+        if self.point.x == other.point.x {
+            return self.point.y > other.point.y
+        } else {
+            return self.point.x > other.point.x
+        }
+    }
+
 }
 
 impl Hash for Pixel {
@@ -284,6 +304,10 @@ impl Pixels {
 
     pub fn monotonic_sort(&mut self) {
         *self = sort_path(self).unwrap();
+    }
+
+    pub fn selective_antialias(&mut self) {
+        selective_antialias(self, 0.5, Color::orange())
     }
 
     pub fn connected_components(&self, w: usize, h: usize) -> Vec<Pixels> {
@@ -681,7 +705,7 @@ mod tests {
     fn test_as_image() {
         use super::*;
         let pixs = pixels!(pixel!(0., 0., Color::red()), pixel!(1., 1., Color::red()));
-        let img = pixs.as_image(Rect(Vec2f { x: 0., y: 0. }, Vec2f { x: 2., y: 2. }));
+        let img = pixs.as_image(Rect(Vec2f { x: 0., y: 0. }, Vec2f { x: 2., y: 2. }), None).unwrap();
         assert_eq!(
             img.raw_pixels(),
             vec![255, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -693,7 +717,7 @@ mod tests {
         use super::*;
         let pixs = pixels!(pixel!(1, 1, Color::red()));
         let bb = pixs.bounding_rect();
-        let img = pixs.as_image(bb);
+        let img = pixs.as_image(bb, None).unwrap();
         assert_eq!(img.raw_pixels(), vec![255, 0, 0, 255]);
     }
 
@@ -701,7 +725,7 @@ mod tests {
     fn test_separate_rgb() {
         use super::*;
         let pixs = pixels!(pixel!(0, 0, Color::white()));
-        let ret = pixs.separate_rgb(None);
+        let ret = pixs.separate_rgb(None).unwrap();
         assert_eq!(
             ret,
             [

@@ -11,4 +11,5 @@ pub mod polyline;
 pub mod rect;
 pub mod rotsprite;
 pub mod sorter;
+pub mod selective_antialias;
 pub mod symmetry;

@@ -632,7 +632,7 @@ mod tests {
             .unwrap()
             .content
             .extend(&pixels!(pixel!(0, 0, Color::red()), pixel!(0, 1, Color::red())));
-        let aseprite = xpr.as_ase();
+        let aseprite = xpr.as_ase().unwrap();
         let mut f = File::create("test.ase").unwrap();
         aseprite.write(&mut f).unwrap();
         std::fs::remove_file("test.ase").unwrap();
@@ -647,7 +647,7 @@ mod tests {
             .unwrap()
             .content
             .extend(&pixels!(pixel!(1, 1, Color::red()), pixel!(1, 2, Color::red())));
-        let aseprite = xpr.as_ase();
+        let aseprite = xpr.as_ase().unwrap();
         let mut f = File::create("test2.ase").unwrap();
         aseprite.write(&mut f).unwrap();
         std::fs::remove_file("test2.ase").unwrap();

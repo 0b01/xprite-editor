@@ -91,9 +91,9 @@ impl Vector {
     }
 
     fn draw_continuous(&self) -> Result<(Path, Pixels), String> {
-        let simple = self.current_polyline.reumann_witkam(self.tolerence as f64);
-        if let Ok(simple) = simple {
-            let path = simple.interp();
+        let simplified = self.current_polyline.reumann_witkam(self.tolerence as f64);
+        if let Ok(simplified) = simplified {
+            let path = simplified.interp();
             let mut buf = path.rasterize(self.mono_sort).unwrap();
             buf.set_color(Color::orange());
             Ok((path, buf))
