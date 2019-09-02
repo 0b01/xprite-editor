@@ -1,4 +1,5 @@
 use crate::image::{self, GenericImageView};
+use crate::prelude::*;
 use glium::{
     backend::Facade,
     texture::{ClientFormat, RawImage2d},
@@ -13,7 +14,7 @@ use xprite::rendering::{MouseCursorType, Renderer};
 pub struct ImguiRenderer<'ui> {
     pub ui: &'ui Ui<'ui>,
     pub gl_ctx: &'ui dyn Facade,
-    pub textures: &'ui mut Textures<Rc<Texture2d>>, // TODO: refactor into a common type
+    pub textures: &'ui mut crate::render::run::Textures,
 }
 
 impl<'ui> Renderer for ImguiRenderer<'ui> {
@@ -81,15 +82,15 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         self.textures.insert(gl_texture).id()
     }
 
-    fn render(&mut self) {
-        ()
+    fn render(&mut self, xpr: Option<&Xprite>) -> Option<()> {
+        Some(())
     }
 
     fn reset(&mut self) {}
 }
 
 impl<'ui> ImguiRenderer<'ui> {
-    pub fn new(ui: &'ui Ui, gl_ctx: &'ui dyn Facade, textures: &'ui mut Textures<Rc<Texture2d>>) -> Self {
+    pub fn new(ui: &'ui Ui, gl_ctx: &'ui dyn Facade, textures: &'ui mut crate::render::run::Textures) -> Self {
         Self { ui, gl_ctx, textures }
     }
 

@@ -72,7 +72,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                     super::inputs::bind_input(state, ui);
                     let origin = state.xpr_mut().canvas.origin();
                     ui.set_cursor_screen_pos([origin.x as f32, origin.y as f32]);
-                    rdr.render();
+                    rdr.render(Some(state.xpr())).unwrap();
 
                     state.redraw_pixels(rdr).unwrap();
 
@@ -142,8 +142,8 @@ fn draw_cursor_cross(ui: &Ui) {
     let right2 = [x + 2. * l, y];
     let left2 = [x - 2. * l, y];
 
-    let color1: [f32; 4] = Color::black().into();
-    let color2: [f32; 4] = Color::white().into();
+    let color1: [f32; 4] = XpriteRgba::black().into();
+    let color2: [f32; 4] = XpriteRgba::white().into();
 
     draw_list.add_line(origin, up1, color1).build();
     draw_list.add_line(origin, down1, color1).build();

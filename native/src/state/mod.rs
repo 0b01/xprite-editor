@@ -7,17 +7,15 @@ const COLOR_PICKER: &'static [u8; 13807] = include_bytes!("../../colorpicker.png
 pub mod brush_state;
 pub mod exporter_state;
 pub mod filepopup_state;
-pub mod palette_window;
 pub mod preview_window;
 
-pub struct State<'a> {
+pub struct State {
     pub xprs: Vec<Xprite>,
     pub xpr_idx: usize,
 
     pub file_popup: filepopup_state::FilePopupState,
     pub inputs: InputState,
     pub hotkeys: HotkeyController,
-    pub palette_window: palette_window::PaletteWindowState<'a>,
     pub preview_window_state: preview_window::PreviewWindowState,
     pub exporter_state: exporter_state::ExporterState,
 
@@ -36,13 +34,12 @@ pub struct State<'a> {
     pub color_picker_texture: Option<usize>,
 }
 
-impl<'a> Default for State<'a> {
+impl Default for State {
     fn default() -> Self {
         Self {
             file_popup: Default::default(),
             xprs: vec![Default::default()],
             xpr_idx: 0,
-            palette_window: Default::default(),
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
             preview_window_state: Default::default(),
@@ -62,7 +59,7 @@ impl<'a> Default for State<'a> {
     }
 }
 
-impl<'a> State<'a> {
+impl State {
     pub fn xpr(&self) -> &Xprite {
         &self.xprs[self.xpr_idx]
     }
@@ -75,7 +72,7 @@ impl<'a> State<'a> {
         self.xprs.remove(idx);
     }
 
-    pub fn new(xpr: Xprite) -> State<'a> {
+    pub fn new(xpr: Xprite) -> State {
         State {
             xprs: vec![xpr],
             ..Default::default()
@@ -102,17 +99,18 @@ impl<'a> State<'a> {
         Ok(())
     }
 
-    fn update_preview(&mut self, rdr: &mut ImguiRenderer) {
+    fn update_preview(&mut self, rdr: &mut ImguiRenderer) -> Option<()> {
         let mut img_rdr = ImageRenderer::new(self.xpr().canvas.art_w, self.xpr().canvas.art_h);
         img_rdr.fill_canvas();
         self.xpr().preview(&mut img_rdr).unwrap();
-        img_rdr.render();
+        img_rdr.render(Some(self.xpr()))?;
         let img = img_rdr.as_img();
         if let Some(id) = self.texture {
             rdr.replace_img(img.to_owned(), image::RGBA(0), id);
         } else {
             self.texture = Some(rdr.add_img(img.to_owned(), image::RGBA(0)));
         }
+        Some(())
     }
 
     pub fn toggle_hotkeys(&mut self) {

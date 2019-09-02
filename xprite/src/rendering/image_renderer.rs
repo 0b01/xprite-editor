@@ -20,10 +20,6 @@ impl Renderer for ImageRenderer {
         self.h
     }
 
-    fn circ(&mut self, p0: [f64; 2], r: f64, color: [f32; 4], filled: bool) {}
-
-    fn bezier(&mut self, p0: [f64; 2], cp1: [f64; 2], cp2: [f64; 2], p1: [f64; 2], color: [f32; 4], thickness: f64) {}
-
     fn rect(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32; 4], filled: bool) {
         ()
     }
@@ -32,15 +28,19 @@ impl Renderer for ImageRenderer {
         self.draw_list.push(pixel!(y, x, color.into()));
     }
 
+    fn circ(&mut self, p0: [f64; 2], r: f64, color: [f32; 4], filled: bool) {}
+
     fn line(&mut self, p0: [f64; 2], p1: [f64; 2], color: [f32; 4]) {}
+
+    fn bezier(&mut self, p0: [f64; 2], cp1: [f64; 2], cp2: [f64; 2], p1: [f64; 2], color: [f32; 4], thickness: f64) {}
 
     fn set_mouse_cursor(&mut self, cursor_type: MouseCursorType) {}
 
-    fn render(&mut self) {
+    fn render(&mut self, xpr: Option<&Xprite>) -> Option<()> {
         for Pixel { point, color } in self.draw_list.iter() {
-            let color = {
+            let color: Rgba<u8> = {
                 Rgba {
-                    data: [color.r, color.g, color.b, color.a],
+                    data: color.to_rgba(xpr)?.into(),
                 }
             };
             if !oob(point.x, point.y, self.w, self.h) {
@@ -49,6 +49,7 @@ impl Renderer for ImageRenderer {
                 self.image.put_pixel(x, y, color);
             }
         }
+        Some(())
     }
 }
 

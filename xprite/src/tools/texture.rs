@@ -1,4 +1,3 @@
-use crate::algorithms::rect::*;
 use crate::core::outline::outline_rect;
 use crate::tools::*;
 use std::num::NonZeroU32;
@@ -68,7 +67,7 @@ impl Texture {
         let bb = self.get_bb().ok_or("no cursor".to_owned())?;
         let mut content = xpr.current_layer().unwrap().content.clone();
         content.retain_in_rect_mut(bb);
-        let img = content.as_image(bb);
+        let img = content.as_image(bb, Some(xpr)).ok_or("cannot view as image".to_owned())?;
 
         let orientation = {
             let mut ret = vec![Orientation::Original];

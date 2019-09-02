@@ -17,10 +17,16 @@ use std::iter::FromIterator;
 use std::ops::{Index, Sub};
 
 #[cfg_attr(feature = "python-scripting", pyclass)]
-#[derive(Copy, Clone, Eq, PartialOrd, Default)]
+#[derive(Copy, Clone, Eq, Default)]
 pub struct Pixel {
     pub point: Vec2f,
     pub color: Color,
+}
+
+impl PartialOrd for Pixel {
+    fn partial_cmp(&self, other: &Pixel) -> Option<Ordering> {
+        self.point.partial_cmp(&other.point)
+    }
 }
 
 #[cfg(feature = "python-scripting")]
@@ -43,25 +49,31 @@ impl Pixel {
 }
 
 impl Pixel {
-    pub fn as_channel_r(&self) -> Pixel {
+    pub fn as_channel_r(&self, xpr: Option<&Xprite>) -> Option<Pixel> {
         let mut ret = *self;
-        ret.color.g = 0;
-        ret.color.b = 0;
-        ret
+        let mut col = ret.color.to_rgba(xpr)?;
+        col.g = 0;
+        col.b = 0;
+        ret.color = Color::Rgba(col);
+        Some(ret)
     }
 
-    pub fn as_channel_g(&self) -> Pixel {
+    pub fn as_channel_g(&self, xpr: Option<&Xprite>) -> Option<Pixel> {
         let mut ret = *self;
-        ret.color.r = 0;
-        ret.color.b = 0;
-        ret
+        let mut col = ret.color.to_rgba(xpr)?;
+        col.r = 0;
+        col.b = 0;
+        ret.color = Color::Rgba(col);
+        Some(ret)
     }
 
-    pub fn as_channel_b(&self) -> Pixel {
+    pub fn as_channel_b(&self, xpr: Option<&Xprite>) -> Option<Pixel> {
         let mut ret = *self;
-        ret.color.r = 0;
-        ret.color.g = 0;
-        ret
+        let mut col = ret.color.to_rgba(xpr)?;
+        col.r = 0;
+        col.g = 0;
+        ret.color = Color::Rgba(col);
+        Some(ret)
     }
 
     pub fn rotate(&self, pivot: Vec2f, angle: f64) -> Pixel {
@@ -301,16 +313,16 @@ impl Pixels {
         Rect(Vec2f { x: min_x, y: min_y }, Vec2f { x: max_x, y: max_y })
     }
 
-    pub fn separate_rgb(&self) -> [Pixels; 3] {
+    pub fn separate_rgb(&self, xpr: Option<&Xprite>) -> Option<[Pixels; 3]> {
         let mut r = Pixels::new();
         let mut g = Pixels::new();
         let mut b = Pixels::new();
         for p in self.iter() {
-            r.push(p.as_channel_r());
-            g.push(p.as_channel_g());
-            b.push(p.as_channel_b());
+            r.push(p.as_channel_r(xpr)?);
+            g.push(p.as_channel_g(xpr)?);
+            b.push(p.as_channel_b(xpr)?);
         }
-        [r, g, b]
+        Some([r, g, b])
     }
 
     #[deprecated]
@@ -387,22 +399,6 @@ impl FromIterator<Pixel> for Pixels {
             c.push(i);
         }
         c
-    }
-}
-
-impl From<Pixels> for ase::Pixels {
-    fn from(pixs: Pixels) -> ase::Pixels {
-        let bb = pixs.bounding_rect();
-        let contiguous: Vec<_> = pixs
-            .as_mat_bb(bb)
-            .into_iter()
-            .flatten()
-            .map(|op| match op {
-                Some(Pixel { color: c, .. }) => c.into(),
-                None => Default::default(),
-            })
-            .collect();
-        ase::Pixels::RGBA(contiguous)
     }
 }
 
@@ -495,7 +491,19 @@ impl Pixels {
         self.0.is_empty()
     }
 
-    pub fn as_image(&self, bb: Rect) -> img::DynamicImage {
+    pub fn to_rgba(&self, xpr: Option<&Xprite>) -> Option<Pixels> {
+        self.iter()
+            .map(|p| {
+                let mut ret = *p;
+                p.color.to_rgba(xpr).map(|c| {
+                    ret.color = Color::Rgba(c);
+                    ret
+                })
+            })
+            .collect()
+    }
+
+    pub fn as_image(&self, bb: Rect, xpr: Option<&Xprite>) -> Option<img::DynamicImage> {
         let w = bb.w() as f64;
         let h = bb.h() as f64;
         let origin = bb.0;
@@ -506,20 +514,35 @@ impl Pixels {
             if oob(*x - origin.x, *y - origin.y, w as f64, h as f64) {
                 continue;
             }
-            rdr.pixel(*x - origin.x, *y - origin.y, (*color).into(), true);
+            rdr.pixel(*x - origin.x, *y - origin.y, (*color).to_rgba(xpr)?.into(), true);
         }
-        rdr.render();
-        rdr.image
+        rdr.render(xpr)?;
+        Some(rdr.image)
     }
 
-    pub fn save(&self, output: &str) {
+    pub fn save(&self, output: &str, xpr: Option<&Xprite>) {
         let bb = self.bounding_rect();
-        let img = self.as_image(bb);
-        img.save(output).unwrap();
+        if let Some(img) = self.as_image(bb, xpr) {
+            img.save(output).unwrap();
+        }
     }
 }
 
 impl Pixels {
+    pub fn to_ase_pixels(&self, xpr: Option<&Xprite>) -> Option<ase::Pixels> {
+        let bb = self.bounding_rect();
+
+        self.as_mat_bb(bb)
+            .into_iter()
+            .flatten()
+            .map(|op| match op {
+                Some(Pixel { color: c, .. }) => c.to_rgba(xpr).map(|rgba| rgba.into()),
+                None => Some(XpriteRgba::default().into()),
+            })
+            .collect::<Option<Vec<_>>>()
+            .map(|v| ase::Pixels::RGBA(v))
+    }
+
     pub fn from_ase_pixels(ase_pixs: &ase::Pixels, bb: Rect) -> Self {
         let x0 = bb.0.x as i32;
         let y0 = bb.0.y as i32;
@@ -678,7 +701,7 @@ mod tests {
     fn test_separate_rgb() {
         use super::*;
         let pixs = pixels!(pixel!(0, 0, Color::white()));
-        let ret = pixs.separate_rgb();
+        let ret = pixs.separate_rgb(None);
         assert_eq!(
             ret,
             [
