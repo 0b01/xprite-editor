@@ -2,3 +2,5 @@ target/
 1.png
 1.xpr
 __pycache__
+.idea
+*.iml

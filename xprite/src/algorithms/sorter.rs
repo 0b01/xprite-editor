@@ -29,6 +29,39 @@ pub fn get_concavity(path: &[Pixel]) -> bool {
     }
 }
 
+/// [((dx, dy), slope)]
+/// ((run x, run y), slope) tuple
+pub fn to_chunks(path: &[Pixel], dir: i32) -> Vec<((i32, i32), f64)> {
+    let mut segs = Vec::new();
+    let Pixel { point: p0, .. } = path[0];
+    let mut p0 = p0;
+    let mut d = (1, 1);
+
+    for Pixel { point: pi, .. } in path.iter() {
+        let p0_ = p0;
+        let pi_ = pi;
+        // console!(log, format!("{:?}", pi));
+        if pi.x == p0.x || pi.y == p0.y {
+            d = (
+                d.0 + (pi_.x - p0_.x) as i32,
+                d.1 + (dir as f64 * (pi_.y - p0_.y)) as i32, // BUG:
+            );
+        } else {
+            // console!(log, format!("{:?}", d));
+            while d.0 > 1 && d.1 > 1 {
+                segs.push(((1, 1), 1.));
+                d.0 -= 1;
+                d.1 -= 1;
+            }
+            segs.push((d, d.1 as f64 / d.0 as f64));
+            d = (1, 1);
+        }
+        p0 = *pi;
+    }
+    segs.push((d, d.1 as f64 / d.0 as f64));
+    segs
+}
+
 pub fn sort_path(input: &Pixels) -> Result<Pixels, String> {
     let mut path: Vec<Pixel> = input.0.iter().cloned().collect();
 
@@ -46,37 +79,11 @@ pub fn sort_path(input: &Pixels) -> Result<Pixels, String> {
     let is_concave_up = get_concavity(&path);
     // console!(log, format!("concavity: {}\nup: {}", is_concave_up, up));
 
-    let mut segs = Vec::new();
-    let Pixel { point: p0, .. } = path[0];
-    let mut p0 = p0;
-    let mut d = (1, 1);
-
-    for Pixel { point: pi, .. } in path.iter() {
-        let p0_ = p0;
-        let pi_ = pi;
-        // console!(log, format!("{:?}", pi));
-        if pi.x == p0.x || pi.y == p0.y {
-            d = (
-                d.0 + (pi_.x - p0_.x) as u32,
-                d.1 + (dir as f64 * (pi_.y - p0_.y)) as u32, // BUG:
-            );
-        } else {
-            // console!(log, format!("{:?}", d));
-            while d.0 > 1 && d.1 > 1 {
-                segs.push(((1, 1), 1.));
-                d.0 -= 1;
-                d.1 -= 1;
-            }
-            segs.push((d, d.1 as f64 / d.0 as f64));
-            d = (1, 1);
-        }
-        p0 = *pi;
-    }
-    segs.push((d, d.1 as f64 / d.0 as f64));
+    let mut chunks = to_chunks(&path, dir);
 
     // sort by slope
-    segs.sort_by(|a, b| {
-        let r = a.1 - b.1;
+    chunks.sort_by(|(_a, a_slope), (_b, b_slope)| {
+        let r = a_slope - b_slope;
         if r < 0. {
             Ordering::Less
         } else if r == 0. {
@@ -87,12 +94,12 @@ pub fn sort_path(input: &Pixels) -> Result<Pixels, String> {
     });
 
     if (is_concave_up && !up) || (!is_concave_up && up) {
-        segs.reverse();
+        chunks.reverse();
     }
 
     // rrf in dihedral group
     if right_to_left {
-        segs.reverse();
+        chunks.reverse();
     }
 
     let mut ret = Pixels::new();
@@ -107,7 +114,7 @@ pub fn sort_path(input: &Pixels) -> Result<Pixels, String> {
         p0.point.y += 1.;
     }
 
-    for &((dx, dy), _) in segs.iter() {
+    for &((dx, dy), _) in chunks.iter() {
         if dx == 1 {
             p0.point.x += 1.;
             for _ in 0..dy {

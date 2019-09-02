@@ -157,7 +157,7 @@ mod tests {
             ret
         );
 
-        let img = ret.as_image(ret.bounding_rect());
+        let img = ret.as_image(ret.bounding_rect(), None).unwrap();
         // img.save("scale2x.png").unwrap();
     }
 
@@ -178,16 +178,16 @@ mod tests {
         let mut pixs1 = pixs.clone();
         let rotated = rotsprite(&pixs, -PI / 6., vec2f!(0, 0));
         pixs1.extend(&rotated);
-        pixs1.save("rotsprite1.png");
+        pixs1.save("rotsprite1.png", None);
 
         let mut pixs1 = pixs.clone();
         let rotated = rotsprite(&pixs, -PI / 6., vec2f!(15, 15));
         pixs1.extend(&rotated);
-        pixs1.save("rotsprite2.png");
+        pixs1.save("rotsprite2.png", None);
 
         let mut pixs1 = pixs.shifted(vec2f!(10, 10));
         let rotated = rotsprite(&pixs1, -PI / 6., vec2f!(0, 0));
         pixs1.extend(&rotated);
-        pixs1.save("rotsprite3.png");
+        pixs1.save("rotsprite3.png", None);
     }
 }
