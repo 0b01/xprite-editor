@@ -160,7 +160,7 @@ fn init_js_bindings(xpr: &Rc<RefCell<Xprite>>) {
     let fn_get_width = move || xpr_.borrow().canvas.art_h;
     let xpr_ = xpr.clone();
     let fn_set_color = move |r: u8, g: u8, b: u8| {
-        xpr_.borrow_mut().set_color(Color::new(r, g, b));
+        xpr_.borrow_mut().palette.set_color(Color::rgba(r, g, b, 255));
         ()
     };
     let xpr_ = xpr.clone();
