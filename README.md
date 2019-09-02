@@ -12,6 +12,10 @@ git submodule update --init --recursive
 
 ## Bugs and Improvements
 
+* [ ] investigate patterned dithering
+* [ ] finish integrating anti-aliasing
+* [ ] investigate other anti-aliasing algos
+* [ ] Checkbox to select whether to use indexed color
 * [ ] frame rate drops when marquee selection is active
 * [ ] Pass in mutable buffer and minimize copying
 * [ ] Layer merge down/up
@@ -21,10 +25,8 @@ git submodule update --init --recursive
 * [ ] Marquee tool
 * [ ] Outline in selected area
 * [ ] snapping with one button(shift)
-* [ ] Autoshade: erode and then color with gradient
-* [ ] Autoshade: erosion modes: accumulative(step by step), vs erode original
 
-## Backburner
+## TODO
 
 * [ ] refactor color tool(using palette crate)
 * [ ] huge refactor to eliminate copying
@@ -45,6 +47,9 @@ git submodule update --init --recursive
 
 ## Done
 
+* [x] Autoshade: erode and then color with gradient
+* [x] Autoshade: erosion modes: cumulative(step by step), vs erode original
+* [x] selective outlining, anti-aliasing
 * [x] Indexed Color mode
 * [x] wave function collapse using wfc
 * [x] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
