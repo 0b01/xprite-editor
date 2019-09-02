@@ -95,7 +95,6 @@ fn run_ui(fname: Option<&str>) {
     //     state.load_icons(&mut rdr);
     //     ui::draw(&mut rdr, &mut state, ui)
     // });
-
 }
 
 fn init_full_logger(console_logger: Arc<Mutex<String>>) {

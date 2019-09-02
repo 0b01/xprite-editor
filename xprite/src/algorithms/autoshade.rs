@@ -34,7 +34,7 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
     // expand bounding box to differentiate foreground at edge
     let (orig_bb, expanded_bb) = {
         let orig = pixs.bounding_rect();
-        let AutoshadeStepParam{shift: Vec2f{x,y}, ..} = &step_params[0];
+        let AutoshadeStepParam { shift: Vec2f { x, y }, .. } = &step_params[0];
 
         let mut bb = orig.clone();
         bb.0.x -= 1.;
@@ -55,7 +55,7 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
     let mut shift_acc = vec2f!(0., 0.);
     let mut erode_acc = 0.;
     for (i, step_param) in step_params.iter().enumerate() {
-        let AutoshadeStepParam {erode, shift, mode} = step_param;
+        let AutoshadeStepParam { erode, shift, mode } = step_param;
         erode_acc += *erode;
         shift_acc += *shift;
         let eroded = erode_l2norm(&acc, erode_acc);
@@ -77,12 +77,11 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
             }
             let intersect = *p == 255 && *orig_p == 255;
             if intersect {
-                let orig_pixel = ret.get_pixel(
-                    orig_bb.0.y as isize + y as isize - 1,
-                    orig_bb.0.x as isize + x as isize - 1,
-                ).unwrap();
+                let orig_pixel = ret
+                    .get_pixel(orig_bb.0.y as isize + y as isize - 1, orig_bb.0.x as isize + x as isize - 1)
+                    .unwrap();
                 let new_col = blend(mode, orig_pixel.color);
-                step_acc.push(pixel!(y-1, x-1, new_col));
+                step_acc.push(pixel!(y - 1, x - 1, new_col));
             }
         }
         acc = if accumulative { eroded.clone() } else { acc };
@@ -103,7 +102,7 @@ fn blend(mode: &AutoshadeBlendingMode, orig_col: Color) -> Color {
             col.g += *diff;
             col.b += *diff;
             col
-        },
+        }
     }
 }
 
@@ -139,25 +138,27 @@ mod tests {
         let r = 100;
         let mut pixs = crate::algorithms::ellipse::algo_ellipsefill(0, 0, r, r);
         pixs.extend(&pixs.shifted(vec2f!(0., 50.)));
-        let shaded = autoshade(&pixs,
+        let shaded = autoshade(
+            &pixs,
             true,
             &[
-            AutoshadeStepParam {
-                erode: 200.,
-                shift: vec2f!(-6., -6.),
-                mode: AutoshadeBlendingMode::Lighten(10),
-            },
-            AutoshadeStepParam {
-                erode: 200.,
-                shift: vec2f!(-6., -6.),
-                mode: AutoshadeBlendingMode::Lighten(10),
-            },
-            AutoshadeStepParam {
-                erode: 200.,
-                shift: vec2f!(-6., -6.),
-                mode: AutoshadeBlendingMode::Lighten(10),
-            }
-        ]);
+                AutoshadeStepParam {
+                    erode: 200.,
+                    shift: vec2f!(-6., -6.),
+                    mode: AutoshadeBlendingMode::Lighten(10),
+                },
+                AutoshadeStepParam {
+                    erode: 200.,
+                    shift: vec2f!(-6., -6.),
+                    mode: AutoshadeBlendingMode::Lighten(10),
+                },
+                AutoshadeStepParam {
+                    erode: 200.,
+                    shift: vec2f!(-6., -6.),
+                    mode: AutoshadeBlendingMode::Lighten(10),
+                },
+            ],
+        );
         let img = shaded.as_image(shaded.bounding_rect());
         img.save("autoshade.png").unwrap();
     }

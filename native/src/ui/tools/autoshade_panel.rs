@@ -1,21 +1,18 @@
-use xprite::algorithms::autoshade::{AutoshadeStepParam, AutoshadeBlendingMode};
 use crate::prelude::*;
 use std::f64;
 use std::rc::Rc;
+use xprite::algorithms::autoshade::{AutoshadeBlendingMode, AutoshadeStepParam};
 
 pub fn draw(_rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
-
     let autoshade = Rc::clone(&state.xpr_mut().toolbox.autoshade);
     let mut tool = autoshade.borrow_mut();
     let len = tool.steps.len();
     if ui.button(&im_str!("+"), [0., 0.]) {
-        tool.steps.push(
-            AutoshadeStepParam {
-                erode: 200.,
-                shift: Vec2f{x: -10., y: -10.},
-                mode: AutoshadeBlendingMode::Lighten(10),
-            }
-        );
+        tool.steps.push(AutoshadeStepParam {
+            erode: 200.,
+            shift: Vec2f { x: -10., y: -10. },
+            mode: AutoshadeBlendingMode::Lighten(10),
+        });
         tool.finalize(&mut state.xpr_mut()).unwrap();
     }
     for i in 0..len {

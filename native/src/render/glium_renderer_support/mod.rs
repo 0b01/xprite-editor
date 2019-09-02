@@ -3,10 +3,7 @@ use glium::index::{self, PrimitiveType};
 use glium::program::ProgramChooserCreationError;
 use glium::texture::{ClientFormat, MipmapsOption, RawImage2d, TextureCreationError};
 use glium::uniforms::{MagnifySamplerFilter, MinifySamplerFilter};
-use glium::{
-    program, uniform, vertex, Blend, DrawError, DrawParameters, IndexBuffer, Program, Rect,
-    Surface, Texture2d, VertexBuffer,
-};
+use glium::{program, uniform, vertex, Blend, DrawError, DrawParameters, IndexBuffer, Program, Rect, Surface, Texture2d, VertexBuffer};
 use imgui::internal::RawWrapper;
 use imgui::{DrawCmd, DrawCmdParams, DrawData, ImString, TextureId, Textures};
 use std::borrow::Cow;
@@ -76,16 +73,10 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub fn init<F: Facade>(
-        ctx: &mut imgui::Context,
-        facade: &F,
-    ) -> Result<Renderer, RendererError> {
+    pub fn init<F: Facade>(ctx: &mut imgui::Context, facade: &F) -> Result<Renderer, RendererError> {
         let program = compile_default_program(facade)?;
         let font_texture = upload_font_texture(ctx.fonts(), facade.get_context())?;
-        ctx.set_renderer_name(Some(ImString::from(format!(
-            "imgui-glium-renderer {}",
-            env!("CARGO_PKG_VERSION")
-        ))));
+        ctx.set_renderer_name(Some(ImString::from(format!("imgui-glium-renderer {}", env!("CARGO_PKG_VERSION")))));
         Ok(Renderer {
             ctx: Rc::clone(facade.get_context()),
             program,
@@ -109,11 +100,7 @@ impl Renderer {
             Err(RendererError::BadTexture(texture_id))
         }
     }
-    pub fn render<T: Surface>(
-        &mut self,
-        target: &mut T,
-        draw_data: &DrawData,
-    ) -> Result<(), RendererError> {
+    pub fn render<T: Surface>(&mut self, target: &mut T, draw_data: &DrawData) -> Result<(), RendererError> {
         let fb_width = draw_data.display_size[0] * draw_data.framebuffer_scale[0];
         let fb_height = draw_data.display_size[1] * draw_data.framebuffer_scale[1];
         if !(fb_width > 0.0 && fb_height > 0.0) {
@@ -128,33 +115,19 @@ impl Renderer {
             [(2.0 / (right - left)), 0.0, 0.0, 0.0],
             [0.0, (2.0 / (top - bottom)), 0.0, 0.0],
             [0.0, 0.0, -1.0, 0.0],
-            [
-                (right + left) / (left - right),
-                (top + bottom) / (bottom - top),
-                0.0,
-                1.0,
-            ],
+            [(right + left) / (left - right), (top + bottom) / (bottom - top), 0.0, 1.0],
         ];
         let clip_off = draw_data.display_pos;
         let clip_scale = draw_data.framebuffer_scale;
         for draw_list in draw_data.draw_lists() {
             let vtx_buffer = VertexBuffer::immutable(&self.ctx, draw_list.vtx_buffer())?;
-            let idx_buffer = IndexBuffer::immutable(
-                &self.ctx,
-                PrimitiveType::TrianglesList,
-                draw_list.idx_buffer(),
-            )?;
+            let idx_buffer = IndexBuffer::immutable(&self.ctx, PrimitiveType::TrianglesList, draw_list.idx_buffer())?;
             let mut idx_start = 0;
             for cmd in draw_list.commands() {
                 match cmd {
                     DrawCmd::Elements {
                         count,
-                        cmd_params:
-                            DrawCmdParams {
-                                clip_rect,
-                                texture_id,
-                                ..
-                            },
+                        cmd_params: DrawCmdParams { clip_rect, texture_id, .. },
                     } => {
                         let idx_end = idx_start + count;
                         let clip_rect = [
@@ -164,16 +137,10 @@ impl Renderer {
                             (clip_rect[3] - clip_off[1]) * clip_scale[1],
                         ];
 
-                        if clip_rect[0] < fb_width
-                            && clip_rect[1] < fb_height
-                            && clip_rect[2] >= 0.0
-                            && clip_rect[3] >= 0.0
-                        {
+                        if clip_rect[0] < fb_width && clip_rect[1] < fb_height && clip_rect[2] >= 0.0 && clip_rect[3] >= 0.0 {
                             target.draw(
                                 &vtx_buffer,
-                                &idx_buffer
-                                    .slice(idx_start..idx_end)
-                                    .expect("Invalid index buffer range"),
+                                &idx_buffer.slice(idx_start..idx_end).expect("Invalid index buffer range"),
                                 &self.program,
                                 &uniform! {
                                     matrix: matrix,
@@ -185,8 +152,7 @@ impl Renderer {
                                     blend: Blend::alpha_blending(),
                                     scissor: Some(Rect {
                                         left: f32::max(0.0, clip_rect[0]).floor() as u32,
-                                        bottom: f32::max(0.0, fb_height - clip_rect[3]).floor()
-                                            as u32,
+                                        bottom: f32::max(0.0, fb_height - clip_rect[3]).floor() as u32,
                                         width: (clip_rect[2] - clip_rect[0]).abs().ceil() as u32,
                                         height: (clip_rect[3] - clip_rect[1]).abs().ceil() as u32,
                                     }),
@@ -197,9 +163,7 @@ impl Renderer {
                         idx_start = idx_end;
                     }
                     DrawCmd::ResetRenderState => (), // TODO
-                    DrawCmd::RawCallback { callback, raw_cmd } => unsafe {
-                        callback(draw_list.raw(), raw_cmd)
-                    },
+                    DrawCmd::RawCallback { callback, raw_cmd } => unsafe { callback(draw_list.raw(), raw_cmd) },
                 }
             }
         }
@@ -208,10 +172,7 @@ impl Renderer {
     }
 }
 
-fn upload_font_texture(
-    mut fonts: imgui::FontAtlasRefMut,
-    ctx: &Rc<Context>,
-) -> Result<Texture2d, RendererError> {
+fn upload_font_texture(mut fonts: imgui::FontAtlasRefMut, ctx: &Rc<Context>) -> Result<Texture2d, RendererError> {
     let texture = fonts.build_rgba32_texture();
     let data = RawImage2d {
         data: Cow::Borrowed(texture.data),

@@ -10,10 +10,10 @@ use fnv::FnvBuildHasher;
 use img::GenericImageView;
 use indexmap::{set::Iter, IndexSet};
 use std::cmp::Ordering;
-use std::iter::FromIterator;
 use std::f64;
 use std::fmt::{Debug, Error, Formatter};
 use std::hash::{Hash, Hasher};
+use std::iter::FromIterator;
 use std::ops::{Index, Sub};
 
 #[cfg_attr(feature = "python-scripting", pyclass)]
@@ -381,7 +381,7 @@ impl From<img::DynamicImage> for Pixels {
 }
 
 impl FromIterator<Pixel> for Pixels {
-    fn from_iter<I: IntoIterator<Item=Pixel>>(iter: I) -> Self {
+    fn from_iter<I: IntoIterator<Item = Pixel>>(iter: I) -> Self {
         let mut c = Pixels::new();
         for i in iter {
             c.push(i);
