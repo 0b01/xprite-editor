@@ -109,21 +109,8 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
         let is_sel = i == color_idx;
         let x = MARGIN + BLOCK_SZ * ((i % cols_per_row) as f32);
         let y = PALETTE_BEGIN_Y + BLOCK_SZ * ((i / cols_per_row) as f32);
-        ui.set_cursor_screen_pos([x, y]);
-        if ui.invisible_button(&im_str!("colorcell##{}", i), [BLOCK_SZ, BLOCK_SZ]) {
-            xpr.palette.selected_color_idx = i;
-        } // if the color block is selected
-        if is_sel {
-            let draw_list = ui.get_window_draw_list();
-            draw_list
-                .add_rect(
-                    [x - MARGIN / 4., y - MARGIN / 4.],
-                    [x + BLOCK_SZ - MARGIN / 4., y + BLOCK_SZ - MARGIN / 4.],
-                    LIGHT_GREY,
-                )
-                .filled(true)
-                .build();
-        }
+
+        // ui.set_cursor_screen_pos([x, y]);
 
         ui.set_cursor_screen_pos([x, y]);
         let misc_flags = {
@@ -137,23 +124,30 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
             f
         };
         let mut sel: [f32; 4] = unsafe { (*col).as_rgba().into() };
-        let id = im_str!("MyColor##{}", i);
-        let b = ui.color_edit(&id, &mut sel).flags(misc_flags).alpha(false);
-
-        // // show color name on hover
-        // if ui.is_item_hovered() {
-        //     state.palette_window.palette_color_name =
-        //         Some(Cow::Owned(col_name.to_owned()));
-        //     ui.tooltip(|| {
-        //         ui.text(col_name.to_owned());
-        //     });
-        // }
-
-        // mutate
-        if b.build() {
+        if ui.color_edit(&im_str!("MyColor##{}", i), &mut sel).flags(misc_flags).alpha(false).build() {
+            // if color is mutated
             *col = sel.into();
             xpr.redraw = true;
         }
+
+        if ui.is_item_hovered() && ui.io().mouse_down[0] {
+            // if clicked
+            xpr.palette.selected_color_idx = i;
+        }
+
+        if is_sel {
+            let draw_list = ui.get_window_draw_list();
+            draw_list
+                .add_triangle(
+                    [x - MARGIN / 8., y - MARGIN / 4. + BLOCK_SZ / 2.],
+                    [x - MARGIN / 8., y + BLOCK_SZ - MARGIN / 4.],
+                    [x + BLOCK_SZ - MARGIN / 4. -  BLOCK_SZ / 2., y + BLOCK_SZ - MARGIN / 4.],
+                    LIGHT_GREY,
+                )
+                .filled(true)
+                .build();
+        }
+
     }
 
     if ui.small_button(&im_str!("+")) {

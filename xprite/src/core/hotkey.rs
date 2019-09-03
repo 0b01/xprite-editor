@@ -221,6 +221,8 @@ impl HotkeyController {
             binds.insert(Action::T(false, false, false, true), Bind::PushTool(ToolType::Texture));
             binds.insert(Action::M(false, false, false, true), Bind::PushTool(ToolType::Marquee));
 
+            binds.insert(Action::Comma(true, false, false, true), Bind::PushTool(ToolType::Settings));
+
             // alt
             binds.insert(Action::LAlt(false, false, true, true), Bind::PushTool(ToolType::ColorPicker));
             binds.insert(Action::LAlt(false, false, false, false), Bind::PopTool);

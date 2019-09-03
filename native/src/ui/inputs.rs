@@ -226,7 +226,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     // left
-    if state.inputs.debounce(InputItem::Left, left) && using_window && !state.inputs.Space {
+    if state.inputs.debounce(InputItem::LMB, left) && using_window && !state.inputs.Space {
         if left {
             trace!("mouse left down");
             handle_error!(state.xpr_mut().event(&MouseDown {
@@ -245,7 +245,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     // right
-    if state.inputs.debounce(InputItem::Right, right) && using_window {
+    if state.inputs.debounce(InputItem::RMB, right) && using_window {
         if right {
             let pos = ui.io().mouse_pos;
             let x = pos[0].into();

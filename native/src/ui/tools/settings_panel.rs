@@ -50,9 +50,9 @@ pub fn draw(_rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
             f.set(ImGuiColorEditFlags::HDR, true);
             f.set(ImGuiColorEditFlags::AlphaPreview, true);
             f.set(ImGuiColorEditFlags::NoOptions, false);
-            f.set(ImGuiColorEditFlags::NoInputs, true);
+            f.set(ImGuiColorEditFlags::NoInputs, false);
             f.set(ImGuiColorEditFlags::NoLabel, true);
-            f.set(ImGuiColorEditFlags::NoPicker, true);
+            f.set(ImGuiColorEditFlags::NoPicker, false);
             f
         };
         let b = ui.color_edit(&id, &mut sel).flags(misc_flags).alpha(false);

@@ -27,7 +27,6 @@ macro_rules! declare_input_state {
             }
         }
 
-
         pub struct InputState {
             $(
                 pub $field: bool,
@@ -228,5 +227,9 @@ declare_input_state!(
     Yen,
     Copy,
     Paste,
-    Cut
+    Cut,
+
+    LMB,
+    RMB
 );
+
