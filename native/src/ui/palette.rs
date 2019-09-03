@@ -110,8 +110,6 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
         let x = MARGIN + BLOCK_SZ * ((i % cols_per_row) as f32);
         let y = PALETTE_BEGIN_Y + BLOCK_SZ * ((i / cols_per_row) as f32);
 
-        // ui.set_cursor_screen_pos([x, y]);
-
         ui.set_cursor_screen_pos([x, y]);
         let misc_flags = {
             let mut f = ImGuiColorEditFlags::empty();

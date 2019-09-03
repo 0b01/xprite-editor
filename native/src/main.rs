@@ -11,6 +11,7 @@ extern crate clap;
 extern crate glium;
 extern crate imgui;
 extern crate imgui_winit_support;
+extern crate nfd;
 extern crate xprite;
 
 mod consts;
