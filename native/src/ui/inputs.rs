@@ -3,57 +3,7 @@ use crate::prelude::*;
 #[allow(unused)]
 #[repr(usize)]
 pub enum KeyCode {
-    Tab = 0,
-    Left = 1,
-    Right = 2,
-    Up = 3,
-    Down = 4,
-    PageUp = 5,
-    PageDown = 6,
-    Home = 7,
-    End = 8,
-    Delete = 9,
-    Back = 10,
-    Return = 11,
-    Escape = 12,
-    A = 13,
-    B = 14,
-    C = 15,
-    D = 16,
-    E = 17,
-    F = 18,
-    G = 19,
-    H = 20,
-    I = 21,
-    J = 22,
-    K = 23,
-    L = 24,
-    M = 25,
-    N = 26,
-    O = 27,
-    P = 29,
-    Q = 30,
-    R = 31,
-    S = 32,
-    T = 33,
-    U = 34,
-    V = 35,
-    W = 36,
-    X = 37,
-    Y = 38,
-    Z = 39,
-    Key0 = 40,
-    Key1 = 41,
-    Key2 = 42,
-    Key3 = 43,
-    Key4 = 44,
-    Key5 = 45,
-    Key6 = 46,
-    Key7 = 47,
-    Key8 = 48,
-    Key9 = 49,
-    Space = 50,
-    Grave = 51,
+    Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9, Key0, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Escape, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24, Snapshot, Scroll, Pause, Insert, Home, Delete, End, PageDown, PageUp, Left, Up, Right, Down, Back, Return, Space, Compose, Caret, Numlock, Numpad0, Numpad1, Numpad2, Numpad3, Numpad4, Numpad5, Numpad6, Numpad7, Numpad8, Numpad9, AbntC1, AbntC2, Add, Apostrophe, Apps, At, Ax, Backslash, Calculator, Capital, Colon, Comma, Convert, Decimal, Divide, Equals, Grave, Kana, Kanji, LAlt, LBracket, LControl, LShift, LWin, Mail, MediaSelect, MediaStop, Minus, Multiply, Mute, MyComputer, NavigateForward, NavigateBackward, NextTrack, NoConvert, NumpadComma, NumpadEnter, NumpadEquals, OEM102, Period, PlayPause, Power, PrevTrack, RAlt, RBracket, RControl, RShift, RWin, Semicolon, Slash, Sleep, Stop, Subtract, Sysrq, Tab, Underline, Unlabeled, VolumeDown, VolumeUp, Wake, WebBack, WebFavorites, WebForward, WebHome, WebRefresh, WebSearch, WebStop, Yen, Copy, Paste, Cut
 }
 
 macro_rules! handle_error {
@@ -73,7 +23,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     let x = pos[0].into();
     let y = pos[1].into();
 
-    if (state.xpr().last_mouse_pos.x != x || state.xpr().last_mouse_pos.y != y) && !state.inputs.space {
+    if (state.xpr().last_mouse_pos.x != x || state.xpr().last_mouse_pos.y != y) && !state.inputs.Space {
         handle_error!(state.xpr_mut().mouse_move(&MouseMove { x: x.into(), y: y.into() }));
     }
 
@@ -82,11 +32,11 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
 
     let using_window = ui.is_window_hovered() && !ui.is_item_active();
 
-    if state.inputs.space {
+    if state.inputs.Space {
         ui.set_mouse_cursor(Some(MouseCursor::Hand));
     }
 
-    let is_wheel_dragging = ui.is_mouse_dragging(MouseButton::Middle) || state.inputs.space;
+    let is_wheel_dragging = ui.is_mouse_dragging(MouseButton::Middle) || state.inputs.Space;
     // middle key for scrolling
     if using_window && is_wheel_dragging {
         // set cursor
@@ -98,7 +48,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
 
     if using_window && wheel_delta != 0. {
         // if alt pressed, change brush size
-        if state.inputs.alt {
+        if state.inputs.LAlt || state.inputs.RAlt {
             let current_tool = state.xpr().last_tool();
             if let Some(brush) = state.xpr().get_brush_for_tool(current_tool) {
                 state.brush.sz[0] += wheel_delta.signum() as i32;
@@ -116,7 +66,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     // left
-    if state.inputs.debounce(InputItem::Left, left) && using_window && !state.inputs.space {
+    if state.inputs.debounce(InputItem::Left, left) && using_window && !state.inputs.Space {
         if left {
             trace!("mouse left down");
             handle_error!(state.xpr_mut().event(&MouseDown {
@@ -155,7 +105,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
                     handle_error!({
                         let bind = state
                             .hotkeys
-                            .lookup(Action::$key_upper(state.inputs.ctrl, state.inputs.shift, state.inputs.alt, true));
+                            .lookup(Action::$key_upper(state.inputs.LControl, state.inputs.LShift, state.inputs.LAlt, true));
                         state.execute(bind)
                     });
                 } else {
@@ -163,7 +113,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
                     handle_error!({
                         let bind = state
                             .hotkeys
-                            .lookup(Action::$key_upper(state.inputs.ctrl, state.inputs.shift, state.inputs.alt, false));
+                            .lookup(Action::$key_upper(state.inputs.LControl, state.inputs.LShift, state.inputs.LAlt, false));
                         state.execute(bind)
                     });
                 }
@@ -172,13 +122,13 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     let is_ctrl = ui.io().key_ctrl;
-    handle_input!(is_ctrl, Ctrl);
+    handle_input!(is_ctrl, LControl);
 
     let is_shift = ui.io().key_shift;
-    handle_input!(is_shift, Shift);
+    handle_input!(is_shift, LShift);
 
     let is_alt = ui.io().key_alt;
-    handle_input!(is_alt, Alt);
+    handle_input!(is_alt, LAlt);
 
     macro_rules! expand_handle_input {
         ($($key:ident),*) => {
@@ -190,8 +140,7 @@ pub fn bind_input(state: &mut State, ui: &Ui) {
     }
 
     expand_handle_input!(
-        A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9, Return,
-        Space, Grave
+        Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9, Key0, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Escape, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24, Snapshot, Scroll, Pause, Insert, Home, Delete, End, PageDown, PageUp, Left, Up, Right, Down, Back, Return, Space, Compose, Caret, Numlock, Numpad0, Numpad1, Numpad2, Numpad3, Numpad4, Numpad5, Numpad6, Numpad7, Numpad8, Numpad9, AbntC1, AbntC2, Add, Apostrophe, Apps, At, Ax, Backslash, Calculator, Capital, Colon, Comma, Convert, Decimal, Divide, Equals, Grave, Kana, Kanji, LAlt, LBracket, LControl, LShift, LWin, Mail, MediaSelect, MediaStop, Minus, Multiply, Mute, MyComputer, NavigateForward, NavigateBackward, NextTrack, NoConvert, NumpadComma, NumpadEnter, NumpadEquals, OEM102, Period, PlayPause, Power, PrevTrack, RAlt, RBracket, RControl, RShift, RWin, Semicolon, Slash, Sleep, Stop, Subtract, Sysrq, Tab, Underline, Unlabeled, VolumeDown, VolumeUp, Wake, WebBack, WebFavorites, WebForward, WebHome, WebRefresh, WebSearch, WebStop, Yen, Copy, Paste, Cut
     );
 
     // for i in 0..512 {

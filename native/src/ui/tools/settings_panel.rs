@@ -41,4 +41,25 @@ pub fn draw(_rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
             }
         }
     });
+
+    ui.tree_node(&im_str!("Background Color")).default_open(true).build(|| {
+        let mut sel: [f32; 4] = unsafe { state.xpr().canvas.bg.as_rgba().into() };
+        let id = im_str!("MyColor##{}", "background");
+        let misc_flags = {
+            let mut f = ImGuiColorEditFlags::empty();
+            f.set(ImGuiColorEditFlags::HDR, true);
+            f.set(ImGuiColorEditFlags::AlphaPreview, true);
+            f.set(ImGuiColorEditFlags::NoOptions, false);
+            f.set(ImGuiColorEditFlags::NoInputs, true);
+            f.set(ImGuiColorEditFlags::NoLabel, true);
+            f.set(ImGuiColorEditFlags::NoPicker, true);
+            f
+        };
+        let b = ui.color_edit(&id, &mut sel).flags(misc_flags).alpha(false);
+        if b.build() {
+            state.xpr_mut().canvas.bg = sel.into();
+            state.xpr_mut().redraw = true;
+        }
+
+    });
 }

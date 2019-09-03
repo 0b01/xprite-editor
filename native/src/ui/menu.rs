@@ -16,7 +16,7 @@ pub fn draw_menu(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                 state.execute(Bind::Save).unwrap();
             }
 
-            if ui.menu_item(&im_str!("Settings")).build() {
+            if ui.menu_item(&im_str!("Settings")).shortcut(&im_str!("Ctrl+,")).build() {
                 state.execute(Bind::PushTool(ToolType::Settings)).unwrap();
             }
 
