@@ -1,11 +1,11 @@
 use crate::prelude::*;
 
 // TODO: eliminate clone
-pub fn pixel_perfect(path: &Pixels) -> Pixels {
+pub fn pixel_perfect(path: &mut Pixels) {
     if path.len() == 1 || path.len() == 0 {
-        return path.clone();
+        return;
     }
-    let mut ret = Pixels::new();
+    let mut take = vec![false; path.len()];
     let mut c = 0;
     while c < path.len() {
         macro_rules! prev {
@@ -32,10 +32,11 @@ pub fn pixel_perfect(path: &Pixels) -> Pixels {
         {
             c += 1;
         }
-        ret.push(path[c]);
+        take[c] = true;
         c += 1;
     }
-    ret
+    let mut idx  = 0;
+    path.0.retain(|_| {idx += 1; take[idx - 1]});
 }
 
 pub fn pixel_antiperfect(path: &Pixels) -> Pixels {
@@ -79,10 +80,10 @@ mod tests {
     use super::*;
     #[test]
     fn test_pp() {
-        let path = pixels!(pixel!(0., 0., Color::red()), pixel!(0., 1., Color::red()), pixel!(1., 1., Color::red()));
+        let mut path = pixels!(pixel!(0., 0., Color::red()), pixel!(0., 1., Color::red()), pixel!(1., 1., Color::red()));
 
-        let ret = pixel_perfect(&path);
-        assert_eq!(ret, pixels!(pixel!(0., 0., Color::red()), pixel!(1., 1., Color::red())));
+        pixel_perfect(&mut path);
+        assert_eq!(path, pixels!(pixel!(0., 0., Color::red()), pixel!(1., 1., Color::red())));
     }
 
     #[test]

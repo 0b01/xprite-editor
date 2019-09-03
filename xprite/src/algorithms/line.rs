@@ -198,7 +198,7 @@ pub fn pixel_perfect_line(start: Vec2f, stop: Vec2f) -> Pixels {
 }
 
 /// input must be snapped to grid
-pub fn continuous_line(start: Vec2f, stop: Vec2f) -> Pixels {
+pub fn continuous_line(start: Vec2f, stop: Vec2f, color: Color) -> Pixels {
     let Vec2f { x: mut x0, y: mut y0 } = start.floor();
     let Vec2f { x: x1, y: y1 } = stop.floor();
 
@@ -211,7 +211,7 @@ pub fn continuous_line(start: Vec2f, stop: Vec2f) -> Pixels {
 
     let mut ret = Pixels::new();
     loop {
-        ret.push(pixel!(y0, x0, Color::red()));
+        ret.push(pixel!(y0, x0, color));
         e2 = 2. * err;
         if e2 >= dy {
             if x0 == x1 {

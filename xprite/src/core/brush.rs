@@ -38,7 +38,8 @@ impl FromStr for Brush {
             Ok(Brush::square(size))
         } else if value.starts_with("/") {
             let params: Vec<f64> = value[1..].split(",").map(|i| i.parse().unwrap()).collect();
-            Ok(Brush::line(params[0] as u32, params[1]))
+            let color: Color = Color::orange(); //TODO: change color
+            Ok(Brush::line(params[0] as u32, params[1], color))
         } else {
             Err("unimplemented brush shape".to_owned())
         }
@@ -118,7 +119,7 @@ impl Brush {
         }
     }
 
-    pub fn line(sz: u32, angle: f64) -> Self {
+    pub fn line(sz: u32, angle: f64, color: Color) -> Self {
         let size = sz as f64;
 
         let a = PI * angle / 180.;
@@ -131,7 +132,7 @@ impl Brush {
 
         let p1 = vec2f_xy!(x1, y1);
         let p2 = vec2f_xy!(x2, y2);
-        let shape = line::continuous_line(p1, p2);
+        let shape = line::continuous_line(p1, p2, color);
 
         let bb = {
             let rect = shape.bounding_rect();
@@ -152,8 +153,8 @@ impl Brush {
 
     pub fn follow_stroke(&self, stroke: &Pixels) -> Option<Pixels> {
         let mut ret = Pixels::new();
-        for Pixel { point, .. } in &stroke.0 {
-            if let Some(pixs) = self.to_canvas_pixels(*point, Color::red()) {
+        for Pixel { point, color } in &stroke.0 {
+            if let Some(pixs) = self.to_canvas_pixels(*point, *color) {
                 ret.extend(&pixs);
             }
         }
@@ -241,7 +242,7 @@ mod tests {
     fn test_line_brush() {
         use super::*;
         assert_eq!(
-            Brush::line(3, 45.),
+            Brush::line(3, 45., Color::red()),
             Brush {
                 shape: pixels! {
                     pixel!(2,0,Color::red()),

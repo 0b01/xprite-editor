@@ -101,7 +101,7 @@ impl Pencil {
     }
 
     pub fn draw_stroke(&self, xpr: &Xprite) -> Result<Pixels, String> {
-        let mut line_pixs = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line()?;
+        let mut line_pixs = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line(xpr.color())?;
         let pixs = if self.mode == PencilMode::Raw {
             line_pixs
         } else {
@@ -109,15 +109,15 @@ impl Pencil {
             line_pixs
         };
         let mut pixs = self.brush.follow_stroke(&pixs).unwrap();
-        pixs.set_color(xpr.color());
+        // pixs.set_color(xpr.color());
         Ok(pixs)
     }
 
     fn finalize_continuous_line(&mut self, xpr: &Xprite, start: Option<Vec2f>, stop: Option<Vec2f>) -> Result<(), String> {
         if let (Some(start), Some(stop)) = (start, stop) {
-            let buf = continuous_line(start, stop);
+            let buf = continuous_line(start, stop, xpr.color());
             let mut buf = self.brush.follow_stroke(&buf).unwrap();
-            buf.set_color(xpr.color());
+            // buf.set_color(xpr.color());
             self.update_buffer = Some(buf);
         }
         Ok(())
@@ -132,7 +132,7 @@ impl Pencil {
                 if !self.moved {
                     self.cursor.clone().unwrap()
                 } else {
-                    let mut points = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line()?;
+                    let mut points = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line(xpr.color())?;
                     if self.mode == PencilMode::PixelPerfect {
                         points.pixel_perfect();
                     } else {
@@ -145,7 +145,7 @@ impl Pencil {
             SortedMonotonic => {
                 let mut points = self.current_polyline
                     .to_pixel_coords(xpr)?
-                    .connect_with_line()?;
+                    .connect_with_line(xpr.color())?;
                 points.pixel_perfect();
                 if points.len() > 1 {
                     points.monotonic_sort();
@@ -160,11 +160,11 @@ impl Pencil {
                 } else {
                     let mut points = self.current_polyline
                         .to_pixel_coords(xpr)?
-                        .connect_with_line()?;
+                        .connect_with_line(xpr.color())?;
                     points.pixel_perfect();
-                    points.selective_antialias();
-                    // let path = self.brush.follow_stroke(&points).unwrap();
-                    points
+                    points.selective_antialias(0.5, Color::orange());
+                    let path = self.brush.follow_stroke(&points).unwrap();
+                    path
                 }
             }
         };
@@ -174,8 +174,8 @@ impl Pencil {
         Ok(())
     }
 
-    fn draw_line(&self) -> Option<Pixels> {
-        let buf = continuous_line(self.last_mouse_down_or_up?, self.cursor_pos?);
+    fn draw_line(&self, color: Color) -> Option<Pixels> {
+        let buf = continuous_line(self.last_mouse_down_or_up?, self.cursor_pos?, color);
         let buf = self.brush.follow_stroke(&buf)?;
         Some(buf)
     }
@@ -189,7 +189,7 @@ impl Tool for Pencil {
         self.cursor_pos = Some(point);
 
         if self.shift {
-            if let Some(pixs) = self.draw_line() {
+            if let Some(pixs) = self.draw_line(xpr.color()) {
                 self.draw_buffer = pixs;
                 self.redraw = true;
                 return Ok(());
@@ -284,7 +284,7 @@ impl Tool for Pencil {
     }
 
     // TODO: dedupe brush instantiation code(pencil, eraser)
-    fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
+    fn set(&mut self, xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
             "mode" => {
                 match PencilMode::from_str(value) {
@@ -298,7 +298,7 @@ impl Tool for Pencil {
             "shift" => match value {
                 "true" => {
                     self.shift = true;
-                    if let Some(pixs) = self.draw_line() {
+                    if let Some(pixs) = self.draw_line(xpr.color()) {
                         self.draw_buffer = pixs;
                     }
                     self.redraw = true;

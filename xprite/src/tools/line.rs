@@ -23,18 +23,18 @@ impl Line {
         }
     }
 
-    fn get_line(&self) -> Option<Pixels> {
+    fn get_line(&self, xpr: &Xprite) -> Option<Pixels> {
         let start = self.start_pos?;
         let stop = self.cursor_pos?;
         if self.snap {
             Some(snapped_line(self.is_snap_45, &start, &stop))
         } else {
-            Some(continuous_line(start.point, stop.point))
+            Some(continuous_line(start.point, stop.point, xpr.color()))
         }
     }
 
     fn finalize_line(&mut self, xpr: &Xprite) -> Result<(), String> {
-        if let Some(mut pixs) = self.get_line() {
+        if let Some(mut pixs) = self.get_line(xpr) {
             pixs.set_color(xpr.color());
             self.buffer = Some(pixs);
         }
@@ -93,7 +93,7 @@ impl Tool for Line {
             xpr.set_cursor(&cursor);
         }
 
-        if let Some(mut pixs) = self.get_line() {
+        if let Some(mut pixs) = self.get_line(xpr) {
             pixs.set_color(xpr.color());
             xpr.add_pixels(&pixs);
             Ok(true)

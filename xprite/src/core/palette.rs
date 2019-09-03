@@ -54,13 +54,13 @@ impl PaletteManager {
     pub fn set_color(&mut self, color: Color) {
         self.selected_color_idx = match color {
             Color::Indexed(i) => i,
-            Color::Rgba(rgba) => {
+            Color::Rgba(_rgba) => {
                 use itertools::Itertools;
                 self.current_palette()
                     .borrow()
                     .iter()
-                    .find_position(|&(k, v)| unsafe { v.as_rgba() == color.as_rgba() })
-                    .unwrap()
+                    .find_position(|&(_k, v)| unsafe { v.as_rgba() == color.as_rgba() })
+                    .unwrap() // TODO: refactor this into insert on error
                     .0
             }
         }

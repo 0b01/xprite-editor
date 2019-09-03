@@ -295,7 +295,7 @@ impl Pixels {
     }
 
     pub fn pixel_perfect(&mut self) {
-        *self = pixel_perfect(self);
+        pixel_perfect(self);
     }
 
     pub fn pixel_antiperfect(&mut self) {
@@ -306,8 +306,8 @@ impl Pixels {
         *self = sort_path(self).unwrap();
     }
 
-    pub fn selective_antialias(&mut self) {
-        selective_antialias(self, 0.5, Color::orange())
+    pub fn selective_antialias(&mut self, k: f64, alt_color: Color) {
+        selective_antialias(self, k, alt_color)
     }
 
     pub fn connected_components(&self, w: usize, h: usize) -> Vec<Pixels> {

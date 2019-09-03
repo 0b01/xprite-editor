@@ -74,14 +74,14 @@ impl Polyline {
         Ok(ret)
     }
 
-    pub fn connect_with_line(&self) -> Result<Pixels, String> {
+    pub fn connect_with_line(&self, color: Color) -> Result<Pixels, String> {
         match self.pos.len() {
             0 => Err("Polyline is empty".to_owned()),
-            1 => Ok(pixels!(pixel!(self.pos[0], Color::red()))),
+            1 => Ok(pixels!(pixel!(self.pos[0], color))),
             _ => {
                 let mut ret = Pixels::new();
                 for (p0, p1) in self.pos.iter().zip(self.pos[1..].iter()) {
-                    let seg = continuous_line(*p0, *p1);
+                    let seg = continuous_line(*p0, *p1, color);
                     ret.extend(&seg);
                 }
                 Ok(ret)
