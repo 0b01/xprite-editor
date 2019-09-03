@@ -113,7 +113,7 @@ impl Texture {
 
 impl Tool for Texture {
     fn cursor(&self) -> Option<Pixels> {
-        let p = self.cursor_pos?;
+        let _p = self.cursor_pos?;
         None
     }
 
@@ -143,7 +143,6 @@ impl Tool for Texture {
         }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(p);
-        let color = xpr.color();
         self.start_pos = Some(point);
         Ok(())
     }

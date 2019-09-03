@@ -3,8 +3,6 @@ use crate::prelude::*;
 /// selectively color a pixel perfect line
 /// each segment of length l contains l*k number of pixels with alt color
 pub fn selective_antialias(path: &mut Pixels, k: f64, alt_color: Color) {
-    let p0 = path.0.get_index(0).unwrap();
-
     let mut chunks = vec![];
     let mut last = 0;
     for (i, (pi,pj)) in path.iter().zip(path.iter().skip(1)).enumerate() {

@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use std::borrow::Cow;
 use xprite::rendering::Renderer;
 
 pub fn draw_palette(rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
@@ -102,7 +101,6 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     // ).filled(false).build();
     let cols_per_row = state.cols_per_row as usize;
     let mut xpr = state.xpr_mut();
-    let pal_idx = xpr.palette.selected_palette_idx as usize;
     let color_idx = xpr.palette.selected_color_idx;
     let pal = xpr.palette.current_palette();
     let mut pal_ = pal.borrow_mut();

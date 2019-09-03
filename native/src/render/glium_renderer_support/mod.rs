@@ -72,6 +72,7 @@ pub struct Renderer {
     textures: Textures<Rc<Texture2d>>,
 }
 
+#[allow(unused)]
 impl Renderer {
     pub fn init<F: Facade>(ctx: &mut imgui::Context, facade: &F) -> Result<Renderer, RendererError> {
         let program = compile_default_program(facade)?;

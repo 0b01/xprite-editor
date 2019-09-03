@@ -108,16 +108,14 @@ impl Pencil {
             line_pixs.pixel_perfect();
             line_pixs
         };
-        let mut pixs = self.brush.follow_stroke(&pixs).unwrap();
-        // pixs.set_color(xpr.color());
+        let pixs = self.brush.follow_stroke(&pixs).unwrap();
         Ok(pixs)
     }
 
     fn finalize_continuous_line(&mut self, xpr: &Xprite, start: Option<Vec2f>, stop: Option<Vec2f>) -> Result<(), String> {
         if let (Some(start), Some(stop)) = (start, stop) {
             let buf = continuous_line(start, stop, xpr.color());
-            let mut buf = self.brush.follow_stroke(&buf).unwrap();
-            // buf.set_color(xpr.color());
+            let buf = self.brush.follow_stroke(&buf).unwrap();
             self.update_buffer = Some(buf);
         }
         Ok(())
@@ -125,7 +123,7 @@ impl Pencil {
 
     fn finalize(&mut self, xpr: &Xprite) -> Result<(), String> {
         use self::PencilMode::*;
-        let mut buf = match self.mode {
+        let buf = match self.mode {
             Raw => self.draw_stroke(xpr)?,
             PixelPerfect | PixelAntiPerfect => {
                 // if mousedown w/o move
@@ -168,8 +166,6 @@ impl Pencil {
                 }
             }
         };
-
-        // buf.set_color(xpr.color());
         self.update_buffer = Some(buf);
         Ok(())
     }

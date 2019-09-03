@@ -5,7 +5,6 @@ use glium::{
     texture::{ClientFormat, RawImage2d},
     Texture2d,
 };
-use imgui::*;
 use std::borrow::Cow;
 use std::f64;
 use std::rc::Rc;
@@ -82,7 +81,7 @@ impl<'ui> Renderer for ImguiRenderer<'ui> {
         self.textures.insert(gl_texture).id()
     }
 
-    fn render(&mut self, xpr: Option<&Xprite>) -> Option<()> {
+    fn render(&mut self, _xpr: Option<&Xprite>) -> Option<()> {
         Some(())
     }
 

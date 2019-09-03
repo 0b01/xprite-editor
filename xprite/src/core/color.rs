@@ -39,7 +39,7 @@ impl Color {
 
     pub unsafe fn as_rgba(&self) -> XpriteRgba {
         match self {
-            Color::Indexed(_) => unsafe {
+            Color::Indexed(_) => {
                 use std::hint::unreachable_unchecked;
                 unreachable_unchecked();
             },
