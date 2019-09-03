@@ -3,8 +3,8 @@ use crate::algorithms::{
     perimeter::{find_outline, find_perimeter},
     pixel_perfect::{pixel_antiperfect, pixel_perfect},
     rotsprite::rotsprite,
-    sorter::sort_path,
     selective_antialias::selective_antialias,
+    sorter::sort_path,
 };
 use crate::prelude::*;
 use fnv::FnvBuildHasher;
@@ -112,12 +112,11 @@ impl Pixel {
 
     pub fn dir(&self, other: &Pixel) -> bool {
         if self.point.x == other.point.x {
-            return self.point.y > other.point.y
+            return self.point.y > other.point.y;
         } else {
-            return self.point.x > other.point.x
+            return self.point.x > other.point.x;
         }
     }
-
 }
 
 impl Hash for Pixel {

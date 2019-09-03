@@ -10,6 +10,6 @@ pub mod polygon;
 pub mod polyline;
 pub mod rect;
 pub mod rotsprite;
-pub mod sorter;
 pub mod selective_antialias;
+pub mod sorter;
 pub mod symmetry;

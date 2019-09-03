@@ -141,9 +141,7 @@ impl Pencil {
                 }
             }
             SortedMonotonic => {
-                let mut points = self.current_polyline
-                    .to_pixel_coords(xpr)?
-                    .connect_with_line(xpr.color())?;
+                let mut points = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line(xpr.color())?;
                 points.pixel_perfect();
                 if points.len() > 1 {
                     points.monotonic_sort();
@@ -156,9 +154,7 @@ impl Pencil {
                 if !self.moved {
                     self.cursor.clone().unwrap()
                 } else {
-                    let mut points = self.current_polyline
-                        .to_pixel_coords(xpr)?
-                        .connect_with_line(xpr.color())?;
+                    let mut points = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line(xpr.color())?;
                     points.pixel_perfect();
                     points.selective_antialias(0.5, Color::orange());
                     let path = self.brush.follow_stroke(&points).unwrap();

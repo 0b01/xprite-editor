@@ -34,7 +34,9 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
     // expand bounding box to differentiate foreground at edge
     let (orig_bb, expanded_bb) = {
         let orig = pixs.bounding_rect();
-        let AutoshadeStepParam { shift: Vec2f { x:_x, y:_y }, .. } = &step_params[0];
+        let AutoshadeStepParam {
+            shift: Vec2f { x: _x, y: _y }, ..
+        } = &step_params[0];
 
         let mut bb = orig.clone();
         bb.0.x -= 1.;
@@ -158,7 +160,8 @@ mod tests {
                     mode: AutoshadeBlendingMode::Lighten(10),
                 },
             ],
-        ).unwrap();
+        )
+        .unwrap();
         let img = shaded.as_image(shaded.bounding_rect(), None).unwrap();
         img.save("autoshade.png").unwrap();
     }

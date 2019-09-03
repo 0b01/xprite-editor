@@ -42,7 +42,7 @@ impl Color {
             Color::Indexed(_) => {
                 use std::hint::unreachable_unchecked;
                 unreachable_unchecked();
-            },
+            }
             Color::Rgba(rgba) => *rgba,
         }
     }

@@ -5,14 +5,13 @@ use crate::prelude::*;
 pub fn selective_antialias(path: &mut Pixels, k: f64, alt_color: Color) {
     let mut chunks = vec![];
     let mut last = 0;
-    for (i, (pi,pj)) in path.iter().zip(path.iter().skip(1)).enumerate() {
+    for (i, (pi, pj)) in path.iter().zip(path.iter().skip(1)).enumerate() {
         // if consecutive pixels are not connected
         if (pi.point.x != pj.point.x) && (pi.point.y != pj.point.y) {
-
             let last_pix = path.0.get_index(last).unwrap();
             let dir = last_pix.dir(&pi);
 
-//            println!("{:?} {:?}", last_pix, pi);
+            //            println!("{:?} {:?}", last_pix, pi);
             chunks.push((i - last, dir));
             last = i + 1;
         }
@@ -21,9 +20,8 @@ pub fn selective_antialias(path: &mut Pixels, k: f64, alt_color: Color) {
     let dir = last_pix.dir(path.iter().last().unwrap());
     chunks.push(((path.len() - last - 1), dir));
 
-//    println!("{:?}", chunks);
-    assert_eq!(chunks.iter().map(|i|i.0 + 1).sum::<usize>(), path.len());
-
+    //    println!("{:?}", chunks);
+    assert_eq!(chunks.iter().map(|i| i.0 + 1).sum::<usize>(), path.len());
 
     let mut acc = 0;
     for (l, dir) in chunks {
@@ -38,7 +36,6 @@ pub fn selective_antialias(path: &mut Pixels, k: f64, alt_color: Color) {
         }
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -60,7 +57,6 @@ mod tests {
             print!("{:?}", i.point);
             println!("{:?}", i.color);
         }
-
     }
 
 }

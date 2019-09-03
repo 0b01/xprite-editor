@@ -60,6 +60,5 @@ pub fn draw(_rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
             state.xpr_mut().canvas.bg = sel.into();
             state.xpr_mut().redraw = true;
         }
-
     });
 }

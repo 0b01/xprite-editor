@@ -35,8 +35,11 @@ pub fn pixel_perfect(path: &mut Pixels) {
         take[c] = true;
         c += 1;
     }
-    let mut idx  = 0;
-    path.0.retain(|_| {idx += 1; take[idx - 1]});
+    let mut idx = 0;
+    path.0.retain(|_| {
+        idx += 1;
+        take[idx - 1]
+    });
 }
 
 pub fn pixel_antiperfect(path: &Pixels) -> Pixels {

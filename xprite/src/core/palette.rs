@@ -74,7 +74,6 @@ impl PaletteManager {
                     let (idx, _) = pal_.insert_full(format!("{}", len), color);
                     idx
                 }
-
             }
         }
     }
