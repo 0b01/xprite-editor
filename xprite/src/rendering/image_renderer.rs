@@ -4,6 +4,7 @@ use img::GenericImage;
 use img::{DynamicImage, Rgba};
 
 pub struct ImageRenderer {
+    color: Color,
     w: f64,
     h: f64,
     pub image: image::DynamicImage,
@@ -54,12 +55,12 @@ impl Renderer for ImageRenderer {
 }
 
 impl ImageRenderer {
-    pub fn new(art_w: f64, art_h: f64) -> Self {
+    pub fn new(color: Color, art_w: f64, art_h: f64) -> Self {
         let w = art_w;
         let h = art_h;
         let image = DynamicImage::new_rgba8(w as u32, h as u32);
         let draw_list = Pixels::new();
-        Self { w, h, image, draw_list }
+        Self { w, h, image, draw_list, color }
     }
 
     pub fn as_img(&self) -> &DynamicImage {
@@ -72,7 +73,8 @@ impl ImageRenderer {
 
     pub fn fill_canvas(&mut self) {
         use img::Pixel;
-        let color = Rgba::from_channels(200, 200, 200, 255);
+        let rgba = unsafe { self.color.as_rgba() };
+        let color = Rgba::from_channels(rgba.r, rgba.g, rgba.b, 255);
 
         for (_i, p) in self.image.as_mut_rgba8().unwrap().pixels_mut().enumerate() {
             *p = color;
@@ -91,7 +93,7 @@ mod tests {
     #[test]
     fn test_img_render() {
         use super::*;
-        let mut rdr = ImageRenderer::new(10., 10.);
+        let mut rdr = ImageRenderer::new(Color::orange(), 10., 10.);
         rdr.rect([0., 0.], [0., 0.], [1., 0., 0., 1.], true);
         let path = "test.png";
         save_img(path, rdr.as_img());

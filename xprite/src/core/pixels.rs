@@ -532,7 +532,8 @@ impl Pixels {
         let h = bb.h() as f64;
         let origin = bb.0;
 
-        let mut rdr = ImageRenderer::new(w, h);
+        let bg = xpr.map(|i| i.canvas.bg).unwrap_or(Color::grey());
+        let mut rdr = ImageRenderer::new(bg, w, h);
         for pix in &self.0 {
             let Pixel { point: Vec2f { x, y }, color } = pix;
             if oob(*x - origin.x, *y - origin.y, w as f64, h as f64) {

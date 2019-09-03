@@ -100,7 +100,7 @@ impl State {
     }
 
     fn update_preview(&mut self, rdr: &mut ImguiRenderer) -> Option<()> {
-        let mut img_rdr = ImageRenderer::new(self.xpr().canvas.art_w, self.xpr().canvas.art_h);
+        let mut img_rdr = ImageRenderer::new(self.xpr().canvas.bg, self.xpr().canvas.art_w, self.xpr().canvas.art_h);
         img_rdr.fill_canvas();
         self.xpr().preview(&mut img_rdr).unwrap();
         img_rdr.render(Some(self.xpr()))?;

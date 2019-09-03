@@ -52,10 +52,10 @@ pub fn draw_color_picker(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
             };
 
             let mut sel: [f32; 4] = {
-                if let Some(col) = &state.xpr_mut().color_picker_color {
-                    unsafe { (*col).as_rgba().into() }
+                if let Some(col) = state.xpr().color_picker_color {
+                    col.to_rgba(Some(state.xpr())).unwrap().into()
                 } else {
-                    unsafe { state.xpr_mut().palette.current_color().1.as_rgba().into() }
+                    unsafe { state.xpr().palette.current_color().1.as_rgba().into() }
                 }
             };
             let b = ui

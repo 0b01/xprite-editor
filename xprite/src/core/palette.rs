@@ -51,17 +51,30 @@ impl PaletteManager {
         })
     }
 
+    fn find_color(&self, color: Color) -> Option<usize> {
+        use itertools::Itertools;
+        self.current_palette()
+            .borrow()
+            .iter()
+            .find_position(|&(_k, v)| unsafe { v.as_rgba() == color.as_rgba() })
+            .map(|i| i.0)
+    }
+
     pub fn set_color(&mut self, color: Color) {
+        println!("{:#?}", color);
         self.selected_color_idx = match color {
             Color::Indexed(i) => i,
             Color::Rgba(_rgba) => {
-                use itertools::Itertools;
-                self.current_palette()
-                    .borrow()
-                    .iter()
-                    .find_position(|&(_k, v)| unsafe { v.as_rgba() == color.as_rgba() })
-                    .unwrap() // TODO: refactor this into insert on error
-                    .0
+                if let Some(idx) = self.find_color(color) {
+                    idx
+                } else {
+                    let pal = self.current_palette();
+                    let mut pal_ = pal.borrow_mut();
+                    let len = pal_.len();
+                    let (idx, _) = pal_.insert_full(format!("{}", len), color);
+                    idx
+                }
+
             }
         }
     }

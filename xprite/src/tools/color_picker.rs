@@ -3,16 +3,16 @@ use crate::prelude::*;
 #[derive(Clone, Default, Debug)]
 pub struct ColorPicker {
     cursor: Option<Pixels>,
-    temp: Option<Color>,
-    col: Option<Color>,
+    hovered_color: Option<Color>,
+    clicked_color: Option<Color>,
 }
 
 impl ColorPicker {
     pub fn new() -> Self {
         ColorPicker {
             cursor: None,
-            temp: None,
-            col: None,
+            hovered_color: None,
+            clicked_color: None,
         }
     }
 
@@ -38,7 +38,7 @@ impl Tool for ColorPicker {
         let point = xpr.canvas.shrink_size(p);
         let color = xpr.color();
         self.cursor = Some(pixels!(Pixel { point, color }));
-        self.temp = if let Some(col) = self.find_color(xpr, point) {
+        self.hovered_color = if let Some(col) = self.find_color(xpr, point) {
             Some(col)
         } else {
             Some(Color::transparent())
@@ -52,7 +52,7 @@ impl Tool for ColorPicker {
 
     fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, _button: InputItem) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
-        self.col = if let Some(col) = self.find_color(xpr, point) {
+        self.clicked_color = if let Some(col) = self.find_color(xpr, point) {
             Some(col)
         } else {
             Some(Color::transparent())
@@ -61,16 +61,16 @@ impl Tool for ColorPicker {
     }
 
     fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
-        if let Some(temp) = self.temp {
+        if let Some(hovered_color) = self.hovered_color {
             // order is important
-            xpr.color_picker_color = Some(temp);
+            xpr.color_picker_color = Some(hovered_color);
         }
-        if let Some(col) = self.col {
+        if let Some(col) = self.clicked_color {
             xpr.palette.set_color(col);
             xpr.color_picker_color = None;
         }
-        self.col = None;
-        self.temp = None;
+        self.clicked_color = None;
+        self.hovered_color = None;
         Ok(false)
     }
 

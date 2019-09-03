@@ -15,6 +15,7 @@ impl Default for Scroll {
 
 #[derive(Debug)]
 pub struct Canvas {
+    pub bg: Color,
     pub scale: f64,
     pub win_x: f64,
     pub win_y: f64,
@@ -30,6 +31,7 @@ pub struct Canvas {
 impl Default for Canvas {
     fn default() -> Self {
         Self {
+            bg: Color::black(),
             scale: 10.,
 
             win_x: 0.,

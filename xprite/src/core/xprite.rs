@@ -308,14 +308,14 @@ impl Xprite {
 
 impl Xprite {
     pub fn as_img(&self) -> Result<img::DynamicImage, String> {
-        let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
+        let mut rdr = ImageRenderer::new(self.canvas.bg, self.canvas.art_w, self.canvas.art_h);
         self.export(&mut rdr)?;
         Ok(rdr.to_img())
     }
 
     pub fn selected_layer_as_im(&self) -> Option<img::DynamicImage> {
         let layer = self.history.top().selected_layer().unwrap();
-        let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
+        let mut rdr = ImageRenderer::new(self.canvas.bg, self.canvas.art_w, self.canvas.art_h);
         layer.draw(&mut rdr, Some(self));
         rdr.render(Some(self))?;
         Some(rdr.image)
@@ -327,7 +327,7 @@ impl Xprite {
             let bb = layer.content.bounding_rect();
             return layer.content.as_image(bb, Some(self));
         }
-        let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
+        let mut rdr = ImageRenderer::new(self.canvas.bg, self.canvas.art_w, self.canvas.art_h);
         layer.draw(&mut rdr, Some(self));
         rdr.render(Some(self))?;
         Some(rdr.image)
@@ -343,7 +343,7 @@ impl Xprite {
             let bb = content.bounding_rect();
             return content.as_image(bb, Some(self));
         }
-        let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
+        let mut rdr = ImageRenderer::new(self.canvas.bg, self.canvas.art_w, self.canvas.art_h);
         for layer in group.iter() {
             layer.draw(&mut rdr, Some(self));
         }
@@ -572,7 +572,7 @@ impl Xprite {
     }
 
     pub fn save_img(&self, img_path: &str, rescale: u32) -> Option<()> {
-        let mut rdr = ImageRenderer::new(self.canvas.art_w, self.canvas.art_h);
+        let mut rdr = ImageRenderer::new(self.canvas.bg, self.canvas.art_w, self.canvas.art_h);
         self.export(&mut rdr).unwrap();
         rdr.render(Some(self))?;
         let im = rdr.as_img();
