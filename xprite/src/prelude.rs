@@ -51,3 +51,14 @@ pub fn oob(x: f64, y: f64, w: f64, h: f64) -> bool {
     }
     false
 }
+
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_oob() {
+        use super::*;
+        assert!(!oob(0., 0., 3., 1.));
+        assert!(oob(1., 2., 3., 1.));
+    }
+}

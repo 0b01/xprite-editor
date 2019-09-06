@@ -628,7 +628,7 @@ mod tests {
     fn test_as_ase() {
         use super::*;
         use std::fs::File;
-        let mut xpr = Xprite::new("test".to_owned(), 100., 100.);
+        let xpr = Xprite::new("test".to_owned(), 100., 100.);
         xpr.current_layer()
             .unwrap()
             .borrow_mut()
@@ -644,7 +644,7 @@ mod tests {
     fn test_as_ase2() {
         use super::*;
         use std::fs::File;
-        let mut xpr = Xprite::new("test".to_owned(), 100., 100.);
+        let xpr = Xprite::new("test".to_owned(), 100., 100.);
         xpr.current_layer()
             .unwrap()
             .borrow_mut()

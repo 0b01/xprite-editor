@@ -196,8 +196,8 @@ mod tests {
     fn test_ellipse_info() {
         use super::*;
         let mut ell = Ellipse::new();
-        ell.start_pos = Some(pixel!(0, 0, Color::red()));
-        ell.cursor_pos = Some(pixel!(10, 10, Color::red()));
+        ell.start_pos = Some(vec2f!(0, 0));
+        ell.cursor_pos = Some(vec2f!(10, 10));
 
         dbg!(ell.get_info());
     }

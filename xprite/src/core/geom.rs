@@ -378,4 +378,12 @@ mod tests {
         let ret = seg.arc_len(10);
         assert_eq!(183.99826172389442, ret);
     }
+
+    #[test]
+    fn test_rect_dimensions() {
+        use super::*;
+        let rect = Rect(vec2f!(0,0), vec2f!(1,1));
+        assert_eq!(rect.w(), 2.);
+        assert_eq!(rect.h(), 2.);
+    }
 }

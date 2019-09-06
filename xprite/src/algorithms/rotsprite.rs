@@ -145,18 +145,23 @@ mod tests {
     #[test]
     fn test_scale2x_1() {
         use super::*;
-
         let pixs = pixels!(pixel!(0, 0, Color::orange()), pixel!(0, 2, Color::white()), pixel!(1, 1, Color::blue()));
-
         let ret = scale2x(&pixs, pixs.bounding_rect());
-
         assert_eq!(
             pixels! {
-                // ...
+                pixel!(0,0,Color::void()),
+                pixel!(1,0,Color::void()),
+                pixel!(0,1,Color::void()),
+                pixel!(0,4,Color::void()),
+                pixel!(0,5,Color::void()),
+                pixel!(1,5,Color::void()),
+                pixel!(2,2,Color::void()),
+                pixel!(3,2,Color::void()),
+                pixel!(2,3,Color::void()),
+                pixel!(3,3,Color::void())
             },
             ret
         );
-
         let img = ret.as_image(ret.bounding_rect(), None).unwrap();
         // img.save("scale2x.png").unwrap();
     }

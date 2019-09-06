@@ -268,7 +268,7 @@ mod tests {
     use super::*;
     #[test]
     fn test_snap_line() {
-        let adjusted_end = snapped_line(true, &pixel!(0., 0., Color::red()), &pixel!(9., 10., Color::red()), Color::red());
+        let adjusted_end = snapped_line(true, vec2f!(0., 0.), vec2f!(9., 10.), Color::red());
 
         let expected = pixels![
             pixel!(0, 0, Color::red()),
