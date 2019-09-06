@@ -100,14 +100,19 @@ impl Pixel {
         return Pixel { point, color: self.color };
     }
 
+    #[deprecated]
     pub fn with_color(&self, color: Color) -> Pixel {
         let mut ret = *self;
         ret.color = color;
         ret
     }
 
-    pub fn set_color(&mut self, color: Color) {
-        self.color = color;
+    #[allow(mutable_transmutes)]
+    pub fn set_color(&self, color: Color) {
+        unsafe {
+            let mut p = ::std::mem::transmute::<&Pixel, &mut Pixel>(self);
+            p.color = color;
+        }
     }
 
     pub fn dir(&self, other: &Pixel) -> bool {
@@ -281,13 +286,11 @@ impl Pixels {
     #[allow(mutable_transmutes)]
     pub fn set_color(&mut self, color: Color) {
         for pix in self.0.iter() {
-            unsafe {
-                let mut p = ::std::mem::transmute::<&Pixel, &mut Pixel>(pix);
-                p.color = color;
-            }
+            pix.set_color(color);
         }
     }
 
+    #[deprecated]
     pub fn with_color(&mut self, color: Color) -> &Self {
         self.set_color(color);
         self

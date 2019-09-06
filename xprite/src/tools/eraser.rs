@@ -25,7 +25,7 @@ impl Eraser {
         let is_mouse_down = None;
         let cursor = None;
         let cursor_pos = None;
-        let brush = Brush::circle(1);
+        let brush = Brush::circle(1, Color::orange());
         let current_polyline = Polyline::new();
 
         Self {
@@ -77,6 +77,13 @@ impl Tool for Eraser {
         let point = xpr.canvas.shrink_size(p);
         self.cursor = self.brush.to_canvas_pixels(point, xpr.color());
         self.cursor_pos = Some(point);
+
+        if self.shift {
+            if let Some(pixs) = self.draw_line(xpr.color()) {
+                self.draw_buffer = pixs;
+                return Ok(());
+            }
+        }
 
         // if mouse is done
         if self.is_mouse_down.is_none() || self.cursor.is_none() {

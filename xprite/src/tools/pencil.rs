@@ -80,7 +80,7 @@ impl Pencil {
     pub fn new() -> Self {
         let is_mouse_down = None;
         let cursor = None;
-        let brush = Brush::circle(1);
+        let brush = Brush::circle(1, Color::orange());
         let current_polyline = Polyline::new();
         let redraw = true;
 
@@ -263,7 +263,7 @@ impl Tool for Pencil {
             xpr.set_cursor(cursor);
         }
         if self.redraw {
-            xpr.add_pixels(&self.draw_buffer.with_color(xpr.color()));
+            xpr.add_pixels(&self.draw_buffer);
             self.redraw = false;
             Ok(true)
         } else {

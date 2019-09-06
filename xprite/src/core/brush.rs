@@ -32,7 +32,7 @@ impl FromStr for Brush {
     fn from_str(value: &str) -> Result<Brush, String> {
         if value.starts_with("o") {
             let size = value[1..].parse::<u32>().unwrap();
-            Ok(Brush::circle(size))
+            Ok(Brush::circle(size, Color::orange())) // TODO: change color
         } else if value.starts_with("s") {
             let size = value[1..].parse::<u32>().unwrap();
             Ok(Brush::square(size))
@@ -62,7 +62,7 @@ impl Default for Brush {
 
 impl Brush {
     pub fn new() -> Self {
-        Brush::circle(1)
+        Brush::circle(1, Color::orange())
     }
 
     pub fn pixel() -> Self {
@@ -102,14 +102,14 @@ impl Brush {
         }
     }
 
-    pub fn circle(size: u32) -> Self {
+    pub fn circle(size: u32, color: Color) -> Self {
         if size == 1 {
             return Self::pixel();
         }
         if size == 3 {
             return Self::cross();
         }
-        let shape = ellipse::algo_ellipsefill(0, 0, size as i32, size as i32 - 1);
+        let shape = ellipse::algo_ellipsefill(0, 0, size as i32, size as i32 - 1, color);
         let off = (size / 2) as f64;
         Self {
             shape,
@@ -130,8 +130,8 @@ impl Brush {
         let x2 = (x1 as f64 + d * (a).cos()) as i32;
         let y2 = (y1 as f64 - d * (a).sin()) as i32;
 
-        let p1 = vec2f_xy!(x1, y1);
-        let p2 = vec2f_xy!(x2, y2);
+        let p1 = vec2f!(y1, x1);
+        let p2 = vec2f!(y2, x2);
         let shape = line::continuous_line(p1, p2, color);
 
         let bb = {
@@ -151,6 +151,7 @@ impl Brush {
         Self { shape, bb, offset, brush_type }
     }
 
+    #[must_use]
     pub fn follow_stroke(&self, stroke: &Pixels) -> Option<Pixels> {
         let mut ret = Pixels::new();
         for Pixel { point, color } in &stroke.0 {
@@ -186,16 +187,16 @@ mod tests {
     #[test]
     fn test_circle_brush1() {
         use super::*;
-        assert_eq!(Brush::circle(1), Brush::pixel());
-        assert_eq!(Brush::circle(2), Brush::square(2));
-        assert_eq!(Brush::circle(3), Brush::cross());
+        assert_eq!(Brush::circle(1, Color::orange()), Brush::pixel());
+        assert_eq!(Brush::circle(2, Color::orange()), Brush::square(2));
+        assert_eq!(Brush::circle(3, Color::orange()), Brush::cross());
     }
 
     #[test]
     fn test_circle_brush4() {
         use super::*;
         assert_eq!(
-            Brush::circle(4),
+            Brush::circle(4, Color::red()),
             Brush {
                 shape: pixels!(
                     pixel!(1, 0, Color::red()),

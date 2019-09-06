@@ -1,9 +1,7 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
 use img::GenericImageView;
-use std::collections::hash_map::DefaultHasher;
 use std::fs::File;
-use std::hash::{Hash, Hasher};
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 use std::rc::Rc;
@@ -601,7 +599,7 @@ impl Xprite {
     }
 
     pub fn from_img(name: String, w: u32, h: u32, img: img::DynamicImage) -> Xprite {
-        let mut xpr = Xprite::new(name, w as f64, h as f64);
+        let xpr = Xprite::new(name, w as f64, h as f64);
         xpr.current_layer().unwrap().borrow_mut().content = img.into();
         xpr
     }
