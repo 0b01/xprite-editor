@@ -139,14 +139,14 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                 .add_triangle(
                     [x - MARGIN / 8., y - MARGIN / 4. + BLOCK_SZ / 2.],
                     [x - MARGIN / 8., y + BLOCK_SZ - MARGIN / 4.],
-                    [x + BLOCK_SZ - MARGIN / 4. -  BLOCK_SZ / 2., y + BLOCK_SZ - MARGIN / 4.],
+                    [x + BLOCK_SZ - MARGIN / 4. - BLOCK_SZ / 2., y + BLOCK_SZ - MARGIN / 4.],
                     LIGHT_GREY,
                 )
                 .filled(true)
                 .build();
         }
-
     }
+    drop(pal_);
 
     if ui.small_button(&im_str!("+")) {
         let pal = state.xpr_mut().palette.current_palette();
