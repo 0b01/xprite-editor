@@ -29,15 +29,15 @@ pub fn filled_rect(x1: i32, y1: i32, x2: i32, y2: i32, col: Color) -> Result<Pix
     Ok(ret)
 }
 
-pub fn get_rect(start: Option<Pixel>, stop: Option<Pixel>, filled: bool) -> Result<Pixels, String> {
+pub fn get_rect(start: Option<Vec2f>, stop: Option<Vec2f>, filled: bool, color: Color) -> Result<Pixels, String> {
     let start = start.ok_or_else(|| "start is none".to_owned())?;
     let stop = stop.ok_or_else(|| "stop is none".to_owned())?;
-    let x0 = start.point.x as i32;
-    let y0 = start.point.y as i32;
-    let x1 = stop.point.x as i32;
-    let y1 = stop.point.y as i32;
+    let x0 = start.x as i32;
+    let y0 = start.y as i32;
+    let x1 = stop.x as i32;
+    let y1 = stop.y as i32;
     let f = if filled { filled_rect } else { rect };
-    f(i32::min(x0, x1), i32::min(y0, y1), i32::max(x0, x1), i32::max(y0, y1), Color::red())
+    f(i32::min(x0, x1), i32::min(y0, y1), i32::max(x0, x1), i32::max(y0, y1), color)
 }
 
 #[cfg(test)]

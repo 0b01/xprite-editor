@@ -29,7 +29,7 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
 
             let ngroups: Vec<_> = {
                 let top = state.xpr_mut().history.top_mut();
-                if top.selected_layer_mut().is_none() {
+                if top.selected_layer().is_none() {
                     return;
                 }
                 top.groups.iter().map(|i| i.1.len()).collect()
@@ -100,18 +100,15 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
 
                             for layer_id in 0..n_layers {
                                 ui.with_id(layer_id as i32, || {
-                                    macro_rules! layer {
-                                        () => {
-                                            group!().1[layer_id]
-                                        };
-                                    }
+                                    let l = group!().1[layer_id].clone();
+                                    let mut layer = l.borrow_mut();
 
                                     if layer_id >= group!().1.len() {
                                         return;
                                     }
-                                    if ui.checkbox(&im_str!(""), &mut layer!().visible) {
+                                    if ui.checkbox(&im_str!(""), &mut layer.visible) {
                                         // undo imgui checkbox mutation
-                                        layer!().visible = !layer!().visible;
+                                        layer.visible = !layer.visible;
                                         // enter history frame and toggle
                                         state.xpr_mut().toggle_layer_visibility(group_id, layer_id).unwrap();
                                     }
@@ -125,7 +122,7 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                     if layer_id >= group!().1.len() {
                                         return;
                                     }
-                                    let name = layer!().name.as_str();
+                                    let name = layer.name.as_str();
                                     if ui.selectable(&im_str!("{}", name), is_sel, ImGuiSelectableFlags::empty(), [100., 0.]) {
                                         state.xpr_mut().switch_layer(group_id, layer_id);
                                     }
@@ -139,7 +136,8 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
 
                                     ui.popup(&im_str!("contextmenu_layer"), || {
                                         if state.rename_layer.is_some() {
-                                            let name = { state.xpr_mut().current_layer().unwrap().name.to_owned() };
+                                            let l = state.xpr_mut().current_layer().unwrap();
+                                            let name = l.borrow().name.to_owned();
                                             let mut im = ImString::with_capacity(100);
                                             im.push_str(&name);
                                             let _ = ui.push_item_width(100.);

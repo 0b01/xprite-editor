@@ -5,8 +5,11 @@ use std::str::FromStr;
 
 #[derive(PartialEq, Eq, Clone, Debug, Copy)]
 pub enum BrushType {
+    /// size
     Circle(u32),
+    /// size
     Square(u32),
+    /// size, angle
     Line(u32, u32),
 }
 
@@ -32,14 +35,14 @@ impl FromStr for Brush {
     fn from_str(value: &str) -> Result<Brush, String> {
         if value.starts_with("o") {
             let size = value[1..].parse::<u32>().unwrap();
-            Ok(Brush::circle(size))
+            Ok(Brush::circle(size, Color::orange())) // TODO: change color
         } else if value.starts_with("s") {
             let size = value[1..].parse::<u32>().unwrap();
             Ok(Brush::square(size))
         } else if value.starts_with("/") {
             let params: Vec<f64> = value[1..].split(",").map(|i| i.parse().unwrap()).collect();
             let color: Color = Color::orange(); //TODO: change color
-            Ok(Brush::line(params[0] as u32, params[1], color))
+            Ok(Brush::line(params[0] as u32, params[1] as u32, color))
         } else {
             Err("unimplemented brush shape".to_owned())
         }
@@ -62,7 +65,7 @@ impl Default for Brush {
 
 impl Brush {
     pub fn new() -> Self {
-        Brush::circle(1)
+        Brush::circle(1, Color::orange())
     }
 
     pub fn pixel() -> Self {
@@ -102,14 +105,14 @@ impl Brush {
         }
     }
 
-    pub fn circle(size: u32) -> Self {
+    pub fn circle(size: u32, color: Color) -> Self {
         if size == 1 {
             return Self::pixel();
         }
         if size == 3 {
             return Self::cross();
         }
-        let shape = ellipse::algo_ellipsefill(0, 0, size as i32, size as i32 - 1);
+        let shape = ellipse::algo_ellipsefill(0, 0, size as i32, size as i32 - 1, color);
         let off = (size / 2) as f64;
         Self {
             shape,
@@ -119,10 +122,10 @@ impl Brush {
         }
     }
 
-    pub fn line(sz: u32, angle: f64, color: Color) -> Self {
+    pub fn line(sz: u32, angle: u32, color: Color) -> Self {
         let size = sz as f64;
 
-        let a = PI * angle / 180.;
+        let a = PI * (angle as f64) / 180.;
         let r = size as f64 / 2.;
         let d = size as f64;
         let x1 = (r + r * (a + PI).cos()) as i32;
@@ -130,8 +133,8 @@ impl Brush {
         let x2 = (x1 as f64 + d * (a).cos()) as i32;
         let y2 = (y1 as f64 - d * (a).sin()) as i32;
 
-        let p1 = vec2f_xy!(x1, y1);
-        let p2 = vec2f_xy!(x2, y2);
+        let p1 = vec2f!(y1, x1);
+        let p2 = vec2f!(y2, x2);
         let shape = line::continuous_line(p1, p2, color);
 
         let bb = {
@@ -146,11 +149,12 @@ impl Brush {
             (-off_x.floor(), -off_y.floor())
         };
 
-        let brush_type = BrushType::Circle(sz);
+        let brush_type = BrushType::Line(sz, angle);
 
         Self { shape, bb, offset, brush_type }
     }
 
+    #[must_use]
     pub fn follow_stroke(&self, stroke: &Pixels) -> Option<Pixels> {
         let mut ret = Pixels::new();
         for Pixel { point, color } in &stroke.0 {
@@ -184,18 +188,10 @@ impl Brush {
 mod tests {
 
     #[test]
-    fn test_circle_brush1() {
-        use super::*;
-        assert_eq!(Brush::circle(1), Brush::pixel());
-        assert_eq!(Brush::circle(2), Brush::square(2));
-        assert_eq!(Brush::circle(3), Brush::cross());
-    }
-
-    #[test]
     fn test_circle_brush4() {
         use super::*;
         assert_eq!(
-            Brush::circle(4),
+            Brush::circle(4, Color::red()),
             Brush {
                 shape: pixels!(
                     pixel!(1, 0, Color::red()),
@@ -221,7 +217,6 @@ mod tests {
     #[test]
     fn test_square_brush2() {
         use super::*;
-        assert_eq!(Brush::square(1), Brush::pixel());
         assert_eq!(
             Brush::square(2),
             Brush {
@@ -242,7 +237,7 @@ mod tests {
     fn test_line_brush() {
         use super::*;
         assert_eq!(
-            Brush::line(3, 45., Color::red()),
+            Brush::line(3, 45, Color::red()),
             Brush {
                 shape: pixels! {
                     pixel!(2,0,Color::red()),

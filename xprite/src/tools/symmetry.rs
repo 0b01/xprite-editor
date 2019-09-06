@@ -49,12 +49,6 @@ impl Symmetry {
 }
 
 impl Tool for Symmetry {
-    fn cursor(&self) -> Option<Pixels> {
-        // let p = self.cursor_pos?;
-        // Some(pixels!(p))
-        None
-    }
-
     fn mouse_move(&mut self, _xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
         // // set current cursor_pos
         // let point = xpr.canvas.shrink_size(p);
@@ -88,7 +82,7 @@ impl Tool for Symmetry {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        // if let Some(cursor) = self.cursor() {
+        // if let Some(cursor) = None {
         //     xpr.set_cursor(&cursor);
         // }
         // if let Ok(marq) = outline_rect(self.start_pos, self.cursor_pos) {
@@ -118,10 +112,10 @@ impl Tool for Symmetry {
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
-            "ctrl" => match value {
+            "LControl" | "RControl" => match value {
                 _ => error!("unimpl for ctrl: {}", value),
             },
-            "shift" => match value {
+            "LShift" | "RShift" => match value {
                 _ => error!("unimpl for ctrl: {}", value),
             },
             "alt" => {

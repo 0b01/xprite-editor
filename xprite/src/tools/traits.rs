@@ -10,5 +10,4 @@ pub trait Tool {
         Ok(false)
     }
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String>;
-    fn cursor(&self) -> Option<Pixels>;
 }

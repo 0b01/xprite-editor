@@ -2,21 +2,21 @@ use crate::algorithms::line::pixel_perfect_line;
 use crate::prelude::*;
 use std::i32;
 
-pub fn get_ellipse(start: Option<Pixel>, stop: Option<Pixel>, filled: bool) -> Result<Pixels, String> {
+pub fn get_ellipse(start: Option<Vec2f>, stop: Option<Vec2f>, filled: bool, color: Color) -> Result<Pixels, String> {
     let start = start.ok_or_else(|| "start is none".to_owned())?;
     let stop = stop.ok_or_else(|| "stop is none".to_owned())?;
-    let x0 = start.point.x as i32;
-    let y0 = start.point.y as i32;
-    let x1 = stop.point.x as i32;
-    let y1 = stop.point.y as i32;
+    let x0 = start.x as i32;
+    let y0 = start.y as i32;
+    let x1 = stop.x as i32;
+    let y1 = stop.y as i32;
 
     if (x1 - x0 < 1) || (y1 - y0 < 1) {
         return Err("".to_owned());
     }
     let ret = if filled {
-        algo_ellipsefill(x0, y0, x1, y1)
+        algo_ellipsefill(x0, y0, x1, y1, color)
     } else {
-        algo_ellipse(x0, y0, x1, y1)
+        algo_ellipse(x0, y0, x1, y1, color)
     };
 
     Ok(ret)
@@ -64,7 +64,7 @@ fn bresenham_ellipse_step(rx: i32, ry: i32, x: &mut i32, y: &mut i32) {
 /// for Allegro 4.x.
 ///
 /// Adapted for ASEPRITE by David A. Capello.
-pub fn algo_ellipse(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
+pub fn algo_ellipse(x1: i32, y1: i32, x2: i32, y2: i32, color: Color) -> Pixels {
     let mut ret = Pixels::new();
 
     let mx;
@@ -87,20 +87,20 @@ pub fn algo_ellipse(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
     ry = (y1 - y2).abs();
 
     if rx == 1 {
-        pixel_perfect_line(Vec2f { x: x2 as f64, y: y1 as f64 }, Vec2f { x: x2 as f64, y: y2 as f64 });
+        pixel_perfect_line(Vec2f { x: x2 as f64, y: y1 as f64 }, Vec2f { x: x2 as f64, y: y2 as f64 }, color);
         rx -= 1;
     }
     if rx == 0 {
-        pixel_perfect_line(Vec2f { x: x1 as f64, y: y1 as f64 }, Vec2f { x: x1 as f64, y: y2 as f64 });
+        pixel_perfect_line(Vec2f { x: x1 as f64, y: y1 as f64 }, Vec2f { x: x1 as f64, y: y2 as f64 }, color);
         return ret;
     }
 
     if ry == 1 {
-        pixel_perfect_line(Vec2f { x: x1 as f64, y: y2 as f64 }, Vec2f { x: x2 as f64, y: y2 as f64 });
+        pixel_perfect_line(Vec2f { x: x1 as f64, y: y2 as f64 }, Vec2f { x: x2 as f64, y: y2 as f64 }, color);
         ry -= 1;
     }
     if ry == 0 {
-        pixel_perfect_line(Vec2f { x: x1 as f64, y: y1 as f64 }, Vec2f { x: x2 as f64, y: y1 as f64 });
+        pixel_perfect_line(Vec2f { x: x1 as f64, y: y1 as f64 }, Vec2f { x: x2 as f64, y: y1 as f64 }, color);
         return ret;
     }
 
@@ -108,20 +108,20 @@ pub fn algo_ellipse(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
     ry /= 2;
 
     /* Draw the 4 poles. */
-    ret.push(pixel_xy!(mx, my2 + ry, Color::red()));
-    ret.push(pixel_xy!(mx, my - ry, Color::red()));
-    ret.push(pixel_xy!(mx2 + rx, my, Color::red()));
-    ret.push(pixel_xy!(mx - rx, my, Color::red()));
+    ret.push(pixel_xy!(mx, my2 + ry, color));
+    ret.push(pixel_xy!(mx, my - ry, color));
+    ret.push(pixel_xy!(mx2 + rx, my, color));
+    ret.push(pixel_xy!(mx - rx, my, color));
 
     /* For even diameter axis, double the poles. */
     if mx != mx2 {
-        ret.push(pixel_xy!(mx2, my2 + ry, Color::red()));
-        ret.push(pixel_xy!(mx2, my - ry, Color::red()));
+        ret.push(pixel_xy!(mx2, my2 + ry, color));
+        ret.push(pixel_xy!(mx2, my - ry, color));
     }
 
     if my != my2 {
-        ret.push(pixel_xy!(mx2 + rx, my2, Color::red()));
-        ret.push(pixel_xy!(mx - rx, my2, Color::red()));
+        ret.push(pixel_xy!(mx2 + rx, my2, color));
+        ret.push(pixel_xy!(mx - rx, my2, color));
     }
 
     // Start at the fatter pole
@@ -149,16 +149,16 @@ pub fn algo_ellipse(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
         } // stop before pole, since it's already drawn
 
         /* Process pixel */
-        ret.push(pixel_xy!(mx2 + x, my - y, Color::red()));
-        ret.push(pixel_xy!(mx - x, my - y, Color::red()));
-        ret.push(pixel_xy!(mx2 + x, my2 + y, Color::red()));
-        ret.push(pixel_xy!(mx - x, my2 + y, Color::red()));
+        ret.push(pixel_xy!(mx2 + x, my - y, color));
+        ret.push(pixel_xy!(mx - x, my - y, color));
+        ret.push(pixel_xy!(mx2 + x, my2 + y, color));
+        ret.push(pixel_xy!(mx - x, my2 + y, color));
     }
 
     ret
 }
 
-pub fn algo_ellipsefill(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
+pub fn algo_ellipsefill(x1: i32, y1: i32, x2: i32, y2: i32, color: Color) -> Pixels {
     let mut ret = Pixels::new();
     let mx;
     let my;
@@ -174,7 +174,7 @@ pub fn algo_ellipsefill(x1: i32, y1: i32, x2: i32, y2: i32) -> Pixels {
 
     let mut hline = |x1, y, x2| {
         for xi in x1..x2 {
-            ret.push(pixel_xy!(xi, y, Color::red()));
+            ret.push(pixel_xy!(xi, y, color));
         }
     };
 

@@ -100,14 +100,19 @@ impl Pixel {
         return Pixel { point, color: self.color };
     }
 
+    #[deprecated]
     pub fn with_color(&self, color: Color) -> Pixel {
         let mut ret = *self;
         ret.color = color;
         ret
     }
 
-    pub fn set_color(&mut self, color: Color) {
-        self.color = color;
+    #[allow(mutable_transmutes)]
+    pub fn set_color(&self, color: Color) {
+        unsafe {
+            let mut p = ::std::mem::transmute::<&Pixel, &mut Pixel>(self);
+            p.color = color;
+        }
     }
 
     pub fn dir(&self, other: &Pixel) -> bool {
@@ -281,13 +286,11 @@ impl Pixels {
     #[allow(mutable_transmutes)]
     pub fn set_color(&mut self, color: Color) {
         for pix in self.0.iter() {
-            unsafe {
-                let mut p = ::std::mem::transmute::<&Pixel, &mut Pixel>(pix);
-                p.color = color;
-            }
+            pix.set_color(color);
         }
     }
 
+    #[deprecated]
     pub fn with_color(&mut self, color: Color) -> &Self {
         self.set_color(color);
         self
@@ -451,7 +454,7 @@ impl Pixels {
     pub fn retain_in_rect_mut(&mut self, bb: Rect) {
         let w = bb.w();
         let h = bb.h();
-        self.0 = self
+        self.0 = self // TODO: use IndexMap::retain
             .0
             .iter()
             .filter_map(|p| {
@@ -466,7 +469,7 @@ impl Pixels {
     }
 
     pub fn retain_in_bound_mut(&mut self, w: usize, h: usize) {
-        self.0 = self
+        self.0 = self // TODO: use IndexMap::retain
             .0
             .iter()
             .filter_map(|p| {
@@ -785,6 +788,10 @@ mod tests {
         let mut pixs = pixels!(pixel!(0, 0, Color::black()), pixel!(0, 1, Color::blue()), pixel!(1, 1, Color::blue()));
 
         pixs.retain_in_rect_mut(Rect(Vec2f { x: 0., y: 0. }, Vec2f { x: 1., y: 1. }));
-        assert_eq!(pixs, pixels!(pixel!(0, 0, Color::red())));
+        assert_eq!(pixs, pixels!(pixel!(0, 0, Color::black()), pixel!(0, 1, Color::blue()), pixel!(1, 1, Color::blue())));
+
+        pixs.retain_in_rect_mut(Rect(Vec2f { x: 0., y: 0. }, Vec2f { x: 0., y: 0. }));
+        assert_eq!(pixs, pixels!(pixel!(0, 0, Color::black())));
+
     }
 }

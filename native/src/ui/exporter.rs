@@ -61,7 +61,8 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                         ExportType::All => (),
                         ExportType::Layer(group_id, layer_id) => {
                             ui.same_line(0.);
-                            let sel_layer_name = &state.xpr_mut().history.top_mut().groups[group_id as usize].1[layer_id as usize].name;
+                            let l = state.xpr_mut().history.top_mut().groups[group_id as usize].1[layer_id as usize].clone();
+                            let sel_layer_name = &l.borrow().name;
                             if ui.button(&im_str!("{}", sel_layer_name), [0., 0.]) {
                                 ui.open_popup(&im_str!("select_export_layer"));
                             }
@@ -71,6 +72,7 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                     ui.push_id(g_id as i32);
                                     ui.tree_node(&im_str!("{}", name)).default_open(true).build(|| {
                                         for (l_id, layer) in g.iter().enumerate() {
+                                            let layer = layer.borrow();
                                             ui.push_id(l_id as i32);
                                             if ui.selectable(&im_str!("{}", layer.name), false, ImGuiSelectableFlags::empty(), [50., 0.]) {
                                                 to_change = Some((ExportType::Layer(g_id, l_id), layer.name.clone()));

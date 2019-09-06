@@ -47,10 +47,11 @@ impl Marquee {
         xpr.history.enter()?;
 
         let bb = Rect(start, cursor);
-        let mut pixs = xpr.current_layer().unwrap().content.clone();
+        let mut pixs = xpr.current_layer().unwrap().borrow().content.clone();
         pixs.retain_in_rect_mut(bb);
 
-        let content_mut = &mut xpr.current_layer_mut().unwrap().content;
+        let l = xpr.current_layer().unwrap();
+        let content_mut = &mut l.borrow_mut().content;
         content_mut.sub_mut(&pixs);
         content_mut.extend(&pixs.shifted(diff));
 
@@ -65,10 +66,6 @@ impl Marquee {
 }
 
 impl Tool for Marquee {
-    fn cursor(&self) -> Option<Pixels> {
-        None
-    }
-
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
@@ -113,7 +110,7 @@ impl Tool for Marquee {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        if let Some(cursor) = self.cursor() {
+        if let Some(cursor) = None {
             xpr.set_cursor(&cursor);
         }
         if self.start_pos.is_some() && self.cursor_pos.is_some() {
@@ -132,10 +129,10 @@ impl Tool for Marquee {
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
-            "ctrl" => match value {
+            "LControl" | "RControl" => match value {
                 _ => error!("unimpl for ctrl: {}", value),
             },
-            "shift" => match value {
+            "LShift" | "RShift" => match value {
                 _ => error!("unimpl for ctrl: {}", value),
             },
             "alt" => {

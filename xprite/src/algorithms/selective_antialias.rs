@@ -27,8 +27,7 @@ pub fn selective_antialias(path: &mut Pixels, k: f64, alt_color: Color) {
     for (l, dir) in chunks {
         for idx in 0..=l {
             if (idx <= (l as f64 * k) as usize) ^ dir {
-                let p = path.0.get_index(acc).unwrap().with_color(alt_color);
-                path.0.replace(p);
+                path.0.get_index(acc).unwrap().set_color(alt_color);
             } else {
                 // noop
             }

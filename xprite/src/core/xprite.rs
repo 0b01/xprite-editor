@@ -1,11 +1,11 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
 use img::GenericImageView;
-use std::collections::hash_map::DefaultHasher;
 use std::fs::File;
-use std::hash::{Hash, Hasher};
 use std::path::Path;
 use std::sync::{Arc, Mutex};
+use std::rc::Rc;
+use std::cell::RefCell;
 
 pub struct Xprite {
     pub name: String,
@@ -90,9 +90,11 @@ impl Xprite {
 
     pub fn finalize_pixels(&mut self, pixs: &Pixels) -> Result<(), String> {
         self.history.enter()?;
-        self.current_layer_mut().unwrap().content.extend(&pixs);
+        let layer = self.current_layer().unwrap();
+        let mut layer = layer.borrow_mut();
+        layer.content.extend(&pixs);
         let reflected = self.toolbox.symmetry.borrow_mut().process(&pixs);
-        self.current_layer_mut().unwrap().content.extend(&reflected);
+        layer.content.extend(&reflected);
         Ok(())
     }
 
@@ -170,12 +172,8 @@ impl Xprite {
         self.history.top_mut().selected = layer;
     }
 
-    pub fn current_layer(&self) -> Option<&Layer> {
+    pub fn current_layer(&self) -> Option<Rc<RefCell<Layer>>> {
         self.history.top().selected_layer()
-    }
-
-    pub fn current_layer_mut(&mut self) -> Option<&mut Layer> {
-        self.history.top_mut().selected_layer_mut()
     }
 
     pub fn toggle_layer_visibility(&mut self, group: usize, layer: usize) -> Result<(), String> {
@@ -197,7 +195,7 @@ impl Xprite {
     pub fn rename_layer(&mut self, name: &str) -> Result<(), String> {
         self.history.enter()?;
         let layers = self.history.top_mut();
-        layers.selected_layer_mut().unwrap().name = name.to_owned();
+        layers.selected_layer().unwrap().borrow_mut().name = name.to_owned();
         Ok(())
     }
 
@@ -314,7 +312,8 @@ impl Xprite {
     }
 
     pub fn selected_layer_as_im(&self) -> Option<img::DynamicImage> {
-        let layer = self.history.top().selected_layer().unwrap();
+        let l = self.history.top().selected_layer().unwrap();
+        let layer = l.borrow();
         let mut rdr = ImageRenderer::new(self.canvas.bg, self.canvas.art_w, self.canvas.art_h);
         layer.draw(&mut rdr, Some(self));
         rdr.render(Some(self))?;
@@ -322,7 +321,7 @@ impl Xprite {
     }
 
     pub fn layer_as_im(&self, group_idx: usize, layer_idx: usize, trim: bool) -> Option<img::DynamicImage> {
-        let layer = &self.history.top().groups[group_idx].1[layer_idx];
+        let layer = &self.history.top().groups[group_idx].1[layer_idx].borrow();
         if trim {
             let bb = layer.content.bounding_rect();
             return layer.content.as_image(bb, Some(self));
@@ -338,27 +337,27 @@ impl Xprite {
         if trim {
             let mut content = Pixels::new();
             for i in group.iter() {
-                content.extend(&i.content);
+                content.extend(&i.borrow().content);
             }
             let bb = content.bounding_rect();
             return content.as_image(bb, Some(self));
         }
         let mut rdr = ImageRenderer::new(self.canvas.bg, self.canvas.art_w, self.canvas.art_h);
         for layer in group.iter() {
-            layer.draw(&mut rdr, Some(self));
+            layer.borrow().draw(&mut rdr, Some(self));
         }
         rdr.render(Some(self))?;
         Some(rdr.image)
     }
 
-    #[deprecated]
-    pub fn img_hash(&mut self) -> u64 {
-        let mut s = DefaultHasher::new();
-        let top = self.history.top();
-        top.hash(&mut s);
-        self.im_buf.hash(&mut s);
-        s.finish()
-    }
+    // #[deprecated]
+    // pub fn img_hash(&mut self) -> u64 {
+    //     let mut s = DefaultHasher::new();
+    //     let top = self.history.top();
+    //     top.hash(&mut s);
+    //     self.im_buf.hash(&mut s);
+    //     s.finish()
+    // }
 
     pub fn preview(&self, rdr: &mut dyn Renderer) -> Result<(), String> {
         let top = self.history.top();
@@ -378,11 +377,11 @@ impl Xprite {
                     }
                     Ok(())
                 };
-                if !layer.visible {
+                if !layer.borrow().visible {
                     draw_buf(rdr)?;
                     continue;
                 } else {
-                    layer.draw(rdr, Some(self));
+                    layer.borrow().draw(rdr, Some(self));
                     draw_buf(rdr)?;
                 }
             }
@@ -396,6 +395,7 @@ impl Xprite {
         let top = self.history.top();
         // draw layers
         for layer in top.iter_layers().rev() {
+            let layer = layer.borrow();
             // skip invisible layers
             if !layer.visible {
                 continue;
@@ -412,6 +412,7 @@ impl Xprite {
         let header = ase::Header::new(self.canvas.art_w as u16, self.canvas.art_h as u16);
         let mut frame = ase::Frame::new();
         for (i, layer) in self.history.top().iter_layers().rev().enumerate() {
+            let layer = layer.borrow();
             frame.add_chunk(ase::Chunk::new(ase::ChunkData::LayerChunk(ase::chunk::LayerChunk::new(
                 layer.name.as_str(),
                 layer.visible,
@@ -474,7 +475,7 @@ impl Xprite {
                     let y_ = y + f64::from(cel.h().unwrap() - 1);
                     let bb = Rect(Vec2f { x, y }, Vec2f { x: x_, y: y_ });
                     let pixs = Pixels::from_ase_pixels(&ase_pixs, bb);
-                    let layer = &mut history.top_mut().groups[0].1[usize::from(*layer_index)];
+                    let layer = &mut history.top_mut().groups[0].1[usize::from(*layer_index)].borrow_mut();
                     layer.content.extend(&pixs);
 
                     // dbg!(pixs);
@@ -598,8 +599,8 @@ impl Xprite {
     }
 
     pub fn from_img(name: String, w: u32, h: u32, img: img::DynamicImage) -> Xprite {
-        let mut xpr = Xprite::new(name, w as f64, h as f64);
-        xpr.current_layer_mut().unwrap().content = img.into();
+        let xpr = Xprite::new(name, w as f64, h as f64);
+        xpr.current_layer().unwrap().borrow_mut().content = img.into();
         xpr
     }
 
@@ -627,9 +628,10 @@ mod tests {
     fn test_as_ase() {
         use super::*;
         use std::fs::File;
-        let mut xpr = Xprite::new("test".to_owned(), 100., 100.);
-        xpr.current_layer_mut()
+        let xpr = Xprite::new("test".to_owned(), 100., 100.);
+        xpr.current_layer()
             .unwrap()
+            .borrow_mut()
             .content
             .extend(&pixels!(pixel!(0, 0, Color::red()), pixel!(0, 1, Color::red())));
         let aseprite = xpr.as_ase().unwrap();
@@ -642,9 +644,10 @@ mod tests {
     fn test_as_ase2() {
         use super::*;
         use std::fs::File;
-        let mut xpr = Xprite::new("test".to_owned(), 100., 100.);
-        xpr.current_layer_mut()
+        let xpr = Xprite::new("test".to_owned(), 100., 100.);
+        xpr.current_layer()
             .unwrap()
+            .borrow_mut()
             .content
             .extend(&pixels!(pixel!(1, 1, Color::red()), pixel!(1, 2, Color::red())));
         let aseprite = xpr.as_ase().unwrap();

@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 #[derive(Debug)]
 pub enum InputEvent {
     MouseMove { x: f64, y: f64 },

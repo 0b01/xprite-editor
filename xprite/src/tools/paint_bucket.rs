@@ -63,8 +63,8 @@ impl PaintBucket {
         let color = xpr.color();
         let w = xpr.canvas.art_w;
         let h = xpr.canvas.art_h;
-        let current_layer = xpr.current_layer().unwrap();
-        let pixs = &current_layer.content;
+        let l =  xpr.current_layer().unwrap();
+        let pixs = &l.borrow().content;
         let buffer = algorithms::floodfill::floodfill(w, h, pixs, p, bg_color, color, self.degrees);
         // info!{"{:#?}", buffer};
         Ok(buffer)
@@ -72,10 +72,6 @@ impl PaintBucket {
 }
 
 impl Tool for PaintBucket {
-    fn cursor(&self) -> Option<Pixels> {
-        self.cursor.clone()
-    }
-
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         if self.is_mouse_down {
             return self.mouse_down(xpr, p, InputItem::Left);
@@ -106,7 +102,7 @@ impl Tool for PaintBucket {
     fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, _button: InputItem) -> Result<(), String> {
         self.is_mouse_down = true;
         let point = xpr.canvas.shrink_size(p);
-        let bg_color = xpr.current_layer().unwrap().get_color(point);
+        let bg_color = xpr.current_layer().unwrap().borrow().get_color(point);
 
         let ff = self.floodfill(xpr, point, bg_color)?;
         self.draw_buffer = match self.mode {
@@ -137,8 +133,8 @@ impl Tool for PaintBucket {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        if let Some(cursor) = self.cursor() {
-            xpr.set_cursor(&cursor);
+        if let Some(cursor) = &self.cursor {
+            xpr.set_cursor(cursor);
         }
         if let Some(pixs) = &self.draw_buffer {
             // pixs.set_color(xpr.color());

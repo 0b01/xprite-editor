@@ -15,7 +15,7 @@ pub struct AutoshadeStepParam {
 
 #[derive(Debug, Clone)]
 pub enum AutoshadeBlendingMode {
-    Lighten(u8),
+    Lighten(i8),
     Replace(XpriteRgba),
 }
 
@@ -100,9 +100,9 @@ fn blend(mode: &AutoshadeBlendingMode, input_color: XpriteRgba) -> XpriteRgba {
         Replace(col) => *col,
         Lighten(diff) => {
             let mut ret = input_color;
-            ret.r += *diff;
-            ret.g += *diff;
-            ret.b += *diff;
+            ret.r = (ret.r as i8 + *diff) as u8;
+            ret.g = (ret.g as i8 + *diff) as u8;
+            ret.b = (ret.b as i8 + *diff) as u8;
             ret
         }
     }
@@ -138,7 +138,7 @@ mod tests {
     fn test_autoshade() {
         use super::*;
         let r = 100;
-        let mut pixs = crate::algorithms::ellipse::algo_ellipsefill(0, 0, r, r);
+        let mut pixs = crate::algorithms::ellipse::algo_ellipsefill(0, 0, r, r, Color::red());
         pixs.extend(&pixs.shifted(vec2f!(0., 50.)));
         let shaded = autoshade(
             &pixs,

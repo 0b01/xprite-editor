@@ -6,8 +6,8 @@ use crate::tools::*;
 #[derive(Clone, Default, Debug)]
 pub struct AutoShade {
     is_mouse_down: Option<InputItem>,
-    cursor_pos: Option<Pixel>,
-    start_pos: Option<Pixel>,
+    cursor_pos: Option<Vec2f>,
+    start_pos: Option<Vec2f>,
     pub steps: Vec<AutoshadeStepParam>,
     buf: Pixels,
 }
@@ -24,8 +24,9 @@ impl AutoShade {
     }
 
     pub fn finalize(&mut self, xpr: &mut Xprite) -> Result<(), String> {
-        let pixs = get_rect(self.start_pos, self.cursor_pos, true)?;
-        let content = &mut xpr.current_layer_mut().unwrap().content;
+        let pixs = get_rect(self.start_pos, self.cursor_pos, true, xpr.color())?;
+        let l = xpr.current_layer().unwrap();
+        let content = &mut l.borrow_mut().content;
         let intersection = content.intersection(&pixs).to_rgba(Some(xpr)).ok_or("cannot convert to rgba".to_owned())?;
         // TODO: don't construct a rect, filter based on w, h directly
         // let _bb = intersection.bounding_rect();
@@ -36,31 +37,24 @@ impl AutoShade {
 
     pub fn get_bb(&self) -> Option<Rect> {
         let (p0, p1) = (self.start_pos?, self.cursor_pos?);
-        let bb = Rect(p0.point, p1.point);
+        let bb = Rect(p0, p1);
         Some(bb)
     }
 }
 
 impl Tool for AutoShade {
-    fn cursor(&self) -> Option<Pixels> {
-        let p = self.cursor_pos?;
-        Some(pixels!(p))
-    }
-
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
-        let color = xpr.color();
         if self.is_mouse_down.is_some() {
-            self.cursor_pos = Some(Pixel { point, color });
+            self.cursor_pos = Some(point);
         }
         Ok(())
     }
 
     fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
-        let color = xpr.color();
-        self.cursor_pos = Some(Pixel { point, color });
+        self.cursor_pos = Some(point);
         // self.quilt_img(xpr)?;
 
         self.is_mouse_down = None;
@@ -75,15 +69,15 @@ impl Tool for AutoShade {
         }
         self.is_mouse_down = Some(button);
         let point = xpr.canvas.shrink_size(p);
-        let color = xpr.color();
-        self.start_pos = Some(Pixel { point, color });
+        self.start_pos = Some(point);
         Ok(())
     }
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        if let Some(cursor) = self.cursor() {
-            xpr.set_cursor(&cursor);
+
+        if let Some(p) = self.cursor_pos {
+            xpr.set_cursor(&pixels!(pixel!(p, xpr.color())));
         }
         let mut ret = false;
         if !self.buf.is_empty() {
@@ -91,7 +85,7 @@ impl Tool for AutoShade {
             ret = true;
         }
         if self.start_pos.is_some() && self.cursor_pos.is_some() {
-            if let Ok(marq) = outline_rect(self.start_pos.unwrap().point, self.cursor_pos.unwrap().point) {
+            if let Ok(marq) = outline_rect(self.start_pos.unwrap(), self.cursor_pos.unwrap()) {
                 xpr.add_marquee(&marq);
                 ret = true;
             }
@@ -101,10 +95,10 @@ impl Tool for AutoShade {
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
-            "ctrl" => match value {
+            "LControl" | "RControl" => match value {
                 _ => error!("unimpl for ctrl: {}", value),
             },
-            "shift" => match value {
+            "LShift" | "RShift" => match value {
                 _ => error!("unimpl for ctrl: {}", value),
             },
             "alt" => {

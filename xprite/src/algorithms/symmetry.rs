@@ -3,12 +3,16 @@ use crate::prelude::*;
 #[derive(Clone, Debug)]
 pub enum SymmetryMode {
     /// -
+    /// parameterized by  y offset
     Horizontal(f64),
     /// |
+    /// parameterized by  x offset
     Vertical(f64),
-    /// / parameterized by the y intercept
+    /// /
+    /// parameterized by the y intercept
     AntiDiagonal(f64),
     /// \
+    /// parameterized by
     Diagonal(f64),
     /// (horizontal, vertical)
     Quad(f64, f64),
@@ -232,7 +236,7 @@ mod tests {
         let mut ret = Pixels::new();
         let symm = SymmetryMode::Diagonal(1.);
         symm.process(&pixs, &mut ret);
-        assert_eq!(ret, pixels!(pixel!(0, -1, Color::red())));
+        assert_eq!(ret, pixels!(pixel!(2, -1, Color::red())));
     }
 
 }

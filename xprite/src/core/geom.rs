@@ -219,7 +219,7 @@ impl CubicBezierSegment {
     }
 
     /// rasterize a single bezier curve by sampling
-    pub fn rasterize(&self, sort: bool) -> Option<Pixels> {
+    pub fn rasterize(&self, sort: bool, color: Color) -> Option<Pixels> {
         let mut pixs = Pixels::new();
 
         let mut extrema = vec![0.];
@@ -233,7 +233,7 @@ impl CubicBezierSegment {
             for _ in 0..n_steps {
                 let point = self.sample(t);
                 let Vec2f { x, y } = Canvas::snap(point);
-                let pixel = pixel!(y, x, Color::red());
+                let pixel = pixel!(y, x, color);
                 // don't allow duplicate pixels
                 if !monotone_seg.contains(&pixel) {
                     monotone_seg.push(pixel);
@@ -377,5 +377,13 @@ mod tests {
 
         let ret = seg.arc_len(10);
         assert_eq!(183.99826172389442, ret);
+    }
+
+    #[test]
+    fn test_rect_dimensions() {
+        use super::*;
+        let rect = Rect(vec2f!(0,0), vec2f!(1,1));
+        assert_eq!(rect.w(), 2.);
+        assert_eq!(rect.h(), 2.);
     }
 }

@@ -84,18 +84,17 @@ impl Vector {
             tolerence: 15.,
             draw_bezier: true,
             mono_sort: true,
-            brush: Brush::circle(1),
+            brush: Brush::circle(1, Color::orange()),
             recording: true,
             ..Default::default()
         }
     }
 
-    fn draw_continuous(&self) -> Result<(Path, Pixels), String> {
+    fn draw_continuous(&self, color: Color) -> Result<(Path, Pixels), String> {
         let simplified = self.current_polyline.reumann_witkam(self.tolerence as f64);
         if let Ok(simplified) = simplified {
             let path = simplified.interp();
-            let mut buf = path.rasterize(self.mono_sort).unwrap();
-            buf.set_color(Color::orange());
+            let buf = path.rasterize(self.mono_sort, color).unwrap();
             Ok((path, buf))
         } else {
             Ok((Path::default(), Pixels::new()))
@@ -147,9 +146,8 @@ impl Vector {
         self.update_buffer = Some({
             let mut ret = Pixels::new();
             for curve in &self.curves {
-                if let Some(ras) = curve.rasterize(self.mono_sort) {
-                    let mut pixs = self.brush.follow_stroke(&ras).unwrap();
-                    let pixs = pixs.with_color(xpr.color());
+                if let Some(ras) = curve.rasterize(self.mono_sort, xpr.color()) {
+                    let pixs = self.brush.follow_stroke(&ras).unwrap();
                     ret.extend(&pixs);
                 }
             }
@@ -206,11 +204,6 @@ impl Vector {
 }
 
 impl Tool for Vector {
-    fn cursor(&self) -> Option<Pixels> {
-        let point = self.cursor_pos?;
-        Some(pixels!(Pixel { point, color: Color::red() }))
-    }
-
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // update cursor pos
         let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
@@ -311,14 +304,15 @@ impl Tool for Vector {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        if let Some(cursor) = self.cursor() {
-            xpr.set_cursor(&cursor);
+
+        if let Some(p) = self.cursor_pos {
+            xpr.set_cursor(&pixels!(Pixel { point: p, color: Color::red() }));
         }
 
         let mut ret = Pixels::new();
         match self.mode {
             VectorMode::Continuous => {
-                if let Ok((path, buf)) = self.draw_continuous() {
+                if let Ok((path, buf)) = self.draw_continuous(xpr.color()) {
                     if self.draw_bezier {
                         xpr.bz_buf.extend(path.segments);
                     }
@@ -330,7 +324,7 @@ impl Tool for Vector {
                     if self.draw_bezier {
                         xpr.bz_buf.push(c.clone());
                     }
-                    if let Some(ras) = c.rasterize(self.mono_sort) {
+                    if let Some(ras) = c.rasterize(self.mono_sort, xpr.color()) {
                         ret.extend(&ras);
                     }
                 }
@@ -342,13 +336,12 @@ impl Tool for Vector {
             if self.draw_bezier {
                 xpr.bz_buf.push(curve.clone());
             }
-            if let Some(ras) = curve.rasterize(self.mono_sort) {
+            if let Some(ras) = curve.rasterize(self.mono_sort, xpr.color()) {
                 ret.extend(&ras);
             }
         }
 
-        let mut pixs = self.brush.follow_stroke(&ret).unwrap();
-        pixs.set_color(xpr.color());
+        let pixs = self.brush.follow_stroke(&ret).unwrap();
         xpr.add_pixels(&pixs);
 
         Ok(true)
@@ -384,7 +377,7 @@ impl Tool for Vector {
             "brush" => {
                 self.brush = value.parse()?;
             }
-            "return" => {
+            "Return" | "Enter" => {
                 self.add_to_hist(xpr)?;
             }
             _ => (),
