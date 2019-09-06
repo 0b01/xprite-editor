@@ -90,12 +90,6 @@ fn run_ui(fname: Option<&str>) {
         state.load_icons(&mut rdr);
         ui::draw(&mut rdr, &mut state, ui);
     });
-
-    // render::run::run("Xprite".to_owned(), BGCOLOR, |ui, gl_ctx, textures| {
-    //     let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures);
-    //     state.load_icons(&mut rdr);
-    //     ui::draw(&mut rdr, &mut state, ui)
-    // });
 }
 
 fn init_full_logger(console_logger: Arc<Mutex<String>>) {

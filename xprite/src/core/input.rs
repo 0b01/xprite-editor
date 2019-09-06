@@ -230,8 +230,6 @@ declare_input_state!(
     Copy,
     Paste,
     Cut,
-
     LMB,
     RMB
 );
-

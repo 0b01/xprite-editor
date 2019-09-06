@@ -15,9 +15,13 @@ pub fn draw_file_manager(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
         .movable(true)
         .build(|| {
             let result = if state.file_popup.show_file_is_save {
-                nfd::open_save_dialog(None, None).unwrap_or_else(|e| { panic!(e); })
+                nfd::open_save_dialog(None, None).unwrap_or_else(|e| {
+                    panic!(e);
+                })
             } else {
-                nfd::open_file_dialog(None, None).unwrap_or_else(|e| { panic!(e); })
+                nfd::open_file_dialog(None, None).unwrap_or_else(|e| {
+                    panic!(e);
+                })
             };
             match result {
                 nfd::Response::Okay(fname) => {
@@ -78,5 +82,4 @@ pub fn draw_file_manager(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
             //     close_window(state);
             // }
         });
-
 }

@@ -147,7 +147,7 @@ pub fn init(title: &str) -> System {
             }),
         },
         // FontSource::TtfData {
-        //     data: include_bytes!("../../../resources/mplus-1p-regular.ttf"),
+        //     data: include_bytes!("../../m5x7.ttf"),
         //     size_pixels: font_size,
         //     config: Some(FontConfig {
         //         rasterizer_multiply: 1.75,

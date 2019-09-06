@@ -111,7 +111,7 @@ fn update_viewport(state: &mut State, ui: &Ui) {
     let win_pos = ui.get_cursor_screen_pos();
     cvs.update_pos(win_pos[0].into(), win_pos[1].into());
 
-    let canvas_sz = ui.io().display_size;
+    let canvas_sz = ui.get_window_size();
     cvs.update_sz(canvas_sz[0].into(), canvas_sz[1].into());
 
     if !cvs.initialized {
