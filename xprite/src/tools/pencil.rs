@@ -1,71 +1,112 @@
+//! Pencil module
+//!
+//! The pencil is a pipelined tool:
+//!
+//! 1. Raw input
+//! 2. Pixel perfect
+//! 3. Pixel AntiPerfect
+//! 4. Sorted Monotonic
+//! 5. Selective Anti-Alias
+//!
+//! Internally, it is implemented this way:
+//!
+//! 1. Raw input
+//! 2. pixel_perfect? or pixel_antiperfect?
+//! 3. sorted_monotonic?
+//! 4. anti_alias?
+//! 5. follow_stroke
+
 use crate::prelude::*;
 use crate::algorithms::line::continuous_line;
 
 use std::str::FromStr;
 
-#[derive(Eq, PartialEq, Clone, Copy, Debug)]
-pub enum PencilMode {
-    /// raw - noop
-    Raw,
+#[derive(PartialEq, Clone, Debug)]
+pub struct PencilProcessor {
     /// pixel perfect - nothing else
-    PixelPerfect,
-    /// pixel perfect - nothing else
-    PixelAntiPerfect,
+    ///
+    /// None -> None
+    /// true -> pixel perfect
+    /// false -> pixel anti-perfect
+    pub run_pixel_perfect: Option<bool>,
     /// sort each monotonic segment
-    SortedMonotonic,
+    pub sorted_monotonic: bool,
     /// Anti-aliasing with background color for each segment
-    SelectiveAntiAliasing,
+    pub selective_anti_aliasing: bool,
+    /// aa color
+    pub aa_alt_color: Color,
+    pub polyline: Polyline,
 }
 
-impl PencilMode {
-    pub fn as_str(&self) -> &str {
-        match self {
-            PencilMode::Raw => "Raw",
-            PencilMode::PixelPerfect => "Pixel Perfect",
-            PencilMode::PixelAntiPerfect => "Pixel Anti-Perfect",
-            PencilMode::SortedMonotonic => "Sorted Monotonic",
-            PencilMode::SelectiveAntiAliasing => "Selective Anti-Aliasing",
+impl PencilProcessor {
+    pub fn new() -> Self {
+        Self {
+            run_pixel_perfect: Some(true),
+            sorted_monotonic: false,
+            selective_anti_aliasing: false,
+            aa_alt_color: Color::orange(),
+            polyline: Polyline::new(),
         }
     }
 
-    pub const VARIANTS: [PencilMode; 5] = [
-        PencilMode::Raw,
-        PencilMode::PixelPerfect,
-        PencilMode::PixelAntiPerfect,
-        PencilMode::SortedMonotonic,
-        PencilMode::SelectiveAntiAliasing,
-    ];
-}
+    pub fn clear(&mut self) {
+        self.polyline.clear();
+    }
 
-impl FromStr for PencilMode {
-    type Err = ();
-    fn from_str(string: &str) -> Result<Self, ()> {
-        match string {
-            "Raw" => Ok(PencilMode::Raw),
-            "Pixel Anti-Perfect" => Ok(PencilMode::PixelAntiPerfect),
-            "Pixel Perfect" => Ok(PencilMode::PixelPerfect),
-            "Sorted Monotonic" => Ok(PencilMode::SortedMonotonic),
-            "Selective Anti-Aliasing" => Ok(PencilMode::SelectiveAntiAliasing),
-            _ => panic!("impossible"),
+    pub fn finalize(&self, brush: &Brush, color: Color) -> Result<Pixels, String> {
+        let mut points = self.polyline.connect_with_line(color)?;
+        // TODO: check self.moved
+        match self.run_pixel_perfect {
+            None => (),
+            Some(true) => {
+                points.pixel_perfect();
+            }
+            Some(false) => {
+                points.pixel_antiperfect();
+            }
+        };
+        if self.sorted_monotonic {
+            assert_eq!(self.run_pixel_perfect, Some(true));
+            if points.len() > 1 {
+                // TODO: move len check inside function
+                points.monotonic_sort();
+            }
         }
+        if self.selective_anti_aliasing {
+            assert_eq!(self.run_pixel_perfect, Some(true));
+            points.selective_antialias(0.5, self.aa_alt_color);
+        }
+        let path = brush.follow_stroke(&points).unwrap();
+        Ok(path)
+    }
+
+    pub fn draw(&self, brush: &Brush, color: Color) -> Result<Pixels, String> {
+        let mut points = self.polyline.connect_with_line(color)?;
+        match self.run_pixel_perfect {
+            None => (),
+            Some(true) => points.pixel_perfect(),
+            Some(false) => points.pixel_antiperfect(),
+        };
+        let path = brush.follow_stroke(&points).unwrap();
+        Ok(path)
+
+    }
+
+    pub fn push(&mut self, point: Vec2f) {
+        self.polyline.push(point)
     }
 }
+
 
 #[derive(Debug)]
 pub struct Pencil {
     is_mouse_down: Option<InputItem>,
-    current_polyline: Polyline,
     cursor: Option<Pixels>,
     cursor_pos: Option<Vec2f>,
-    pub mode: PencilMode,
-
-    pub aa_alt_color: Color,
-
+    pub processor: PencilProcessor,
     last_mouse_down_or_up: Option<Vec2f>,
     shift: bool,
-
     pub brush: Brush,
-
     moved: bool,
     draw_buffer: Pixels,
     update_buffer: Option<Pixels>,
@@ -83,36 +124,22 @@ impl Pencil {
         let is_mouse_down = None;
         let cursor = None;
         let brush = Brush::circle(1, Color::orange());
-        let current_polyline = Polyline::new();
         let redraw = true;
+        let processor = PencilProcessor::new();
 
         Self {
             is_mouse_down,
             cursor_pos: None,
+            processor,
             last_mouse_down_or_up: None,
             shift: false,
-            current_polyline,
             cursor,
             brush,
-            mode: PencilMode::PixelPerfect,
-            aa_alt_color: Color::red(),
             moved: false,
             draw_buffer: Pixels::new(),
             update_buffer: None,
             redraw,
         }
-    }
-
-    pub fn draw_stroke(&self, xpr: &Xprite) -> Result<Pixels, String> {
-        let mut line_pixs = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line(xpr.color())?;
-        let pixs = if self.mode == PencilMode::Raw {
-            line_pixs
-        } else {
-            line_pixs.pixel_perfect();
-            line_pixs
-        };
-        let pixs = self.brush.follow_stroke(&pixs).unwrap();
-        Ok(pixs)
     }
 
     fn finalize_continuous_line(&mut self, xpr: &Xprite, start: Option<Vec2f>, stop: Option<Vec2f>) -> Result<(), String> {
@@ -125,46 +152,7 @@ impl Pencil {
     }
 
     fn finalize(&mut self, xpr: &Xprite) -> Result<(), String> {
-        use self::PencilMode::*;
-        let buf = match self.mode {
-            Raw => self.draw_stroke(xpr)?,
-            PixelPerfect | PixelAntiPerfect => {
-                // if mousedown w/o move
-                if !self.moved {
-                    self.cursor.clone().unwrap()
-                } else {
-                    let mut points = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line(xpr.color())?;
-                    if self.mode == PencilMode::PixelPerfect {
-                        points.pixel_perfect();
-                    } else {
-                        points.pixel_antiperfect();
-                    }
-                    let path = self.brush.follow_stroke(&points).unwrap();
-                    path
-                }
-            }
-            SortedMonotonic => {
-                let mut points = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line(xpr.color())?;
-                points.pixel_perfect();
-                if points.len() > 1 {
-                    points.monotonic_sort();
-                }
-                let path = self.brush.follow_stroke(&points).unwrap();
-                path
-            }
-            SelectiveAntiAliasing => {
-                // if mousedown w/o move
-                if !self.moved {
-                    self.cursor.clone().unwrap()
-                } else {
-                    let mut points = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line(xpr.color())?;
-                    points.pixel_perfect();
-                    points.selective_antialias(0.5, self.aa_alt_color);
-                    let path = self.brush.follow_stroke(&points).unwrap();
-                    path
-                }
-            }
-        };
+        let buf = self.processor.finalize(&self.brush, xpr.color())?;
         self.update_buffer = Some(buf);
         Ok(())
     }
@@ -196,9 +184,9 @@ impl Tool for Pencil {
             return Ok(());
         }
         self.moved = true;
-        self.current_polyline.push(p);
+        self.processor.polyline.push(point);
 
-        let stroke = self.draw_stroke(xpr)?;
+        let stroke = self.processor.draw(&self.brush, xpr.color())?;
         self.draw_buffer = stroke;
         self.redraw = true;
 
@@ -206,9 +194,10 @@ impl Tool for Pencil {
     }
 
     fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
+        let point = xpr.canvas.shrink_size(p);
         self.is_mouse_down = Some(button);
 
-        self.current_polyline.push(p);
+        self.processor.polyline.push(point);
         let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
         // TODO:
         if let Some(pixels) = pixels {
@@ -241,7 +230,7 @@ impl Tool for Pencil {
             self.finalize(xpr)?;
         }
 
-        self.current_polyline.clear();
+        self.processor.clear();
         self.is_mouse_down = None;
         self.draw_buffer.clear();
         self.redraw = false;
@@ -277,12 +266,6 @@ impl Tool for Pencil {
     // TODO: dedupe brush instantiation code(pencil, eraser)
     fn set(&mut self, xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
-            "mode" => {
-                match PencilMode::from_str(value) {
-                    Ok(mode) => self.mode = mode,
-                    _ => (),
-                };
-            }
             "brush" => {
                 self.brush = value.parse()?;
             }
