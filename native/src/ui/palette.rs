@@ -67,9 +67,12 @@ pub fn draw_color_picker(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                 .rgb(true);
 
             if b.build() {
-                let ret = sel.into();
-                let color_idx = state.xpr_mut().palette.selected_color_idx;
-                *state.xpr_mut().palette.current_palette().borrow_mut().get_index_mut(color_idx).unwrap().1 = ret;
+                let ret: Color = sel.into();
+                let pal = state.xpr_mut().palette.current_palette();
+                let idx = pal.idx;
+                let mut pal_ = pal.colors.borrow_mut();
+                *(pal_.get_index_mut(idx).unwrap().1) = ret;
+                drop(pal_);
                 state.xpr_mut().redraw = true;
             };
         });
@@ -101,9 +104,9 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     // ).filled(false).build();
     let cols_per_row = state.cols_per_row as usize;
     let mut xpr = state.xpr_mut();
-    let color_idx = xpr.palette.selected_color_idx;
-    let pal = xpr.palette.current_palette();
-    let mut pal_ = pal.borrow_mut();
+    let pal = xpr.palette.current_palette_mut();
+    let color_idx = pal.idx;
+    let mut pal_ = pal.colors.borrow_mut();
     for (i, (_col_name, col)) in pal_.iter_mut().enumerate() {
         //        let is_sel = col == &xpr.selected_color;
         let is_sel = i == color_idx;
@@ -130,7 +133,7 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
 
         if ui.is_item_hovered() && ui.io().mouse_down[0] {
             // if clicked
-            xpr.palette.selected_color_idx = i;
+            pal.idx = i;
         }
 
         if is_sel {
@@ -150,7 +153,7 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
 
     if ui.small_button(&im_str!("+")) {
         let pal = state.xpr_mut().palette.current_palette();
-        let key = format!("my_color##{}", pal.borrow().len());
-        pal.borrow_mut().insert(key, Color::black());
+        let key = format!("my_color##{}", pal.colors.borrow().len());
+        pal.colors.borrow_mut().insert(key, Color::black());
     }
 }

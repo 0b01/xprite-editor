@@ -148,7 +148,7 @@ impl Xprite {
     }
 
     pub fn color(&self) -> Color {
-        Color::Indexed(self.palette.selected_color_idx)
+        Color::Indexed(self.palette.current_palette().idx)
     }
 
     pub fn new_frame(&mut self) {

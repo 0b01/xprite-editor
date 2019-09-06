@@ -55,7 +55,7 @@ impl Color {
                 }
                 let pm = &xpr.unwrap().palette;
                 let (_pal_name, pal) = pm.palettes.get_index(pm.selected_palette_idx)?;
-                Some(unsafe { pal.borrow().get_index(i)?.1.as_rgba() })
+                Some(unsafe { pal.colors.borrow().get_index(i)?.1.as_rgba() })
             }
             Color::Rgba(c) => Some(c),
         }

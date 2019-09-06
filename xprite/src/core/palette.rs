@@ -3,22 +3,27 @@ use image::{self, GenericImageView};
 use indexmap::IndexMap;
 use natord;
 use std::{fs, io, path};
-
-type PaletteGroup = IndexMap<String, Color>;
-
+use std::rc::Rc;
 use std::cell::RefCell;
 
 #[derive(Debug)]
+pub struct PaletteGroup {
+    pub colors: Rc<RefCell<IndexMap<String, Color>>>,
+    pub idx: usize,
+}
+
+
+#[derive(Debug)]
 pub struct PaletteManager {
-    pub palettes: IndexMap<String, Rc<RefCell<PaletteGroup>>>,
-    pub selected_color_idx: usize,
+    /// usize is for the index of the selected color within the palette
+    pub palettes: IndexMap<String, PaletteGroup>,
     pub selected_palette_idx: usize,
 }
 
 impl PaletteManager {
     pub fn new() -> io::Result<Self> {
         let mut palettes = IndexMap::new();
-        palettes.insert("pico8".to_owned(), Rc::new(RefCell::new(pico8())));
+        palettes.insert("pico8".to_owned(), pico8());
 
         if cfg!(not(wasm32)) {
             let dir = "config/palettes";
@@ -26,7 +31,6 @@ impl PaletteManager {
             if dir_entries.is_err() {
                 return Ok(Self {
                     palettes,
-                    selected_color_idx: Default::default(),
                     selected_palette_idx: Default::default(),
                 });
             }
@@ -40,13 +44,12 @@ impl PaletteManager {
                     "png" => get_palette_png(&path)?,
                     _ => continue,
                 };
-                palettes.insert(palette_name, Rc::new(RefCell::new(pal)));
+                palettes.insert(palette_name, pal);
             }
         }
 
         Ok(Self {
             palettes,
-            selected_color_idx: Default::default(),
             selected_palette_idx: Default::default(),
         })
     }
@@ -54,6 +57,7 @@ impl PaletteManager {
     fn find_color(&self, color: Color) -> Option<usize> {
         use itertools::Itertools;
         self.current_palette()
+            .colors
             .borrow()
             .iter()
             .find_position(|&(_k, v)| unsafe { v.as_rgba() == color.as_rgba() })
@@ -62,30 +66,37 @@ impl PaletteManager {
 
     pub fn set_color(&mut self, color: Color) {
         println!("{:#?}", color);
-        self.selected_color_idx = match color {
+        let idx = match color {
             Color::Indexed(i) => i,
             Color::Rgba(_rgba) => {
                 if let Some(idx) = self.find_color(color) {
                     idx
                 } else {
                     let pal = self.current_palette();
-                    let mut pal_ = pal.borrow_mut();
+                    let mut pal_ = pal.colors.borrow_mut();
                     let len = pal_.len();
                     let (idx, _) = pal_.insert_full(format!("{}", len), color);
                     idx
                 }
             }
-        }
+        };
+
+        self.current_palette_mut().idx = idx;
     }
 
-    pub fn current_palette(&self) -> Rc<RefCell<PaletteGroup>> {
-        return Rc::clone(self.palettes.get_index(self.selected_palette_idx).unwrap().1);
+    pub fn current_palette_mut(&mut self) -> &mut PaletteGroup {
+        return self.palettes.get_index_mut(self.selected_palette_idx).unwrap().1;
+    }
+
+    pub fn current_palette(&self) -> &PaletteGroup {
+        return &self.palettes.get_index(self.selected_palette_idx).unwrap().1;
     }
 
     pub fn current_color(&self) -> (String, Color) {
         let pal = self.current_palette();
-        let pal_ = pal.borrow();
-        let ret = pal_.get_index(self.selected_color_idx).unwrap();
+        let idx = pal.idx;
+        let pal_ = pal.colors.borrow();
+        let ret = pal_.get_index(idx).unwrap();
 
         (ret.0.to_owned(), *ret.1)
     }
@@ -109,7 +120,10 @@ fn pico8() -> PaletteGroup {
     colors.insert("indigo".to_owned(), Color::rgba(131, 118, 156, 255));
     colors.insert("pink".to_owned(), Color::rgba(255, 119, 168, 255));
     colors.insert("peach".to_owned(), Color::rgba(255, 204, 170, 255));
-    colors
+    PaletteGroup {
+        colors: Rc::new(RefCell::new(colors)),
+        idx: 0
+    }
 }
 
 fn get_palette_hex(p: &path::PathBuf) -> io::Result<PaletteGroup> {
@@ -119,7 +133,10 @@ fn get_palette_hex(p: &path::PathBuf) -> io::Result<PaletteGroup> {
         let color = Color::from_hex(&col[1..]).expect(&format!("Cannot decode hex in file {:?}", p));
         colors.insert(col.to_owned(), color);
     }
-    Ok(colors)
+    Ok(PaletteGroup{
+        colors: Rc::new(RefCell::new(colors)),
+        idx: 0,
+    })
 }
 
 fn get_palette_png(p: &path::PathBuf) -> io::Result<PaletteGroup> {
@@ -130,5 +147,8 @@ fn get_palette_png(p: &path::PathBuf) -> io::Result<PaletteGroup> {
         let my_color = Color::rgba(color[0], color[1], color[2], 255);
         colors.insert(format!("color##{},{}", pix.0, pix.1), my_color);
     }
-    Ok(colors)
+    Ok(PaletteGroup{
+        colors: Rc::new(RefCell::new(colors)),
+        idx: 0,
+    })
 }
