@@ -17,6 +17,13 @@ impl FloodFillDegrees {
         }
     }
 
+    pub fn description(&self) -> &str {
+        match self {
+            FloodFillDegrees::Four => "Color connected blobs",
+            FloodFillDegrees::Eight => "Color thin disjoint lines",
+        }
+    }
+
     pub const VARIANTS: [FloodFillDegrees; 2] = [FloodFillDegrees::Four, FloodFillDegrees::Eight];
 }
 

@@ -118,7 +118,7 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
             f.set(ImGuiColorEditFlags::NoOptions, false);
             f.set(ImGuiColorEditFlags::NoInputs, true);
             f.set(ImGuiColorEditFlags::NoLabel, true);
-            f.set(ImGuiColorEditFlags::NoPicker, true);
+            f.set(ImGuiColorEditFlags::NoPicker, false);
             f
         };
         let mut sel: [f32; 4] = unsafe { (*col).as_rgba().into() };

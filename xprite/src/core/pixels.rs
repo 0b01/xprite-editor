@@ -283,7 +283,6 @@ impl Pixels {
         self.0.iter()
     }
 
-    #[allow(mutable_transmutes)]
     pub fn set_color(&mut self, color: Color) {
         for pix in self.0.iter() {
             pix.set_color(color);

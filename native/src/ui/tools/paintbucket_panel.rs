@@ -10,6 +10,9 @@ pub fn draw(state: &mut State, ui: &Ui) {
             if ui.selectable(&im_str!("{}", degrees.as_str()), is_sel, ImGuiSelectableFlags::empty(), [0., 0.]) {
                 state.xpr_mut().set_option("degrees", degrees.as_str()).unwrap();
             }
+            if ui.is_item_hovered() {
+                ui.tooltip_text(degrees.description());
+            }
         }
     });
 
@@ -20,6 +23,7 @@ pub fn draw(state: &mut State, ui: &Ui) {
             if ui.selectable(&im_str!("{}", mode.as_str()), is_sel, ImGuiSelectableFlags::empty(), [0., 0.]) {
                 state.xpr_mut().set_option("mode", mode.as_str()).unwrap();
             }
+
         }
     });
 }

@@ -84,7 +84,7 @@ fn run_ui(fname: Option<&str>) {
     init_full_logger(Arc::clone(&xpr.log));
     let mut state = State::new(xpr);
 
-    let system = crate::render::run::init(file!());
+    let system = crate::render::run::init("Xprite v0.1.0");
     system.main_loop(|_, ui, gl_ctx, textures| {
         let mut rdr = ImguiRenderer::new(&ui, gl_ctx, textures);
         state.load_icons(&mut rdr);
