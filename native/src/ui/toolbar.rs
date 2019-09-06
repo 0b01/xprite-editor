@@ -3,7 +3,7 @@ use crate::prelude::*;
 // use xprite::rendering::Renderer;
 
 pub fn draw_toolbar(state: &mut State, ui: &Ui) {
-    ui.window(&im_str!("Xprite v0.1.0"))
+    ui.window(&im_str!("Xprite {}", env!("CARGO_PKG_VERSION")))
         .no_bring_to_front_on_focus(true)
         .position([0., 20.], Condition::Appearing)
         .size([LEFT_SIDE_WIDTH, 200.], Condition::Appearing)

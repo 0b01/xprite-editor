@@ -13,7 +13,6 @@ cargo run --bin xprite-native
 ## Bugs and Improvements
 
 * [ ] investigate patterned dithering
-* [ ] finish integrating anti-aliasing
 * [ ] investigate other anti-aliasing algos
 * [ ] Checkbox to select whether to use indexed color
 * [ ] frame rate drops when marquee selection is active
@@ -47,6 +46,7 @@ cargo run --bin xprite-native
 
 ## Done
 
+* [x] AA: finish integrating anti-aliasing
 * [x] Autoshade: erode and then color with gradient
 * [x] Autoshade: erosion modes: cumulative(step by step), vs erode original
 * [x] selective outlining, anti-aliasing

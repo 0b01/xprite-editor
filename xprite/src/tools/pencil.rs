@@ -59,6 +59,8 @@ pub struct Pencil {
     cursor_pos: Option<Vec2f>,
     pub mode: PencilMode,
 
+    pub aa_alt_color: Color,
+
     last_mouse_down_or_up: Option<Vec2f>,
     shift: bool,
 
@@ -93,6 +95,7 @@ impl Pencil {
             cursor,
             brush,
             mode: PencilMode::PixelPerfect,
+            aa_alt_color: Color::red(),
             moved: false,
             draw_buffer: Pixels::new(),
             update_buffer: None,
@@ -156,7 +159,7 @@ impl Pencil {
                 } else {
                     let mut points = self.current_polyline.to_pixel_coords(xpr)?.connect_with_line(xpr.color())?;
                     points.pixel_perfect();
-                    points.selective_antialias(0.5, Color::orange());
+                    points.selective_antialias(0.5, self.aa_alt_color);
                     let path = self.brush.follow_stroke(&points).unwrap();
                     path
                 }
