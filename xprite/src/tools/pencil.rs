@@ -219,7 +219,7 @@ impl Tool for Pencil {
         Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2f) -> Result<(), String> {
         if self.is_mouse_down.is_none() {
             return Ok(());
         }

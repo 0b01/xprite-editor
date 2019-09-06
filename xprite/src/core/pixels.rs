@@ -252,7 +252,7 @@ impl Pixels {
         rotsprite(&self, angle, pivot)
     }
 
-    pub fn extend(&mut self, other: &Pixels) {
+    pub fn extend<'a, 'b>(&'a mut self, other: &'b Pixels) {
         for i in other.0.iter() {
             self.0.replace(*i);
         }

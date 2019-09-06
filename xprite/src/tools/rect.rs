@@ -115,7 +115,7 @@ impl Tool for Rect {
         Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         self.cursor_pos = Some(point);
         self.finalize_rect(xpr)?;

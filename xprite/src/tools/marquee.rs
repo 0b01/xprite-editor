@@ -78,7 +78,7 @@ impl Tool for Marquee {
         Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         if self.move_orig_pos.is_some() {
             self.move_final_pos = Some(point);

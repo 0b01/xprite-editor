@@ -82,7 +82,7 @@ impl Tool for PaintBucket {
         Ok(())
     }
 
-    fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2f) -> Result<(), String> {
         self.is_mouse_down = false;
 
         // reset cursor

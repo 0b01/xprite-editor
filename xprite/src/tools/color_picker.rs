@@ -42,7 +42,7 @@ impl Tool for ColorPicker {
         Ok(())
     }
 
-    fn mouse_up(&mut self, _xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
+    fn mouse_up(&mut self, _xpr: &mut Xprite, _p: Vec2f) -> Result<(), String> {
         Ok(())
     }
 

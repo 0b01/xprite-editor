@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 pub trait Tool {
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String>;
-    fn mouse_up(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String>;
+    fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2f) -> Result<(), String>;
     fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String>;
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String>;
     /// for updating global state

@@ -279,7 +279,7 @@ impl Tool for Vector {
         Ok(())
     }
 
-    fn mouse_up(&mut self, _xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
+    fn mouse_up(&mut self, _xpr: &mut Xprite, _p: Vec2f) -> Result<(), String> {
         if self.is_mouse_down.is_none() {
             return Ok(());
         }

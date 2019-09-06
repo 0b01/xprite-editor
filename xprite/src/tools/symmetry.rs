@@ -59,7 +59,7 @@ impl Tool for Symmetry {
         Ok(())
     }
 
-    fn mouse_up(&mut self, _xpr: &Xprite, _p: Vec2f) -> Result<(), String> {
+    fn mouse_up(&mut self, _xpr: &mut Xprite, _p: Vec2f) -> Result<(), String> {
         // let point = xpr.canvas.shrink_size(p);
         // let color = xpr.color();
         // self.cursor_pos = Some(Pixel { point, color });
