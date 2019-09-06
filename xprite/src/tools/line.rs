@@ -43,11 +43,6 @@ impl Line {
 }
 
 impl Tool for Line {
-    fn cursor(&self) -> Option<Pixels> {
-        let p = self.cursor_pos?;
-        Some(pixels!(p))
-    }
-
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
@@ -89,8 +84,9 @@ impl Tool for Line {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        if let Some(cursor) = self.cursor() {
-            xpr.set_cursor(&cursor);
+
+        if let Some(p) = self.cursor_pos {
+            xpr.set_cursor(&pixels!(p));
         }
 
         if let Some(mut pixs) = self.get_line(xpr) {
@@ -104,7 +100,7 @@ impl Tool for Line {
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
-            "ctrl" => match value {
+            "LControl" | "RControl" => match value {
                 "true" => {
                     self.snap = true;
                     self.is_snap_45 = true
@@ -112,7 +108,7 @@ impl Tool for Line {
                 "false" => self.snap = false,
                 _ => error!("unimpl for ctrl: {}", value),
             },
-            "shift" => match value {
+            "LShift" | "RShift" => match value {
                 "true" => {
                     self.snap = true;
                     self.is_snap_45 = false

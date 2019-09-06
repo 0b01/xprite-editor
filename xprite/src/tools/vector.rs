@@ -206,11 +206,6 @@ impl Vector {
 }
 
 impl Tool for Vector {
-    fn cursor(&self) -> Option<Pixels> {
-        let point = self.cursor_pos?;
-        Some(pixels!(Pixel { point, color: Color::red() }))
-    }
-
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // update cursor pos
         let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
@@ -311,8 +306,9 @@ impl Tool for Vector {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        if let Some(cursor) = self.cursor() {
-            xpr.set_cursor(&cursor);
+
+        if let Some(p) = self.cursor_pos {
+            xpr.set_cursor(&pixels!(Pixel { point: p, color: Color::red() }));
         }
 
         let mut ret = Pixels::new();
@@ -384,7 +380,7 @@ impl Tool for Vector {
             "brush" => {
                 self.brush = value.parse()?;
             }
-            "return" => {
+            "Return" | "Enter" => {
                 self.add_to_hist(xpr)?;
             }
             _ => (),

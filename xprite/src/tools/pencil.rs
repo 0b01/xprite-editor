@@ -1,5 +1,5 @@
-use crate::algorithms::line::continuous_line;
 use crate::prelude::*;
+use crate::algorithms::line::continuous_line;
 
 use std::str::FromStr;
 
@@ -247,10 +247,6 @@ impl Tool for Pencil {
         Ok(())
     }
 
-    fn cursor(&self) -> Option<Pixels> {
-        self.cursor.clone()
-    }
-
     fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         if let Some(pixs) = &self.update_buffer {
             xpr.finalize_pixels(&pixs)?;
@@ -263,8 +259,8 @@ impl Tool for Pencil {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        if let Some(cursor) = self.cursor() {
-            xpr.set_cursor(&cursor);
+        if let Some(cursor) = &self.cursor {
+            xpr.set_cursor(cursor);
         }
         if self.redraw {
             xpr.add_pixels(&self.draw_buffer.with_color(xpr.color()));
@@ -287,7 +283,7 @@ impl Tool for Pencil {
             "brush" => {
                 self.brush = value.parse()?;
             }
-            "shift" => match value {
+            "LShift" | "RShift" => match value {
                 "true" => {
                     self.shift = true;
                     if let Some(pixs) = self.draw_line(xpr.color()) {

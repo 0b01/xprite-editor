@@ -120,11 +120,6 @@ impl Ellipse {
 }
 
 impl Tool for Ellipse {
-    fn cursor(&self) -> Option<Pixels> {
-        let p = self.cursor_pos?;
-        Some(pixels!(p))
-    }
-
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
@@ -166,8 +161,8 @@ impl Tool for Ellipse {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        if let Some(cursor) = self.cursor() {
-            xpr.set_cursor(&cursor);
+        if let Some(p) = self.cursor_pos {
+            xpr.set_cursor(&pixels!(p));
         }
         if let Ok(mut pixs) = self.get_ellipse() {
             pixs.set_color(xpr.color());
@@ -180,12 +175,12 @@ impl Tool for Ellipse {
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
-            "ctrl" => match value {
+            "LControl" | "RControl" => match value {
                 "true" => self.symmetric = true,
                 "false" => self.symmetric = false,
                 _ => error!("unimpl for ctrl: {}", value),
             },
-            "shift" => match value {
+            "LShift" | "RShift" => match value {
                 "true" => {
                     self.snap = true;
                 }

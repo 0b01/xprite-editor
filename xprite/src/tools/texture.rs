@@ -65,7 +65,7 @@ impl Texture {
 
     fn quilt_img(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
         let bb = self.get_bb().ok_or("no cursor".to_owned())?;
-        let mut content = xpr.current_layer().unwrap().content.clone();
+        let mut content = xpr.current_layer().unwrap().borrow().content.clone();
         content.retain_in_rect_mut(bb);
         let img = content.as_image(bb, Some(xpr)).ok_or("cannot view as image".to_owned())?;
 
@@ -112,11 +112,6 @@ impl Texture {
 }
 
 impl Tool for Texture {
-    fn cursor(&self) -> Option<Pixels> {
-        let _p = self.cursor_pos?;
-        None
-    }
-
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         // set current cursor_pos
         let point = xpr.canvas.shrink_size(p);
@@ -149,7 +144,7 @@ impl Tool for Texture {
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         xpr.new_frame();
-        if let Some(cursor) = self.cursor() {
+        if let Some(cursor) = None {
             xpr.set_cursor(&cursor);
         }
         if self.start_pos.is_some() && self.cursor_pos.is_some() {
@@ -163,10 +158,10 @@ impl Tool for Texture {
 
     fn set(&mut self, _xpr: &Xprite, option: &str, value: &str) -> Result<(), String> {
         match option {
-            "ctrl" => match value {
+            "LControl" | "RControl" => match value {
                 _ => error!("unimpl for ctrl: {}", value),
             },
-            "shift" => match value {
+            "LShift" | "RShift" => match value {
                 _ => error!("unimpl for ctrl: {}", value),
             },
             "alt" => {
