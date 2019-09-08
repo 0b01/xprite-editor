@@ -54,7 +54,7 @@ impl PaletteManager {
         })
     }
 
-    fn find_color(&self, color: Color) -> Option<usize> {
+    pub fn find_color(&self, color: Color) -> Option<usize> {
         use itertools::Itertools;
         self.current_palette()
             .colors
@@ -64,8 +64,7 @@ impl PaletteManager {
             .map(|i| i.0)
     }
 
-    pub fn upsert_color(&mut self, color: Color) -> usize {
-        println!("{:#?}", color);
+    pub fn set_color(&mut self, color: Color) {
         let idx = match color {
             Color::Indexed(i) => i,
             Color::Rgba(_rgba) => {
@@ -80,12 +79,12 @@ impl PaletteManager {
                 }
             }
         };
-        idx
+        self.current_palette_mut().idx = idx;
     }
 
-    pub fn set_color(&mut self, color: Color) {
-        let idx = self.upsert_color(color);
-        self.current_palette_mut().idx = idx;
+    pub fn modify_color(&mut self, idx: usize, color: Color) {
+        let pal = self.current_palette_mut();
+        *(pal.colors.borrow_mut().get_index_mut(idx).unwrap().1) = color;
     }
 
     pub fn current_palette_mut(&mut self) -> &mut PaletteGroup {
@@ -98,12 +97,15 @@ impl PaletteManager {
 
     pub fn current_color(&self) -> (String, Color) {
         let pal = self.current_palette();
-        let idx = pal.idx;
+        let mut idx = pal.idx;
         let pal_ = pal.colors.borrow();
+        if idx > pal_.len() {
+            idx = 0;
+        }
         let ret = pal_.get_index(idx).unwrap();
-
         (ret.0.to_owned(), *ret.1)
     }
+
 }
 
 fn pico8() -> PaletteGroup {

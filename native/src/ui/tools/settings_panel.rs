@@ -61,4 +61,10 @@ pub fn draw(_rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
             state.xpr_mut().redraw = true;
         }
     });
+
+    ui.tree_node(&im_str!("Show grid")).default_open(true).build(|| {
+        // checkbox for show grid
+        ui.checkbox(&im_str!("grid"), &mut state.xpr_mut().canvas.show_grid);
+        // ui.text(&im_str!("{}, {}", state.xpr().last_mouse_pos.y, state.xpr().last_mouse_pos.x));
+    });
 }

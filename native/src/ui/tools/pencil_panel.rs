@@ -51,10 +51,14 @@ pub fn draw(state: &mut State, ui: &Ui) {
     }
 
     if p.selective_anti_aliasing {
-        ui.tree_node(&im_str!("Selective Anti Aliasing Options")).build(|| {
+        ui.tree_node(&im_str!("Selective Anti Aliasing Options")).default_open(true).build(|| {
             ui.slider_float(&im_str!("Threshold"), &mut p.aa_threshold, 0., 1.).build();
 
-            let mut sel: [f32; 4] = unsafe { p.aa_alt_color.to_rgba(Some(state.xpr())).unwrap().into() }; // BUG:
+            let mut sel: [f32; 4] = p.aa_alt_color
+                .unwrap_or(Color::black())
+                .to_rgba(Some(state.xpr()))
+                .unwrap()
+                .into();
             let id = im_str!("MyColor##{}", "background");
             let misc_flags = {
                 let mut f = ImGuiColorEditFlags::empty();
@@ -69,8 +73,21 @@ pub fn draw(state: &mut State, ui: &Ui) {
             let b = ui.color_edit(&id, &mut sel).flags(misc_flags).alpha(false);
             if b.build() {
                 let color = sel.into();
-                let idx = state.xpr_mut().palette.upsert_color(color);
-                p.aa_alt_color = Color::Indexed(idx);
+                match p.aa_alt_color {
+                    None => {
+                        let idx = state.xpr_mut().palette.find_color(color).unwrap_or(0);
+                        p.aa_alt_color = Some(Color::Indexed(idx));
+                    }
+                    Some(c) => {
+                        let idx = unsafe { c.as_index() };
+                        state.xpr_mut().palette.modify_color(idx, color);
+                        state.xpr_mut().redraw = true;
+                    }
+                }
+            }
+
+            if p.aa_alt_color.is_none() && ui.is_item_hovered() {
+                ui.tooltip_text("Drag and drop from your palette");
             }
         });
     }

@@ -101,9 +101,6 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
             //   .speed(0.1)
             //   .build();
 
-            // checkbox for show grid
-            ui.checkbox(&im_str!("grid"), &mut state.xpr_mut().canvas.show_grid);
-            ui.text(&im_str!("{}, {}", state.xpr().last_mouse_pos.y, state.xpr().last_mouse_pos.x));
         });
 }
 
@@ -119,8 +116,8 @@ fn update_viewport(state: &mut State, ui: &Ui) {
         cvs.scale = cvs.canvas_w / cvs.art_w / CANVAS_INIT_SCALE;
         // cvs.scroll.x = (cvs.canvas_w - cvs.scale * cvs.art_w) / 2.;
         // cvs.scroll.y = (cvs.canvas_h - cvs.scale * cvs.art_h) / 2.;
-        cvs.scroll.x = 0.;
-        cvs.scroll.y = 0.;
+        // cvs.scroll.x = 0.;
+        // cvs.scroll.y = 0.;
     }
 
     state.xpr_mut().canvas.initialized = true;

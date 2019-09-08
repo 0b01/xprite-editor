@@ -47,6 +47,16 @@ impl Color {
         }
     }
 
+    pub unsafe fn as_index(&self) -> usize {
+        match self {
+            Color::Indexed(idx) => *idx,
+            Color::Rgba(_rgba) => {
+                use std::hint::unreachable_unchecked;
+                unreachable_unchecked();
+            }
+        }
+    }
+
     pub fn to_rgba(&self, xpr: Option<&Xprite>) -> Option<XpriteRgba> {
         match *self {
             Color::Indexed(i) => {
