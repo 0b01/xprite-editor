@@ -50,24 +50,33 @@ pub fn draw(state: &mut State, ui: &Ui) {
         }
     }
 
-    let mut sel: [f32; 4] = unsafe { p.aa_alt_color.as_rgba().into() };
-    let id = im_str!("MyColor##{}", "background");
-    let misc_flags = {
-        let mut f = ImGuiColorEditFlags::empty();
-        f.set(ImGuiColorEditFlags::HDR, true);
-        f.set(ImGuiColorEditFlags::AlphaPreview, true);
-        f.set(ImGuiColorEditFlags::NoOptions, false);
-        f.set(ImGuiColorEditFlags::NoInputs, true);
-        f.set(ImGuiColorEditFlags::NoLabel, true);
-        f.set(ImGuiColorEditFlags::NoPicker, false);
-        f
-    };
-    let b = ui.color_edit(&id, &mut sel).flags(misc_flags).alpha(false);
-    if b.build() {
-        p.aa_alt_color = sel.into();
+    if p.selective_anti_aliasing {
+        ui.tree_node(&im_str!("Selective Anti Aliasing Options")).build(|| {
+            ui.slider_float(&im_str!("Threshold"), &mut p.aa_threshold, 0., 1.).build();
+
+            let mut sel: [f32; 4] = unsafe { p.aa_alt_color.to_rgba(Some(state.xpr())).unwrap().into() }; // BUG:
+            let id = im_str!("MyColor##{}", "background");
+            let misc_flags = {
+                let mut f = ImGuiColorEditFlags::empty();
+                f.set(ImGuiColorEditFlags::HDR, true);
+                f.set(ImGuiColorEditFlags::AlphaPreview, true);
+                f.set(ImGuiColorEditFlags::NoOptions, false);
+                f.set(ImGuiColorEditFlags::NoInputs, true);
+                f.set(ImGuiColorEditFlags::NoLabel, true);
+                f.set(ImGuiColorEditFlags::NoPicker, false);
+                f
+            };
+            let b = ui.color_edit(&id, &mut sel).flags(misc_flags).alpha(false);
+            if b.build() {
+                let color = sel.into();
+                let idx = state.xpr_mut().palette.upsert_color(color);
+                p.aa_alt_color = Color::Indexed(idx);
+            }
+        });
     }
 
     if ui.button(&im_str!("toggle brush"), [0., 0.]) {
         state.toggle_brush();
     }
+
 }

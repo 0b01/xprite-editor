@@ -64,7 +64,7 @@ impl PaletteManager {
             .map(|i| i.0)
     }
 
-    pub fn set_color(&mut self, color: Color) {
+    pub fn upsert_color(&mut self, color: Color) -> usize {
         println!("{:#?}", color);
         let idx = match color {
             Color::Indexed(i) => i,
@@ -80,7 +80,11 @@ impl PaletteManager {
                 }
             }
         };
+        idx
+    }
 
+    pub fn set_color(&mut self, color: Color) {
+        let idx = self.upsert_color(color);
         self.current_palette_mut().idx = idx;
     }
 

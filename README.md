@@ -12,6 +12,10 @@ cargo run --bin xprite-native
 
 ## Bugs and Improvements
 
+* [ ] BUG: rerender on palette change
+* [ ] BUG: palette persistence
+* [ ] BUG: selective AA upserts palette instead of changing color at index
+
 * [ ] investigate patterned dithering
 * [ ] investigate other anti-aliasing algos
 * [ ] Checkbox to select whether to use indexed color

@@ -35,6 +35,8 @@ pub struct PencilProcessor {
     pub selective_anti_aliasing: bool,
     /// aa color
     pub aa_alt_color: Color,
+    /// aa threshold
+    pub aa_threshold: f32,
     pub polyline: Polyline,
 }
 
@@ -45,6 +47,7 @@ impl PencilProcessor {
             sorted_monotonic: false,
             selective_anti_aliasing: false,
             aa_alt_color: Color::orange(),
+            aa_threshold: 0.5,
             polyline: Polyline::new(),
         }
     }
@@ -74,7 +77,7 @@ impl PencilProcessor {
         }
         if self.selective_anti_aliasing {
             assert_eq!(self.run_pixel_perfect, Some(true));
-            points.selective_antialias(0.5, self.aa_alt_color);
+            points.selective_antialias(self.aa_threshold as f64, self.aa_alt_color);
         }
         let path = brush.follow_stroke(&points).unwrap();
         Ok(path)

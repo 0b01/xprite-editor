@@ -70,6 +70,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
 
                     update_viewport(state, ui);
                     super::inputs::bind_input(state, ui);
+
                     let origin = state.xpr_mut().canvas.origin();
                     ui.set_cursor_screen_pos([origin.x as f32, origin.y as f32]);
                     rdr.render(Some(state.xpr())).unwrap();
@@ -116,8 +117,10 @@ fn update_viewport(state: &mut State, ui: &Ui) {
 
     if !cvs.initialized {
         cvs.scale = cvs.canvas_w / cvs.art_w / CANVAS_INIT_SCALE;
-        cvs.scroll.x = (cvs.canvas_w - cvs.scale * cvs.art_w) / 2.;
-        cvs.scroll.y = (cvs.canvas_h - cvs.scale * cvs.art_h) / 2.;
+        // cvs.scroll.x = (cvs.canvas_w - cvs.scale * cvs.art_w) / 2.;
+        // cvs.scroll.y = (cvs.canvas_h - cvs.scale * cvs.art_h) / 2.;
+        cvs.scroll.x = 0.;
+        cvs.scroll.y = 0.;
     }
 
     state.xpr_mut().canvas.initialized = true;
