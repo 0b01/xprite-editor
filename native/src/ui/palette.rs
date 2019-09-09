@@ -84,6 +84,7 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     let mut pal_idx: i32 = state.xpr_mut().palette.selected_palette_idx as i32;
     if ui.combo(&im_str!("Palette"), &mut pal_idx, &refs, -1) {
         state.xpr_mut().palette.selected_palette_idx = pal_idx as usize;
+        state.xpr_mut().redraw = true;
     }
     ui.text(&im_str!("Color: {}", state.xpr().palette.current_color().0));
 
