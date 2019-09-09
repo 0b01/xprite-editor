@@ -26,8 +26,7 @@ impl BufferedPolyline {
 
     pub fn process(&mut self, brush: &Brush, color: Color) -> Result<&Pixels, String> {
         self.upto += self.polyline.pos.len();
-        let mut line_pixs = self.polyline.connect_with_line(color)?;
-        // line_pixs.push(Pixel{ point: self.cursor_pos.unwrap(), color: Color::void()});
+        let line_pixs = self.polyline.connect_with_line(color)?;
         let brushstroke = brush.follow_stroke(&line_pixs).unwrap();
         self.buffer.extend(&brushstroke);
         Ok(&self.buffer)
@@ -209,7 +208,7 @@ impl Tool for Eraser {
         Ok(())
     }
 
-    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
+    fn update(&mut self, _xpr: &mut Xprite) -> Result<bool, String> {
         Ok(false)
     }
 

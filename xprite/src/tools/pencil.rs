@@ -19,8 +19,6 @@
 use crate::prelude::*;
 use crate::algorithms::line::continuous_line;
 
-use std::str::FromStr;
-
 #[derive(PartialEq, Clone, Debug)]
 pub struct PencilProcessor {
     /// pixel perfect - nothing else
