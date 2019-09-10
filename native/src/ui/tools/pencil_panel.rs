@@ -83,7 +83,7 @@ pub fn draw(state: &mut State, ui: &Ui) {
                     Some(c) => {
                         let idx = unsafe { c.as_index() };
                         state.xpr_mut().palette.modify_color(idx, color);
-                        state.xpr_mut().redraw = true;
+                        state.xpr_mut().set_redraw(true);
                     }
                 }
             }

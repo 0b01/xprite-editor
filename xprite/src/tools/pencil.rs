@@ -201,24 +201,6 @@ impl Tool for Pencil {
         Ok(())
     }
 
-    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
-        let point = xpr.canvas.shrink_size(p);
-        self.is_mouse_down = Some(button);
-
-        self.processor.polyline.push(point);
-        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
-        // TODO:
-        if let Some(pixels) = pixels {
-            if button == InputItem::Left {
-                self.draw_buffer.extend(&pixels);
-                self.redraw = true
-            } else {
-                // xpr.remove_pixels(&pixels);
-            }
-        }
-        Ok(())
-    }
-
     fn mouse_up(&mut self, xpr: &mut Xprite, p: Vec2f) -> Result<(), String> {
         if self.is_mouse_down.is_none() {
             return Ok(());
@@ -247,14 +229,22 @@ impl Tool for Pencil {
         Ok(())
     }
 
-    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
-        if let Some(pixs) = &self.update_buffer {
-            xpr.finalize_pixels(&pixs)?;
-            self.update_buffer = None;
-            Ok(true)
-        } else {
-            Ok(false)
+    fn mouse_down(&mut self, xpr: &Xprite, p: Vec2f, button: InputItem) -> Result<(), String> {
+        let point = xpr.canvas.shrink_size(p);
+        self.is_mouse_down = Some(button);
+
+        self.processor.polyline.push(point);
+        let pixels = self.brush.to_canvas_pixels(xpr.canvas.shrink_size(p), xpr.color());
+        // TODO:
+        if let Some(pixels) = pixels {
+            if button == InputItem::Left {
+                self.draw_buffer.extend(&pixels);
+                self.redraw = true;
+            } else {
+                // xpr.remove_pixels(&pixels);
+            }
         }
+        Ok(())
     }
 
     fn draw(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
@@ -265,6 +255,16 @@ impl Tool for Pencil {
         if self.redraw {
             xpr.add_pixels(&self.draw_buffer);
             self.redraw = false;
+            Ok(true)
+        } else {
+            Ok(false)
+        }
+    }
+
+    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
+        if let Some(pixs) = &self.update_buffer {
+            xpr.finalize_pixels(&pixs)?;
+            self.update_buffer = None;
             Ok(true)
         } else {
             Ok(false)

@@ -73,7 +73,7 @@ pub fn draw_color_picker(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                 let mut pal_ = pal.colors.borrow_mut();
                 *(pal_.get_index_mut(idx).unwrap().1) = ret;
                 drop(pal_);
-                state.xpr_mut().redraw = true;
+                state.xpr_mut().set_redraw(true);
             };
         });
 }
@@ -84,7 +84,7 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     let mut pal_idx: i32 = state.xpr_mut().palette.selected_palette_idx as i32;
     if ui.combo(&im_str!("Palette"), &mut pal_idx, &refs, -1) {
         state.xpr_mut().palette.selected_palette_idx = pal_idx as usize;
-        state.xpr_mut().redraw = true;
+        state.xpr_mut().set_redraw(true);
     }
     ui.text(&im_str!("Color: {}", state.xpr().palette.current_color().0));
 
@@ -103,8 +103,9 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     //     (RIGHT_SIDE_WIDTH - MARGIN + 5., PALETTE_BEGIN_Y + PALETTE_H + 5.),
     //     LIGHT_GREY
     // ).filled(false).build();
+    let mut modified = false;
     let cols_per_row = state.cols_per_row as usize;
-    let mut xpr = state.xpr_mut();
+    let xpr = state.xpr_mut();
     let pal = xpr.palette.current_palette_mut();
     let color_idx = pal.idx;
     let mut pal_ = pal.colors.borrow_mut();
@@ -129,7 +130,7 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
         if ui.color_edit(&im_str!("MyColor##{}", i), &mut sel).flags(misc_flags).alpha(false).build() {
             // if color is mutated
             *col = sel.into();
-            xpr.redraw = true;
+            modified = true;
         }
 
         if ui.is_item_hovered() && ui.io().mouse_down[0] {
@@ -151,6 +152,9 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
         }
     }
     drop(pal_);
+    if modified {
+        xpr.set_redraw(true);
+    }
 
     if ui.small_button(&im_str!("+")) {
         let pal = state.xpr_mut().palette.current_palette();

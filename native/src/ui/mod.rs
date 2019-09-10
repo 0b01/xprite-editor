@@ -2,6 +2,7 @@ pub mod brush;
 pub mod canvas;
 pub mod console;
 pub mod exporter;
+pub mod frames;
 pub mod file_manager;
 pub mod inputs;
 pub mod layers;
@@ -47,6 +48,7 @@ pub fn draw(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) -> bool {
 
     self::preview::draw_preview(rdr, state, ui);
     self::exporter::draw_exporter(rdr, state, ui);
+    self::frames::draw_frames(rdr, state, ui);
     true
 }
 

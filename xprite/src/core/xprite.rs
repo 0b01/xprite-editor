@@ -10,8 +10,9 @@ use std::cell::RefCell;
 pub struct Xprite {
     pub name: String,
     history: History,
-    pub im_buf: Pixels,
-    pub line_buf: Vec<Rect>,
+
+    im_buf: Pixels,
+    line_buf: Vec<Rect>,
     pub bz_buf: Vec<CubicBezierSegment>,
     marquee_buf: Vec<MarqueePixel>,
 
@@ -25,7 +26,7 @@ pub struct Xprite {
 
     pub log: Arc<Mutex<String>>,
 
-    pub redraw: bool,
+    redraw: bool,
 }
 
 impl Default for Xprite {
@@ -66,17 +67,21 @@ impl Xprite {
 
     pub fn undo(&mut self) {
         self.history.undo();
-        self.redraw = true;
+        self.set_redraw(true);
     }
 
     pub fn redo(&mut self) {
         self.history.redo();
-        self.redraw = true;
+        self.set_redraw(true);
     }
 
     pub fn update_mouse_pos(&mut self, x: f64, y: f64) {
         self.last_mouse_pos.x = x;
         self.last_mouse_pos.y = y;
+    }
+
+    pub fn update_lines(&mut self, lines: Vec<Rect>) {
+        self.line_buf = lines;
     }
 
     /// add pixels to temp im_buf
@@ -133,15 +138,17 @@ impl Xprite {
     }
 
     pub fn draw(&mut self) -> Result<(), String> {
-        self.redraw = self.toolbox.tool().borrow_mut().draw(self)?;
+        let redraw = Rc::clone(&self.toolbox.tool()).borrow_mut().draw(self)?;
+        self.set_redraw(redraw);
         Ok(())
     }
 
     pub fn update(&mut self) -> Result<(), String> {
         let mut redraw = false;
         redraw |= Rc::clone(&self.toolbox.symmetry).borrow_mut().update(self)?;
+        // XXX: investigate this call ^
         redraw |= self.toolbox.tool().borrow_mut().update(self)?;
-        self.redraw = redraw;
+        self.set_redraw(redraw);
         Ok(())
     }
 
@@ -187,7 +194,7 @@ impl Xprite {
         let frame = self.frame_mut();
         let l = frame.groups.get_mut(group).ok_or("no group".to_owned())?.1.get_mut(layer).ok_or("no layer".to_owned())?;
         l.borrow_mut().toggle_visible();
-        self.redraw = true;
+        self.set_redraw(true);
         Ok(())
     }
 
@@ -551,6 +558,15 @@ impl Xprite {
 
 /// layers
 impl Xprite {
+
+    pub fn redraw(&self) -> bool {
+        self.redraw
+    }
+
+    pub fn set_redraw(&mut self, redraw: bool) {
+        self.redraw = redraw;
+    }
+
     pub fn get_layer(&self, group_id: usize, layer_id: usize) -> Rc<RefCell<Layer>> {
         Rc::clone(&self.frame().groups[group_id].1[layer_id])
     }
@@ -584,7 +600,6 @@ impl Xprite {
         let nheight = im.height() * rescale;
         let filter = img::FilterType::Nearest;
         let im = img::imageops::resize(&im, nwidth, nheight, filter);
-
         info!("writing file to {}", img_path);
         im.save(img_path).unwrap();
         Some(())
@@ -595,14 +610,11 @@ impl Xprite {
         self.export(&mut rdr).unwrap();
         rdr.render(Some(self))?;
         let im = rdr.as_img();
-
         //rescale image
-
         let nwidth = im.width() * rescale;
         let nheight = im.height() * rescale;
         let filter = img::FilterType::Nearest;
         let im = img::imageops::resize(im, nwidth, nheight, filter);
-
         info!("writing file to {}", img_path);
         im.save(img_path).unwrap();
         Some(())

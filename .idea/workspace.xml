@@ -5,33 +5,33 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="529b08c0-0e9b-4167-abbe-955b4eb7ca07" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/native/src/ui/frames.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/font/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/font/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/native/src/ui/exporter.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/exporter.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/state/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/state/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/ui/canvas.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/canvas.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/native/src/ui/layers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/layers.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/ui/menu.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/menu.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/ui/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/ui/palette.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/palette.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/native/src/ui/tools/pencil_panel.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/tools/pencil_panel.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/algorithms/selective_antialias.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/algorithms/selective_antialias.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/core/history.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/history.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/core/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/core/pixels.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/pixels.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/ui/tools/settings_panel.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/tools/settings_panel.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xprite/src/algorithms/symmetry.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/algorithms/symmetry.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xprite/src/core/xprite.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/xprite.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/layer/layers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/layer/layers.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/prelude.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/prelude.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/scripting/python/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/scripting/python/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/tools/autoshade.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/tools/autoshade.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/tools/color_picker.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/tools/color_picker.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/tools/eraser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/tools/eraser.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/tools/marquee.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/tools/marquee.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/tools/paint_bucket.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/tools/paint_bucket.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xprite/src/tools/pencil.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/tools/pencil.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/tools/texture.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/tools/texture.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xprite/src/tools/symmetry.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/tools/symmetry.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Rust File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -82,6 +82,9 @@
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
     <option name="version" value="2" />
+  </component>
+  <component name="ServiceViewManager">
+    <option name="showServicesTree" value="false" />
   </component>
   <component name="SvnConfiguration">
     <configuration />

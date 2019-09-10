@@ -92,9 +92,9 @@ impl State {
     /// checks if texture needs to be updated.
     /// redraw texture
     pub fn redraw_pixels(&mut self, rdr: &mut ImguiRenderer) -> Result<(), String> {
-        if self.xpr().redraw || self.texture.is_none() {
+        if self.xpr().redraw() || self.texture.is_none() {
             self.update_preview(rdr);
-            self.xpr_mut().redraw = false;
+            self.xpr_mut().set_redraw(false);
         }
         Ok(())
     }
