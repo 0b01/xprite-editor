@@ -174,8 +174,8 @@ impl Xprite {
     }
 
     pub fn switch_layer(&mut self, group_id: usize, layer: usize) {
-        self.frame_mut().sel_group = group_id;
-        self.frame_mut().selected = layer;
+        self.frame_mut().group_idx = group_id;
+        self.frame_mut().layer_idx = layer;
     }
 
     pub fn cel(&self) -> Option<Rc<RefCell<Layer>>> {
@@ -194,7 +194,7 @@ impl Xprite {
     pub fn remove_layer(&mut self, group: usize, old: usize) -> Result<(), String> {
         self.commit();
         let layers = self.frame_mut();
-        layers.selected = 0;
+        layers.layer_idx = 0;
         layers.remove_layer(group, old);
 
         Ok(())
@@ -362,7 +362,7 @@ impl Xprite {
         for (i, group) in self.frame().groups.iter().enumerate().rev() {
             for (j, layer) in group.1.iter().enumerate().rev() {
                 let draw_buf = |rdr: &mut dyn Renderer| -> Result<(), String> {
-                    if i == self.frame().sel_group && j == self.frame().selected {
+                    if i == self.frame().group_idx && j == self.frame().layer_idx {
                         // draw current layer pixels
                         for &Pixel { point, color } in self.pixels().iter() {
                             let Vec2f { x, y } = point;

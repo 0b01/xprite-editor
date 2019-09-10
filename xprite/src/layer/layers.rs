@@ -5,8 +5,8 @@ use std::cell::RefCell;
 #[derive(Debug)]
 pub struct Layers {
     pub groups: Vec<(String, Vec<Rc<RefCell<Layer>>>)>,
-    pub selected: usize,
-    pub sel_group: usize,
+    pub layer_idx: usize,
+    pub group_idx: usize,
 }
 
 impl Clone for Layers {
@@ -22,8 +22,8 @@ impl Clone for Layers {
         }
         Self {
             groups,
-            selected: self.selected,
-            sel_group: self.sel_group,
+            layer_idx: self.layer_idx,
+            group_idx: self.group_idx,
         }
     }
 }
@@ -39,20 +39,20 @@ impl Layers {
         let groups = vec![("Group 1".to_owned(), vec![Rc::new(RefCell::new(Layer::new("Layer 0".to_owned())))])];
         let selected = 0;
         let sel_group = 0;
-        Self { groups, selected, sel_group }
+        Self { groups, layer_idx: selected, group_idx: sel_group }
     }
 
     pub fn layer(&self) -> Option<Rc<RefCell<Layer>>> {
         let gp = self.group()?;
-        gp.1.get(self.selected).cloned()
+        gp.1.get(self.layer_idx).cloned()
     }
 
     pub fn group(&self) -> Option<&(String, Vec<Rc<RefCell<Layer>>>)> {
-        self.groups.get(self.sel_group)
+        self.groups.get(self.group_idx)
     }
 
     pub fn group_mut(&mut self) -> Option<&mut (String, Vec<Rc<RefCell<Layer>>>)> {
-        self.groups.get_mut(self.sel_group)
+        self.groups.get_mut(self.group_idx)
     }
 
     pub fn swap_group(&mut self, first_idx: usize, second_idx: usize) {

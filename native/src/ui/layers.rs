@@ -116,7 +116,7 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
 
                                     let is_sel = {
                                         let frame = state.xpr().frame();
-                                        frame.selected == layer_id && frame.sel_group == group_id
+                                        frame.layer_idx == layer_id && frame.group_idx == group_id
                                     };
 
                                     if layer_id >= group!().1.len() {
