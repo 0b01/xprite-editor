@@ -1,9 +1,12 @@
 use crate::prelude::*;
 
+/// History
+///     ~> Frames
+///         ~> Layers
 #[derive(Debug)]
 pub struct History {
-    stack: Vec<Layers>,
-    redos: Vec<Layers>,
+    stack: Vec<Frames>,
+    redos: Vec<Frames>,
 }
 
 impl Default for History {
@@ -14,35 +17,22 @@ impl Default for History {
 
 impl History {
     pub fn new() -> Self {
-        let stack = vec![Layers::new()];
+        let stack = vec![Frames::new()];
         let redos = vec![];
         History { stack, redos }
     }
 
-    pub fn empty() -> Self {
-        let stack = vec![Layers::empty()];
-        let redos = vec![];
-        History { stack, redos }
-    }
-
-    pub fn enter(&mut self) -> Result<(), String> {
-        self.duplicate()?;
-        self.clear_redo();
-        Ok(())
-    }
-
-    pub fn duplicate(&mut self) -> Result<(), String> {
+    pub fn duplicate(&mut self) {
         trace!("duplicate history");
         let latest = self.top().clone();
         self.stack.push(latest);
-        Ok(())
     }
 
-    pub fn top_mut(&mut self) -> &mut Layers {
+    pub fn top_mut(&mut self) -> &mut Frames {
         self.stack.last_mut().unwrap()
     }
 
-    pub fn top(&self) -> &Layers {
+    pub fn top(&self) -> &Frames {
         self.stack.last().unwrap()
     }
 

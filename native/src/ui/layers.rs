@@ -14,32 +14,32 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
         .build(|| {
             if ui.button(&im_str!("+Layer"), [60., 20.]) {
                 let visible = true;
-                state.xpr_mut().history.top_mut().add_layer(None, visible);
+                state.xpr_mut().frame_mut().add_layer(None, visible);
             }
             if ui.is_item_hovered() {
                 ui.tooltip_text("Add layer under selected group");
             }
             ui.same_line(0.);
             if ui.button(&im_str!("+Group"), [60., 20.]) {
-                state.xpr_mut().history.top_mut().add_group(None);
+                state.xpr_mut().frame_mut().add_group(None);
             }
             if ui.is_item_hovered() {
                 ui.tooltip_text("Add group");
             }
 
             let ngroups: Vec<_> = {
-                let top = state.xpr_mut().history.top_mut();
-                if top.selected_layer().is_none() {
+                let frame = state.xpr_mut().frame_mut();
+                if frame.layer().is_none() {
                     return;
                 }
-                top.groups.iter().map(|i| i.1.len()).collect()
+                frame.groups.iter().map(|i| i.1.len()).collect()
             };
 
             for (group_id, n_layers) in ngroups.clone().into_iter().enumerate() {
                 ui.with_id(group_id as i32, || {
                     macro_rules! group {
                         () => {
-                            state.xpr_mut().history.top_mut().groups[group_id]
+                            state.xpr_mut().frame_mut().groups[group_id]
                         };
                     };
 
@@ -58,7 +58,7 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                             }
                             ui.popup(&im_str!("contextmenu_group##{}", group_id), || {
                                 if state.rename_group.is_some() {
-                                    let name = state.xpr_mut().history.top().selected_group().unwrap().0.to_owned();
+                                    let name = state.xpr().frame().group().unwrap().0.to_owned();
                                     let mut im = ImString::with_capacity(100);
                                     im.push_str(&name);
                                     let _ = ui.push_item_width(100.);
@@ -66,7 +66,7 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                         let im: &str = &im.as_ref();
                                         info!("renaming: {}", im);
                                         // state.xpr_mut().rename_layer(&im).unwrap();
-                                        state.xpr_mut().history.top_mut().selected_group_mut().unwrap().0 = im.to_owned();
+                                        state.xpr_mut().frame_mut().group_mut().unwrap().0 = im.to_owned();
                                         state.rename_group = None;
                                         state.toggle_hotkeys();
                                         ui.close_current_popup();
@@ -82,16 +82,16 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                     if ui.selectable(&im_str!("Move Up"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
                                         info!("moving group up...");
                                         if group_id != 0 {
-                                            state.xpr_mut().history.enter().expect("enter history failed");
-                                            state.xpr_mut().history.top_mut().swap_group(group_id - 1, group_id);
+                                            state.xpr_mut().commit();
+                                            state.xpr_mut().swap_group(group_id - 1, group_id);
                                             ui.close_current_popup();
                                         }
                                     }
                                     if ui.selectable(&im_str!("Move Down"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
                                         info!("moving group down...");
                                         if group_id + 1 != ngroups.len() {
-                                            state.xpr_mut().history.enter().expect("enter history failed");
-                                            state.xpr_mut().history.top_mut().swap_group(group_id, group_id + 1);
+                                            state.xpr_mut().commit();
+                                            state.xpr_mut().swap_group(group_id, group_id + 1);
                                             ui.close_current_popup();
                                         }
                                     }
@@ -115,8 +115,8 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                     ui.same_line(0.);
 
                                     let is_sel = {
-                                        let top = state.xpr_mut().history.top();
-                                        top.selected == layer_id && top.sel_group == group_id
+                                        let frame = state.xpr().frame();
+                                        frame.selected == layer_id && frame.sel_group == group_id
                                     };
 
                                     if layer_id >= group!().1.len() {
@@ -136,7 +136,7 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
 
                                     ui.popup(&im_str!("contextmenu_layer"), || {
                                         if state.rename_layer.is_some() {
-                                            let l = state.xpr_mut().current_layer().unwrap();
+                                            let l = state.xpr_mut().cel().unwrap();
                                             let name = l.borrow().name.to_owned();
                                             let mut im = ImString::with_capacity(100);
                                             im.push_str(&name);
@@ -163,22 +163,22 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                             }
 
                                             if ui.selectable(&im_str!("Insert Below"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
-                                                state.xpr_mut().history.enter().expect("enter history failed");
-                                                state.xpr_mut().history.top_mut().insert_layer(None, true, layer_id + 1);
+                                                state.xpr_mut().commit();
+                                                state.xpr_mut().frame_mut().insert_layer(None, true, layer_id + 1);
                                                 ui.close_current_popup();
                                             }
 
                                             if ui.selectable(&im_str!("Insert Above"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
-                                                state.xpr_mut().history.enter().expect("enter history failed");
-                                                state.xpr_mut().history.top_mut().insert_layer(None, true, layer_id);
+                                                state.xpr_mut().commit();
+                                                state.xpr_mut().frame_mut().insert_layer(None, true, layer_id);
                                                 ui.close_current_popup();
                                             }
 
                                             if ui.selectable(&im_str!("Move Up"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
                                                 info!("moving layer up...");
                                                 if layer_id != 0 {
-                                                    state.xpr_mut().history.enter().expect("enter history failed");
-                                                    state.xpr_mut().history.top_mut().swap_layer(layer_id - 1, layer_id);
+                                                    state.xpr_mut().commit();
+                                                    state.xpr_mut().swap_layer(layer_id - 1, layer_id);
                                                     ui.close_current_popup();
                                                 }
                                             }
@@ -186,8 +186,8 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                             if ui.selectable(&im_str!("Move Down"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
                                                 info!("moving layer down...");
                                                 if layer_id + 1 != n_layers {
-                                                    state.xpr_mut().history.enter().expect("enter history failed");
-                                                    state.xpr_mut().history.top_mut().swap_layer(layer_id, layer_id + 1);
+                                                    state.xpr_mut().commit();
+                                                    state.xpr_mut().swap_layer(layer_id, layer_id + 1);
                                                     ui.close_current_popup();
                                                 }
                                             }

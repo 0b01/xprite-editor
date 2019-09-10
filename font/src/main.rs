@@ -7,7 +7,7 @@ use std::collections::HashMap;
 fn main() {
     // load layers
     let xpr = Xprite::load_ase("font.aseprite");
-    let layers = &xpr.history.top().groups.get(0).unwrap().1;
+    let layers = &xpr.history.top().frame().groups.get(0).unwrap().1;
 
     let mut map: HashMap<char, Pixels> = HashMap::new();
 
