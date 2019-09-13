@@ -52,7 +52,9 @@ pub fn draw(state: &mut State, ui: &Ui) {
 
     if p.selective_anti_aliasing {
         ui.tree_node(&im_str!("Selective Anti Aliasing Options")).default_open(true).build(|| {
+
             ui.slider_float(&im_str!("Threshold"), &mut p.aa_threshold, 0., 1.).build();
+            ui.slider_int(&im_str!("Min Segment"), &mut p.min_segment_length, 1, 100).build();
 
             let mut sel: [f32; 4] = p.aa_alt_color
                 .unwrap_or(Color::black())
@@ -81,7 +83,7 @@ pub fn draw(state: &mut State, ui: &Ui) {
                     Some(c) => {
                         let idx = unsafe { c.as_index() };
                         state.xpr_mut().palette.modify_color(idx, color);
-                        state.xpr_mut().redraw = true;
+                        state.xpr_mut().set_redraw(true);
                     }
                 }
             }

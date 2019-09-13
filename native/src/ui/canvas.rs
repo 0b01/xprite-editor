@@ -54,7 +54,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
             }
 
             if let Some(ridx) = redraw_idx {
-                state.xprs[ridx].redraw = true;
+                state.xprs[ridx].set_redraw(true);
             }
 
             let _ = ui.push_style_vars(&styles);

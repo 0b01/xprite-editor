@@ -26,8 +26,7 @@ impl BufferedPolyline {
 
     pub fn process(&mut self, brush: &Brush, color: Color) -> Result<&Pixels, String> {
         self.upto += self.polyline.pos.len();
-        let mut line_pixs = self.polyline.connect_with_line(color)?;
-        // line_pixs.push(Pixel{ point: self.cursor_pos.unwrap(), color: Color::void()});
+        let line_pixs = self.polyline.connect_with_line(color)?;
         let brushstroke = brush.follow_stroke(&line_pixs).unwrap();
         self.buffer.extend(&brushstroke);
         Ok(&self.buffer)
@@ -98,9 +97,9 @@ impl Eraser {
         let color = xpr.color();
 
         let mut add = |pixs: &Pixels| {
-            xpr.history.enter().unwrap();
+            xpr.commit();
             let reflected = xpr.toolbox.symmetry.clone().borrow().process(pixs);
-            let l = xpr.current_layer().unwrap();
+            let l = xpr.cel().unwrap();
             let layer_mut = &mut l.borrow_mut();
             layer_mut.content.sub_mut(&reflected);
             layer_mut.content.sub_mut(pixs);
@@ -209,7 +208,7 @@ impl Tool for Eraser {
         Ok(())
     }
 
-    fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
+    fn update(&mut self, _xpr: &mut Xprite) -> Result<bool, String> {
         Ok(false)
     }
 
@@ -219,7 +218,7 @@ impl Tool for Eraser {
             xpr.set_cursor(cursor);
         }
 
-        let l = xpr.current_layer().unwrap();
+        let l = xpr.cel().unwrap();
         let mut layer = l.borrow_mut();
         if !self.draw_buffer.is_empty() {
             let reflected = xpr.toolbox.symmetry.clone().borrow().process(&self.draw_buffer);

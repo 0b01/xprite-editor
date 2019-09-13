@@ -9,11 +9,10 @@ use std::cell::RefCell;
 
 pub struct Xprite {
     pub name: String,
+    history: History,
 
-    pub history: History,
-
-    pub im_buf: Pixels,
-    pub line_buf: Vec<Rect>,
+    im_buf: Pixels,
+    line_buf: Vec<Rect>,
     pub bz_buf: Vec<CubicBezierSegment>,
     marquee_buf: Vec<MarqueePixel>,
 
@@ -27,7 +26,7 @@ pub struct Xprite {
 
     pub log: Arc<Mutex<String>>,
 
-    pub redraw: bool,
+    redraw: bool,
 }
 
 impl Default for Xprite {
@@ -68,17 +67,21 @@ impl Xprite {
 
     pub fn undo(&mut self) {
         self.history.undo();
-        self.redraw = true;
+        self.set_redraw(true);
     }
 
     pub fn redo(&mut self) {
         self.history.redo();
-        self.redraw = true;
+        self.set_redraw(true);
     }
 
     pub fn update_mouse_pos(&mut self, x: f64, y: f64) {
         self.last_mouse_pos.x = x;
         self.last_mouse_pos.y = y;
+    }
+
+    pub fn update_lines(&mut self, lines: Vec<Rect>) {
+        self.line_buf = lines;
     }
 
     /// add pixels to temp im_buf
@@ -89,8 +92,8 @@ impl Xprite {
     }
 
     pub fn finalize_pixels(&mut self, pixs: &Pixels) -> Result<(), String> {
-        self.history.enter()?;
-        let layer = self.current_layer().unwrap();
+        self.commit();
+        let layer = self.cel().unwrap();
         let mut layer = layer.borrow_mut();
         layer.content.extend(&pixs);
         let reflected = self.toolbox.symmetry.borrow_mut().process(&pixs);
@@ -135,15 +138,17 @@ impl Xprite {
     }
 
     pub fn draw(&mut self) -> Result<(), String> {
-        self.redraw = self.toolbox.tool().borrow_mut().draw(self)?;
+        let to_redraw = Rc::clone(&self.toolbox.tool()).borrow_mut().draw(self)?;
+        self.set_redraw(to_redraw);
         Ok(())
     }
 
     pub fn update(&mut self) -> Result<(), String> {
-        let mut redraw = false;
-        redraw |= Rc::clone(&self.toolbox.symmetry).borrow_mut().update(self)?;
-        redraw |= self.toolbox.tool().borrow_mut().update(self)?;
-        self.redraw = redraw;
+        let mut to_redraw = false;
+        to_redraw |= Rc::clone(&self.toolbox.symmetry).borrow_mut().update(self)?;
+        // XXX: investigate this call ^
+        to_redraw |= self.toolbox.tool().borrow_mut().update(self)?;
+        self.set_redraw(to_redraw);
         Ok(())
     }
 
@@ -167,35 +172,54 @@ impl Xprite {
 }
 
 impl Xprite {
-    pub fn switch_layer(&mut self, group_id: usize, layer: usize) {
-        self.history.top_mut().sel_group = group_id;
-        self.history.top_mut().selected = layer;
+
+    pub fn frames(&self) -> &Frames {
+        self.history.top()
     }
 
-    pub fn current_layer(&self) -> Option<Rc<RefCell<Layer>>> {
-        self.history.top().selected_layer()
+    pub fn frames_mut(&mut self) -> &mut Frames {
+        self.history.top_mut()
+    }
+
+    pub fn frame(&self) -> &Layers {
+        self.history.top().frame()
+    }
+
+    pub fn frame_mut(&mut self) -> &mut Layers {
+        self.history.top_mut().frame_mut()
+    }
+
+    pub fn switch_layer(&mut self, group_id: usize, layer: usize) {
+        self.frame_mut().group_idx = group_id;
+        self.frame_mut().layer_idx = layer;
+    }
+
+    pub fn cel(&self) -> Option<Rc<RefCell<Layer>>> {
+        self.history.top().cel()
     }
 
     pub fn toggle_layer_visibility(&mut self, group: usize, layer: usize) -> Result<(), String> {
-        self.history.enter()?;
-        self.history.top_mut().toggle_layer_visibility(group, layer);
-        self.redraw = true;
+        self.commit();
+        let frame = self.frame_mut();
+        let l = frame.groups.get_mut(group).ok_or("no group".to_owned())?.1.get_mut(layer).ok_or("no layer".to_owned())?;
+        l.borrow_mut().toggle_visible();
+        self.set_redraw(true);
         Ok(())
     }
 
     pub fn remove_layer(&mut self, group: usize, old: usize) -> Result<(), String> {
-        self.history.enter()?;
-        let layers = self.history.top_mut();
-        layers.selected = 0;
+        self.commit();
+        let layers = self.frame_mut();
+        layers.layer_idx = 0;
         layers.remove_layer(group, old);
 
         Ok(())
     }
 
     pub fn rename_layer(&mut self, name: &str) -> Result<(), String> {
-        self.history.enter()?;
-        let layers = self.history.top_mut();
-        layers.selected_layer().unwrap().borrow_mut().name = name.to_owned();
+        self.commit();
+        let layers = self.frame_mut();
+        layers.layer().unwrap().borrow_mut().name = name.to_owned();
         Ok(())
     }
 
@@ -312,7 +336,7 @@ impl Xprite {
     }
 
     pub fn selected_layer_as_im(&self) -> Option<img::DynamicImage> {
-        let l = self.history.top().selected_layer().unwrap();
+        let l = self.history.top().cel().unwrap();
         let layer = l.borrow();
         let mut rdr = ImageRenderer::new(self.canvas.bg, self.canvas.art_w, self.canvas.art_h);
         layer.draw(&mut rdr, Some(self));
@@ -321,7 +345,7 @@ impl Xprite {
     }
 
     pub fn layer_as_im(&self, group_idx: usize, layer_idx: usize, trim: bool) -> Option<img::DynamicImage> {
-        let layer = &self.history.top().groups[group_idx].1[layer_idx].borrow();
+        let layer = &self.history.top().frame().groups[group_idx].1[layer_idx].borrow();
         if trim {
             let bb = layer.content.bounding_rect();
             return layer.content.as_image(bb, Some(self));
@@ -333,7 +357,7 @@ impl Xprite {
     }
 
     pub fn group_as_im(&self, group_idx: usize, trim: bool) -> Option<img::DynamicImage> {
-        let group = &self.history.top().groups[group_idx].1;
+        let group = &self.history.top().frame().groups[group_idx].1;
         if trim {
             let mut content = Pixels::new();
             for i in group.iter() {
@@ -350,23 +374,11 @@ impl Xprite {
         Some(rdr.image)
     }
 
-    // #[deprecated]
-    // pub fn img_hash(&mut self) -> u64 {
-    //     let mut s = DefaultHasher::new();
-    //     let top = self.history.top();
-    //     top.hash(&mut s);
-    //     self.im_buf.hash(&mut s);
-    //     s.finish()
-    // }
-
     pub fn preview(&self, rdr: &mut dyn Renderer) -> Result<(), String> {
-        let top = self.history.top();
-        // draw layers
-
-        for (i, group) in top.groups.iter().enumerate().rev() {
+        for (i, group) in self.frame().groups.iter().enumerate().rev() {
             for (j, layer) in group.1.iter().enumerate().rev() {
                 let draw_buf = |rdr: &mut dyn Renderer| -> Result<(), String> {
-                    if i == top.sel_group && j == top.selected {
+                    if i == self.frame().group_idx && j == self.frame().layer_idx {
                         // draw current layer pixels
                         for &Pixel { point, color } in self.pixels().iter() {
                             let Vec2f { x, y } = point;
@@ -392,9 +404,8 @@ impl Xprite {
 
     /// export pixels to an image via renderer
     pub fn export(&self, rdr: &mut dyn Renderer) -> Result<(), String> {
-        let top = self.history.top();
-        // draw layers
-        for layer in top.iter_layers().rev() {
+        for layer in self.frame().iter_layers().rev() {
+            // draw layers
             let layer = layer.borrow();
             // skip invisible layers
             if !layer.visible {
@@ -411,7 +422,7 @@ impl Xprite {
     pub fn as_ase(&self) -> Option<ase::Aseprite> {
         let header = ase::Header::new(self.canvas.art_w as u16, self.canvas.art_h as u16);
         let mut frame = ase::Frame::new();
-        for (i, layer) in self.history.top().iter_layers().rev().enumerate() {
+        for (i, layer) in self.history.top().frame().iter_layers().rev().enumerate() {
             let layer = layer.borrow();
             frame.add_chunk(ase::Chunk::new(ase::ChunkData::LayerChunk(ase::chunk::LayerChunk::new(
                 layer.name.as_str(),
@@ -438,7 +449,7 @@ impl Xprite {
             ..
         } = &header;
         let canvas = Canvas::new(f64::from(*width_in_pixels), f64::from(*height_in_pixels));
-        let mut history = History::empty();
+        let mut history = History::new();
 
         let frame = &frames[0];
         let ase::Frame { chunks, .. } = frame;
@@ -455,10 +466,10 @@ impl Xprite {
                     let visible = flags.contains(ase::chunk::layer_chunk::Flags::Visible);
                     if *layer_type == ase::chunk::LayerType::Normal {
                         // image layer
-                        history.top_mut().add_layer(Some(layer_name), visible);
+                        history.top_mut().frame_mut().add_layer(Some(layer_name), visible);
                     } else {
                         // group layer
-                        history.top_mut().add_group(Some(layer_name));
+                        history.top_mut().frame_mut().add_group(Some(layer_name));
                     }
                 }
                 ase::ChunkData::CelChunk(ase::chunk::CelChunk {
@@ -475,7 +486,7 @@ impl Xprite {
                     let y_ = y + f64::from(cel.h().unwrap() - 1);
                     let bb = Rect(Vec2f { x, y }, Vec2f { x: x_, y: y_ });
                     let pixs = Pixels::from_ase_pixels(&ase_pixs, bb);
-                    let layer = &mut history.top_mut().groups[0].1[usize::from(*layer_index)].borrow_mut();
+                    let layer = &mut history.top_mut().frame_mut().groups[0].1[usize::from(*layer_index)].borrow_mut();
                     layer.content.extend(&pixs);
 
                     // dbg!(pixs);
@@ -484,7 +495,7 @@ impl Xprite {
             };
         }
 
-        history.top_mut().groups[0].1.reverse();
+        history.top_mut().frame_mut().groups[0].1.reverse();
 
         let mut xpr = Xprite {
             name,
@@ -548,6 +559,38 @@ impl Xprite {
 }
 
 impl Xprite {
+    pub fn commit(&mut self) {
+        self.history.duplicate();
+        self.history.clear_redo();
+    }
+}
+
+/// layers
+impl Xprite {
+
+    pub fn redraw(&self) -> bool {
+        self.redraw
+    }
+
+    pub fn set_redraw(&mut self, redraw: bool) {
+        self.redraw |= redraw;
+    }
+
+    pub fn get_layer(&self, group_id: usize, layer_id: usize) -> Rc<RefCell<Layer>> {
+        Rc::clone(&self.frame().groups[group_id].1[layer_id])
+    }
+
+    pub fn swap_layer(&mut self, prev: usize, next: usize) {
+        self.frame_mut().swap_layer(prev, next);
+    }
+
+    pub fn swap_group(&mut self, prev: usize, next: usize) {
+        self.frame_mut().swap_group(prev, next);
+    }
+}
+
+/// import/export
+impl Xprite {
     pub fn save_layer_img(&self, group_idx: usize, layer_idx: usize, img_path: &str, rescale: u32, trim: bool) -> Option<()> {
         let im = self.layer_as_im(group_idx, layer_idx, trim)?;
         let nwidth = im.width() * rescale;
@@ -566,7 +609,6 @@ impl Xprite {
         let nheight = im.height() * rescale;
         let filter = img::FilterType::Nearest;
         let im = img::imageops::resize(&im, nwidth, nheight, filter);
-
         info!("writing file to {}", img_path);
         im.save(img_path).unwrap();
         Some(())
@@ -577,14 +619,11 @@ impl Xprite {
         self.export(&mut rdr).unwrap();
         rdr.render(Some(self))?;
         let im = rdr.as_img();
-
         //rescale image
-
         let nwidth = im.width() * rescale;
         let nheight = im.height() * rescale;
         let filter = img::FilterType::Nearest;
         let im = img::imageops::resize(im, nwidth, nheight, filter);
-
         info!("writing file to {}", img_path);
         im.save(img_path).unwrap();
         Some(())
@@ -600,7 +639,7 @@ impl Xprite {
 
     pub fn from_img(name: String, w: u32, h: u32, img: img::DynamicImage) -> Xprite {
         let xpr = Xprite::new(name, w as f64, h as f64);
-        xpr.current_layer().unwrap().borrow_mut().content = img.into();
+        xpr.cel().unwrap().borrow_mut().content = img.into();
         xpr
     }
 
@@ -629,7 +668,7 @@ mod tests {
         use super::*;
         use std::fs::File;
         let xpr = Xprite::new("test".to_owned(), 100., 100.);
-        xpr.current_layer()
+        xpr.cel()
             .unwrap()
             .borrow_mut()
             .content
@@ -645,7 +684,7 @@ mod tests {
         use super::*;
         use std::fs::File;
         let xpr = Xprite::new("test".to_owned(), 100., 100.);
-        xpr.current_layer()
+        xpr.cel()
             .unwrap()
             .borrow_mut()
             .content

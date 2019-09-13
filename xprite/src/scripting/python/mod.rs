@@ -59,8 +59,8 @@ pub fn python(fname: &str) -> Result<Xprite, String> {
 
     let mut xpr = Xprite::new("python exec".to_owned(), width, height);
 
-    xpr.history.enter().unwrap();
-    let layer = xpr.current_layer().unwrap().borrow_mut();
+    xpr.commit();
+    let layer = xpr.cel().unwrap().borrow_mut();
     layer.content.clear();
     layer.content.extend(&my_pixels.p);
 

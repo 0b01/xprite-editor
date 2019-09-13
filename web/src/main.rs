@@ -149,7 +149,7 @@ fn init_js_bindings(xpr: &Rc<RefCell<Xprite>>) {
     };
     let xpr_ = xpr.clone();
     let fn_draw_pixel = move |x: u32, y: u32| {
-        xpr_.borrow_mut().current_layer().unwrap().borrow_mut().content.push(Pixel {
+        xpr_.borrow_mut().cel().unwrap().borrow_mut().content.push(Pixel {
             point: Vec2f { x: x as f64, y: y as f64 },
             color: Color::red(),
         })
@@ -182,7 +182,7 @@ fn init_js_bindings(xpr: &Rc<RefCell<Xprite>>) {
     };
     let xpr_ = xpr.clone();
     let fn_enter = move || {
-        xpr_.borrow_mut().history.enter().unwrap();
+        xpr_.borrow_mut().commit();
         ()
     };
 

@@ -4,6 +4,7 @@ pub use crate::core::{
     color::{Color, XpriteRgba},
     geom::{CubicBezierSegment, Rect, Vec2f},
     history::History,
+    frames::Frames,
     input::{InputEvent, InputItem, InputState},
     outline::{MarqueePixel, Outline},
     palette::PaletteManager,

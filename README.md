@@ -12,10 +12,6 @@ cargo run --bin xprite-native
 
 ## Bugs and Improvements
 
-* [ ] BUG: rerender on palette change
-* [ ] BUG: palette persistence
-* [ ] BUG: selective AA upserts palette instead of changing color at index
-
 * [ ] investigate patterned dithering
 * [ ] investigate other anti-aliasing algos
 * [ ] Checkbox to select whether to use indexed color
@@ -50,6 +46,9 @@ cargo run --bin xprite-native
 
 ## Done
 
+* [x] BUG: redraw on palette change
+* [x] BUG: palette persistence
+* [x] AA: BUG: selective AA upserts palette instead of changing color at index
 * [x] AA: finish integrating anti-aliasing
 * [x] Autoshade: erode and then color with gradient
 * [x] Autoshade: erosion modes: cumulative(step by step), vs erode original
