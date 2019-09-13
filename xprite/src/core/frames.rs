@@ -5,7 +5,7 @@ use std::cell::RefCell;
 #[derive(Debug, Clone)]
 pub struct Frames {
     frames: Vec<Layers>,
-    current_frame_idx: usize,
+    pub current_frame_idx: usize,
 }
 
 impl Frames {
@@ -27,6 +27,20 @@ impl Frames {
 
     pub fn cel(&self) -> Option<Rc<RefCell<Layer>>> {
         self.frame().layer()
+    }
+
+    pub fn set_frame_index(&mut self, idx: usize) {
+        self.current_frame_idx = idx;
+    }
+
+    pub fn count(&self) -> usize {
+        self.frames.len()
+    }
+
+    pub fn add_frame_after_current(&mut self) {
+        let idx = self.current_frame_idx;
+        let copy = self.frame().clone();
+        self.frames.insert(idx, copy);
     }
 
 }

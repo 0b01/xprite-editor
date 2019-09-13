@@ -5,20 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="529b08c0-0e9b-4167-abbe-955b4eb7ca07" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/native/src/ui/frames.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/native/src/state/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/state/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/native/src/ui/canvas.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/canvas.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/native/src/ui/layers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/layers.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/native/src/ui/menu.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/menu.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/native/src/ui/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/native/src/ui/palette.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/palette.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/native/src/ui/tools/pencil_panel.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/tools/pencil_panel.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/native/src/ui/tools/settings_panel.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/tools/settings_panel.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/algorithms/symmetry.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/algorithms/symmetry.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/ui/frames.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/frames.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xprite/src/core/frames.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/frames.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xprite/src/core/xprite.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/xprite.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/tools/pencil.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/tools/pencil.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/tools/symmetry.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/tools/symmetry.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

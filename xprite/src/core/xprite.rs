@@ -138,17 +138,17 @@ impl Xprite {
     }
 
     pub fn draw(&mut self) -> Result<(), String> {
-        let redraw = Rc::clone(&self.toolbox.tool()).borrow_mut().draw(self)?;
-        self.set_redraw(redraw);
+        let to_redraw = Rc::clone(&self.toolbox.tool()).borrow_mut().draw(self)?;
+        self.set_redraw(to_redraw);
         Ok(())
     }
 
     pub fn update(&mut self) -> Result<(), String> {
-        let mut redraw = false;
-        redraw |= Rc::clone(&self.toolbox.symmetry).borrow_mut().update(self)?;
+        let mut to_redraw = false;
+        to_redraw |= Rc::clone(&self.toolbox.symmetry).borrow_mut().update(self)?;
         // XXX: investigate this call ^
-        redraw |= self.toolbox.tool().borrow_mut().update(self)?;
-        self.set_redraw(redraw);
+        to_redraw |= self.toolbox.tool().borrow_mut().update(self)?;
+        self.set_redraw(to_redraw);
         Ok(())
     }
 
@@ -172,6 +172,15 @@ impl Xprite {
 }
 
 impl Xprite {
+
+    pub fn frames(&self) -> &Frames {
+        self.history.top()
+    }
+
+    pub fn frames_mut(&mut self) -> &mut Frames {
+        self.history.top_mut()
+    }
+
     pub fn frame(&self) -> &Layers {
         self.history.top().frame()
     }
@@ -564,7 +573,7 @@ impl Xprite {
     }
 
     pub fn set_redraw(&mut self, redraw: bool) {
-        self.redraw = redraw;
+        self.redraw |= redraw;
     }
 
     pub fn get_layer(&self, group_id: usize, layer_id: usize) -> Rc<RefCell<Layer>> {

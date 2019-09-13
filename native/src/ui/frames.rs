@@ -10,5 +10,29 @@ pub fn draw_frames(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
         .movable(true)
         .collapsible(true)
         .resizable(true)
-        .build(|| {});
+        .build(|| {
+            macro_rules! frames {
+                () => {
+                    state.xpr_mut().frames_mut();
+                }
+            };
+            let idx = frames!().current_frame_idx;
+
+            if ui.button(&im_str!("+"), [0., 0.]) {
+                frames!().add_frame_after_current();
+            }
+
+            for i in 0..frames!().count() {
+                let txt = &im_str!("{}", i);
+                if i == idx {
+                    ui.text(txt);
+                } else {
+                    if ui.button(txt, [0., 0.]) {
+                        frames!().set_frame_index(i);
+                        info!("pressed");
+                        state.xpr_mut().set_redraw(true);
+                    }
+                }
+            }
+        });
 }
