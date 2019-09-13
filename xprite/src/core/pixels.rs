@@ -307,8 +307,8 @@ impl Pixels {
         *self = sort_path(self).unwrap();
     }
 
-    pub fn selective_antialias(&mut self, k: f64, alt_color: Color) {
-        selective_antialias(self, k, alt_color)
+    pub fn selective_antialias(&mut self, k: f64, alt_color: Color, min_segment_length: usize) {
+        selective_antialias(self, k, alt_color, min_segment_length)
     }
 
     pub fn connected_components(&self, w: usize, h: usize) -> Vec<Pixels> {

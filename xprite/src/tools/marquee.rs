@@ -44,13 +44,13 @@ impl Marquee {
         let move_final = self.move_final_pos.ok_or("move_final".to_owned())?;
         let diff = move_final - move_orig;
 
-        xpr.history.enter()?;
+        xpr.commit();
 
         let bb = Rect(start, cursor);
-        let mut pixs = xpr.current_layer().unwrap().borrow().content.clone();
+        let mut pixs = xpr.cel().unwrap().borrow().content.clone();
         pixs.retain_in_rect_mut(bb);
 
-        let l = xpr.current_layer().unwrap();
+        let l = xpr.cel().unwrap();
         let content_mut = &mut l.borrow_mut().content;
         content_mut.sub_mut(&pixs);
         content_mut.extend(&pixs.shifted(diff));

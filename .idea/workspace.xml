@@ -6,16 +6,22 @@
   <component name="ChangeListManager">
     <list default="true" id="529b08c0-0e9b-4167-abbe-955b4eb7ca07" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/native/src/ui/palette.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/palette.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/algorithms/autoshade.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/algorithms/autoshade.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/core/palette.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/palette.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/prelude.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/prelude.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/ui/frames.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/frames.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xprite/src/core/frames.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/frames.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xprite/src/core/xprite.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/xprite.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Rust File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -26,7 +32,7 @@
   <component name="ProjectId" id="1QAmJ9Ew1K75Y16Osm5iJ2IOBe7" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/xprite/Cargo.toml" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="org.rust.cargo.project.model.PROJECT_DISCOVERY" value="true" />
     <property name="org.rust.hideToolchainNotifications" value="true" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
@@ -66,6 +72,12 @@
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
     <option name="version" value="2" />
+  </component>
+  <component name="ServiceViewManager">
+    <option name="showServicesTree" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

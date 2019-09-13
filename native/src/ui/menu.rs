@@ -59,7 +59,7 @@ pub fn draw_menu(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                 ui.pop_id();
             }
             if let Some(ridx) = redraw_idx {
-                state.xprs[ridx].redraw = true;
+                state.xprs[ridx].set_redraw(true);
             }
         });
 

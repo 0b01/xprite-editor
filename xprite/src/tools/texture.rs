@@ -65,7 +65,7 @@ impl Texture {
 
     fn quilt_img(&mut self, xpr: &mut Xprite) -> Result<img::DynamicImage, String> {
         let bb = self.get_bb().ok_or("no cursor".to_owned())?;
-        let mut content = xpr.current_layer().unwrap().borrow().content.clone();
+        let mut content = xpr.cel().unwrap().borrow().content.clone();
         content.retain_in_rect_mut(bb);
         let img = content.as_image(bb, Some(xpr)).ok_or("cannot view as image".to_owned())?;
 

@@ -28,7 +28,7 @@ pub fn draw(_rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
         if ui.input_int2(&im_str!("size"), &mut aspect).build() {
             state.xpr_mut().canvas.art_w = aspect[0] as f64;
             state.xpr_mut().canvas.art_h = aspect[1] as f64;
-            state.xpr_mut().redraw = true;
+            state.xpr_mut().set_redraw(true);
         }
     });
 
@@ -58,7 +58,7 @@ pub fn draw(_rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
         let b = ui.color_edit(&id, &mut sel).flags(misc_flags).alpha(false);
         if b.build() {
             state.xpr_mut().canvas.bg = sel.into();
-            state.xpr_mut().redraw = true;
+            state.xpr_mut().set_redraw(true);
         }
     });
 

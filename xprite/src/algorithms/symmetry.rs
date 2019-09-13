@@ -94,7 +94,8 @@ impl SymmetryMode {
         }
     }
 
-    pub fn get_graph(&self, w: f64, h: f64) -> Vec<Rect> {
+    /// returns a line defined by two points
+    pub fn auxiliary_line(&self, w: f64, h: f64) -> Vec<Rect> {
         match *self {
             SymmetryMode::Horizontal(m) => vec![Rect(vec2f!(m, 0), vec2f!(m, w))],
             SymmetryMode::Vertical(m) => vec![Rect(vec2f!(0, m), vec2f!(h, m))],

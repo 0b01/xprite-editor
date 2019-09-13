@@ -61,14 +61,14 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                         ExportType::All => (),
                         ExportType::Layer(group_id, layer_id) => {
                             ui.same_line(0.);
-                            let l = state.xpr_mut().history.top_mut().groups[group_id as usize].1[layer_id as usize].clone();
+                            let l = state.xpr().get_layer(group_id as usize, layer_id as usize);
                             let sel_layer_name = &l.borrow().name;
                             if ui.button(&im_str!("{}", sel_layer_name), [0., 0.]) {
                                 ui.open_popup(&im_str!("select_export_layer"));
                             }
                             ui.popup(&im_str!("select_export_layer"), || {
                                 let mut to_change = None;
-                                for (g_id, (name, g)) in state.xpr_mut().history.top_mut().groups.iter().enumerate() {
+                                for (g_id, (name, g)) in state.xpr_mut().frame_mut().groups.iter().enumerate() {
                                     ui.push_id(g_id as i32);
                                     ui.tree_node(&im_str!("{}", name)).default_open(true).build(|| {
                                         for (l_id, layer) in g.iter().enumerate() {
@@ -92,13 +92,13 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                         }
                         ExportType::Group(group_id) => {
                             ui.same_line(0.);
-                            let name = &state.xpr_mut().history.top_mut().groups[group_id as usize].0;
+                            let name = &state.xpr_mut().frame_mut().groups[group_id as usize].0;
                             if ui.button(&im_str!("{}", name), [0., 0.]) {
                                 ui.open_popup(&im_str!("select_export_layer"));
                             }
                             ui.popup(&im_str!("select_export_layer"), || {
                                 let mut to_change = None;
-                                for (g_id, (name, _g)) in state.xpr_mut().history.top_mut().groups.iter().enumerate() {
+                                for (g_id, (name, _g)) in state.xpr_mut().frame_mut().groups.iter().enumerate() {
                                     ui.push_id(g_id as i32);
                                     if ui.selectable(&im_str!("{}", name), false, ImGuiSelectableFlags::empty(), [50., 0.]) {
                                         to_change = Some(ExportType::Group(g_id));
