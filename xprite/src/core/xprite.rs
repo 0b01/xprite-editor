@@ -572,6 +572,10 @@ impl Xprite {
         self.redraw
     }
 
+    pub unsafe fn override_redraw(&mut self, redraw: bool) {
+        self.redraw = redraw;
+    }
+
     pub fn set_redraw(&mut self, redraw: bool) {
         self.redraw |= redraw;
     }

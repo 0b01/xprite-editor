@@ -94,7 +94,9 @@ impl State {
     pub fn redraw_pixels(&mut self, rdr: &mut ImguiRenderer) -> Result<(), String> {
         if self.xpr().redraw() || self.texture.is_none() {
             self.update_preview(rdr);
-            self.xpr_mut().set_redraw(false);
+            unsafe {
+                self.xpr_mut().override_redraw(false);
+            }
         }
         Ok(())
     }
