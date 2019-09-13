@@ -4,3 +4,5 @@ target/
 __pycache__
 .idea
 *.iml
+.idea/
+.vscode/

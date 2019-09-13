@@ -595,30 +595,30 @@ impl Xprite {
 
 /// import/export
 impl Xprite {
-    pub fn save_layer_img(&self, group_idx: usize, layer_idx: usize, img_path: &str, rescale: u32, trim: bool) -> Option<()> {
+    pub fn save_layer_img<P: AsRef<Path>>(&self, group_idx: usize, layer_idx: usize, img_path: P, rescale: u32, trim: bool) -> Option<()> {
         let im = self.layer_as_im(group_idx, layer_idx, trim)?;
         let nwidth = im.width() * rescale;
         let nheight = im.height() * rescale;
         let filter = img::FilterType::Nearest;
         let im = img::imageops::resize(&im, nwidth, nheight, filter);
 
-        info!("writing file to {}", img_path);
+        info!("writing file to {:?}", img_path.as_ref().as_os_str());
         im.save(img_path).unwrap();
         Some(())
     }
 
-    pub fn save_group_img(&self, group_idx: usize, img_path: &str, rescale: u32, trim: bool) -> Option<()> {
+    pub fn save_group_img<P: AsRef<Path>>(&self, group_idx: usize, img_path: P, rescale: u32, trim: bool) -> Option<()> {
         let im = self.group_as_im(group_idx, trim)?;
         let nwidth = im.width() * rescale;
         let nheight = im.height() * rescale;
         let filter = img::FilterType::Nearest;
         let im = img::imageops::resize(&im, nwidth, nheight, filter);
-        info!("writing file to {}", img_path);
+        info!("writing file to {:?}", img_path.as_ref().as_os_str());
         im.save(img_path).unwrap();
         Some(())
     }
 
-    pub fn save_img(&self, img_path: &str, rescale: u32) -> Option<()> {
+    pub fn save_img<P: AsRef<Path>>(&self, img_path: P, rescale: u32) -> Option<()> {
         let mut rdr = ImageRenderer::new(self.canvas.bg, self.canvas.art_w, self.canvas.art_h);
         self.export(&mut rdr).unwrap();
         rdr.render(Some(self))?;
@@ -628,16 +628,16 @@ impl Xprite {
         let nheight = im.height() * rescale;
         let filter = img::FilterType::Nearest;
         let im = img::imageops::resize(im, nwidth, nheight, filter);
-        info!("writing file to {}", img_path);
+        info!("writing file to {:?}", img_path.as_ref().as_os_str());
         im.save(img_path).unwrap();
         Some(())
     }
 
-    pub fn load_img(png_path: &str) -> Xprite {
-        info!("loading png file {}", png_path);
-        let img = img::open(png_path).unwrap();
+    pub fn load_img<P: AsRef<Path>>(png_path: P) -> Xprite {
+        info!("loading png file {:?}", png_path.as_ref().as_os_str());
+        let img = img::open(png_path.as_ref()).unwrap();
         let (w, h) = img.dimensions();
-        let name = Path::new(png_path).file_stem().unwrap().to_str().unwrap().to_owned();
+        let name = png_path.as_ref().file_stem().unwrap().to_str().unwrap().to_owned();
         Xprite::from_img(name, w, h, img)
     }
 
@@ -647,19 +647,19 @@ impl Xprite {
         xpr
     }
 
-    pub fn save_ase(&self, file_path: &str) -> Option<()> {
-        info!("saving ase file to {}", file_path);
+    pub fn save_ase<P: AsRef<Path>>(&self, file_path: P) -> Option<()> {
+        info!("saving ase file to {:?}", file_path.as_ref().as_os_str());
         let mut f = File::create(file_path).unwrap();
         let aseprite = self.as_ase()?;
         aseprite.write(&mut f).unwrap();
         Some(())
     }
 
-    pub fn load_ase(file_path: &str) -> Xprite {
-        info!("loading ase file {}", file_path);
-        let mut f = File::open(file_path).unwrap();
+    pub fn load_ase<P: AsRef<Path>>(file_path: P) -> Xprite {
+        info!("loading ase file {:?}", file_path.as_ref().as_os_str());
+        let mut f = File::open(file_path.as_ref()).unwrap();
         let ase = ase::Aseprite::from_read(&mut f).unwrap();
-        let name = Path::new(file_path).file_stem().unwrap().to_str().unwrap().to_owned();
+        let name = file_path.as_ref().file_stem().unwrap().to_str().unwrap().to_owned();
         Xprite::from_ase(name, &ase)
     }
 }

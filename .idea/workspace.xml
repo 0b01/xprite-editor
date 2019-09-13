@@ -5,9 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="529b08c0-0e9b-4167-abbe-955b4eb7ca07" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/tasks.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/colorpicker.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/state/exporter_state.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/state/exporter_state.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/state/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/state/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/ui/canvas.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/canvas.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/ui/exporter.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/exporter.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/native/src/ui/frames.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/frames.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xprite/src/core/frames.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/frames.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/native/src/ui/layers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/native/src/ui/layers.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xprite/src/core/xprite.rs" beforeDir="false" afterPath="$PROJECT_DIR$/xprite/src/core/xprite.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />

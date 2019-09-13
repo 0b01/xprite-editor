@@ -12,6 +12,7 @@ cargo run --bin xprite-native
 
 ## Bugs and Improvements
 
+* [ ] refactor exporter
 * [ ] investigate patterned dithering
 * [ ] investigate other anti-aliasing algos
 * [ ] Checkbox to select whether to use indexed color
