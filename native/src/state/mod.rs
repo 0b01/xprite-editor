@@ -2,7 +2,6 @@ use crate::prelude::*;
 use crate::render::imgui::ImguiRenderer;
 use xprite::rendering::image_renderer::ImageRenderer;
 
-const COLOR_PICKER: &'static [u8; 13807] = include_bytes!("../../colorpicker.png");
 
 pub mod brush_state;
 pub mod exporter_state;
@@ -83,7 +82,8 @@ impl State {
         if self.color_picker_texture.is_some() {
             return;
         }
-        let color_picker = COLOR_PICKER;
+
+        let color_picker = include_bytes!("../../assets/colorpicker.png");
         let img = image::load_from_memory(color_picker).unwrap();
         let texture_id = rdr.add_img(img, image::ColorType::RGBA(0));
         self.color_picker_texture = Some(texture_id);

@@ -69,7 +69,7 @@ impl Default for ExporterSpec {
 }
 
 impl ExporterSpec {
-    fn export(&self, xpr: &Xprite) {
+    fn export(&self, xpr: &Xprite, dir: &str) {
         let ExporterSpec {
             format,
             rescale,
@@ -78,11 +78,19 @@ impl ExporterSpec {
             trim,
         } = self;
         let ext = self.format.as_file_extension();
-        let path = if *rescale == 1 {
-            format!("{}.{}", stem, ext)
-        } else {
-            format!("{}.{}x.{}", stem, rescale, ext)
-        };
+
+        let mut path = ::std::path::PathBuf::new();
+        path.push(dir);
+        path.set_file_name(
+            if *rescale == 1 {
+                format!("{}", stem)
+            } else {
+                format!("{}.{}x", stem, rescale)
+            }
+        );
+        path.set_extension(ext);
+
+
 
         match format {
             ExporterFormat::ASE => {
@@ -90,9 +98,9 @@ impl ExporterSpec {
             }
             _ => {
                 match layer {
-                    ExportType::All => xpr.save_img(&path, *rescale),
+                    ExportType::All => xpr.save_img(path, *rescale),
                     ExportType::Layer(group_idx, layer_idx) => xpr.save_layer_img(*group_idx, *layer_idx, &path, *rescale, *trim),
-                    ExportType::Group(group_idx) => xpr.save_group_img(*group_idx, &path, *rescale, *trim),
+                    ExportType::Group(group_idx) => xpr.save_group_img(*group_idx, path, *rescale, *trim),
                 };
             }
         }
@@ -130,7 +138,7 @@ impl ExporterState {
 
     pub fn run_export(&self, xpr: &Xprite) {
         for s in &self.specs {
-            s.export(xpr);
+            s.export(xpr, &self.path);
         }
     }
 }

@@ -10,17 +10,26 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
             .collapsible(false)
             .resizable(true)
             .build(|| {
-                if ui.button(&im_str!("export"), [0., 0.]) {
-                    state.export();
-                }
-                if ui.button(&im_str!("+"), [0., 0.]) {
-                    state.exporter_state.add_default(); // TODO:
-                }
                 let mut im = ImString::with_capacity(100);
                 im.push_str(&state.exporter_state.path);
                 if ui.input_text(&im_str!("Path"), &mut im).build() {
                     state.exporter_state.path = im.to_str().to_owned();
                 }
+
+                ui.same_line(0.);
+                if ui.button(&im_str!("Browse"), [0., 0.]) {
+                    let result = nfd::open_pick_folder(None).unwrap_or_else(|e| {
+                        panic!(e);
+                    });
+                    match result {
+                        nfd::Response::Okay(dir_name) => {
+                            state.exporter_state.path = dir_name;
+                        }
+                        nfd::Response::OkayMultiple(files) => println!("Files {:?}", files),
+                        nfd::Response::Cancel => println!("User canceled"),
+                    };
+                }
+
                 let len = state.exporter_state.specs.len();
                 'out: for i in 0..len {
                     ui.push_id(i as i32);
@@ -145,6 +154,15 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
 
                     ui.pop_id();
                 }
+
+                if ui.button(&im_str!("+"), [0., 0.]) {
+                    state.exporter_state.add_default(); // TODO:
+                }
+
+                if ui.button(&im_str!("Run export"), [0., 0.]) {
+                    state.export();
+                }
+
             });
     }
 }

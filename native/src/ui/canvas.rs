@@ -89,7 +89,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                     state.xpr_mut().render(rdr);
 
                     if state.xpr_mut().toolbox.selected == ToolType::ColorPicker {
-                        draw_color_picker(state, ui);
+                        draw_color_picker_icon(state, ui);
                     } else {
                         draw_cursor_cross(ui);
                     }
@@ -156,7 +156,7 @@ fn draw_cursor_cross(ui: &Ui) {
     draw_list.add_line(right1, right2, color2).build();
 }
 
-fn draw_color_picker(state: &mut State, ui: &Ui) {
+fn draw_color_picker_icon(state: &mut State, ui: &Ui) {
     let pos = ui.io().mouse_pos;
     let x: f32 = pos[0].into();
     let y: f32 = pos[1].into();

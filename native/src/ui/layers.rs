@@ -8,9 +8,9 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
         .no_bring_to_front_on_focus(true)
         .position([sz[0] as f32 - RIGHT_SIDE_WIDTH, sz[1] as f32 * 2. / 4. + 20.], Condition::Always)
         .size([RIGHT_SIDE_WIDTH, (sz[1] / 4.) as f32 - 20.], Condition::Always)
-        .movable(true)
-        .collapsible(true)
-        .resizable(true)
+        .movable(false)
+        .collapsible(false)
+        .resizable(false)
         .build(|| {
             if ui.button(&im_str!("+Layer"), [60., 20.]) {
                 let visible = true;
