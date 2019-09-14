@@ -1,9 +1,9 @@
 use crate::prelude::*;
-use crate::state::exporter_state::{ExportType, ExporterFormat};
+use xprite::core::exporter::{ExportType, ExporterFormat};
 use xprite::rendering::Renderer;
 
 pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
-    if state.exporter_state.show {
+    if state.exporter.show {
         ui.window(&im_str!("Exporter"))
             .size([300., 200.], Condition::Appearing)
             .movable(true)
@@ -11,9 +11,9 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
             .resizable(true)
             .build(|| {
                 let mut im = ImString::with_capacity(100);
-                im.push_str(&state.exporter_state.path);
+                im.push_str(&state.exporter.path);
                 if ui.input_text(&im_str!("Path"), &mut im).build() {
-                    state.exporter_state.path = im.to_str().to_owned();
+                    state.exporter.path = im.to_str().to_owned();
                 }
 
                 ui.same_line(0.);
@@ -23,23 +23,23 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                     });
                     match result {
                         nfd::Response::Okay(dir_name) => {
-                            state.exporter_state.path = dir_name;
+                            state.exporter.path = dir_name;
                         }
                         nfd::Response::OkayMultiple(files) => println!("Files {:?}", files),
                         nfd::Response::Cancel => println!("User canceled"),
                     };
                 }
 
-                let len = state.exporter_state.specs.len();
+                let len = state.exporter.specs.len();
                 'out: for i in 0..len {
                     ui.push_id(i as i32);
                     macro_rules! spec {
                         () => {
-                            state.exporter_state.specs[i]
+                            state.exporter.specs[i]
                         };
                     }
                     if ui.button(&im_str!("-"), [0., 0.]) {
-                        state.exporter_state.remove(i);
+                        state.exporter.remove(i);
                         ui.pop_id();
                         break 'out;
                     }
@@ -133,7 +133,7 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                 continue;
                             }
                             if ui.button(&im_str!("{:#?}", spec), [0., 0.]) {
-                                state.exporter_state.set_format(i, *spec);
+                                state.exporter.set_format(i, *spec);
                                 ui.close_current_popup();
                             }
                         }
@@ -142,21 +142,21 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                     if spec!().format != ExporterFormat::ASE {
                         let mut scale = spec!().rescale as i32;
                         if ui.drag_int(&im_str!("scale"), &mut scale).min(1).max(100).build() {
-                            state.exporter_state.set_scale(i, scale as u32);
+                            state.exporter.set_scale(i, scale as u32);
                         }
                     }
 
                     let mut fname = ImString::with_capacity(100);
                     fname.push_str(&spec!().stem);
                     if ui.input_text(&im_str!("Filename"), &mut fname).build() {
-                        state.exporter_state.set_stem(i, fname.to_str().to_owned());
+                        state.exporter.set_stem(i, fname.to_str().to_owned());
                     }
 
                     ui.pop_id();
                 }
 
                 if ui.button(&im_str!("+"), [0., 0.]) {
-                    state.exporter_state.add_default(); // TODO:
+                    state.exporter.add_default(); // TODO:
                 }
 
                 if ui.button(&im_str!("Run export"), [0., 0.]) {

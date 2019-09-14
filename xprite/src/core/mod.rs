@@ -11,4 +11,5 @@ pub mod input;
 pub mod outline;
 pub mod palette;
 pub mod toolbox;
+pub mod exporter;
 pub mod xprite;

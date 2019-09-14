@@ -108,14 +108,14 @@ impl ExporterSpec {
 }
 
 #[derive(Default)]
-pub struct ExporterState {
+pub struct Exporter {
     pub show: bool,
     pub specs: Vec<ExporterSpec>,
     pub selected: usize,
     pub path: String,
 }
 
-impl ExporterState {
+impl Exporter {
     pub fn add_default(&mut self) {
         self.specs.push(Default::default());
     }

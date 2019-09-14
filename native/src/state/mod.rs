@@ -2,9 +2,7 @@ use crate::prelude::*;
 use crate::render::imgui::ImguiRenderer;
 use xprite::rendering::image_renderer::ImageRenderer;
 
-
 pub mod brush_state;
-pub mod exporter_state;
 pub mod filepopup_state;
 pub mod preview_window;
 
@@ -16,7 +14,7 @@ pub struct State {
     pub inputs: InputState,
     pub hotkeys: HotkeyController,
     pub preview_window_state: preview_window::PreviewWindowState,
-    pub exporter_state: exporter_state::ExporterState,
+    pub exporter: xprite::core::exporter::Exporter,
 
     pub show_console: bool,
     pub show_brush: bool,
@@ -42,7 +40,7 @@ impl Default for State {
             hotkeys: HotkeyController::new(),
             inputs: InputState::default(),
             preview_window_state: Default::default(),
-            exporter_state: Default::default(),
+            exporter: Default::default(),
 
             brush: Default::default(),
             show_console: false,
@@ -129,7 +127,7 @@ impl State {
     }
 
     pub fn toggle_exporter(&mut self) {
-        self.exporter_state.show = !self.exporter_state.show;
+        self.exporter.show = !self.exporter.show;
     }
 
     pub fn toggle_symmetry(&mut self) {
@@ -179,7 +177,7 @@ impl State {
     }
 
     pub fn export(&self) {
-        self.exporter_state.run_export(&self.xpr());
+        self.exporter.run_export(&self.xpr());
     }
 
     pub fn set_brush_for_tool(&mut self, brush: BrushType, tool_type: ToolType) {
