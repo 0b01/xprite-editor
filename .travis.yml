@@ -1,6 +1,6 @@
 language: rust
 
-before_install: |
+before_install:
   - echo $TRAVIS_OS_NAME
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then
   -   brew unlink python
