@@ -4,9 +4,15 @@
 
 Pixel art editor with algorithmic tools.
 
-# LICENSE
+# Features
 
-GNU GPL
+* Support for aseprite
+
+* Pixel art algorithms
+
+* Customizable exporter workflow
+
+* Wave function collapse based texture synthesis
 
 # Build
 
@@ -48,14 +54,14 @@ Also checkout the projects tab.
 * [x] Symmetry
 * [ ] Select/Marquee
 * [ ] Copy paste
-* [ ] Layer grouping
-
-1. Others
-* [ ] Pattern Brush
-* [ ] Texture Synthesis
+* [x] Layer groups
 
 1. Animation support
 * [ ] Celluloid
-* [ ] Preview window
+* [x] Preview window
 
-1. Collaborative edit
+1. Others
+* [ ] Pattern Brush
+* [x] Texture Synthesis
+
+1. Collaborative editing
