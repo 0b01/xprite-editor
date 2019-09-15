@@ -1,86 +1,28 @@
 # xprite
 
+[![Build Status](https://travis-ci.org/rickyhan/xprite-editor.svg?branch=master)](https://travis-ci.org/rickyhan/xprite-editor)
+
 Pixel art editor with algorithmic tools.
+
+# LICENSE
+
+GNU GPL
+
+# Build
 
 To build:
 
 ```bash
-cargo run --bin xprite-native
+cargo run --bin xprite-native --release
 ```
 
-[![Build Status](https://travis-ci.org/rickyhan/xprite-editor.svg?branch=master)](https://travis-ci.org/rickyhan/xprite-editor)
+# Contributions Welcome
 
-## Bugs and Improvements
+If you find xprite useful, feel free to add features you want.
 
-* [ ] refactor exporter
-* [ ] investigate patterned dithering
-* [ ] investigate other anti-aliasing algos
-* [ ] Checkbox to select whether to use indexed color
-* [ ] frame rate drops when marquee selection is active
-* [ ] Pass in mutable buffer and minimize copying
-* [ ] Layer merge down/up
-* [ ] Foreground/background color
-* [ ] Copy paste
-* [ ] rotsprite
-* [ ] Marquee tool
-* [ ] Outline in selected area
-* [ ] snapping with one button(shift)
+Also checkout the projects tab.
 
-## TODO
-
-* [ ] refactor color tool(using palette crate)
-* [ ] huge refactor to eliminate copying
-* [ ] Performance is bad when drawing with 150x150 brush
-* [ ] Deep learning based rotator
-* [ ] Partial sorting curves(read TC Inglis thesis)
-* [ ] Line modes(perfect span, predictable, continuous, bresenham)
-* [ ] Replace pyo3 with RustPython
-* [ ] Curves(increment modes: fibonacci, odd, even)
-
-## WONTFIX
-
-* [ ] Tabs
-* [ ] Output svg
-* [ ] Fix web target
-* [ ] rect decomp (for efficient render)
-* [ ] Bounding box in preview window
-
-## Done
-
-* [x] BUG: redraw on palette change
-* [x] BUG: palette persistence
-* [x] AA: BUG: selective AA upserts palette instead of changing color at index
-* [x] AA: finish integrating anti-aliasing
-* [x] Autoshade: erode and then color with gradient
-* [x] Autoshade: erosion modes: cumulative(step by step), vs erode original
-* [x] selective outlining, anti-aliasing
-* [x] Indexed Color mode
-* [x] wave function collapse using wfc
-* [x] Exporter with profile: (Output {fname}.1x.png, 2x, 3x, ase)
-* [x] multi document
-* [x] Diagonal(\) symmetry is broken
-* [x] Symmetry tool
-* [x] rotational symmetry
-* [x] Add a mode in paintbucket for 8-way connected floodfill
-* [x] Icon for color picker
-* [x] hover show color in color picker
-* [x] show selected color in palette
-* [x] put info in panel (radius, aspect ratio, etc.)
-* [x] Preview window preserve aspect ratio, modes(fill, 1x, 2x)
-* [x] Set brush size
-* [x] Save/load .aseprite
-* [x] Fix zoom
-* [x] Fix ellipse( i.center stroke; ii. filled )
-* [x] Connected component algorithm
-* [x] Stroke caching
-* [x] Fix eraser !moved
-* [x] ImageImguiRenderer(integrated to imgui)
-* [x] Change ImDrawIdx to u32
-* [x] Floodfill crashing when index is negative
-* [x] Simplify drawlist
-* [x] Ignore canvas OOB
-
-## Milestones
+# Milestones
 
 1. Finding the right abstractions
 * [x] Canvas
