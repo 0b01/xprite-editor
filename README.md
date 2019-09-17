@@ -19,6 +19,7 @@ Pixel art editor with algorithmic tools.
 To build:
 
 ```bash
+git submodule update --init --recursive
 cargo run --bin xprite-native --release
 ```
 
