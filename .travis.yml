@@ -13,12 +13,5 @@ matrix:
   fast_finish: true
 
 script:
-  - cargo build --verbose --all
-  - cargo test --verbose --all
-
-addons:
-  apt:
-    sources:
-      - deadsnakes # source required so it finds the package definition below
-    packages:
-      - python3.5
+  - cargo build --verbose --bin xprite-native
+  - cargo test --verbose --lib

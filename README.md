@@ -1,8 +1,9 @@
 # xprite
 
 [![License: GPL](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-
 [![Build Status](https://travis-ci.org/rickyhan/xprite-editor.svg?branch=master)](https://travis-ci.org/rickyhan/xprite-editor)
+[![Lines of code](https://tokei.rs/b1/github/rickyhan/xprite-editor)](https://github.com/rickyhan/xprite-editor).
+
 
 Pixel art editor with algorithmic tools.
 
