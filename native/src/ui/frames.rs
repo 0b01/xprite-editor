@@ -3,14 +3,14 @@ use xprite::rendering::Renderer;
 
 pub fn draw_frames(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.io().display_size;
-    ui.window(&im_str!("Frames"))
-        .no_bring_to_front_on_focus(true)
+    Window::new(&im_str!("Frames"))
+        .bring_to_front_on_focus(false)
         .position([sz[0] as f32 - RIGHT_SIDE_WIDTH, sz[1] as f32 * 3. / 4. ], Condition::Always)
         .size([RIGHT_SIDE_WIDTH, (sz[1] / 4.) as f32], Condition::Always)
         .movable(false)
         .collapsible(false)
         .resizable(false)
-        .build(|| {
+        .build(&ui, || {
             macro_rules! frames {
                 () => {
                     state.xpr_mut().frames_mut();
@@ -24,14 +24,16 @@ pub fn draw_frames(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
 
             for i in 0..frames!().count() {
                 let txt = &im_str!("{}", i);
+                if i % 5 != 0 {
+                    ui.same_line(0.);
+                }
                 if i == idx {
-                    ui.text(txt);
-                } else {
-                    if ui.button(txt, [0., 0.]) {
-                        frames!().set_frame_index(i);
-                        info!("pressed");
-                        state.xpr_mut().set_redraw(true);
-                    }
+                    // ui.push_style_color();
+                }
+                if ui.button(txt, [0., 0.]) {
+                    frames!().set_frame_index(i);
+                    info!("pressed");
+                    state.xpr_mut().set_redraw(true);
                 }
             }
         });

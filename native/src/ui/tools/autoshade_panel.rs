@@ -16,14 +16,14 @@ pub fn draw(_rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
         tool.finalize(&mut state.xpr_mut()).unwrap();
     }
     for i in 0..len {
-        ui.push_id(i as i32);
+        let pushed_id = ui.push_id(i as i32);
         let mut erode = tool.steps[i].erode as f32;
         let mut dist_x = tool.steps[i].shift.x as f32;
         let mut dist_y = tool.steps[i].shift.y as f32;
 
         if ui.small_button(&im_str!("-")) {
             tool.steps.remove(i);
-            ui.pop_id();
+            pushed_id.pop(&ui);
             return;
         }
         if ui.drag_float(&im_str!("erode"), &mut erode).build() {
@@ -43,12 +43,12 @@ pub fn draw(_rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
         // let col = tool.steps[i].mode;
         // let mut sel: [f32; 4] = col.into();
         // let id = im_str!("MyColor##{}", i);
-        // let b = ui.color_edit(id, &mut sel).flags(misc_flags).alpha(false);
-        // if b.build() {
+        // let b = ColorEdit::new(id, &mut sel).flags(misc_flags).alpha(false);
+        // if b.build(&ui) {
         //     tool.steps[i].color = sel.into();
         //     tool.finalize(&mut state.xpr_mut()).unwrap();
         // }
 
-        ui.pop_id();
+        pushed_id.pop(&ui);
     }
 }

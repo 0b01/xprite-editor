@@ -65,7 +65,7 @@ pub fn draw_file_manager(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
             //     .input_text(&im_str!(""), &mut state.file_popup.open_file_name)
             //     .auto_select_all(true)
             //     .enter_returns_true(true)
-            //     .build()
+            //     .build(&ui)
             // {
             //     open_file(state);
             //     close_window(state);

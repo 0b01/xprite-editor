@@ -3,17 +3,17 @@ use crate::prelude::*;
 // use xprite::rendering::Renderer;
 
 pub fn draw_toolbar(state: &mut State, ui: &Ui) {
-    ui.window(&im_str!("Sprite 3 v{}", env!("CARGO_PKG_VERSION")))
-        .no_bring_to_front_on_focus(true)
+    Window::new(&im_str!("Sprite 3 v{}", env!("CARGO_PKG_VERSION")))
+        .bring_to_front_on_focus(false)
         .position([0., 20.], Condition::Appearing)
         .size([LEFT_SIDE_WIDTH, 200.], Condition::Appearing)
         .movable(false)
         .collapsible(false)
         .resizable(false)
-        .build(|| {
+        .build(&ui, || {
             let selected = state.xpr_mut().toolbox.selected.clone();
             let tools = ToolType::VARIANTS;
-            let orig = ui.get_cursor_screen_pos();
+            let orig = ui.cursor_screen_pos();
             for (idx, mut tool_type) in tools.iter().enumerate() {
 
                 let x = (idx % 5) as f32;
@@ -32,27 +32,27 @@ pub fn draw_toolbar(state: &mut State, ui: &Ui) {
                 // macro_rules! draw_down {
                 //     ($t: expr) => {
                 //         ui.set_cursor_screen_pos(pos);
-                //         ui.image(TextureId::from(state.icons["button_down"]), [30., 30.]).build();
+                //         ui.image(TextureId::from(state.icons["button_down"]), [30., 30.]).build(&ui);
                 //         ui.set_cursor_screen_pos(pos);
-                //         ui.image(TextureId::from(state.icons[$t.as_str()]), [30., 30.]).build();
+                //         ui.image(TextureId::from(state.icons[$t.as_str()]), [30., 30.]).build(&ui);
                 //     }
                 // }
 
                 macro_rules! draw_up {
                     ($t: expr) => {
                         ui.set_cursor_screen_pos(pos);
-                        ui.image(TextureId::from(state.icons["button_up"]), [30., 30.]).build();
+                        Image::new(TextureId::from(state.icons["button_up"]), [30., 30.]).build(&ui);
                         ui.set_cursor_screen_pos(pos);
-                        ui.image(TextureId::from(state.icons[$t.as_str()]), [30., 30.]).build();
+                        Image::new(TextureId::from(state.icons[$t.as_str()]), [30., 30.]).build(&ui);
                     }
                 }
                 macro_rules! draw_hold {
                     ($t: expr) => {
                         ui.set_cursor_screen_pos(pos);
-                        ui.image(TextureId::from(state.icons["button_hold"]), [30., 30.]).build();
+                        Image::new(TextureId::from(state.icons["button_hold"]), [30., 30.]).build(&ui);
                         pos[1] += 5.;
                         ui.set_cursor_screen_pos(pos);
-                        ui.image(TextureId::from(state.icons[$t.as_str()]), [30., 30.]).build();
+                        Image::new(TextureId::from(state.icons[$t.as_str()]), [30., 30.]).build(&ui);
                     }
                 }
 

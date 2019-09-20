@@ -10,7 +10,7 @@ pub fn draw(rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
         return;
     }
 
-    ui.tree_node(&im_str!("Orientation")).default_open(true).build(|| {
+    ui.tree_node(&im_str!("Orientation")).default_open(true).build( || {
         if ui.radio_button_bool(&im_str!("reflections"), texture.orientation_reflection) {
             texture.orientation_reflection = !texture.orientation_reflection;
         }
@@ -19,7 +19,7 @@ pub fn draw(rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
         }
     });
 
-    ui.tree_node(&im_str!("Wrap")).default_open(true).build(|| {
+    ui.tree_node(&im_str!("Wrap")).default_open(true).build( || {
         if ui.radio_button_bool(&im_str!("wrap x"), texture.wrap_x) {
             texture.wrap_x = !texture.wrap_x;
         }
@@ -28,7 +28,7 @@ pub fn draw(rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
         }
     });
 
-    ui.tree_node(&im_str!("Texture size")).default_open(true).build(|| {
+    ui.tree_node(&im_str!("Texture size")).default_open(true).build( || {
         ui.drag_int(&im_str!("texture width"), &mut texture.tex_w).build();
         ui.drag_int(&im_str!("texture height"), &mut texture.tex_h).build();
     });
@@ -55,7 +55,7 @@ pub fn draw(rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
     }
 
     if let Some((tex_id, img)) = &texture.tex {
-        ui.image(TextureId::from(*tex_id), [100., 100.]).build(); // TODO: fix hardcoded size
+        Image::new(TextureId::from(*tex_id), [100., 100.]).build(&ui); // TODO: fix hardcoded size
 
         if ui.button(&im_str!("finalize"), [0., 0.]) {
             let w = img.width();

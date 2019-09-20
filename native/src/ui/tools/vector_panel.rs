@@ -18,11 +18,15 @@ pub fn draw(state: &mut State, ui: &Ui) {
 }
 
 fn draw_mode(state: &mut State, ui: &Ui) {
-    ui.tree_node(&im_str!("Mode")).default_open(true).build(|| {
+    ui.tree_node(&im_str!("Mode")).default_open(true).build( || {
         let modes = vector::VectorMode::VARIANTS;
         for (_index, mode) in modes.iter().enumerate() {
             let is_sel = &state.xpr_mut().toolbox.vector.borrow().mode == mode;
-            if ui.selectable(&im_str!("{}", mode.as_str()), is_sel, ImGuiSelectableFlags::empty(), [0., 0.]) {
+            if Selectable::new(&im_str!("{}", mode.as_str()))
+                .selected(is_sel)
+                .flags(SelectableFlags::empty())
+                .size([0., 0.])
+                .build(&ui) {
                 state.xpr_mut().set_option("mode", mode.as_str()).unwrap();
             }
         }

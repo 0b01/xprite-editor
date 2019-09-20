@@ -2,10 +2,10 @@ use crate::prelude::*;
 use std::rc::Rc;
 
 pub fn draw(state: &mut State, ui: &Ui) {
-    // ui.tree_node(&im_str!("Mode")).default_open(true).build(|| {
+    // ui.tree_node(&im_str!("Mode")).default_open(true).build( || {
     //     for (_index, mode) in PencilMode::VARIANTS.iter().enumerate() {
     //         let is_sel = &state.xpr_mut().toolbox.pencil.borrow().mode == mode;
-    //         if ui.selectable(&im_str!("{}", mode.as_str()), is_sel, ImGuiSelectableFlags::empty(), [0., 0.]) {
+    //         if ui.selectable(&im_str!("{}", mode.as_str()), is_sel, SelectableFlags::empty(), [0., 0.]) {
     //             state.xpr_mut().set_option("mode", mode.as_str()).unwrap();
     //         }
     //     }
@@ -51,10 +51,10 @@ pub fn draw(state: &mut State, ui: &Ui) {
     }
 
     if p.selective_anti_aliasing {
-        ui.tree_node(&im_str!("Selective Anti Aliasing Options")).default_open(true).build(|| {
+        ui.tree_node(&im_str!("Selective Anti Aliasing Options")).default_open(true).build( || {
 
-            ui.slider_float(&im_str!("Threshold"), &mut p.aa_threshold, 0., 1.).build();
-            ui.slider_int(&im_str!("Min Segment"), &mut p.min_segment_length, 1, 100).build();
+            Slider::new(&im_str!("Threshold"), (0.)..=(1.)).build(&ui, &mut p.aa_threshold);
+            Slider::new(&im_str!("Min Segment"), (1)..=(100)).build(&ui, &mut p.min_segment_length);
 
             let mut sel: [f32; 4] = p.aa_alt_color
                 .unwrap_or(Color::black())
@@ -63,17 +63,17 @@ pub fn draw(state: &mut State, ui: &Ui) {
                 .into();
             let id = im_str!("##{}", "background");
             let misc_flags = {
-                let mut f = ImGuiColorEditFlags::empty();
-                f.set(ImGuiColorEditFlags::HDR, true);
-                f.set(ImGuiColorEditFlags::AlphaPreview, true);
-                f.set(ImGuiColorEditFlags::NoOptions, false);
-                f.set(ImGuiColorEditFlags::NoInputs, true);
-                f.set(ImGuiColorEditFlags::NoLabel, true);
-                f.set(ImGuiColorEditFlags::NoPicker, false);
+                let mut f = ColorEditFlags::empty();
+                f.set(ColorEditFlags::HDR, true);
+                f.set(ColorEditFlags::ALPHA_PREVIEW, true);
+                f.set(ColorEditFlags::NO_OPTIONS, false);
+                f.set(ColorEditFlags::NO_INPUTS, true);
+                f.set(ColorEditFlags::NO_LABEL, true);
+                f.set(ColorEditFlags::NO_PICKER, false);
                 f
             };
-            let b = ui.color_edit(&id, &mut sel).flags(misc_flags).alpha(false);
-            if b.build() {
+            let b = ColorEdit::new(&id, &mut sel).flags(misc_flags).alpha(false);
+            if b.build(&ui) {
                 let color = sel.into();
                 match p.aa_alt_color {
                     None => {

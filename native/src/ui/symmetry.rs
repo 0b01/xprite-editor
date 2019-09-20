@@ -7,19 +7,19 @@ pub fn draw_symmetry(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
         return;
     }
     let sz = ui.io().display_size;
-    ui.window(&im_str!("Symmetry"))
-        .no_bring_to_front_on_focus(false)
+    Window::new(&im_str!("Symmetry"))
+        .bring_to_front_on_focus(true)
         .movable(true)
         .position([sz[0] as f32 - RIGHT_SIDE_WIDTH * 3., 20.], Condition::Once)
         .size([RIGHT_SIDE_WIDTH, (sz[1] / 2.) as f32], Condition::Once)
         .collapsible(true)
         .resizable(true)
-        .build(|| {
+        .build(&ui, || {
             use self::SymmetryMode::*;
             let symm = Rc::clone(&state.xpr_mut().toolbox.symmetry);
             let mut tool = symm.borrow_mut();
             for (i, symm) in SymmetryMode::VARIANTS.iter().enumerate() {
-                ui.push_id(i as i32);
+                let pushed_id = ui.push_id(i as i32);
                 ui.same_line(0.);
                 if ui.button(&im_str!("{}", symm.symbol()), [0., 0.]) {
                     tool.add_symmetry(symm.clone());
@@ -27,16 +27,16 @@ pub fn draw_symmetry(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                 if ui.is_item_hovered() {
                     ui.tooltip_text(symm.as_str());
                 }
-                ui.pop_id();
+                pushed_id.pop(&ui);
             }
 
             let len = tool.symms.len();
             'out: for i in 0..len {
-                ui.push_id(1 + i as i32);
+                let pushed_id = ui.push_id(1 + i as i32);
                 if ui.button(&im_str!("-"), [0., 0.]) {
                     info!("removing symmetry {}", i);
                     tool.remove_symmetry(i);
-                    ui.pop_id();
+                    pushed_id.pop(&ui);
                     break 'out;
                 }
                 ui.same_line(0.);
@@ -137,7 +137,7 @@ pub fn draw_symmetry(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                         tool.dirty = dirty;
                     }
                 }
-                ui.pop_id();
+                pushed_id.pop(&ui);
             }
         });
 }

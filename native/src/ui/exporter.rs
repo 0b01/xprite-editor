@@ -4,12 +4,12 @@ use xprite::rendering::Renderer;
 
 pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     if state.show_exporter {
-        ui.window(&im_str!("Exporter"))
+        Window::new(&im_str!("Exporter"))
             .size([300., 200.], Condition::Appearing)
             .movable(true)
             .collapsible(false)
             .resizable(true)
-            .build(|| {
+            .build(&ui, || {
                 let mut im = ImString::with_capacity(100);
                 im.push_str(&state.exporter.path);
                 if ui.input_text(&im_str!("Path"), &mut im).build() {
@@ -32,7 +32,7 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
 
                 let len = state.exporter.specs.len();
                 'out: for i in 0..len {
-                    ui.push_id(i as i32);
+                    let pushed_id = ui.push_id(i as i32);
                     macro_rules! spec {
                         () => {
                             state.exporter.specs[i]
@@ -40,7 +40,7 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                     }
                     if ui.button(&im_str!("-"), [0., 0.]) {
                         state.exporter.remove(i);
-                        ui.pop_id();
+                        pushed_id.pop(&ui);
                         break 'out;
                     }
                     ui.same_line(0.);
@@ -78,19 +78,23 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                             ui.popup(&im_str!("select_export_layer"), || {
                                 let mut to_change = None;
                                 for (g_id, (name, g)) in state.xpr_mut().frame_mut().groups.iter().enumerate() {
-                                    ui.push_id(g_id as i32);
-                                    ui.tree_node(&im_str!("{}", name)).default_open(true).build(|| {
+                                    let pushed_id = ui.push_id(g_id as i32);
+                                    ui.tree_node(&im_str!("{}", name)).default_open(true).build( || {
                                         for (l_id, layer) in g.iter().enumerate() {
                                             let layer = layer.borrow();
-                                            ui.push_id(l_id as i32);
-                                            if ui.selectable(&im_str!("{}", layer.name), false, ImGuiSelectableFlags::empty(), [50., 0.]) {
+                                            let pushed_id = ui.push_id(l_id as i32);
+                                            if Selectable::new(&im_str!("{}", layer.name))
+                .selected(false)
+                .flags(SelectableFlags::empty())
+                .size([50., 0.])
+                .build(&ui) {
                                                 to_change = Some((ExportType::Layer(g_id, l_id), layer.name.clone()));
                                                 ui.close_current_popup();
                                             }
-                                            ui.pop_id();
+                                            pushed_id.pop(&ui);
                                         }
                                     });
-                                    ui.pop_id();
+                                    pushed_id.pop(&ui);
                                 }
 
                                 if let Some((to_change, stem)) = to_change {
@@ -108,12 +112,16 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                             ui.popup(&im_str!("select_export_layer"), || {
                                 let mut to_change = None;
                                 for (g_id, (name, _g)) in state.xpr_mut().frame_mut().groups.iter().enumerate() {
-                                    ui.push_id(g_id as i32);
-                                    if ui.selectable(&im_str!("{}", name), false, ImGuiSelectableFlags::empty(), [50., 0.]) {
+                                    let pushed_id = ui.push_id(g_id as i32);
+                                    if Selectable::new(&im_str!("{}", name))
+                .selected(false)
+                .flags(SelectableFlags::empty())
+                .size([50., 0.])
+                .build(&ui) {
                                         to_change = Some(ExportType::Group(g_id));
                                         ui.close_current_popup();
                                     }
-                                    ui.pop_id();
+                                    pushed_id.pop(&ui);
                                 }
 
                                 if let Some(to_change) = to_change {
@@ -152,7 +160,7 @@ pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                         state.exporter.set_stem(i, fname.to_str().to_owned());
                     }
 
-                    ui.pop_id();
+                    pushed_id.pop(&ui);
                 }
 
                 if ui.button(&im_str!("+"), [0., 0.]) {

@@ -51,7 +51,7 @@ mod tests {
             pixel!(4, 4, Color::red())
         ];
 
-        selective_antialias(&mut path, 0.5, Color::orange());
+        selective_antialias(&mut path, 0.5, Color::orange(), 2);
         for i in path.iter() {
             print!("{:?}", i.point);
             println!("{:?}", i.color);

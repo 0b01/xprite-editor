@@ -1,22 +1,22 @@
 use crate::prelude::*;
 use crate::render::imgui::ImguiRenderer;
-use imgui::ImGuiWindowFlags;
+use imgui::WindowFlags;
 use xprite::rendering::Renderer;
 
 pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
     let sz = ui.io().display_size;
-    ui.window(&im_str!("canvas"))
-        .no_bring_to_front_on_focus(true)
+    Window::new(&im_str!("canvas"))
+        .bring_to_front_on_focus(false)
         .position([LEFT_SIDE_WIDTH, 20.0], Condition::Always)
         .size([sz[0] as f32 - RIGHT_SIDE_WIDTH - LEFT_SIDE_WIDTH, sz[1] as f32 - 20.], Condition::Always)
         .flags(
-            ImGuiWindowFlags::NoBringToFrontOnFocus
-                | ImGuiWindowFlags::NoTitleBar
-                | ImGuiWindowFlags::NoResize
-                | ImGuiWindowFlags::NoMove
-                | ImGuiWindowFlags::NoCollapse,
+            WindowFlags::NO_BRING_TO_FRONT_ON_FOCUS
+                | WindowFlags::NO_TITLE_BAR
+                | WindowFlags::NO_RESIZE
+                | WindowFlags::NO_MOVE
+                | WindowFlags::NO_COLLAPSE,
         )
-        .build(|| {
+        .build(&ui, || {
             let styles = [StyleVar::FramePadding([-1., -1.]), StyleVar::WindowPadding([-1., -1.])];
             let colors = [(StyleColor::ChildBg, BACKGROUND)];
 
@@ -26,7 +26,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
             for (i, x) in state.xprs.iter_mut().enumerate() {
                 let is_sel = i == state.xpr_idx;
                 // let col: [f32; 4] = if is_sel {Color::grey()} else {Color::black()}.into();
-                ui.push_id(i as i32);
+                let pushed_id = ui.push_id(i as i32);
                 ui.same_line(0.);
                 if ui.radio_button_bool(&im_str!("{}", x.name), is_sel) {
                     state.xpr_idx = i;
@@ -38,14 +38,18 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                     ui.open_popup(&im_str!("contextmenu_doc##{}", i));
                 }
                 ui.popup(&im_str!("contextmenu_doc##{}", i), || {
-                    if ui.selectable(&im_str!("Close"), false, ImGuiSelectableFlags::empty(), [50., 0.]) {
+                    if Selectable::new(&im_str!("Close"))
+                .selected(false)
+                .flags(SelectableFlags::empty())
+                .size([50., 0.])
+                .build(&ui) {
                         info!("close pressed");
                         close_idx = Some(i);
                         ui.close_current_popup();
                     }
                 });
 
-                ui.pop_id();
+                pushed_id.pop(&ui);
             }
 
             if let Some(cidx) = close_idx {
@@ -57,12 +61,13 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                 state.xprs[ridx].set_redraw(true);
             }
 
-            let _ = ui.push_style_vars(&styles);
-            let _ = ui.push_style_colors(&colors);
-            ui.child_frame(&im_str!("scrolling_region"), ui.io().display_size)
-                .show_scrollbar(false)
-                .movable(false)
-                .build(|| {
+            let style = ui.push_style_vars(&styles);
+            let color = ui.push_style_colors(&colors);
+            ChildWindow::new(&im_str!("scrolling_region"))
+                .size(ui.io().display_size)
+                .scroll_bar(false)
+                // .movable(false)
+                .build(&ui, || {
                     // diable cursor
                     if ui.is_window_hovered() {
                         ui.set_mouse_cursor(None);
@@ -77,14 +82,10 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
 
                     state.redraw_pixels(rdr).unwrap();
 
-                    ui.image(
-                        TextureId::from(state.texture.unwrap()),
-                        [
+                    Image::new(TextureId::from(state.texture.unwrap()), [
                             (state.xpr_mut().canvas.art_w * state.xpr_mut().canvas.scale) as f32,
                             (state.xpr_mut().canvas.art_h * state.xpr_mut().canvas.scale) as f32,
-                        ],
-                    )
-                    .build();
+                        ]).build(&ui);
 
                     state.xpr_mut().render(rdr);
 
@@ -99,17 +100,19 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
             //   .min(1.)
             //   .max(50.)
             //   .speed(0.1)
-            //   .build();
+            //   .build(&ui);
+            style.pop(&ui);
+            color.pop(&ui);
 
         });
 }
 
 fn update_viewport(state: &mut State, ui: &Ui) {
     let cvs = &mut state.xpr_mut().canvas;
-    let win_pos = ui.get_cursor_screen_pos();
+    let win_pos = ui.cursor_screen_pos();
     cvs.update_pos(win_pos[0].into(), win_pos[1].into());
 
-    let canvas_sz = ui.get_window_size();
+    let canvas_sz = ui.window_size();
     cvs.update_sz(canvas_sz[0].into(), canvas_sz[1].into());
 
     if !cvs.initialized {
@@ -161,5 +164,5 @@ fn draw_color_picker_icon(state: &mut State, ui: &Ui) {
     let x: f32 = pos[0].into();
     let y: f32 = pos[1].into();
     ui.set_cursor_screen_pos([x - 10., y - 10.]);
-    ui.image(TextureId::from(state.icons["color_picker"]), [20., 20.]).build();
+    Image::new(TextureId::from(state.icons["color_picker"]), [20., 20.]).build(&ui);
 }

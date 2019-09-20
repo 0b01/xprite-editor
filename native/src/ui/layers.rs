@@ -4,14 +4,14 @@ use xprite::rendering::Renderer;
 
 pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.io().display_size;
-    ui.window(&im_str!("Layers"))
-        .no_bring_to_front_on_focus(true)
+    Window::new(&im_str!("Layers"))
+        .bring_to_front_on_focus(false)
         .position([sz[0] as f32 - RIGHT_SIDE_WIDTH, sz[1] as f32 * 2. / 4. + 20.], Condition::Always)
         .size([RIGHT_SIDE_WIDTH, (sz[1] / 4.) as f32 - 20.], Condition::Always)
         .movable(false)
         .collapsible(false)
         .resizable(false)
-        .build(|| {
+        .build(&ui, || {
             if ui.button(&im_str!("+Layer"), [60., 20.]) {
                 let visible = true;
                 state.xpr_mut().frame_mut().add_layer(None, visible);
@@ -36,7 +36,7 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
             };
 
             for (group_id, n_layers) in ngroups.clone().into_iter().enumerate() {
-                ui.with_id(group_id as i32, || {
+                let pushed_id = ui.push_id(group_id as i32);
                     macro_rules! group {
                         () => {
                             state.xpr_mut().frame_mut().groups[group_id]
@@ -46,7 +46,7 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                     ui.tree_node(&im_str!("{}", &group!().0))
                         .default_open(true)
                         .open_on_double_click(false)
-                        .build(|| {
+                        .build(||{
                             // right click
                             if (ui.is_item_hovered() && ui.is_mouse_clicked(MouseButton::Right))
                                 || (state.rename_group.is_some() && state.rename_group.unwrap() == group_id)
@@ -72,14 +72,22 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                         ui.close_current_popup();
                                     }
                                 } else {
-                                    if ui.selectable(&im_str!("Rename"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
+                                    if Selectable::new(&im_str!("Rename"))
+                .selected(false)
+                .flags(SelectableFlags::empty())
+                .size([0., 0.])
+                .build(&ui) {
                                         info!("renaming layer...");
                                         // disable hotkeys
                                         state.toggle_hotkeys();
                                         state.rename_group = Some(group_id);
                                         ui.close_current_popup();
                                     }
-                                    if ui.selectable(&im_str!("Move Up"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
+                                    if Selectable::new(&im_str!("Move Up"))
+                .selected(false)
+                .flags(SelectableFlags::empty())
+                .size([0., 0.])
+                .build(&ui) {
                                         info!("moving group up...");
                                         if group_id != 0 {
                                             state.xpr_mut().commit();
@@ -87,7 +95,11 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                             ui.close_current_popup();
                                         }
                                     }
-                                    if ui.selectable(&im_str!("Move Down"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
+                                    if Selectable::new(&im_str!("Move Down"))
+                .selected(false)
+                .flags(SelectableFlags::empty())
+                .size([0., 0.])
+                .build(&ui) {
                                         info!("moving group down...");
                                         if group_id + 1 != ngroups.len() {
                                             state.xpr_mut().commit();
@@ -99,7 +111,7 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                             });
 
                             for layer_id in 0..n_layers {
-                                ui.with_id(layer_id as i32, || {
+                                let pushed_id = ui.push_id(layer_id as i32);
                                     let l = group!().1[layer_id].clone();
 
                                     if layer_id >= group!().1.len() {
@@ -126,9 +138,13 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                     if layer_id >= group!().1.len() {
                                         return;
                                     }
-                                    let mut layer = l.borrow_mut();
+                                    let layer = l.borrow_mut();
                                     let name = layer.name.as_str();
-                                    if ui.selectable(&im_str!("{}", name), is_sel, ImGuiSelectableFlags::empty(), [100., 0.]) {
+                                    if Selectable::new(&im_str!("{}", name))
+                .selected(is_sel)
+                .flags(SelectableFlags::empty())
+                .size([100., 0.])
+                .build(&ui) {
                                         state.xpr_mut().switch_layer(group_id, layer_id);
                                     }
 
@@ -156,7 +172,11 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                                 ui.close_current_popup();
                                             }
                                         } else {
-                                            if ui.selectable(&im_str!("Rename"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
+                                            if Selectable::new(&im_str!("Rename"))
+                .selected(false)
+                .flags(SelectableFlags::empty())
+                .size([0., 0.])
+                .build(&ui) {
                                                 info!("renaming layer...");
                                                 // disable hotkeys
                                                 state.toggle_hotkeys();
@@ -164,23 +184,39 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                                 // ui.close_current_popup();
                                             }
 
-                                            if ui.selectable(&im_str!("Delete"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
+                                            if Selectable::new(&im_str!("Delete"))
+                .selected(false)
+                .flags(SelectableFlags::empty())
+                .size([0., 0.])
+                .build(&ui) {
                                                 state.xpr_mut().remove_layer(group_id, layer_id).unwrap();
                                             }
 
-                                            if ui.selectable(&im_str!("Insert Below"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
+                                            if Selectable::new(&im_str!("Insert Below"))
+                .selected(false)
+                .flags(SelectableFlags::empty())
+                .size([0., 0.])
+                .build(&ui) {
                                                 state.xpr_mut().commit();
                                                 state.xpr_mut().frame_mut().insert_layer(None, true, layer_id + 1);
                                                 ui.close_current_popup();
                                             }
 
-                                            if ui.selectable(&im_str!("Insert Above"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
+                                            if Selectable::new(&im_str!("Insert Above"))
+                .selected(false)
+                .flags(SelectableFlags::empty())
+                .size([0., 0.])
+                .build(&ui) {
                                                 state.xpr_mut().commit();
                                                 state.xpr_mut().frame_mut().insert_layer(None, true, layer_id);
                                                 ui.close_current_popup();
                                             }
 
-                                            if ui.selectable(&im_str!("Move Up"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
+                                            if Selectable::new(&im_str!("Move Up"))
+                .selected(false)
+                .flags(SelectableFlags::empty())
+                .size([0., 0.])
+                .build(&ui) {
                                                 info!("moving layer up...");
                                                 if layer_id != 0 {
                                                     state.xpr_mut().commit();
@@ -189,7 +225,11 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                                 }
                                             }
 
-                                            if ui.selectable(&im_str!("Move Down"), false, ImGuiSelectableFlags::empty(), [0., 0.]) {
+                                            if Selectable::new(&im_str!("Move Down"))
+                .selected(false)
+                .flags(SelectableFlags::empty())
+                .size([0., 0.])
+                .build(&ui) {
                                                 info!("moving layer down...");
                                                 if layer_id + 1 != n_layers {
                                                     state.xpr_mut().commit();
@@ -199,10 +239,10 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                             }
                                         }
                                     });
-                                });
+                                pushed_id.pop(&ui);
                             }
                         });
-                });
+                pushed_id.pop(&ui);
             }
         })
 }

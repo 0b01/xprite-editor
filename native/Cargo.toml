@@ -6,8 +6,8 @@ edition = "2018"
 
 [dependencies]
 glium = { version = "0.25.0", default-features = true }
-imgui = { version = "0.1.0", features = ["glium"] }
-imgui-winit-support = { version = "0.1.0" }
+imgui = { version = "0.2.1", features = ["glium"] }
+imgui-winit-support = { version = "0.2.1" }
 clipboard = "0.5"
 nfd = "0.0.4"
 
