@@ -1,7 +1,7 @@
 use crate::tools::ToolType;
 use std::collections::HashMap;
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(Hash, Eq, PartialEq, Clone, Copy)]
 pub enum Bind {
     Redo,
     Undo,
@@ -25,6 +25,23 @@ macro_rules! declare_actions {
                 /// ctrl, shift, alt, is_down
                 $field(bool, bool, bool, bool),
             )*
+        }
+
+        impl Action {
+            pub fn to_string<'a>(&'a self) -> String {
+                let (key, ctrl, shift, alt) = match &self {
+                    $(
+                        Action::$field(c,s,a,_) => (stringify!($field), c, s, a),
+                    )*
+                };
+
+                let mut s = String::new();
+                if *ctrl { s.push_str("Ctrl+"); }
+                if *shift { s.push_str("Shift+"); }
+                if *alt { s.push_str("Alt+"); }
+                s.push_str(key);
+                s
+            }
         }
     }
 }
@@ -195,48 +212,61 @@ declare_actions!(
 
 pub struct HotkeyController {
     binds: HashMap<Action, Bind>,
+    reverse_map: HashMap<Bind, Action>,
+    action_strings: HashMap<Action, String>,
     pub enabled: bool,
 }
 
 impl HotkeyController {
+    pub fn empty() -> Self {
+        let binds = HashMap::new();
+        let reverse_map = HashMap::new();
+        let action_strings = HashMap::new();
+        Self { binds, reverse_map, action_strings, enabled: true }
+    }
+
     pub fn new() -> Self {
-        let mut binds = HashMap::new();
+        let mut binds = Self::empty();
+        // TODO: initialize in the right place
+        binds.insert(Action::Z(true, false, false, true), Bind::Undo);
+        binds.insert(Action::Z(true, true, false, true), Bind::Redo);
+        binds.insert(Action::Y(true, false, false, true), Bind::Redo);
 
-        {
-            // TODO: initialize in the right place
-            binds.insert(Action::Z(true, false, false, true), Bind::Undo);
-            binds.insert(Action::Z(true, true, false, true), Bind::Redo);
-            binds.insert(Action::Y(true, false, false, true), Bind::Redo);
+        binds.insert(Action::Grave(false, false, false, true), Bind::ToggleConsole);
 
-            binds.insert(Action::Grave(false, false, false, true), Bind::ToggleConsole);
+        // tools
+        binds.insert(Action::B(false, false, false, true), Bind::PushTool(ToolType::Pencil));
+        binds.insert(Action::G(false, false, false, true), Bind::PushTool(ToolType::PaintBucket));
+        binds.insert(Action::L(false, false, false, true), Bind::PushTool(ToolType::Line));
+        binds.insert(Action::E(false, false, false, true), Bind::PushTool(ToolType::Eraser));
+        binds.insert(Action::V(false, false, false, true), Bind::PushTool(ToolType::Vector));
+        binds.insert(Action::R(false, false, false, true), Bind::PushTool(ToolType::Rect));
+        binds.insert(Action::U(false, false, false, true), Bind::PushTool(ToolType::Ellipse));
+        binds.insert(Action::T(false, false, false, true), Bind::PushTool(ToolType::Texture));
+        binds.insert(Action::M(false, false, false, true), Bind::PushTool(ToolType::Marquee));
+        binds.insert(Action::A(true, true, false, true), Bind::PushTool(ToolType::AutoShade));
 
-            // tools
-            binds.insert(Action::B(false, false, false, true), Bind::PushTool(ToolType::Pencil));
-            binds.insert(Action::G(false, false, false, true), Bind::PushTool(ToolType::PaintBucket));
-            binds.insert(Action::L(false, false, false, true), Bind::PushTool(ToolType::Line));
-            binds.insert(Action::E(false, false, false, true), Bind::PushTool(ToolType::Eraser));
-            binds.insert(Action::V(false, false, false, true), Bind::PushTool(ToolType::Vector));
-            binds.insert(Action::R(false, false, false, true), Bind::PushTool(ToolType::Rect));
-            binds.insert(Action::U(false, false, false, true), Bind::PushTool(ToolType::Ellipse));
-            binds.insert(Action::T(false, false, false, true), Bind::PushTool(ToolType::Texture));
-            binds.insert(Action::M(false, false, false, true), Bind::PushTool(ToolType::Marquee));
+        binds.insert(Action::Comma(true, false, false, true), Bind::PushTool(ToolType::Settings));
 
-            binds.insert(Action::Comma(true, false, false, true), Bind::PushTool(ToolType::Settings));
+        // alt
+        binds.insert(Action::LAlt(false, false, true, true), Bind::PushTool(ToolType::ColorPicker));
+        binds.insert(Action::LAlt(false, false, false, false), Bind::PopTool);
 
-            // alt
-            binds.insert(Action::LAlt(false, false, true, true), Bind::PushTool(ToolType::ColorPicker));
-            binds.insert(Action::LAlt(false, false, false, false), Bind::PopTool);
+        binds.insert(Action::Return(true, false, false, true), Bind::RunScript);
+        binds.insert(Action::N(true, false, false, true), Bind::NewXpr);
+        // ctrl-s
+        binds.insert(Action::S(true, false, false, true), Bind::Save);
+        binds.insert(Action::O(true, false, false, true), Bind::Load);
+        binds.insert(Action::S(true, true, false, true), Bind::Save);
+        binds.insert(Action::O(true, true, false, true), Bind::Load);
 
-            binds.insert(Action::Return(true, false, false, true), Bind::RunScript);
-            binds.insert(Action::N(true, false, false, true), Bind::NewXpr);
-            // ctrl-s
-            binds.insert(Action::S(true, false, false, true), Bind::Save);
-            binds.insert(Action::O(true, false, false, true), Bind::Load);
-            binds.insert(Action::S(true, true, false, true), Bind::Save);
-            binds.insert(Action::O(true, true, false, true), Bind::Load);
-        }
+        binds
+    }
 
-        Self { binds, enabled: true }
+    pub fn insert(&mut self, action: Action, bind: Bind) {
+        self.binds.insert(action.clone(), bind);
+        self.action_strings.insert(action.clone(), action.to_string());
+        self.reverse_map.insert(bind, action);
     }
 
     pub fn lookup(&self, action: Action) -> Bind {
@@ -247,6 +277,11 @@ impl HotkeyController {
             trace!("unmapped action: {:?}", action);
             Bind::Unmapped
         })
+    }
+
+    pub fn lookup_reverse_str<'a>(&'a self, bind: &Bind) -> Option<&'a str> {
+        let action = self.reverse_map.get(bind)?;
+        self.action_strings.get(action).map(|i| i.as_str())
     }
 
     pub fn toggle(&mut self) {

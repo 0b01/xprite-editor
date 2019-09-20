@@ -101,18 +101,22 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                             for layer_id in 0..n_layers {
                                 ui.with_id(layer_id as i32, || {
                                     let l = group!().1[layer_id].clone();
-                                    let mut layer = l.borrow_mut();
 
                                     if layer_id >= group!().1.len() {
                                         return;
                                     }
-                                    if ui.checkbox(&im_str!(""), &mut layer.visible) {
-                                        // undo imgui checkbox mutation
-                                        layer.visible = !layer.visible;
-                                        // enter history frame and toggle
-                                        state.xpr_mut().toggle_layer_visibility(group_id, layer_id).unwrap();
+
+                                    {
+                                        let mut layer = l.borrow_mut();
+                                        if ui.checkbox(&im_str!(""), &mut layer.visible) {
+                                            // undo imgui checkbox mutation
+                                            layer.visible = !layer.visible;
+                                            drop(layer);
+                                            // enter history frame and toggle
+                                            state.xpr_mut().toggle_layer_visibility(group_id, layer_id).unwrap();
+                                        }
+                                        ui.same_line(0.);
                                     }
-                                    ui.same_line(0.);
 
                                     let is_sel = {
                                         let frame = state.xpr().frame();
@@ -122,6 +126,7 @@ pub fn draw_layers(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                                     if layer_id >= group!().1.len() {
                                         return;
                                     }
+                                    let mut layer = l.borrow_mut();
                                     let name = layer.name.as_str();
                                     if ui.selectable(&im_str!("{}", name), is_sel, ImGuiSelectableFlags::empty(), [100., 0.]) {
                                         state.xpr_mut().switch_layer(group_id, layer_id);

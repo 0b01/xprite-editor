@@ -5,7 +5,3 @@ members = [
     "native",
     # "font",
 ]
-
-
-[profile.release]
-debug = true

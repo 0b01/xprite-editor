@@ -1,6 +1,7 @@
 use crate::prelude::*;
 use crate::render::imgui::ImguiRenderer;
 use xprite::rendering::image_renderer::ImageRenderer;
+use std::collections::BTreeMap;
 
 pub mod brush_state;
 pub mod filepopup_state;
@@ -27,8 +28,12 @@ pub struct State {
     pub rename_group: Option<usize>,
     pub brush: brush_state::BrushState,
 
+    /// rendered texture
     pub texture: Option<usize>,
-    pub color_picker_texture: Option<usize>,
+
+    pub icons: BTreeMap<&'static str, usize>,
+    icons_initialized: bool,
+
 }
 
 impl Default for State {
@@ -51,7 +56,9 @@ impl Default for State {
             cols_per_row: 8,
             rename_layer: None,
             rename_group: None,
-            color_picker_texture: None,
+
+            icons: BTreeMap::new(),
+            icons_initialized: false,
         }
     }
 }
@@ -76,15 +83,31 @@ impl State {
         }
     }
 
+    pub fn add_icon(rdr: &mut ImguiRenderer, src: &[u8]) -> usize {
+        let img = image::load_from_memory(src).unwrap();
+        let texture_id = rdr.add_img(img, image::ColorType::RGBA(0));
+        texture_id
+    }
+
     pub fn load_icons(&mut self, rdr: &mut ImguiRenderer) {
-        if self.color_picker_texture.is_some() {
+        if self.icons_initialized {
             return;
         }
-
-        let color_picker = include_bytes!("../../assets/colorpicker.png");
-        let img = image::load_from_memory(color_picker).unwrap();
-        let texture_id = rdr.add_img(img, image::ColorType::RGBA(0));
-        self.color_picker_texture = Some(texture_id);
+        self.icons.insert("color_picker", Self::add_icon(rdr, include_bytes!("../../assets/colorpicker.png")));
+        self.icons.insert("button_up", Self::add_icon(rdr, include_bytes!("../../assets/up.png")));
+        self.icons.insert("button_hold", Self::add_icon(rdr, include_bytes!("../../assets/hold.png")));
+        self.icons.insert("button_down", Self::add_icon(rdr, include_bytes!("../../assets/down.png")));
+        self.icons.insert(ToolType::Pencil.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/pencil.png")));
+        self.icons.insert(ToolType::Line.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/line.png")));
+        self.icons.insert(ToolType::PaintBucket.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/paint.png")));
+        self.icons.insert(ToolType::Vector.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/vector.png")));
+        self.icons.insert(ToolType::Eraser.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/eraser.png")));
+        self.icons.insert(ToolType::Rect.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/rect.png")));
+        self.icons.insert(ToolType::Texture.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/texture.png")));
+        self.icons.insert(ToolType::Ellipse.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/ellipse.png")));
+        self.icons.insert(ToolType::Marquee.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/marquee.png")));
+        self.icons.insert(ToolType::AutoShade.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/autoshade.png")));
+        self.icons_initialized = true;
     }
 
     /// checks if texture needs to be updated.
@@ -149,12 +172,10 @@ impl State {
                 self.toggle_console();
             }
             Load => {
-                self.toggle_hotkeys();
                 self.file_popup.show_file_popup = true;
                 self.file_popup.show_file_is_save = false;
             }
             Save => {
-                self.toggle_hotkeys();
                 self.file_popup.show_file_popup = true;
                 self.file_popup.show_file_is_save = true;
             }

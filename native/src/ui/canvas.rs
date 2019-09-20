@@ -161,5 +161,5 @@ fn draw_color_picker_icon(state: &mut State, ui: &Ui) {
     let x: f32 = pos[0].into();
     let y: f32 = pos[1].into();
     ui.set_cursor_screen_pos([x - 10., y - 10.]);
-    ui.image(TextureId::from(state.color_picker_texture.unwrap()), [20., 20.]).build();
+    ui.image(TextureId::from(state.icons["color_picker"]), [20., 20.]).build();
 }
