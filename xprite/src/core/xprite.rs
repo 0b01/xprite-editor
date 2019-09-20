@@ -126,7 +126,7 @@ impl Xprite {
         current_tool.set(self, opt, val)
     }
 
-    pub fn set_option_for_tool(&mut self, name: &ToolType, opt: &str, val: &str) -> Result<(), String> {
+    pub fn set_option_for_tool(&mut self, name: ToolType, opt: &str, val: &str) -> Result<(), String> {
         let tool = self.toolbox.get(name);
         tool.borrow_mut().set(self, opt, val).unwrap();
         Ok(())
@@ -203,10 +203,10 @@ impl Xprite {
         let l = frame
             .groups
             .get_mut(group)
-            .ok_or("no group".to_owned())?
+            .ok_or_else(||"no group".to_owned())?
             .1
             .get_mut(layer)
-            .ok_or("no layer".to_owned())?;
+            .ok_or_else(||"no layer".to_owned())?;
         l.borrow_mut().toggle_visible();
         self.set_redraw(true);
         Ok(())
@@ -337,7 +337,7 @@ impl Xprite {
     pub fn as_img(&self) -> Result<img::DynamicImage, String> {
         let mut rdr = ImageRenderer::new(self.canvas.bg, self.canvas.art_w, self.canvas.art_h);
         self.export(&mut rdr)?;
-        Ok(rdr.to_img())
+        Ok(rdr.into_img())
     }
 
     pub fn selected_layer_as_im(&self) -> Option<img::DynamicImage> {
@@ -388,7 +388,7 @@ impl Xprite {
                         for &Pixel { point, color } in self.pixels().iter() {
                             let Vec2f { x, y } = point;
                             // println!("{:?}", color);
-                            let c = color.to_rgba(Some(self)).ok_or("color index too big".to_owned())?.into();
+                            let c = color.to_rgba(Some(self)).ok_or_else(||"color index too big".to_owned())?.into();
                             rdr.pixel(x, y, c, true);
                         }
                     }
@@ -463,10 +463,8 @@ impl Xprite {
                 ase::ChunkData::LayerChunk(ase::chunk::LayerChunk {
                     flags,
                     layer_type,
-                    layer_child_level: _,
-                    blend_mode: _,
-                    opacity: _,
                     layer_name,
+                    ..
                 }) => {
                     let visible = flags.contains(ase::chunk::layer_chunk::Flags::Visible);
                     if *layer_type == ase::chunk::LayerType::Normal {
@@ -481,10 +479,10 @@ impl Xprite {
                     layer_index,
                     x_position,
                     y_position,
-                    opacity_level: _,
                     cel,
+                    ..
                 }) => {
-                    let ase_pixs = cel.pixels(&header.color_depth).unwrap();
+                    let ase_pixs = cel.pixels(header.color_depth).unwrap();
                     let x = f64::from(*x_position);
                     let y = f64::from(*y_position);
                     let x_ = x + f64::from(cel.w().unwrap() - 1); // TODO: FIXME: off by 1 error from Pixels::bounding_box
@@ -522,16 +520,16 @@ impl Xprite {
             MouseMove { .. } => self.mouse_move(evt),
             MouseDown { .. } => self.mouse_down(evt),
             MouseUp { .. } => self.mouse_up(evt),
-            KeyUp { key } => self.key_up(key),
-            KeyDown { key } => self.keys_down(key),
+            KeyUp { key } => self.key_up(*key),
+            KeyDown { key } => self.keys_down(*key),
         }
     }
 
-    pub fn key_up(&mut self, key: &InputItem) -> Result<(), String> {
+    pub fn key_up(&mut self, key: InputItem) -> Result<(), String> {
         self.set_option(key.as_str(), "false")
     }
 
-    pub fn keys_down(&mut self, key: &InputItem) -> Result<(), String> {
+    pub fn keys_down(&mut self, key: InputItem) -> Result<(), String> {
         self.set_option(key.as_str(), "true")
     }
 
@@ -646,7 +644,7 @@ impl Xprite {
     }
 
     pub fn from_img(name: String, w: u32, h: u32, img: img::DynamicImage) -> Xprite {
-        let xpr = Xprite::new(name, w as f64, h as f64);
+        let xpr = Xprite::new(name, f64::from(w), f64::from(h));
         xpr.cel().unwrap().borrow_mut().content = img.into();
         xpr
     }

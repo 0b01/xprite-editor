@@ -41,7 +41,7 @@ impl Polyline {
             let dist = point_line_distance(self.pos[third], self.pos[first], self.pos[second]);
 
             if dist <= tol {
-                third = third + 1;
+                third += 1;
             } else {
                 ret.push(Vec2f {
                     x: self.pos[third].x,
@@ -49,7 +49,7 @@ impl Polyline {
                 });
                 first = second;
                 second = third;
-                third = third + 1;
+                third += third;
             }
         }
 

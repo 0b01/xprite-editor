@@ -38,7 +38,7 @@ pub fn autoshade(pixs: &Pixels, accumulative: bool, step_params: &[AutoshadeStep
             shift: Vec2f { x: _x, y: _y }, ..
         } = &step_params[0];
 
-        let mut bb = orig.clone();
+        let mut bb = orig;
         bb.0.x -= 1.;
         bb.0.y -= 1.;
         bb.1.x += 1.;

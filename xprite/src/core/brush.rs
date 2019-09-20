@@ -33,14 +33,14 @@ impl Default for BrushType {
 impl FromStr for Brush {
     type Err = String;
     fn from_str(value: &str) -> Result<Brush, String> {
-        if value.starts_with("o") {
+        if value.starts_with('o') {
             let size = value[1..].parse::<u32>().unwrap();
             Ok(Brush::circle(size, Color::orange())) // TODO: change color
-        } else if value.starts_with("s") {
+        } else if value.starts_with('s') {
             let size = value[1..].parse::<u32>().unwrap();
             Ok(Brush::square(size))
-        } else if value.starts_with("/") {
-            let params: Vec<f64> = value[1..].split(",").map(|i| i.parse().unwrap()).collect();
+        } else if value.starts_with('/') {
+            let params: Vec<f64> = value[1..].split(',').map(|i| i.parse().unwrap()).collect();
             let color: Color = Color::orange(); //TODO: change color
             Ok(Brush::line(params[0] as u32, params[1] as u32, color))
         } else {
@@ -96,10 +96,10 @@ impl Brush {
 
     pub fn square(size: u32) -> Self {
         let shape = rect::filled_rect(0, 0, size as i32, size as i32, Color::red()).unwrap();
-        let off = (size / 2) as f64;
+        let off = f64::from(size / 2);
         Self {
             shape,
-            bb: (size as f64, size as f64),
+            bb: (f64::from(size), f64::from(size)),
             offset: (-off, -off),
             brush_type: BrushType::Square(size),
         }
@@ -116,18 +116,18 @@ impl Brush {
         let off = (size / 2) as f64;
         Self {
             shape,
-            bb: (size as f64, size as f64),
+            bb: (size as f64, f64::from(size)),
             offset: (-off, -off),
             brush_type: BrushType::Circle(size),
         }
     }
 
     pub fn line(sz: u32, angle: u32, color: Color) -> Self {
-        let size = sz as f64;
+        let size = f64::from(sz);
 
-        let a = PI * (angle as f64) / 180.;
-        let r = size as f64 / 2.;
-        let d = size as f64;
+        let a = PI * f64::from(angle) / 180.;
+        let r = size / 2.;
+        let d = size;
         let x1 = (r + r * (a + PI).cos()) as i32;
         let y1 = (r - r * (a + PI).sin()) as i32;
         let x2 = (x1 as f64 + d * (a).cos()) as i32;
@@ -162,7 +162,7 @@ impl Brush {
                 ret.extend(&pixs);
             }
         }
-        return Some(ret);
+        Some(ret)
     }
 
     /// convert brush shape to actual pixel on canvas

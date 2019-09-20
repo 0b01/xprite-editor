@@ -2,7 +2,7 @@ use crate::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Frames {
     frames: Vec<Layers>,
     pub current_frame_idx: usize,

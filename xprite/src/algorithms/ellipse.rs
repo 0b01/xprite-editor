@@ -87,20 +87,20 @@ pub fn algo_ellipse(x1: i32, y1: i32, x2: i32, y2: i32, color: Color) -> Pixels 
     ry = (y1 - y2).abs();
 
     if rx == 1 {
-        pixel_perfect_line(Vec2f { x: x2 as f64, y: y1 as f64 }, Vec2f { x: x2 as f64, y: y2 as f64 }, color);
+        pixel_perfect_line(Vec2f { x: f64::from(x2), y: f64::from(y1) }, Vec2f { x: f64::from(x2), y: f64::from(y2) }, color);
         rx -= 1;
     }
     if rx == 0 {
-        pixel_perfect_line(Vec2f { x: x1 as f64, y: y1 as f64 }, Vec2f { x: x1 as f64, y: y2 as f64 }, color);
+        pixel_perfect_line(Vec2f { x: f64::from(x1), y: f64::from(y1) }, Vec2f { x: f64::from(x1), y: f64::from(y2) }, color);
         return ret;
     }
 
     if ry == 1 {
-        pixel_perfect_line(Vec2f { x: x1 as f64, y: y2 as f64 }, Vec2f { x: x2 as f64, y: y2 as f64 }, color);
+        pixel_perfect_line(Vec2f { x: f64::from(x1), y: f64::from(y2) }, Vec2f { x: f64::from(x2), y: f64::from(y2) }, color);
         ry -= 1;
     }
     if ry == 0 {
-        pixel_perfect_line(Vec2f { x: x1 as f64, y: y1 as f64 }, Vec2f { x: x2 as f64, y: y1 as f64 }, color);
+        pixel_perfect_line(Vec2f { x: f64::from(x1), y: f64::from(y1) }, Vec2f { x: f64::from(x2), y: f64::from(y1) }, color);
         return ret;
     }
 

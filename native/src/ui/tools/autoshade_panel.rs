@@ -27,15 +27,15 @@ pub fn draw(_rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
             return;
         }
         if ui.drag_float(&im_str!("erode"), &mut erode).build() {
-            tool.steps[i].erode = erode as f64;
+            tool.steps[i].erode = f64::from(erode);
             tool.finalize(&mut state.xpr_mut()).unwrap();
         }
         if ui.drag_float(&im_str!("dist_x"), &mut dist_x).build() {
-            tool.steps[i].shift.x = dist_x as f64;
+            tool.steps[i].shift.x = f64::from(dist_x);
             tool.finalize(&mut state.xpr_mut()).unwrap();
         }
         if ui.drag_float(&im_str!("dist_y"), &mut dist_y).build() {
-            tool.steps[i].shift.y = dist_y as f64;
+            tool.steps[i].shift.y = f64::from(dist_y);
             tool.finalize(&mut state.xpr_mut()).unwrap();
         }
 

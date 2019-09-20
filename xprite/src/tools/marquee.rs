@@ -38,10 +38,10 @@ impl Marquee {
 
     fn move_pixs(&mut self, xpr: &mut Xprite) -> Result<(), String> {
         dbg!("move_pixs");
-        let start = self.start_pos.ok_or("start".to_owned())?;
-        let cursor = self.cursor_pos.ok_or("stop".to_owned())?;
-        let move_orig = self.move_orig_pos.ok_or("move_orig".to_owned())?;
-        let move_final = self.move_final_pos.ok_or("move_final".to_owned())?;
+        let start = self.start_pos.ok_or_else(||"start".to_owned())?;
+        let cursor = self.cursor_pos.ok_or_else(||"stop".to_owned())?;
+        let move_orig = self.move_orig_pos.ok_or_else(||"move_orig".to_owned())?;
+        let move_final = self.move_final_pos.ok_or_else(||"move_final".to_owned())?;
         let diff = move_final - move_orig;
 
         xpr.commit();

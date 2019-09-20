@@ -27,10 +27,10 @@ impl AutoShade {
         let pixs = get_rect(self.start_pos, self.cursor_pos, true, xpr.color())?;
         let l = xpr.cel().unwrap();
         let content = &mut l.borrow_mut().content;
-        let intersection = content.intersection(&pixs).to_rgba(Some(xpr)).ok_or("cannot convert to rgba".to_owned())?;
+        let intersection = content.intersection(&pixs).to_rgba(Some(xpr)).ok_or_else(||"cannot convert to rgba".to_owned())?;
         // TODO: don't construct a rect, filter based on w, h directly
         // let _bb = intersection.bounding_rect();
-        let shaded = autoshade(&intersection, true, &self.steps).ok_or("autoshade algorithm failed".to_owned())?;
+        let shaded = autoshade(&intersection, true, &self.steps).ok_or_else(||"autoshade algorithm failed".to_owned())?;
         self.buf = shaded;
         Ok(())
     }

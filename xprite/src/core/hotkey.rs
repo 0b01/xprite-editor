@@ -31,7 +31,7 @@ macro_rules! declare_actions {
         }
 
         impl Action {
-            pub fn to_string<'a>(&'a self) -> String {
+            pub fn to_string(&self) -> String {
                 let (key, ctrl, shift, alt) = match &self {
                     $(
                         Action::$field(c,s,a,_) => (stringify!($field), c, s, a),
@@ -213,6 +213,7 @@ declare_actions!(
     Cut
 );
 
+#[derive(Default)]
 pub struct HotkeyController {
     binds: HashMap<Action, Bind>,
     reverse_map: HashMap<Bind, Action>,

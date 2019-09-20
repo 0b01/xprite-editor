@@ -16,7 +16,8 @@ pub fn draw(state: &mut State, ui: &Ui) {
     let mut pp = p.run_pixel_perfect == Some(true);
     let mut pap = p.run_pixel_perfect == Some(false);
 
-    let disabled = p.sorted_monotonic || p.selective_anti_aliasing;
+
+    let disabled =  p.sorted_monotonic || p.selective_anti_aliasing;
     if ui.checkbox(&im_str!("Pixel Perfect"), &mut pp) {
         if !disabled {
             if !pp && !pap {
@@ -36,6 +37,7 @@ pub fn draw(state: &mut State, ui: &Ui) {
         }
     }
 
+
     if ui.checkbox(&im_str!("Sorted Monotonic"), &mut p.sorted_monotonic) {
         if p.sorted_monotonic {
             p.run_pixel_perfect = Some(true);
@@ -49,11 +51,16 @@ pub fn draw(state: &mut State, ui: &Ui) {
     }
 
     if p.selective_anti_aliasing {
-        ui.tree_node(&im_str!("Selective Anti Aliasing Options")).default_open(true).build(|| {
+        ui.tree_node(&im_str!("Selective Anti Aliasing Options")).default_open(true).build( || {
+
             Slider::new(&im_str!("Threshold"), (0.)..=(1.)).build(&ui, &mut p.aa_threshold);
             Slider::new(&im_str!("Min Segment"), (1)..=(100)).build(&ui, &mut p.min_segment_length);
 
-            let mut sel: [f32; 4] = p.aa_alt_color.unwrap_or(Color::black()).to_rgba(Some(state.xpr())).unwrap().into();
+            let mut sel: [f32; 4] = p.aa_alt_color
+                .unwrap_or_else(||Color::black())
+                .to_rgba(Some(state.xpr()))
+                .unwrap()
+                .into();
             let id = im_str!("##{}", "background");
             let misc_flags = {
                 let mut f = ColorEditFlags::empty();
@@ -70,7 +77,7 @@ pub fn draw(state: &mut State, ui: &Ui) {
                 let color = sel.into();
                 match p.aa_alt_color {
                     None => {
-                        let idx = state.xpr_mut().palette.find_color(color).unwrap_or(0);
+                        let idx = state.xpr_mut().palette.find_color(color).unwrap_or_else(||0);
                         p.aa_alt_color = Some(Color::Indexed(idx));
                     }
                     Some(c) => {
@@ -90,4 +97,5 @@ pub fn draw(state: &mut State, ui: &Ui) {
     if ui.button(&im_str!("toggle brush"), [0., 0.]) {
         state.toggle_brush();
     }
+
 }

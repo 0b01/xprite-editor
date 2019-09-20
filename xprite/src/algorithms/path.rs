@@ -153,7 +153,7 @@ impl Path {
             });
             i += 1;
         }
-        return tangents;
+        tangents
     }
 
     /// get control points

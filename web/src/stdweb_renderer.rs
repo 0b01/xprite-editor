@@ -61,11 +61,11 @@ impl Renderer for StdwebRenderer {
             self.ctx
                 .set_fill_style_color(&format!("rgba({},{},{},{})", color[0] * 255., color[1] * 255., color[2] * 255., color[3],));
             self.ctx.begin_path();
-            self.ctx.arc(x, y, r as f64, 0., 2. * 3.141592653, false);
+            self.ctx.arc(x, y, f64::from(r), 0., 2. * 3.141592653, false);
             self.ctx.fill(Default::default());
         } else {
             self.ctx.begin_path();
-            self.ctx.arc(x, y, r as f64, 0., 2. * 3.141592653, false);
+            self.ctx.arc(x, y, f64::from(r), 0., 2. * 3.141592653, false);
             self.ctx.stroke();
         }
     }

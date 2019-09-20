@@ -162,7 +162,7 @@ mod tests {
             },
             ret
         );
-        let img = ret.as_image(ret.bounding_rect(), None).unwrap();
+        let _img = ret.as_image(ret.bounding_rect(), None).unwrap();
         // img.save("scale2x.png").unwrap();
     }
 

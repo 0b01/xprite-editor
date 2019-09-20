@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 // TODO: eliminate clone
 pub fn pixel_perfect(path: &mut Pixels) {
-    if path.len() == 1 || path.len() == 0 {
+    if path.len() == 1 || path.is_empty() {
         return;
     }
     let mut take = vec![false; path.len()];
@@ -43,14 +43,14 @@ pub fn pixel_perfect(path: &mut Pixels) {
 }
 
 pub fn pixel_antiperfect(path: &Pixels) -> Pixels {
-    if path.len() == 1 || path.len() == 0 {
+    if path.len() == 1 || path.is_empty() {
         return path.clone();
     }
     let mut ret = Pixels::new();
 
     for (curr, next) in path.iter().zip(path.iter().skip(1)) {
         if curr.point.x != next.point.x && curr.point.y != next.point.y {
-            let mut between = curr.clone();
+            let mut between = *curr;
             match (next.point.x > curr.point.x, next.point.y > curr.point.y) {
                 (true, true) => {
                     between.point.x += 1.;

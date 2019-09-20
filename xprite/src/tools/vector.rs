@@ -91,7 +91,7 @@ impl Vector {
     }
 
     fn draw_continuous(&self, color: Color) -> Result<(Path, Pixels), String> {
-        let simplified = self.current_polyline.reumann_witkam(self.tolerence as f64);
+        let simplified = self.current_polyline.reumann_witkam(f64::from(self.tolerence));
         if let Ok(simplified) = simplified {
             let path = simplified.interp();
             let buf = path.rasterize(self.mono_sort, color).unwrap();
@@ -128,8 +128,8 @@ impl Vector {
     fn finalize_curvature(&self) -> Option<CubicBezierSegment> {
         let from = self.start_pos?;
         let to = self.end_pos?;
-        let ctrl1 = self.ctrl1_pos.unwrap_or(from);
-        let ctrl2 = self.ctrl2_pos.unwrap_or(to);
+        let ctrl1 = self.ctrl1_pos.unwrap_or_else(||from);
+        let ctrl2 = self.ctrl2_pos.unwrap_or_else(||to);
         Some(CubicBezierSegment { from, to, ctrl1, ctrl2 })
     }
 
@@ -285,7 +285,7 @@ impl Tool for Vector {
         }
         self.recording = false;
 
-        let simple = self.current_polyline.reumann_witkam(self.tolerence as f64);
+        let simple = self.current_polyline.reumann_witkam(f64::from(self.tolerence));
         if let Ok(simple) = simple {
             let path = simple.interp();
             self.curves.extend(path.segments);

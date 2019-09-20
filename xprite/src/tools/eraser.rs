@@ -4,7 +4,7 @@ use crate::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct BufferedPolyline {
     polyline: Polyline,
     upto: usize,

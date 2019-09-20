@@ -1,6 +1,7 @@
 use crate::core::xprite::Xprite;
 use hex;
 
+#[allow(clippy::derive_hash_xor_eq)]
 #[derive(Debug, Hash, Copy, Clone, Eq)]
 pub enum Color {
     Indexed(usize),
@@ -34,7 +35,7 @@ pub struct XpriteRgba {
 
 impl Color {
     pub fn from_hex(col: &str) -> Result<Self, hex::FromHexError> {
-        XpriteRgba::from_hex(col).map(|i| Color::Rgba(i))
+        XpriteRgba::from_hex(col).map(Color::Rgba)
     }
 
     pub unsafe fn as_rgba(&self) -> XpriteRgba {
@@ -60,10 +61,7 @@ impl Color {
     pub fn to_rgba(&self, xpr: Option<&Xprite>) -> Option<XpriteRgba> {
         match *self {
             Color::Indexed(i) => {
-                if xpr.is_none() {
-                    return None;
-                }
-                let pm = &xpr.unwrap().palette;
+                let pm = &xpr?.palette;
                 let (_pal_name, pal) = pm.palettes.get_index(pm.selected_palette_idx)?;
                 Some(unsafe { pal.colors.borrow().get_index(i)?.1.as_rgba() })
             }

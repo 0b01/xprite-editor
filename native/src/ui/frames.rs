@@ -27,14 +27,25 @@ pub fn draw_frames(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                 if i % 5 != 0 {
                     ui.same_line(0.);
                 }
-                if i == idx {
-                    // ui.push_style_color();
-                }
+                let color_token = if i == idx {
+                    ui.push_style_colors(&[
+                        (StyleColor::Button, XpriteRgba::red().into()),
+                        (StyleColor::ButtonHovered, XpriteRgba::red().into()),
+                        (StyleColor::ButtonActive, XpriteRgba::red().into()),
+                    ])
+                } else {
+                    ui.push_style_colors(&[
+                        (StyleColor::Button, XpriteRgba::black().into()),
+                        (StyleColor::ButtonHovered, XpriteRgba::black().into()),
+                        (StyleColor::ButtonActive, XpriteRgba::black().into()),
+                    ])
+                };
                 if ui.button(txt, [0., 0.]) {
                     frames!().set_frame_index(i);
                     info!("pressed");
                     state.xpr_mut().set_redraw(true);
                 }
+                color_token.pop(&ui);
             }
         });
 }

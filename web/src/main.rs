@@ -150,7 +150,7 @@ fn init_js_bindings(xpr: &Rc<RefCell<Xprite>>) {
     let xpr_ = xpr.clone();
     let fn_draw_pixel = move |x: u32, y: u32| {
         xpr_.borrow_mut().cel().unwrap().borrow_mut().content.push(Pixel {
-            point: Vec2f { x: x as f64, y: y as f64 },
+            point: Vec2f { x: f64::from(x), y: f64::from(y) },
             color: Color::red(),
         })
     };
@@ -171,7 +171,7 @@ fn init_js_bindings(xpr: &Rc<RefCell<Xprite>>) {
     let xpr_ = xpr.clone();
     let fn_set_option_for_tool = move |name: String, opt: String, val: String| {
         let tool = ToolType::from_str(&name).unwrap();
-        xpr_.borrow_mut().set_option_for_tool(&tool, &opt, &val).unwrap();
+        xpr_.borrow_mut().set_option_for_tool(tool, &opt, &val).unwrap();
         ()
     };
     let xpr_ = xpr.clone();

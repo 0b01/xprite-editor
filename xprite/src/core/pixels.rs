@@ -97,7 +97,7 @@ impl Pixel {
         point.x = point.x.floor();
         point.y = point.y.floor();
 
-        return Pixel { point, color: self.color };
+        Pixel { point, color: self.color }
     }
 
     #[deprecated]
@@ -107,19 +107,19 @@ impl Pixel {
         ret
     }
 
-    #[allow(mutable_transmutes)]
+    #[allow(clippy::cast_ref_to_mut)]
     pub fn set_color(&self, color: Color) {
         unsafe {
-            let mut p = ::std::mem::transmute::<&Pixel, &mut Pixel>(self);
+            let mut p = &mut *(self as *const Pixel as *mut Pixel);
             p.color = color;
         }
     }
 
     pub fn dir(&self, other: &Pixel) -> bool {
         if self.point.x == other.point.x {
-            return self.point.y > other.point.y;
+            self.point.y > other.point.y
         } else {
-            return self.point.x > other.point.x;
+            self.point.x > other.point.x
         }
     }
 }
@@ -252,7 +252,7 @@ impl Pixels {
         rotsprite(&self, angle, pivot)
     }
 
-    pub fn extend<'a, 'b>(&'a mut self, other: &'b Pixels) {
+    pub fn extend(&mut self, other: &Pixels) {
         for i in other.0.iter() {
             self.0.replace(*i);
         }
@@ -458,7 +458,7 @@ impl Pixels {
             .iter()
             .filter_map(|p| {
                 let Pixel { point: Vec2f { x, y }, .. } = p;
-                if oob(*x - bb.0.x, *y - bb.0.y, w as f64, h as f64) {
+                if oob(*x - bb.0.x, *y - bb.0.y, w, h) {
                     None
                 } else {
                     Some(*p)
@@ -500,7 +500,7 @@ impl Pixels {
     pub fn shifted(&self, d: Vec2f) -> Pixels {
         let mut ret = Pixels::new();
         for i in self.iter() {
-            let mut shifted_i = i.clone();
+            let mut shifted_i = *i;
             shifted_i.point.x += d.x;
             shifted_i.point.y += d.y;
             ret.push(shifted_i);
@@ -533,11 +533,11 @@ impl Pixels {
         let h = bb.h() as f64;
         let origin = bb.0;
 
-        let bg = xpr.map(|i| i.canvas.bg).unwrap_or(Color::grey());
+        let bg = xpr.map(|i| i.canvas.bg).unwrap_or_else(Color::grey);
         let mut rdr = ImageRenderer::new(bg, w, h);
         for pix in &self.0 {
             let Pixel { point: Vec2f { x, y }, color } = pix;
-            if oob(*x - origin.x, *y - origin.y, w as f64, h as f64) {
+            if oob(*x - origin.x, *y - origin.y, w, h) {
                 continue;
             }
             rdr.pixel(*x - origin.x, *y - origin.y, (*color).to_rgba(xpr)?.into(), true);
@@ -566,7 +566,7 @@ impl Pixels {
                 None => Some(XpriteRgba::default().into()),
             })
             .collect::<Option<Vec<_>>>()
-            .map(|v| ase::Pixels::RGBA(v))
+            .map(ase::Pixels::RGBA)
     }
 
     pub fn from_ase_pixels(ase_pixs: &ase::Pixels, bb: Rect) -> Self {

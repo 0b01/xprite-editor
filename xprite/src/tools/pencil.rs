@@ -19,7 +19,7 @@
 use crate::algorithms::line::continuous_line;
 use crate::prelude::*;
 
-#[derive(PartialEq, Clone, Debug)]
+#[derive(PartialEq, Clone, Debug, Default)]
 pub struct PencilProcessor {
     /// pixel perfect - nothing else
     ///
@@ -79,8 +79,8 @@ impl PencilProcessor {
         if self.selective_anti_aliasing {
             assert_eq!(self.run_pixel_perfect, Some(true));
             points.selective_antialias(
-                self.aa_threshold as f64,
-                self.aa_alt_color.unwrap_or(Color::Indexed(0)),
+                f64::from(self.aa_threshold),
+                self.aa_alt_color.unwrap_or_else(||Color::Indexed(0)),
                 self.min_segment_length as usize,
             );
         }

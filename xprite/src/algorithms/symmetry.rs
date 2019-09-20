@@ -114,7 +114,7 @@ impl SymmetryMode {
                 let max_rot = u8::min(max_allowed as u8, max_);
                 let mut ret = vec![];
                 for i in 0..max_rot {
-                    let angle = i as f64 * radian;
+                    let angle = f64::from(i) * radian;
                     let y = -100. * angle.cos();
                     let x = 100. * angle.sin();
                     let end = vec2f!(y, x) + pivot;

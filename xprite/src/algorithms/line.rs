@@ -23,78 +23,78 @@ pub fn snapped_line(is_45: bool, start: Vec2f, stop: Vec2f, color: Color) -> Pix
         match dir as i32 {
             0 => {
                 for i in 0..dx {
-                    ret.push(pixel!(y0, x0 + i as f64, color))
+                    ret.push(pixel!(y0, x0 + f64::from(i), color))
                 }
             }
             1 => {
                 let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(y0 + i as f64 / 2., x0 + i as f64, color));
-                    ret.push(pixel!(y0 + i as f64 / 2., x0 + 1. + i as f64, color));
+                    ret.push(pixel!(y0 + f64::from(i) / 2., x0 + f64::from(i), color));
+                    ret.push(pixel!(y0 + f64::from(i) / 2., x0 + 1. + f64::from(i), color));
                 }
             }
             2 => {
                 let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(y0 + i as f64, x0 + i as f64 / 2., color));
-                    ret.push(pixel!(y0 + 1. + i as f64, x0 + i as f64 / 2., color));
+                    ret.push(pixel!(y0 + f64::from(i), x0 + f64::from(i) / 2., color));
+                    ret.push(pixel!(y0 + 1. + f64::from(i), x0 + f64::from(i) / 2., color));
                 }
             }
             3 => {
                 for i in 0..dy {
-                    ret.push(pixel!(y0 + i as f64, x0, color))
+                    ret.push(pixel!(y0 + f64::from(i), x0, color))
                 }
             }
             4 => {
                 let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(y0 + i as f64, x0 - i as f64 / 2., color));
-                    ret.push(pixel!(y0 + 1. + i as f64, x0 - i as f64 / 2., color));
+                    ret.push(pixel!(y0 + f64::from(i), x0 - f64::from(i) / 2., color));
+                    ret.push(pixel!(y0 + 1. + f64::from(i), x0 - f64::from(i) / 2., color));
                 }
             }
             5 => {
                 let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(y0 + i as f64 / 2., x0 - i as f64, color));
-                    ret.push(pixel!(y0 + i as f64 / 2., x0 - 1. - i as f64, color));
+                    ret.push(pixel!(y0 + f64::from(i) / 2., x0 - f64::from(i), color));
+                    ret.push(pixel!(y0 + f64::from(i) / 2., x0 - 1. - f64::from(i), color));
                 }
             }
             6 => {
                 for i in 0..dx {
-                    ret.push(pixel!(y0, x0 - i as f64, color))
+                    ret.push(pixel!(y0, x0 - f64::from(i), color))
                 }
             }
             7 => {
                 let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(y0 - i as f64 / 2., x0 - i as f64, color));
-                    ret.push(pixel!(y0 - i as f64 / 2., x0 - 1. - i as f64, color));
+                    ret.push(pixel!(y0 - f64::from(i) / 2., x0 - f64::from(i), color));
+                    ret.push(pixel!(y0 - f64::from(i) / 2., x0 - 1. - f64::from(i), color));
                 }
             }
             8 => {
                 let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(y0 - i as f64, x0 - i as f64 / 2., color));
-                    ret.push(pixel!(y0 - 1. - i as f64, x0 - i as f64 / 2., color));
+                    ret.push(pixel!(y0 - f64::from(i), x0 - f64::from(i) / 2., color));
+                    ret.push(pixel!(y0 - 1. - f64::from(i), x0 - f64::from(i) / 2., color));
                 }
             }
             9 => {
                 for i in 0..dy {
-                    ret.push(pixel!(y0 - i as f64, x0, color))
+                    ret.push(pixel!(y0 - f64::from(i), x0, color))
                 }
             }
             10 => {
                 let dy = (dy as f64 * 1.1).ceil() as i32;
                 for i in (0..dy).step_by(2) {
-                    ret.push(pixel!(y0 - i as f64, x0 + i as f64 / 2., color));
-                    ret.push(pixel!(y0 - 1. - i as f64, x0 + i as f64 / 2., color));
+                    ret.push(pixel!(y0 - f64::from(i), x0 + f64::from(i) / 2., color));
+                    ret.push(pixel!(y0 - 1. - f64::from(i), x0 + f64::from(i) / 2., color));
                 }
             }
             11 => {
                 let dx = (dx as f64 * 1.1).ceil() as i32;
                 for i in (0..dx).step_by(2) {
-                    ret.push(pixel!(y0 - i as f64 / 2., x0 + i as f64, color));
-                    ret.push(pixel!(y0 - i as f64 / 2., x0 + 1. + i as f64, color));
+                    ret.push(pixel!(y0 - f64::from(i) / 2., x0 + f64::from(i), color));
+                    ret.push(pixel!(y0 - f64::from(i) / 2., x0 + 1. + f64::from(i), color));
                 }
             }
             _ => (),
@@ -107,42 +107,42 @@ pub fn snapped_line(is_45: bool, start: Vec2f, stop: Vec2f, color: Color) -> Pix
         match dir as i32 {
             0 => {
                 for i in 0..dx {
-                    ret.push(pixel!(y0, x0 + i as f64, color))
+                    ret.push(pixel!(y0, x0 + f64::from(i), color))
                 }
             }
             1 => {
                 for i in 0..dy {
-                    ret.push(pixel!(y0 + i as f64, x0 + i as f64, color))
+                    ret.push(pixel!(y0 + f64::from(i), x0 + f64::from(i), color))
                 }
             }
             2 => {
                 for i in 0..dy {
-                    ret.push(pixel!(y0 + i as f64, x0, color))
+                    ret.push(pixel!(y0 + f64::from(i), x0, color))
                 }
             }
             3 => {
                 for i in 0..dy {
-                    ret.push(pixel!(y0 + i as f64, x0 - i as f64, color))
+                    ret.push(pixel!(y0 + f64::from(i), x0 - f64::from(i), color))
                 }
             }
             4 => {
                 for i in 0..dx {
-                    ret.push(pixel!(y0, x0 - i as f64, color))
+                    ret.push(pixel!(y0, x0 - f64::from(i), color))
                 }
             }
             5 => {
                 for i in 0..dx {
-                    ret.push(pixel!(y0 - i as f64, x0 - i as f64, color))
+                    ret.push(pixel!(y0 - f64::from(i), x0 - f64::from(i), color))
                 }
             }
             6 => {
                 for i in 0..dy {
-                    ret.push(pixel!(y0 - i as f64, x0, color))
+                    ret.push(pixel!(y0 - f64::from(i), x0, color))
                 }
             }
             7 => {
                 for i in 0..dx {
-                    ret.push(pixel!(y0 - i as f64, x0 + i as f64, color))
+                    ret.push(pixel!(y0 - f64::from(i), x0 + f64::from(i), color))
                 }
             }
             _ => error!("impossible"),

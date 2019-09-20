@@ -87,11 +87,11 @@ impl PaletteManager {
     }
 
     pub fn current_palette_mut(&mut self) -> &mut PaletteGroup {
-        return self.palettes.get_index_mut(self.selected_palette_idx).unwrap().1;
+        self.palettes.get_index_mut(self.selected_palette_idx).unwrap().1
     }
 
     pub fn current_palette(&self) -> &PaletteGroup {
-        return &self.palettes.get_index(self.selected_palette_idx).unwrap().1;
+        &self.palettes.get_index(self.selected_palette_idx).unwrap().1
     }
 
     pub fn current_color(&self) -> (String, Color) {
@@ -134,7 +134,7 @@ fn get_palette_hex(p: &path::PathBuf) -> io::Result<PaletteGroup> {
     let mut colors = IndexMap::new();
     let cols = fs::read_to_string(p)?;
     for col in cols.lines() {
-        let color = Color::from_hex(&col[1..]).expect(&format!("Cannot decode hex in file {:?}", p));
+        let color = Color::from_hex(&col[1..]).unwrap_or_else(|_| panic!("Cannot decode hex in file {:?}", p));
         colors.insert(col.to_owned(), color);
     }
     Ok(PaletteGroup {

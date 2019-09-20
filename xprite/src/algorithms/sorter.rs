@@ -20,12 +20,7 @@ pub fn get_concavity(path: &[Pixel]) -> bool {
     } else {
         let m1 = (y2 - y1) / (x2 - x1);
         let m2 = (y3 - y2) / (x3 - x2);
-
-        if m1 < m2 {
-            false
-        } else {
-            true
-        }
+        m1 >= m2
     }
 }
 

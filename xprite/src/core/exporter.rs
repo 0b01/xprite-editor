@@ -33,7 +33,7 @@ impl ExporterFormat {
         ExporterFormat::ASE,
     ];
 
-    pub fn as_file_extension(&self) -> &'static str {
+    pub fn as_file_extension(self) -> &'static str {
         match &self {
             ExporterFormat::ICO => "ico",
             ExporterFormat::JPG => "jpg",
@@ -82,7 +82,7 @@ impl ExporterSpec {
         let mut path = ::std::path::PathBuf::new();
         path.push(dir);
         path.set_file_name(if *rescale == 1 {
-            format!("{}", stem)
+            stem.to_string()
         } else {
             format!("{}.{}x", stem, rescale)
         });

@@ -61,7 +61,7 @@ impl Add for Vec2f {
 }
 
 impl AddAssign for Vec2f {
-    fn add_assign(&mut self, rhs: Vec2f) -> () {
+    fn add_assign(&mut self, rhs: Vec2f) {
         *self = *self + rhs;
     }
 }
@@ -75,7 +75,7 @@ impl Sub for Vec2f {
 }
 
 impl SubAssign for Vec2f {
-    fn sub_assign(&mut self, rhs: Vec2f) -> () {
+    fn sub_assign(&mut self, rhs: Vec2f) {
         *self = *self - rhs;
     }
 }
@@ -103,7 +103,7 @@ impl Div<f64> for Vec2f {
 }
 
 impl DivAssign for Vec2f {
-    fn div_assign(&mut self, rhs: Vec2f) -> () {
+    fn div_assign(&mut self, rhs: Vec2f) {
         *self = *self / rhs;
     }
 }
@@ -131,7 +131,7 @@ impl Mul<f64> for Vec2f {
 }
 
 impl MulAssign for Vec2f {
-    fn mul_assign(&mut self, rhs: Vec2f) -> () {
+    fn mul_assign(&mut self, rhs: Vec2f) {
         *self = *self * rhs;
     }
 }
@@ -235,7 +235,7 @@ impl CubicBezierSegment {
             let mut monotone_seg = Pixels::new();
             let mut t = *start;
             let n_steps = 1000;
-            let step = (stop - start) / n_steps as f64;
+            let step = (stop - start) / f64::from(n_steps);
             for _ in 0..n_steps {
                 let point = self.sample(t);
                 let Vec2f { x, y } = Canvas::snap(point);
@@ -297,7 +297,7 @@ impl CubicBezierSegment {
             roots.extend(&result[dim]);
         }
         roots.sort_by(|a: &f64, b| a.partial_cmp(b).unwrap());
-        return roots;
+        roots
     }
 }
 
