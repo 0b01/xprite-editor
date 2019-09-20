@@ -1,6 +1,6 @@
 use crate::prelude::*;
-use std::rc::Rc;
 use std::cell::RefCell;
+use std::rc::Rc;
 
 #[derive(Debug, Clone)]
 pub struct Frames {
@@ -9,7 +9,6 @@ pub struct Frames {
 }
 
 impl Frames {
-
     pub fn new() -> Self {
         Self {
             frames: vec![Layers::new()],
@@ -42,5 +41,4 @@ impl Frames {
         let copy = self.frame().clone();
         self.frames.insert(idx, copy);
     }
-
 }

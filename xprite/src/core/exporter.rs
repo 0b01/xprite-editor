@@ -81,16 +81,12 @@ impl ExporterSpec {
 
         let mut path = ::std::path::PathBuf::new();
         path.push(dir);
-        path.set_file_name(
-            if *rescale == 1 {
-                format!("{}", stem)
-            } else {
-                format!("{}.{}x", stem, rescale)
-            }
-        );
+        path.set_file_name(if *rescale == 1 {
+            format!("{}", stem)
+        } else {
+            format!("{}.{}x", stem, rescale)
+        });
         path.set_extension(ext);
-
-
 
         match format {
             ExporterFormat::ASE => {

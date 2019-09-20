@@ -16,8 +16,8 @@
 //! 4. anti_alias?
 //! 5. follow_stroke
 
-use crate::prelude::*;
 use crate::algorithms::line::continuous_line;
+use crate::prelude::*;
 
 #[derive(PartialEq, Clone, Debug)]
 pub struct PencilProcessor {
@@ -97,14 +97,12 @@ impl PencilProcessor {
         };
         let path = brush.follow_stroke(&points).unwrap();
         Ok(path)
-
     }
 
     pub fn push(&mut self, point: Vec2f) {
         self.polyline.push(point)
     }
 }
-
 
 #[derive(Debug)]
 pub struct Pencil {

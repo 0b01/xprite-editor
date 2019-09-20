@@ -2,16 +2,15 @@ use crate::prelude::*;
 use image::{self, GenericImageView};
 use indexmap::IndexMap;
 use natord;
-use std::{fs, io, path};
-use std::rc::Rc;
 use std::cell::RefCell;
+use std::rc::Rc;
+use std::{fs, io, path};
 
 #[derive(Debug)]
 pub struct PaletteGroup {
     pub colors: Rc<RefCell<IndexMap<String, Color>>>,
     pub idx: usize,
 }
-
 
 #[derive(Debug)]
 pub struct PaletteManager {
@@ -105,7 +104,6 @@ impl PaletteManager {
         let ret = pal_.get_index(idx).unwrap();
         (ret.0.to_owned(), *ret.1)
     }
-
 }
 
 fn pico8() -> PaletteGroup {
@@ -128,7 +126,7 @@ fn pico8() -> PaletteGroup {
     colors.insert("peach".to_owned(), Color::rgba(255, 204, 170, 255));
     PaletteGroup {
         colors: Rc::new(RefCell::new(colors)),
-        idx: 0
+        idx: 0,
     }
 }
 
@@ -139,7 +137,7 @@ fn get_palette_hex(p: &path::PathBuf) -> io::Result<PaletteGroup> {
         let color = Color::from_hex(&col[1..]).expect(&format!("Cannot decode hex in file {:?}", p));
         colors.insert(col.to_owned(), color);
     }
-    Ok(PaletteGroup{
+    Ok(PaletteGroup {
         colors: Rc::new(RefCell::new(colors)),
         idx: 0,
     })
@@ -153,7 +151,7 @@ fn get_palette_png(p: &path::PathBuf) -> io::Result<PaletteGroup> {
         let my_color = Color::rgba(color[0], color[1], color[2], 255);
         colors.insert(format!("color##{},{}", pix.0, pix.1), my_color);
     }
-    Ok(PaletteGroup{
+    Ok(PaletteGroup {
         colors: Rc::new(RefCell::new(colors)),
         idx: 0,
     })

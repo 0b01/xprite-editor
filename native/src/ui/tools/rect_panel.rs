@@ -6,7 +6,7 @@ pub fn draw(state: &mut State, ui: &Ui) {
     if ui.checkbox(&im_str!("filled"), &mut tool.filled) {}
 
     if let Some(info) = tool.get_info() {
-        ui.tree_node(&im_str!("Status")).default_open(true).build( || {
+        ui.tree_node(&im_str!("Status")).default_open(true).build(|| {
             ui.text(&im_str!("Aspect ratio: {:.2}", info.aspect_ratio));
             ui.text(&im_str!("Angle: {:.2}", info.angle * 2. * PI));
             ui.text(&im_str!("p0: {:?}", info.top_left));

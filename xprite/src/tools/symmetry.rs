@@ -94,15 +94,12 @@ impl Tool for Symmetry {
     fn update(&mut self, xpr: &mut Xprite) -> Result<bool, String> {
         if self.dirty {
             let (w, h) = xpr.canvas.get_art_dimension();
-            let lines = self.symms.iter().filter_map(|(show, symmetry)|{
-                if *show {
-                    Some(symmetry.auxiliary_line(w, h))
-                } else {
-                    None
-                }
-            })
-            .flatten()
-            .collect();
+            let lines = self
+                .symms
+                .iter()
+                .filter_map(|(show, symmetry)| if *show { Some(symmetry.auxiliary_line(w, h)) } else { None })
+                .flatten()
+                .collect();
             xpr.update_lines(lines);
             self.dirty = false;
             Ok(true)

@@ -225,7 +225,12 @@ impl HotkeyController {
         let binds = HashMap::new();
         let reverse_map = HashMap::new();
         let action_strings = HashMap::new();
-        Self { binds, reverse_map, action_strings, enabled: true }
+        Self {
+            binds,
+            reverse_map,
+            action_strings,
+            enabled: true,
+        }
     }
 
     pub fn new() -> Self {
@@ -269,7 +274,6 @@ impl HotkeyController {
         binds.insert(Action::K(true, true, true, true), Bind::ToggleSymmetryPanel);
         // toggle exporter panel
         binds.insert(Action::E(true, false, false, true), Bind::ToggleExporterPanel);
-
 
         binds.insert(Action::Return(true, false, false, true), Bind::RunScript);
         binds.insert(Action::N(true, false, false, true), Bind::NewXpr);

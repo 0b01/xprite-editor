@@ -63,7 +63,7 @@ impl PaintBucket {
         let color = xpr.color();
         let w = xpr.canvas.art_w;
         let h = xpr.canvas.art_h;
-        let l =  xpr.cel().unwrap();
+        let l = xpr.cel().unwrap();
         let pixs = &l.borrow().content;
         let buffer = algorithms::floodfill::floodfill(w, h, pixs, p, bg_color, color, self.degrees);
         // info!{"{:#?}", buffer};

@@ -1,11 +1,11 @@
 use crate::prelude::*;
 use crate::rendering::Renderer;
 use img::GenericImageView;
+use std::cell::RefCell;
 use std::fs::File;
 use std::path::Path;
-use std::sync::{Arc, Mutex};
 use std::rc::Rc;
-use std::cell::RefCell;
+use std::sync::{Arc, Mutex};
 
 pub struct Xprite {
     pub name: String,
@@ -172,7 +172,6 @@ impl Xprite {
 }
 
 impl Xprite {
-
     pub fn frames(&self) -> &Frames {
         self.history.top()
     }
@@ -201,7 +200,13 @@ impl Xprite {
     pub fn toggle_layer_visibility(&mut self, group: usize, layer: usize) -> Result<(), String> {
         self.commit();
         let frame = self.frame_mut();
-        let l = frame.groups.get_mut(group).ok_or("no group".to_owned())?.1.get_mut(layer).ok_or("no layer".to_owned())?;
+        let l = frame
+            .groups
+            .get_mut(group)
+            .ok_or("no group".to_owned())?
+            .1
+            .get_mut(layer)
+            .ok_or("no layer".to_owned())?;
         l.borrow_mut().toggle_visible();
         self.set_redraw(true);
         Ok(())
@@ -567,7 +572,6 @@ impl Xprite {
 
 /// layers
 impl Xprite {
-
     pub fn redraw(&self) -> bool {
         self.redraw
     }

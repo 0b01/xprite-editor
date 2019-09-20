@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use crate::render::imgui::ImguiRenderer;
-use xprite::rendering::image_renderer::ImageRenderer;
 use std::collections::BTreeMap;
+use xprite::rendering::image_renderer::ImageRenderer;
 
 pub mod brush_state;
 pub mod filepopup_state;
@@ -34,7 +34,6 @@ pub struct State {
 
     pub icons: BTreeMap<&'static str, usize>,
     icons_initialized: bool,
-
 }
 
 impl Default for State {
@@ -95,22 +94,39 @@ impl State {
         if self.icons_initialized {
             return;
         }
-        self.icons.insert("color_picker", Self::add_icon(rdr, include_bytes!("../../assets/colorpicker.png")));
+        self.icons
+            .insert("color_picker", Self::add_icon(rdr, include_bytes!("../../assets/colorpicker.png")));
         self.icons.insert("button_up", Self::add_icon(rdr, include_bytes!("../../assets/up.png")));
         self.icons.insert("button_hold", Self::add_icon(rdr, include_bytes!("../../assets/hold.png")));
         self.icons.insert("button_down", Self::add_icon(rdr, include_bytes!("../../assets/down.png")));
-        self.icons.insert(ToolType::Pencil.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/pencil.png")));
-        self.icons.insert(ToolType::Line.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/line.png")));
-        self.icons.insert(ToolType::PaintBucket.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/paint.png")));
-        self.icons.insert(ToolType::Vector.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/vector.png")));
-        self.icons.insert(ToolType::Eraser.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/eraser.png")));
-        self.icons.insert(ToolType::Rect.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/rect.png")));
-        self.icons.insert(ToolType::Texture.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/texture.png")));
-        self.icons.insert(ToolType::Ellipse.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/ellipse.png")));
-        self.icons.insert(ToolType::Marquee.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/marquee.png")));
-        self.icons.insert(ToolType::AutoShade.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/autoshade.png")));
-        self.icons.insert(ToolType::FilledRect.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/filledrect.png")));
-        self.icons.insert(ToolType::FilledEllipse.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/filledellipse.png")));
+        self.icons
+            .insert(ToolType::Pencil.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/pencil.png")));
+        self.icons
+            .insert(ToolType::Line.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/line.png")));
+        self.icons
+            .insert(ToolType::PaintBucket.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/paint.png")));
+        self.icons
+            .insert(ToolType::Vector.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/vector.png")));
+        self.icons
+            .insert(ToolType::Eraser.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/eraser.png")));
+        self.icons
+            .insert(ToolType::Rect.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/rect.png")));
+        self.icons
+            .insert(ToolType::Texture.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/texture.png")));
+        self.icons
+            .insert(ToolType::Ellipse.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/ellipse.png")));
+        self.icons
+            .insert(ToolType::Marquee.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/marquee.png")));
+        self.icons
+            .insert(ToolType::AutoShade.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/autoshade.png")));
+        self.icons.insert(
+            ToolType::FilledRect.as_str(),
+            Self::add_icon(rdr, include_bytes!("../../assets/filledrect.png")),
+        );
+        self.icons.insert(
+            ToolType::FilledEllipse.as_str(),
+            Self::add_icon(rdr, include_bytes!("../../assets/filledellipse.png")),
+        );
         self.icons_initialized = true;
     }
 

@@ -388,7 +388,7 @@ mod tests {
     #[test]
     fn test_rect_dimensions() {
         use super::*;
-        let rect = Rect(vec2f!(0,0), vec2f!(1,1));
+        let rect = Rect(vec2f!(0, 0), vec2f!(1, 1));
         assert_eq!(rect.w(), 2.);
         assert_eq!(rect.h(), 2.);
     }

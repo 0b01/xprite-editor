@@ -2,9 +2,9 @@ pub use crate::algorithms::{path::Path, polyline::Polyline};
 pub use crate::core::{
     brush::{Brush, BrushType},
     color::{Color, XpriteRgba},
+    frames::Frames,
     geom::{CubicBezierSegment, Rect, Vec2f},
     history::History,
-    frames::Frames,
     input::{InputEvent, InputItem, InputState},
     outline::{MarqueePixel, Outline},
     palette::PaletteManager,
@@ -50,7 +50,6 @@ pub fn oob(x: f64, y: f64, w: f64, h: f64) -> bool {
     }
     false
 }
-
 
 #[cfg(test)]
 mod tests {

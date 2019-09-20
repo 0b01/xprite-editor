@@ -9,13 +9,7 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
         .bring_to_front_on_focus(false)
         .position([LEFT_SIDE_WIDTH, 20.0], Condition::Always)
         .size([sz[0] as f32 - RIGHT_SIDE_WIDTH - LEFT_SIDE_WIDTH, sz[1] as f32 - 20.], Condition::Always)
-        .flags(
-            WindowFlags::NO_BRING_TO_FRONT_ON_FOCUS
-                | WindowFlags::NO_TITLE_BAR
-                | WindowFlags::NO_RESIZE
-                | WindowFlags::NO_MOVE
-                | WindowFlags::NO_COLLAPSE,
-        )
+        .flags(WindowFlags::NO_BRING_TO_FRONT_ON_FOCUS | WindowFlags::NO_TITLE_BAR | WindowFlags::NO_RESIZE | WindowFlags::NO_MOVE | WindowFlags::NO_COLLAPSE)
         .build(&ui, || {
             let styles = [StyleVar::FramePadding([-1., -1.]), StyleVar::WindowPadding([-1., -1.])];
             let colors = [(StyleColor::ChildBg, BACKGROUND)];
@@ -39,10 +33,11 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
                 }
                 ui.popup(&im_str!("contextmenu_doc##{}", i), || {
                     if Selectable::new(&im_str!("Close"))
-                .selected(false)
-                .flags(SelectableFlags::empty())
-                .size([50., 0.])
-                .build(&ui) {
+                        .selected(false)
+                        .flags(SelectableFlags::empty())
+                        .size([50., 0.])
+                        .build(&ui)
+                    {
                         info!("close pressed");
                         close_idx = Some(i);
                         ui.close_current_popup();
@@ -82,10 +77,14 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
 
                     state.redraw_pixels(rdr).unwrap();
 
-                    Image::new(TextureId::from(state.texture.unwrap()), [
+                    Image::new(
+                        TextureId::from(state.texture.unwrap()),
+                        [
                             (state.xpr_mut().canvas.art_w * state.xpr_mut().canvas.scale) as f32,
                             (state.xpr_mut().canvas.art_h * state.xpr_mut().canvas.scale) as f32,
-                        ]).build(&ui);
+                        ],
+                    )
+                    .build(&ui);
 
                     state.xpr_mut().render(rdr);
 
@@ -103,7 +102,6 @@ pub fn draw_canvas(rdr: &mut ImguiRenderer, state: &mut State, ui: &Ui) {
             //   .build(&ui);
             style.pop(&ui);
             color.pop(&ui);
-
         });
 }
 

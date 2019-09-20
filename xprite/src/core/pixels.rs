@@ -787,10 +787,12 @@ mod tests {
         let mut pixs = pixels!(pixel!(0, 0, Color::black()), pixel!(0, 1, Color::blue()), pixel!(1, 1, Color::blue()));
 
         pixs.retain_in_rect_mut(Rect(Vec2f { x: 0., y: 0. }, Vec2f { x: 1., y: 1. }));
-        assert_eq!(pixs, pixels!(pixel!(0, 0, Color::black()), pixel!(0, 1, Color::blue()), pixel!(1, 1, Color::blue())));
+        assert_eq!(
+            pixs,
+            pixels!(pixel!(0, 0, Color::black()), pixel!(0, 1, Color::blue()), pixel!(1, 1, Color::blue()))
+        );
 
         pixs.retain_in_rect_mut(Rect(Vec2f { x: 0., y: 0. }, Vec2f { x: 0., y: 0. }));
         assert_eq!(pixs, pixels!(pixel!(0, 0, Color::black())));
-
     }
 }

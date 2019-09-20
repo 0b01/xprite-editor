@@ -27,7 +27,7 @@ pub fn draw_brush(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
 }
 
 pub fn draw_brush_tree(state: &mut State, ui: &Ui, current_brush: BrushType, tool_type: ToolType) {
-    ui.tree_node(&im_str!("Brush")).default_open(true).build( || {
+    ui.tree_node(&im_str!("Brush")).default_open(true).build(|| {
         for (_index, brush) in BrushType::VARIANTS.iter().enumerate() {
             let is_sel = &current_brush == brush;
             if Selectable::new(&im_str!("{}", brush.as_str()))
@@ -41,7 +41,7 @@ pub fn draw_brush_tree(state: &mut State, ui: &Ui, current_brush: BrushType, too
         }
     });
 
-    ui.tree_node(&im_str!("Brush Settings")).default_open(true).build( || {
+    ui.tree_node(&im_str!("Brush Settings")).default_open(true).build(|| {
         if ui.drag_int(&im_str!("size"), &mut state.brush.sz[0]).build() {
             state.set_brush_for_tool(current_brush, tool_type);
         }

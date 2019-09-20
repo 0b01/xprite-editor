@@ -21,7 +21,15 @@ impl ColorPicker {
             .frame()
             .groups
             .iter()
-            .map(|group| group.1.iter().filter_map(|layer| if layer.borrow().visible { Some(layer.borrow().get_color(point)) } else { None }))
+            .map(|group| {
+                group.1.iter().filter_map(|layer| {
+                    if layer.borrow().visible {
+                        Some(layer.borrow().get_color(point))
+                    } else {
+                        None
+                    }
+                })
+            })
             .flatten()
             .collect();
         *colors.iter().find(|i| i.is_some())?

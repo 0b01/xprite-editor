@@ -5,7 +5,7 @@ pub fn draw_frames(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
     let sz = ui.io().display_size;
     Window::new(&im_str!("Frames"))
         .bring_to_front_on_focus(false)
-        .position([sz[0] as f32 - RIGHT_SIDE_WIDTH, sz[1] as f32 * 3. / 4. ], Condition::Always)
+        .position([sz[0] as f32 - RIGHT_SIDE_WIDTH, sz[1] as f32 * 3. / 4.], Condition::Always)
         .size([RIGHT_SIDE_WIDTH, (sz[1] / 4.) as f32], Condition::Always)
         .movable(false)
         .collapsible(false)
@@ -14,7 +14,7 @@ pub fn draw_frames(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
             macro_rules! frames {
                 () => {
                     state.xpr_mut().frames_mut();
-                }
+                };
             };
             let idx = frames!().current_frame_idx;
 

@@ -1,8 +1,8 @@
-use crate::prelude::*;
 use crate::algorithms::line::continuous_line;
+use crate::prelude::*;
 
-use std::rc::Rc;
 use std::cell::RefCell;
+use std::rc::Rc;
 
 #[derive(Debug)]
 pub struct BufferedPolyline {
@@ -85,8 +85,6 @@ impl Eraser {
         }
     }
 
-
-
     fn draw_line(&self, color: Color) -> Option<Pixels> {
         let buf = continuous_line(self.last_mouse_down_or_up?, self.cursor_pos?, color);
         let buf = self.brush.follow_stroke(&buf)?;
@@ -122,7 +120,12 @@ impl Eraser {
                 let b = Rc::clone(&self.buffered_polyline);
                 let mut c = b.borrow_mut();
                 let buf = c.process(&self.brush, color);
-                if let Ok(buf) = buf { add(buf); Ok(true) } else { Ok(false) }
+                if let Ok(buf) = buf {
+                    add(buf);
+                    Ok(true)
+                } else {
+                    Ok(false)
+                }
             }
             None => Ok(false),
         };
@@ -132,7 +135,6 @@ impl Eraser {
 }
 
 impl Tool for Eraser {
-
     fn mouse_move(&mut self, xpr: &Xprite, p: Vec2f) -> Result<(), String> {
         let point = xpr.canvas.shrink_size(p);
         self.cursor = self.brush.to_canvas_pixels(point, xpr.color());

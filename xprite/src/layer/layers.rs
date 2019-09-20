@@ -1,6 +1,6 @@
 use crate::prelude::*;
-use std::rc::Rc;
 use std::cell::RefCell;
+use std::rc::Rc;
 
 #[derive(Debug)]
 pub struct Layers {
@@ -39,7 +39,11 @@ impl Layers {
         let groups = vec![("Group 1".to_owned(), vec![Rc::new(RefCell::new(Layer::new("Layer 0".to_owned())))])];
         let selected = 0;
         let sel_group = 0;
-        Self { groups, layer_idx: selected, group_idx: sel_group }
+        Self {
+            groups,
+            layer_idx: selected,
+            group_idx: sel_group,
+        }
     }
 
     pub fn layer(&self) -> Option<Rc<RefCell<Layer>>> {
@@ -68,9 +72,7 @@ impl Layers {
     }
 
     pub fn insert_layer(&mut self, name: Option<&str>, visible: bool, idx: usize) {
-        let name = name
-            .map(|i| i.to_owned())
-            .unwrap_or_else(|| format!("Layer {}", self.group().unwrap().1.len()));
+        let name = name.map(|i| i.to_owned()).unwrap_or_else(|| format!("Layer {}", self.group().unwrap().1.len()));
         let mut new_layer = Layer::new(name);
         new_layer.visible = visible;
 
@@ -95,7 +97,6 @@ impl Layers {
     pub fn remove_layer(&mut self, group: usize, to_remove: usize) {
         self.groups[group].1.remove(to_remove);
     }
-
 
     pub fn toggle_group_visibility(&mut self, group: usize) -> Option<()> {
         for layer in &self.groups.get_mut(group)?.1 {

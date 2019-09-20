@@ -10,7 +10,7 @@ pub fn draw(rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
         return;
     }
 
-    ui.tree_node(&im_str!("Orientation")).default_open(true).build( || {
+    ui.tree_node(&im_str!("Orientation")).default_open(true).build(|| {
         if ui.radio_button_bool(&im_str!("reflections"), texture.orientation_reflection) {
             texture.orientation_reflection = !texture.orientation_reflection;
         }
@@ -19,7 +19,7 @@ pub fn draw(rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
         }
     });
 
-    ui.tree_node(&im_str!("Wrap")).default_open(true).build( || {
+    ui.tree_node(&im_str!("Wrap")).default_open(true).build(|| {
         if ui.radio_button_bool(&im_str!("wrap x"), texture.wrap_x) {
             texture.wrap_x = !texture.wrap_x;
         }
@@ -28,7 +28,7 @@ pub fn draw(rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
         }
     });
 
-    ui.tree_node(&im_str!("Texture size")).default_open(true).build( || {
+    ui.tree_node(&im_str!("Texture size")).default_open(true).build(|| {
         ui.drag_int(&im_str!("texture width"), &mut texture.tex_w).build();
         ui.drag_int(&im_str!("texture height"), &mut texture.tex_h).build();
     });

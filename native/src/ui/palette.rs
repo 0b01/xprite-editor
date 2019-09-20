@@ -59,8 +59,7 @@ pub fn draw_color_picker(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                     unsafe { state.xpr().palette.current_color().1.as_rgba().into() }
                 }
             };
-            let b =
-                ColorPicker::new(&im_str!("##4"), &mut sel)
+            let b = ColorPicker::new(&im_str!("##4"), &mut sel)
                 .flags(misc_flags)
                 .alpha(true)
                 .alpha_bar(true)
