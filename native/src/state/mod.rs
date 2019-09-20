@@ -109,6 +109,8 @@ impl State {
         self.icons.insert(ToolType::Ellipse.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/ellipse.png")));
         self.icons.insert(ToolType::Marquee.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/marquee.png")));
         self.icons.insert(ToolType::AutoShade.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/autoshade.png")));
+        self.icons.insert(ToolType::FilledRect.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/filledrect.png")));
+        self.icons.insert(ToolType::FilledEllipse.as_str(), Self::add_icon(rdr, include_bytes!("../../assets/filledellipse.png")));
         self.icons_initialized = true;
     }
 

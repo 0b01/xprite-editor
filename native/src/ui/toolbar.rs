@@ -14,12 +14,20 @@ pub fn draw_toolbar(state: &mut State, ui: &Ui) {
             let selected = state.xpr_mut().toolbox.selected.clone();
             let tools = ToolType::VARIANTS;
             let orig = ui.get_cursor_screen_pos();
-            for (idx, tool_type) in tools.iter().enumerate() {
-                let is_sel = selected == *tool_type;
+            for (idx, mut tool_type) in tools.iter().enumerate() {
 
                 let x = (idx % 5) as f32;
                 let y = (idx / 5) as f32;
                 let mut pos = [orig[0] + x * 33., orig[1] + y * 35.];
+
+                let mut is_sel = selected == *tool_type;
+
+                if (selected == ToolType::FilledEllipse && *tool_type == ToolType::Ellipse) ||
+                   (selected == ToolType::FilledRect && *tool_type == ToolType::Rect)
+                {
+                    is_sel = true;
+                    tool_type = &selected;
+                }
 
                 // macro_rules! draw_down {
                 //     ($t: expr) => {
