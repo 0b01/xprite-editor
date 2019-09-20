@@ -59,7 +59,7 @@ pub fn draw_color_picker(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                 }
             };
             let b = ui
-                .color_picker(&im_str!("MyColor##4"), &mut sel)
+                .color_picker(&im_str!("##4"), &mut sel)
                 .flags(misc_flags)
                 .alpha(true)
                 .alpha_bar(true)
@@ -127,7 +127,7 @@ fn draw_cells(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
             f
         };
         let mut sel: [f32; 4] = unsafe { (*col).as_rgba().into() };
-        if ui.color_edit(&im_str!("MyColor##{}", i), &mut sel).flags(misc_flags).alpha(false).build() {
+        if ui.color_edit(&im_str!("##{}", i), &mut sel).flags(misc_flags).alpha(false).build() {
             // if color is mutated
             *col = sel.into();
             modified = true;

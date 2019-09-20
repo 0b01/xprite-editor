@@ -14,6 +14,9 @@ pub enum Bind {
     NewXpr,
     CloseXpr(usize),
     Unmapped,
+    SetPaletteIndex(usize),
+    ToggleSymmetryPanel,
+    ToggleExporterPanel,
 }
 
 macro_rules! declare_actions {
@@ -251,6 +254,22 @@ impl HotkeyController {
         // alt
         binds.insert(Action::LAlt(false, false, true, true), Bind::PushTool(ToolType::ColorPicker));
         binds.insert(Action::LAlt(false, false, false, false), Bind::PopTool);
+
+        // alt + num to switch color
+        binds.insert(Action::Key1(false, false, true, true), Bind::SetPaletteIndex(0));
+        binds.insert(Action::Key2(false, false, true, true), Bind::SetPaletteIndex(1));
+        binds.insert(Action::Key3(false, false, true, true), Bind::SetPaletteIndex(2));
+        binds.insert(Action::Key4(false, false, true, true), Bind::SetPaletteIndex(3));
+        binds.insert(Action::Key5(false, false, true, true), Bind::SetPaletteIndex(4));
+        binds.insert(Action::Key6(false, false, true, true), Bind::SetPaletteIndex(5));
+        binds.insert(Action::Key7(false, false, true, true), Bind::SetPaletteIndex(6));
+        binds.insert(Action::Key8(false, false, true, true), Bind::SetPaletteIndex(7));
+
+        // toggle symmetry panel
+        binds.insert(Action::K(true, true, true, true), Bind::ToggleSymmetryPanel);
+        // toggle exporter panel
+        binds.insert(Action::E(true, false, false, true), Bind::ToggleExporterPanel);
+
 
         binds.insert(Action::Return(true, false, false, true), Bind::RunScript);
         binds.insert(Action::N(true, false, false, true), Bind::NewXpr);

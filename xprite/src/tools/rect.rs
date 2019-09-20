@@ -61,6 +61,7 @@ impl Rect {
         })
     }
 
+    /// get rectangle in pixel form
     fn get_rect(&self, color: Color) -> Result<Pixels, String> {
         if let (Some(start), Some(stop)) = (self.start_pos, self.cursor_pos) {
             let end = self.process_snap(start, stop);
@@ -71,6 +72,7 @@ impl Rect {
         }
     }
 
+    /// snap to angle
     fn process_snap(&self, start: Vec2f, stop: Vec2f) -> Vec2f {
         if self.snap {
             let x0 = start.x;
@@ -89,6 +91,7 @@ impl Rect {
         }
     }
 
+    /// reflect about p0
     fn process_symmetry(&self, start: Vec2f, end: Vec2f) -> Vec2f {
         if self.symmetric {
             let x = start.x - (end.x - start.x);

@@ -44,7 +44,7 @@ pub fn draw(_rdr: &mut dyn Renderer, state: &mut State, ui: &Ui) {
 
     ui.tree_node(&im_str!("Background Color")).default_open(true).build(|| {
         let mut sel: [f32; 4] = unsafe { state.xpr().canvas.bg.as_rgba().into() };
-        let id = im_str!("MyColor##{}", "background");
+        let id = im_str!("##{}", "background");
         let misc_flags = {
             let mut f = ImGuiColorEditFlags::empty();
             f.set(ImGuiColorEditFlags::HDR, true);

@@ -109,7 +109,6 @@ impl ExporterSpec {
 
 #[derive(Default)]
 pub struct Exporter {
-    pub show: bool,
     pub specs: Vec<ExporterSpec>,
     pub selected: usize,
     pub path: String,

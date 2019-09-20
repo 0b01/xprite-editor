@@ -150,10 +150,16 @@ impl Rect {
 
 /// represents a 2D vector
 #[cfg_attr(feature = "python-scripting", pyclass)]
-#[derive(Debug, Copy, Clone, PartialOrd, Default)]
+#[derive(Copy, Clone, PartialOrd, Default)]
 pub struct Vec2f {
     pub x: f64,
     pub y: f64,
+}
+
+impl ::std::fmt::Debug for Vec2f {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        write!(f, "[x,y]=[{},{}]", self.x, self.y)
+    }
 }
 
 #[cfg(feature = "python-scripting")]

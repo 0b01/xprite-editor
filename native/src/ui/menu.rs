@@ -20,7 +20,7 @@ pub fn draw_menu(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
                 state.execute(Bind::PushTool(ToolType::Settings)).unwrap();
             }
 
-            if ui.menu_item(&im_str!("Exporter")).build() {
+            if ui.menu_item(&im_str!("Exporter")).shortcut(&im_str!("Ctrl+E")).build() {
                 state.toggle_exporter();
             }
         });
@@ -29,13 +29,13 @@ pub fn draw_menu(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
             if ui.menu_item(&im_str!("Undo")).shortcut(&im_str!("Ctrl+Z")).build() {
                 state.xpr_mut().undo();
             }
-            if ui.menu_item(&im_str!("Redo")).shortcut(&im_str!("Ctrl+y")).build() {
+            if ui.menu_item(&im_str!("Redo")).shortcut(&im_str!("Ctrl+Y")).build() {
                 state.xpr_mut().redo();
             }
         });
 
         ui.menu(&im_str!("Panels")).build(|| {
-            if ui.menu_item(&im_str!("Symmetry")).build() {
+            if ui.menu_item(&im_str!("Symmetry")).shortcut(&im_str!("Ctrl+Shift+Alt+K")).build() {
                 state.toggle_symmetry();
             }
             if ui.menu_item(&im_str!("Console")).build() {

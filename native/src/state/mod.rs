@@ -17,6 +17,7 @@ pub struct State {
     pub preview_window_state: preview_window::PreviewWindowState,
     pub exporter: xprite::core::exporter::Exporter,
 
+    pub show_exporter: bool,
     pub show_console: bool,
     pub show_brush: bool,
     pub show_symmetry: bool,
@@ -48,6 +49,7 @@ impl Default for State {
             exporter: Default::default(),
 
             brush: Default::default(),
+            show_exporter: false,
             show_console: false,
             show_brush: false,
             show_symmetry: false,
@@ -150,7 +152,7 @@ impl State {
     }
 
     pub fn toggle_exporter(&mut self) {
-        self.exporter.show = !self.exporter.show;
+        self.show_exporter = !self.show_exporter;
     }
 
     pub fn toggle_symmetry(&mut self) {
@@ -192,6 +194,11 @@ impl State {
             RunScript => {
                 unimplemented!();
             }
+            SetPaletteIndex(i) => {
+                self.xpr_mut().palette.current_palette_mut().idx = i;
+            }
+            ToggleSymmetryPanel => self.toggle_symmetry(),
+            ToggleExporterPanel => self.toggle_exporter(),
             Unmapped => (),
         }
         Ok(())

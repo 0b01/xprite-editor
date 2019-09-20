@@ -3,7 +3,7 @@ use xprite::core::exporter::{ExportType, ExporterFormat};
 use xprite::rendering::Renderer;
 
 pub fn draw_exporter(_rdr: &dyn Renderer, state: &mut State, ui: &Ui) {
-    if state.exporter.show {
+    if state.show_exporter {
         ui.window(&im_str!("Exporter"))
             .size([300., 200.], Condition::Appearing)
             .movable(true)

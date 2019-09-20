@@ -61,7 +61,7 @@ pub fn draw(state: &mut State, ui: &Ui) {
                 .to_rgba(Some(state.xpr()))
                 .unwrap()
                 .into();
-            let id = im_str!("MyColor##{}", "background");
+            let id = im_str!("##{}", "background");
             let misc_flags = {
                 let mut f = ImGuiColorEditFlags::empty();
                 f.set(ImGuiColorEditFlags::HDR, true);
