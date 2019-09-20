@@ -1,13 +1,7 @@
 language: rust
 
 before_install:
-  - echo $TRAVIS_OS_NAME
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-  -   brew unlink python
-  -   brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/f2a764ef944b1080be64bd88dca9a1d80130c558/Formula/python.rb
-  -   brew switch python 3.6.5_1
-  - fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libgtk-3-dev ; fi
+  - sudo apt-get install -y libgtk3-dev
 
 rust:
   - nightly
