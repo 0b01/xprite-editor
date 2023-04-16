@@ -15,3 +15,5 @@ matrix:
 script:
   - cargo build --verbose --bin xprite-native
   - cargo test --verbose --lib
+
+# Added comment - 
